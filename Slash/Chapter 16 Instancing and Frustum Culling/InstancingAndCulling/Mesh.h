@@ -1,0 +1,44 @@
+#pragma once
+#include "GameTimer.h"
+
+using namespace std;
+
+class Mesh
+{
+public:
+	typedef struct character
+	{
+		int iTimeValue = 0;
+		vector<Vertex> vecVertex;
+		vector<int> vecIndex;
+
+		int iNumVertex = 0;
+		int iNumIndex = 0;
+
+		vector<XMFLOAT2> uv;
+		vector<int>		uvIndex;
+
+		int iNumTexCnt = 0;
+		int iNumTexIndex = 0;
+
+		vector<Vertex> realvecVertex;
+
+	}Character;
+
+public:
+	explicit Mesh(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);
+	virtual ~Mesh();
+
+public:
+	virtual HRESULT Initialize(vector<pair<const string, const string>> &pFilePath);
+	virtual HRESULT Initialize();
+	virtual int Update(const GameTimer& gt);
+	virtual void Render();
+	virtual void Release();
+
+public:
+	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath) = 0;
+
+protected:
+	Microsoft::WRL::ComPtr<ID3D12Device>		m_d3dDevice;
+};
