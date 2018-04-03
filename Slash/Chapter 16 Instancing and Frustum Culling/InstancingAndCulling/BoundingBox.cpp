@@ -1,29 +1,61 @@
 #include "stdafx.h"
-#include "Barrel.h"
+#include "BoundingBox.h"
 #include "Define.h"
-#include "StaticMesh.h"
+#include "GeometryMesh.h"
 
+CBoundingBox::CBoundingBox(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT3& f3Pos, XMFLOAT3& f3Scale)
+	:CGameObject(d3dDevice, srv, srvSize)
+	, m_f3Position(f3Pos)
+	, m_f3Scale(f3Scale)
+{
 
-Barrel::Barrel(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize) 
-	: CGameObject(d3dDevice, srv, srvSize)
+}
+
+CBoundingBox::~CBoundingBox()
 {
 }
 
-
-Barrel::~Barrel()
+HRESULT CBoundingBox::Initialize()
 {
+	m_pMesh = new GeometryMesh(m_d3dDevice);
+
+	if (FAILED(m_pMesh->Initialize()))
+		return E_FAIL;
+
+	/* Material Build */
+	Mat = new Material;
+	Mat->Name = "BoxMat";
+	Mat->MatCBIndex = 0;
+	Mat->DiffuseSrvHeapIndex = 0;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Mat->Roughness = 0.3f;
+
+	/* CB(World,TextureTranform...) Build */
+
+	XMStoreFloat4x4(&World, XMMatrixScaling(10.0f, 10.0f, 10.0f));
+	TexTransform = MathHelper::Identity4x4();
+	ObjCBIndex = 0;
+
+	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	IndexCount = Geo->DrawArgs["sphere"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["sphere"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["sphere"].BaseVertexLocation;
+
+
+	/////////////////////////
+
+	return S_OK;
 }
 
-bool Barrel::Update(const GameTimer & gt)
+bool CBoundingBox::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
+
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
-
-	//auto currObjectCB2 = m_pFrameResource->InstanceBuffer.get();
-
-	World._43 = 1.0f;
+	/* CB Update */
 	XMMATRIX world = XMLoadFloat4x4(&World);
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
@@ -34,12 +66,9 @@ bool Barrel::Update(const GameTimer & gt)
 
 	currObjectCB->CopyData(ObjCBIndex, objConstants);
 
-
 	//////////////////////////////////////////////////
 
-
-	// Next FrameResource need to be updated too.
-	//NumFramesDirty--;
+	/* Material Update */
 	auto currMaterialCB = m_pFrameResource->MaterialCB.get();
 
 	XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
@@ -53,10 +82,11 @@ bool Barrel::Update(const GameTimer & gt)
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
 	return true;
 }
 
-void Barrel::Render(ID3D12GraphicsCommandList * cmdList)
+void CBoundingBox::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -82,60 +112,20 @@ void Barrel::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
 	cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
-
-
 }
 
-HRESULT Barrel::Initialize()
+CBoundingBox * CBoundingBox::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT3 & f3Pos, XMFLOAT3 & f3Scale)
 {
-	m_pMesh = new StaticMesh(m_d3dDevice);
-
-	/*if (FAILED(m_pMesh->Initialize(L"Idle", "Models/StaticMesh/staticMesh.ASE")))
-		return E_FAIL;*/
-
-
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
-
-
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;
-
-
-	Mat = new Material;
-	Mat->Name = "BarrelMat";
-	Mat->MatCBIndex = 1;
-	Mat->DiffuseSrvHeapIndex = 1;
-	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
-	Mat->Roughness = 0.3f;
-
-	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixTranslation(0.0f, 1.0f, 0.0f));
-	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 1;
-
-	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
-	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs["Barrel"].IndexCount;
-	StartIndexLocation = Geo->DrawArgs["Barrel"].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs["Barrel"].BaseVertexLocation;
-
-	return S_OK;
-}
-
-Barrel * Barrel::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
-{
-	Barrel* pInstance = new Barrel(d3dDevice, srv, srvSize);
+	CBoundingBox* pInstance = new CBoundingBox(d3dDevice, srv, srvSize, f3Pos, f3Scale);
+	if (FAILED(pInstance->Initialize()))
 	{
-		if (FAILED(pInstance->Initialize()))
-		{
-			MSG_BOX(L"Barrel Created Failed");
-			Safe_Release(pInstance);
-		}
+		Safe_Release(pInstance);
+		MSG_BOX(L"CBoundingBox Created Failed");
 	}
 	return pInstance;
 }
 
-void Barrel::Free()
+void CBoundingBox::Free()
 {
 }
+

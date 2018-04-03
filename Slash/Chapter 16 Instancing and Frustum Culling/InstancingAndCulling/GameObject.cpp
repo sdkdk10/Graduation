@@ -3,7 +3,6 @@
 #include "Management.h"
 #include "Mesh.h"
 
-
 CGameObject::CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
 	, mSrvDescriptorHeap(srv)
@@ -34,6 +33,10 @@ void CGameObject::Render(ID3D12GraphicsCommandList* cmdList)
 HRESULT CGameObject::Initialize()
 {
 	return S_OK;
+}
+
+void CGameObject::RenderBounds(ID3D12GraphicsCommandList * cmdList)
+{
 }
 
 void CGameObject::Free()

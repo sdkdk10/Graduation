@@ -4,8 +4,9 @@
 
 class StaticMesh : public Mesh
 {
+
 public:
-	std::unique_ptr<MeshGeometry>	m_Geometry;
+	vector<std::unique_ptr<MeshGeometry>>	m_Geometry;
 
 public:
 	explicit StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);
@@ -16,6 +17,7 @@ public:
 	virtual void Draw();
 	virtual void Release();
 
+	void BuildBounds();
 	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath);
 };
 

@@ -6,6 +6,8 @@ class GameTimer;
 class CTransform;
 struct RenderItem;
 
+class GeometryMesh;
+
 struct CB_ObjectConstants
 {
 	DirectX::XMFLOAT4X4 World = MathHelper::Identity4x4();
@@ -69,6 +71,7 @@ protected:
 	Material* Mat = nullptr;
 	MeshGeometry* Geo = nullptr;
 
+	MeshGeometry* Geo_Bounds = nullptr;
 	// Primitive topology.
 	D3D12_PRIMITIVE_TOPOLOGY PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -84,9 +87,13 @@ protected:
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;
 
+	BoundingBox					Bounds;
+
 public:
 	Mesh*				m_pMesh;
 	CTransform*			m_pTransCom;
+
+
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
@@ -98,6 +105,10 @@ public:
 	void SetSrvDescriptorHeap(ComPtr<ID3D12DescriptorHeap> &srv) { mSrvDescriptorHeap = srv; }
 	void SetSrvDescriptorSize(UINT srvSize) { mCbvSrvDescriptorSize = srvSize; }
 
+	virtual void			RenderBounds(ID3D12GraphicsCommandList* cmdList);
+
+public:
+	
 private:
 	virtual void			Free();
 };

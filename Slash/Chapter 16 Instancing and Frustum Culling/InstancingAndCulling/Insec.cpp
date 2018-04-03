@@ -3,6 +3,7 @@
 #include "Define.h"
 #include "DynamicMesh.h"
 #include "InputDevice.h"
+#include "BoundingBox.h"
 
 
 
@@ -17,6 +18,8 @@ Insec::~Insec()
 
 bool Insec::Update(const GameTimer & gt)
 {
+	/*m_pBoundMesh->SetPosition(GetPosition());
+	m_pBoundMesh->Update(gt);*/
 	//OnPrepareRender(); 수정필요
 
 	//XMFLOAT3 MoveTest = XMFLOAT3(1, 0, 0);
@@ -83,6 +86,8 @@ bool Insec::Update(const GameTimer & gt)
 
 		}*/
 
+		World._43 -= gt.DeltaTime() * 10.f;
+		World._41 -= gt.DeltaTime() * 10.f;
 
 	}
 	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
@@ -103,12 +108,52 @@ bool Insec::Update(const GameTimer & gt)
 			
 		}*/
 
-		
+		World._43 += gt.DeltaTime() * 10.f;
+		World._41 += gt.DeltaTime() * 10.f;
+	}
+
+	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
+	{
+		KeyInputTest = 1;
+		fAngleTestSum = 0;
 
 
+		/*fAngleTestSum2 += fAngleTest2;
+
+		if (fAngleTestSum2 < 3.14)
+		{
+
+		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
+		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
+		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
 
 
-		//World._43 += gt.DeltaTime() * 10.f;
+		}*/
+
+
+		World._41 -= gt.DeltaTime() * 10.f;
+		World._43 += gt.DeltaTime() * 10.f;
+	}
+	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
+	{
+		//KeyInputTest = 2;
+		KeyInputTest = 1;
+
+		/*	fAngleTestSum2 = 0;
+		fAngleTestSum += fAngleTest;
+
+		if (fAngleTestSum < 3.14)
+		{
+
+		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
+		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
+		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
+
+
+		}*/
+
+		World._41 += gt.DeltaTime() * 10.f;
+		World._43 -= gt.DeltaTime() * 10.f;
 	}
 	else
 	{
@@ -120,6 +165,8 @@ bool Insec::Update(const GameTimer & gt)
 
 void Insec::Render(ID3D12GraphicsCommandList * cmdList)
 {
+	//m_pBoundMesh->Render(cmdList);
+
 	if (KeyInputTest == 0)
 		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex;
 	if (KeyInputTest == 1)
@@ -187,8 +234,10 @@ HRESULT Insec::Initialize()
 	//Element_Left.BaseVertexLocation = Geo_Left->DrawArgs["mage_Left"].BaseVertexLocation;
 
 
+	//m_pBoundMesh = dynam
 
 
+	//m_pBoundMesh = CBoundingBox::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, GetPosition(), XMFLOAT3(0.5f, 0.5f, 0.5f));
 	return S_OK;
 }
 

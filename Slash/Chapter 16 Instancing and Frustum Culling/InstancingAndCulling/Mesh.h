@@ -6,6 +6,10 @@ using namespace std;
 class Mesh
 {
 public:
+	XMVECTOR vMin;
+
+	XMVECTOR vMax;
+public:
 	typedef struct character
 	{
 		int iTimeValue = 0;

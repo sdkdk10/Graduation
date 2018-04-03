@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+class CBoundingBox;
+
 typedef struct objdrawelement
 {
 	UINT IndexCount = 0;
@@ -11,6 +13,8 @@ typedef struct objdrawelement
 
 class Insec : public CGameObject
 {
+
+
 //////////////////////////////////////////////
 
 	virtual void OnPrepareRender();
@@ -48,7 +52,7 @@ public:
 
 	float fAngleTest2 = 0.1f;
 	float fAngleTestSum2 = 0.0f;
-
+	CBoundingBox*						m_pBoundMesh = nullptr;
 private:
 	Insec(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 public:

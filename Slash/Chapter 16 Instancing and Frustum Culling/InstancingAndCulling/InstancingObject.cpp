@@ -100,7 +100,7 @@ HRESULT CInstancingObject::Initialize()
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = 0;
 
-	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry.get();
+	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	InstanceCount = 0;
 	IndexCount = Geo->DrawArgs["Barrel"].IndexCount;
@@ -108,6 +108,13 @@ HRESULT CInstancingObject::Initialize()
 	BaseVertexLocation = Geo->DrawArgs["Barrel"].BaseVertexLocation;
 	Bounds = Geo->DrawArgs["Barrel"].Bounds;
 
+	Geo_Bounds = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[1].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	InstanceCount = 0;
+	Element_Bounds.IndexCount = Geo_Bounds->DrawArgs["BarrelBounds"].IndexCount;
+	Element_Bounds.StartIndexLocation = Geo_Bounds->DrawArgs["BarrelBounds"].StartIndexLocation;
+	Element_Bounds.BaseVertexLocation = Geo_Bounds->DrawArgs["BarrelBounds"].BaseVertexLocation;
+//	m_GeoBounds = 
 
 	// Generate instance data.
 	const int n = 5;
@@ -182,7 +189,7 @@ bool CInstancingObject::Update(const GameTimer & gt)
 			XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
 			data.MaterialIndex = instanceData[i].MaterialIndex;
 
-			// Write the instance data to structured buffer for the visible objects.
+			// Write the instance data to structured buffer for the visible objects. º¸¿©? ¤¾¤· 
 			currInstanceBuffer->CopyData(visibleInstanceCount++, data);
 		}
 	}
@@ -222,6 +229,9 @@ bool CInstancingObject::Update(const GameTimer & gt)
 
 void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 {
+
+	RenderBounds(cmdList);
+	
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	//UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
@@ -236,6 +246,9 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 	
 
 	cmdList->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndexLocation, BaseVertexLocation, 0);
+
+	
+
 }
 
 CInstancingObject * CInstancingObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
@@ -249,6 +262,31 @@ CInstancingObject * CInstancingObject::Create(Microsoft::WRL::ComPtr<ID3D12Devic
 	}
 
 	return pInstance;
+}
+
+void CInstancingObject::RenderBounds(ID3D12GraphicsCommandList * cmdList)
+{
+	//UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	cmdList->IASetVertexBuffers(0, 1, &Geo_Bounds->VertexBufferView());
+	cmdList->IASetIndexBuffer(&Geo_Bounds->IndexBufferView());
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+	// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
+	// the heap and set as a root descriptor.
+
+	auto instanceBuffer = m_pFrameResource->InstanceBuffer->Resource();
+	mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress());
+
+
+
+
+	cmdList->DrawIndexedInstanced(Element_Bounds.IndexCount, InstanceCount, Element_Bounds.StartIndexLocation, Element_Bounds.BaseVertexLocation, 0);
+
+
+
+
+
+	////////////////////////////////////////////////////////////
 }
 
 void CInstancingObject::Free()

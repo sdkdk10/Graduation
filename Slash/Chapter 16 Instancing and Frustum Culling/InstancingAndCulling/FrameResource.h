@@ -66,6 +66,22 @@ struct MaterialData
 
 struct Vertex
 {
+	Vertex() {}
+	Vertex(
+		const DirectX::XMFLOAT3& p,
+		const DirectX::XMFLOAT3& n,
+		const DirectX::XMFLOAT2& uv) :
+		Pos(p),
+		Normal(n),
+		TexC(uv) {}
+	Vertex(
+		float px, float py, float pz,
+		float nx, float ny, float nz,
+		float u, float v) :
+		Pos(px, py, pz),
+		Normal(nx, ny, nz),
+		TexC(u, v) {}
+
     DirectX::XMFLOAT3 Pos;
     DirectX::XMFLOAT3 Normal;
 	DirectX::XMFLOAT2 TexC;
