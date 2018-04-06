@@ -63,11 +63,16 @@ float4 PS(VertexOut pin) : SV_Target
     float4 directLight = ComputeLighting(gLights, mat, pin.PosW,
         pin.NormalW, toEyeW, shadowFactor);
 
+
+	
     float4 litColor = ambient + directLight;
 
     // Common convention to take alpha from diffuse albedo.
     litColor.a = diffuseAlbedo.a;
 	//litColor.rgb = float3(1.0, 0, 0);
+	
+	//litColor = ceil(litColor * 5) / 5.0f;
+
 
     return litColor;
 }

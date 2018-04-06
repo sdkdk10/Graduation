@@ -13,6 +13,7 @@ typedef struct objdrawelement
 
 class Insec : public CGameObject
 {
+	bool bAttackMotionTest = false;
 
 
 //////////////////////////////////////////////

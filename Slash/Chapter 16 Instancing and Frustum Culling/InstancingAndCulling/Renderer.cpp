@@ -38,6 +38,7 @@ void CRenderer::Render(ID3D12GraphicsCommandList* cmdList)
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 	Render_ForWard(cmdList);
+
 	Render_Priority(cmdList);
 	
 
@@ -62,7 +63,7 @@ void CRenderer::Render_ForWard(ID3D12GraphicsCommandList* cmdList)
 	mCommandList->SetPipelineState(mPSOs["Opaque"].Get());
 	for (auto& elem : m_vecObject[RENDER_NONALPHA_FORWARD])
 		elem->Render(cmdList);
-}
+} 
 
 void CRenderer::Render_Instancing(ID3D12GraphicsCommandList* cmdList)
 {

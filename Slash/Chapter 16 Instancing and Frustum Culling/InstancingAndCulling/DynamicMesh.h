@@ -64,13 +64,22 @@ public:
 	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath);
 
 public:
+	bool bTimerTestIdle = false;
+	bool bTimerTestWalk = false;
+	bool bTimerTestAttack1 = false;
+	bool bTimerTestAttack2 = false;
+	bool bTimerTestAttack3 = false;
+
+
 	int				m_iAnimationState = 0;				// 애니메이션 상태
 	int				m_iAnimationSize = 0;				// 모델이 갖고있는 애니메이션 수
 
 	float			m_fAnimationKeyFrameIndex = 0.f;		// 애니메이션 인덱스
 	float			m_fAnimationKeyFrameIndex_Walk = 0.f;		// 애니메이션 인덱스
-	float			m_fAnimationKeyFrameIndex_Back = 0.f;		// 애니메이션 인덱스
 
+	float			m_fAnimationKeyFrameIndex_Attack1 = 0.f;		// 애니메이션 인덱스
+	float			m_fAnimationKeyFrameIndex_Attack2 = 0.f;		// 애니메이션 인덱스
+	float			m_fAnimationKeyFrameIndex_Attack3 = 0.f;		// 애니메이션 인덱스
 
 	vector<int> vecAnimFrame;
 

@@ -46,6 +46,9 @@ float4 PS(VertexOut pin) : SV_Target
 
 	diffuseAlbedo *= gDiffuseMap_Default[0].Sample(gsamAnisotropicWrap, pin.TexC);
 
+	/*if (diffuseAlbedo.a < 0.1)
+		discard;*/
+
 	// Interpolating normal can unnormalize it, so renormalize it.
 	pin.NormalW = normalize(pin.NormalW);
 
@@ -61,6 +64,8 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 directLight = ComputeLighting(gLights, mat, pin.PosW,
 		pin.NormalW, toEyeW, shadowFactor);
 
+	
+
 	float4 litColor = ambient + directLight;
 
 	// Add in specular reflections.
@@ -69,10 +74,11 @@ float4 PS(VertexOut pin) : SV_Target
 	float3 fresnelFactor = SchlickFresnel(fresnelR0, pin.NormalW, r);
 	litColor.rgb += shininess * fresnelFactor * reflectionColor.rgb;
 
+	
 	// Common convention to take alpha from diffuse albedo.
 	litColor.a = diffuseAlbedo.a;
-	
 
+	//litColor = ceil(litColor * 5) / 5.0f;
 	return litColor;
 }
 

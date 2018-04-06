@@ -16,8 +16,156 @@ Insec::~Insec()
 {
 }
 
+
+void Insec::Animate(const GameTimer & gt)
+{
+
+	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
+	{
+		KeyInputTest = 1;
+		fAngleTestSum = 0;
+
+
+		/*fAngleTestSum2 += fAngleTest2;
+
+		if (fAngleTestSum2 < 3.14)
+		{
+
+		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
+		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
+		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
+
+
+		}*/
+
+		World._43 -= gt.DeltaTime() * 10.f;
+		World._41 -= gt.DeltaTime() * 10.f;
+
+	}
+	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
+	{
+		//KeyInputTest = 2;
+		KeyInputTest = 1;
+
+		/*	fAngleTestSum2 = 0;
+		fAngleTestSum += fAngleTest;
+
+		if (fAngleTestSum < 3.14)
+		{
+
+		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
+		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
+		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
+
+
+		}*/
+
+		World._43 += gt.DeltaTime() * 10.f;
+		World._41 += gt.DeltaTime() * 10.f;
+	}
+
+	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
+	{
+		KeyInputTest = 1;
+		fAngleTestSum = 0;
+
+
+		/*fAngleTestSum2 += fAngleTest2;
+
+		if (fAngleTestSum2 < 3.14)
+		{
+
+		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
+		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
+		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
+
+
+		}*/
+
+
+		World._41 -= gt.DeltaTime() * 10.f;
+		World._43 += gt.DeltaTime() * 10.f;
+	}
+	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
+	{
+		//KeyInputTest = 2;
+		KeyInputTest = 1;
+
+		/*	fAngleTestSum2 = 0;
+		fAngleTestSum += fAngleTest;
+
+		if (fAngleTestSum < 3.14)
+		{
+
+		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
+		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
+		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
+
+
+		}*/
+
+		World._41 += gt.DeltaTime() * 10.f;
+		World._43 -= gt.DeltaTime() * 10.f;
+	}
+
+	else if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	{
+		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
+
+		//KeyInputTest = 2;
+
+		if (KeyInputTest != 2)
+			KeyInputTest = 2;
+		else
+		{
+			KeyInputTest = 3;
+
+			bAttackMotionTest = true;
+		}
+
+		if (bAttackMotionTest == false)
+		{
+			if (KeyInputTest == 3)
+			{
+
+			}
+		}
+
+
+	}
+	else if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+	{
+		//KeyInputTest = 2;
+		KeyInputTest = 3;
+
+
+
+	}
+	else if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
+	{
+		//KeyInputTest = 2;
+		KeyInputTest = 4;
+
+
+	}
+	else
+	{
+
+
+		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
+		if (!pTestMesh->bTimerTestAttack1 &&
+			!pTestMesh->bTimerTestAttack2 &&
+			!pTestMesh->bTimerTestAttack3 &&
+			!pTestMesh->bTimerTestWalk
+			)
+
+			KeyInputTest = 0;
+	}
+}
+
 bool Insec::Update(const GameTimer & gt)
 {
+	Animate(gt);
 	/*m_pBoundMesh->SetPosition(GetPosition());
 	m_pBoundMesh->Update(gt);*/
 	//OnPrepareRender(); 수정필요
@@ -68,98 +216,6 @@ bool Insec::Update(const GameTimer & gt)
 	//mat->NumFramesDirty--;
 	
 
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
-	{
-		KeyInputTest = 1;
-		fAngleTestSum = 0;
-
-
-		/*fAngleTestSum2 += fAngleTest2;
-
-		if (fAngleTestSum2 < 3.14)
-		{
-
-			XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
-			XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
-			XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-
-		}*/
-
-		World._43 -= gt.DeltaTime() * 10.f;
-		World._41 -= gt.DeltaTime() * 10.f;
-
-	}
-	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
-	{
-		//KeyInputTest = 2;
-		KeyInputTest = 1;
-
-	/*	fAngleTestSum2 = 0;
-		fAngleTestSum += fAngleTest;
-
-		if (fAngleTestSum < 3.14)
-		{
-
-			XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
-			XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
-			XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-			
-		}*/
-
-		World._43 += gt.DeltaTime() * 10.f;
-		World._41 += gt.DeltaTime() * 10.f;
-	}
-
-	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
-	{
-		KeyInputTest = 1;
-		fAngleTestSum = 0;
-
-
-		/*fAngleTestSum2 += fAngleTest2;
-
-		if (fAngleTestSum2 < 3.14)
-		{
-
-		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
-		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
-		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-
-		}*/
-
-
-		World._41 -= gt.DeltaTime() * 10.f;
-		World._43 += gt.DeltaTime() * 10.f;
-	}
-	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
-	{
-		//KeyInputTest = 2;
-		KeyInputTest = 1;
-
-		/*	fAngleTestSum2 = 0;
-		fAngleTestSum += fAngleTest;
-
-		if (fAngleTestSum < 3.14)
-		{
-
-		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
-		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
-		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-
-		}*/
-
-		World._41 += gt.DeltaTime() * 10.f;
-		World._43 -= gt.DeltaTime() * 10.f;
-	}
-	else
-	{
-		KeyInputTest = 0;
-	}
-
 	return true;
 }
 
@@ -168,11 +224,39 @@ void Insec::Render(ID3D12GraphicsCommandList * cmdList)
 	//m_pBoundMesh->Render(cmdList);
 
 	if (KeyInputTest == 0)
+	{
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestIdle = true;
 		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex;
+
+	}
 	if (KeyInputTest == 1)
+	{
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk= true;
+
 		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
+
+	}
 	if (KeyInputTest == 2)
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Back;
+	{
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestAttack1 = true;
+
+		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Attack1;
+
+	}
+	if (KeyInputTest == 3)
+	{
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestAttack2 = true;
+
+		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Attack2;
+
+	}
+	if (KeyInputTest == 4)
+	{
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestAttack3 = true;
+
+		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Attack3;
+
+	}
 	Render_Head(cmdList);
 	Render_Body(cmdList);
 	Render_Right(cmdList);
@@ -189,9 +273,9 @@ HRESULT Insec::Initialize()
 	vector<pair<const string, const string>> path;
 	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Back.ASE"));
-
-
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
 	if (FAILED(m_pMesh->Initialize(path)))
 		return E_FAIL;
 
@@ -452,9 +536,6 @@ void Insec::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
 {
 }
 
-void Insec::Animate(const GameTimer & gt)
-{
-}
 
 void Insec::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 {

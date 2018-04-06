@@ -27,7 +27,10 @@ VertexOut_Sky VS(VertexIn_Sky vin)
 
 float4 PS(VertexOut_Sky pin) : SV_Target
 {
-	return gCubeMap.Sample(gsamLinearWrap, pin.PosL);
+	float4 litColor = gCubeMap.Sample(gsamLinearWrap, pin.PosL);
+
+	//litColor = ceil(litColor * 5) / 5.0f;
+	return litColor;
 
 }
 

@@ -684,6 +684,13 @@ void InstancingAndCullingApp::LoadTextures()
 	mCommandList.Get(), SkyTex->Filename.c_str(),
 		SkyTex->Resource, SkyTex->UploadHeap));
 
+	auto FenceTex = std::make_unique<Texture>();
+	FenceTex->Name = "FenceTex";
+	FenceTex->Filename = L"../../Textures/WireFence.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), FenceTex->Filename.c_str(),
+		FenceTex->Resource, FenceTex->UploadHeap));
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -693,6 +700,7 @@ void InstancingAndCullingApp::LoadTextures()
 	//mMaterials[defaultTex->Name] = std::move(defaultTex);
 	mMaterials_Instancing[InsecTex->Name] = std::move(InsecTex);
 	mMaterials_Instancing[SkyTex->Name] = std::move(SkyTex);
+	mMaterials_Instancing[FenceTex->Name] = std::move(FenceTex);
 
 }
 
@@ -795,6 +803,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	//auto skyTex = mMaterials["skyCubeMap"]->Resource;
 	auto InsecTex = mMaterials_Instancing["InsecTex"]->Resource;
 	auto SkyTex = mMaterials_Instancing["SkyTex"]->Resource;
+	auto FenceTex = mMaterials_Instancing["FenceTex"]->Resource;
 
 
 
@@ -859,9 +868,9 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	// next descriptor 1
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
-	srvDesc_Default.Format = iceTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = iceTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc_Default, hDescriptor_Default);
+	srvDesc_Default.Format = FenceTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = FenceTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(FenceTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
 	// next descriptor 2
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
@@ -887,8 +896,15 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 void InstancingAndCullingApp::BuildShadersAndInputLayout()
 {
+	const D3D_SHADER_MACRO defines[] =
+	{
+		"FOG", "1",
+		NULL, NULL
+	};
+
 	const D3D_SHADER_MACRO alphaTestDefines[] =
 	{
+		"FOG", "1",
 		"ALPHA_TEST", "1",
 		NULL, NULL
 	};
@@ -901,6 +917,7 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 
 	mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
+
 
 	mInputLayout =
 	{
@@ -1440,6 +1457,28 @@ void InstancingAndCullingApp::BuildPSOs()
 		mShaders["skyPS"]->GetBufferSize()
 	};
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skyPsoDesc, IID_PPV_ARGS(&mPSOs["sky"])));
+
+	//
+	// PSO for transparent objects
+	//
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC transparentPsoDesc = opaquePsoDesc;
+
+	D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
+	transparencyBlendDesc.BlendEnable = true;
+	transparencyBlendDesc.LogicOpEnable = false;
+	transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+	transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+	transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+	transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	transparentPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&transparentPsoDesc, IID_PPV_ARGS(&mPSOs["transparent"])));
+
 
 }
 

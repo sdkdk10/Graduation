@@ -296,29 +296,50 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 int DynamicMesh::Update(const GameTimer & gt)
 {
 
-
+	if (bTimerTestIdle == true)
 		m_fAnimationKeyFrameIndex += gt.DeltaTime() * 25;
+	if (m_fAnimationKeyFrameIndex > vecAnimFrame[0])
+	{
+		bTimerTestIdle = false;
 
-		if (m_fAnimationKeyFrameIndex > vecAnimFrame[0])
-		{
-			m_fAnimationKeyFrameIndex = 0;
-		}
-	
+		m_fAnimationKeyFrameIndex = 0;
+	}
+
+	if (bTimerTestWalk == true)
 		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 25;
+	if (m_fAnimationKeyFrameIndex_Walk > vecAnimFrame[1])
+	{
+		bTimerTestWalk = false;
+		m_fAnimationKeyFrameIndex_Walk = 0;
+	}
 
-		if (m_fAnimationKeyFrameIndex_Walk > vecAnimFrame[1])
+	if (bTimerTestAttack1 == true)
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
+
+	if (m_fAnimationKeyFrameIndex_Attack1 > vecAnimFrame[2])
+	{
+		bTimerTestAttack1 = false;
+		m_fAnimationKeyFrameIndex_Attack1 = 0;
+	}
+
+	if (bTimerTestAttack2 == true)
+		m_fAnimationKeyFrameIndex_Attack2 += gt.DeltaTime() * 20;
+
+	if (m_fAnimationKeyFrameIndex_Attack2 > vecAnimFrame[3])
+	{
+		bTimerTestAttack2 = false;
+		m_fAnimationKeyFrameIndex_Attack2 = 0;
+	}
+
+	if (bTimerTestAttack3 == true)
+		m_fAnimationKeyFrameIndex_Attack3 += gt.DeltaTime() * 20;
+
+		if (m_fAnimationKeyFrameIndex_Attack3 > vecAnimFrame[4])
 		{
-			m_fAnimationKeyFrameIndex_Walk = 0;
+			bTimerTestAttack3 = false;
+			m_fAnimationKeyFrameIndex_Attack3 = 0;
 		}
 
-		m_fAnimationKeyFrameIndex_Back += gt.DeltaTime() * 25;
-
-		if (m_fAnimationKeyFrameIndex_Back > vecAnimFrame[2])
-		{
-			m_fAnimationKeyFrameIndex_Back = 0;
-		}
-
-	
 
 	
 
