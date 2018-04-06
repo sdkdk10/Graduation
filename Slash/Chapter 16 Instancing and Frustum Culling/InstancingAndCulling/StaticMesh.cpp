@@ -267,7 +267,7 @@ void StaticMesh::Draw()
 {
 }
 
-void StaticMesh::Release()
+void StaticMesh::Free()
 {
 }
 

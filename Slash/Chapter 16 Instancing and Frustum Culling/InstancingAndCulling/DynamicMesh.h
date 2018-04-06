@@ -59,7 +59,7 @@ public:
 	virtual HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
-	virtual void Release();
+	virtual void Free();
 
 	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath);
 

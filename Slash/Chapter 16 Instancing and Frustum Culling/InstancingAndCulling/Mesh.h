@@ -1,9 +1,11 @@
 #pragma once
+#include "Base.h"
 #include "GameTimer.h"
 
 using namespace std;
 
 class Mesh
+	: public CBase
 {
 public:
 	XMVECTOR vMin;
@@ -38,7 +40,7 @@ public:
 	virtual HRESULT Initialize();
 	virtual int Update(const GameTimer& gt);
 	virtual void Render();
-	virtual void Release();
+	virtual void Free();
 
 public:
 	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath) = 0;

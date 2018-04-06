@@ -125,11 +125,11 @@ bool CInputDevice::AnyKeyInput(void)
 {
 	for (int i = 0; i < 256; ++i)
 	{
-		if ( m_byKeyCur[i] )
-			return TRUE;
+		if ( m_byKeyCur[i] != INPUT_NONE)
+			return FALSE;
 	}
 
-	return FALSE;
+	return TRUE;
 }
 
 float* CInputDevice::GetMouseEpsX( void )

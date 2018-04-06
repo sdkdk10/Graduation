@@ -230,7 +230,7 @@ bool CInstancingObject::Update(const GameTimer & gt)
 void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 {
 
-	RenderBounds(cmdList);
+	//RenderBounds(cmdList);
 	
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	//UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));

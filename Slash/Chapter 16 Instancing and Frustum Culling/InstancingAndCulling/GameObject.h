@@ -109,7 +109,7 @@ public:
 
 public:
 	
-private:
+protected:
 	virtual void			Free();
 };
 

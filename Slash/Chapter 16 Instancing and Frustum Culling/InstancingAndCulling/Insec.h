@@ -13,6 +13,15 @@ typedef struct objdrawelement
 
 class Insec : public CGameObject
 {
+	float RotationAngle = 0.0f;
+
+	float RotationDeltaRIGHT = 0.0f;
+	float RotationDeltaLEFT = 0.0f;
+
+	float RotationDeltaFORWARD = 0.0f;
+	float RotationDeltaBACKWARD = 0.0f;
+
+///////////////////////////////////////////
 	bool bAttackMotionTest = false;
 
 
@@ -33,7 +42,7 @@ class Insec : public CGameObject
 	virtual void Animate(const GameTimer & gt);
 
 	void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
-
+	void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity);
 //////////////////////////////////////////////
 public:
 	int iTest = 0;

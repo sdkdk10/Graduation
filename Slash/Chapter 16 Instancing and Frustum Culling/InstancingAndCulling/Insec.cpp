@@ -14,111 +14,71 @@ Insec::Insec(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12Descri
 
 Insec::~Insec()
 {
+	delete m_pMesh;
+
+	delete Mat;
+
+	//여기
 }
 
 
 void Insec::Animate(const GameTimer & gt)
 {
 
+	DWORD dwDirection = 0;
+
+
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
 		KeyInputTest = 1;
-		fAngleTestSum = 0;
-
-
-		/*fAngleTestSum2 += fAngleTest2;
-
-		if (fAngleTestSum2 < 3.14)
-		{
-
-		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
-		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
-		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-
-		}*/
-
-		World._43 -= gt.DeltaTime() * 10.f;
-		World._41 -= gt.DeltaTime() * 10.f;
+		dwDirection |= DIR_FORWARD;
 
 	}
-	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
-	{
-		//KeyInputTest = 2;
-		KeyInputTest = 1;
-
-		/*	fAngleTestSum2 = 0;
-		fAngleTestSum += fAngleTest;
-
-		if (fAngleTestSum < 3.14)
-		{
-
-		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
-		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
-		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-
-		}*/
-
-		World._43 += gt.DeltaTime() * 10.f;
-		World._41 += gt.DeltaTime() * 10.f;
-	}
-
-	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
+	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
 	{
 		KeyInputTest = 1;
-		fAngleTestSum = 0;
+		dwDirection |= DIR_BACKWARD;
 
-
-		/*fAngleTestSum2 += fAngleTest2;
-
-		if (fAngleTestSum2 < 3.14)
-		{
-
-		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, -1, 0);
-		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest2);
-		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
-
-
-		}*/
-
-
-		World._41 -= gt.DeltaTime() * 10.f;
-		World._43 += gt.DeltaTime() * 10.f;
 	}
-	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
+
+	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
 	{
-		//KeyInputTest = 2;
 		KeyInputTest = 1;
+		dwDirection |= DIR_RIGHT;
 
-		/*	fAngleTestSum2 = 0;
-		fAngleTestSum += fAngleTest;
-
-		if (fAngleTestSum < 3.14)
-		{
-
-		XMFLOAT3 xmf3RotateAxis = XMFLOAT3(0, 1, 0);
-		XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3RotateAxis), fAngleTest);
-		XMStoreFloat4x4(&World, XMLoadFloat4x4(&World) * mtxRotate);
+	}
+	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
+	{
+	
+		KeyInputTest = 1;
+		dwDirection |= DIR_LEFT;
 
 
-		}*/
-
-		World._41 += gt.DeltaTime() * 10.f;
-		World._43 -= gt.DeltaTime() * 10.f;
 	}
 
-	else if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+
+	if (dwDirection != 0)
 	{
-		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
+
+		Move(dwDirection, 15.0f * gt.DeltaTime(), true);
+	}
+
+
+	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	{
+
 
 		//KeyInputTest = 2;
 
 		if (KeyInputTest != 2)
+		{
+
 			KeyInputTest = 2;
+
+		}
 		else
 		{
-			KeyInputTest = 3;
+			KeyInputTest = 4;//3;
 
 			bAttackMotionTest = true;
 		}
@@ -133,7 +93,7 @@ void Insec::Animate(const GameTimer & gt)
 
 
 	}
-	else if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
 		KeyInputTest = 3;
@@ -141,40 +101,51 @@ void Insec::Animate(const GameTimer & gt)
 
 
 	}
-	else if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
+	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
 		KeyInputTest = 4;
 
 
 	}
-	else
+
+
+	if(CInputDevice::GetInstance()->AnyKeyInput())
 	{
-
-
 		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
+
+
 		if (!pTestMesh->bTimerTestAttack1 &&
 			!pTestMesh->bTimerTestAttack2 &&
 			!pTestMesh->bTimerTestAttack3 &&
 			!pTestMesh->bTimerTestWalk
 			)
+		{
 
 			KeyInputTest = 0;
+
+		}
 	}
+	
+
+
 }
 
 bool Insec::Update(const GameTimer & gt)
 {
-	Animate(gt);
+
 	/*m_pBoundMesh->SetPosition(GetPosition());
 	m_pBoundMesh->Update(gt);*/
-	//OnPrepareRender(); 수정필요
+	//OnPrepareRender(); 
 
 	//XMFLOAT3 MoveTest = XMFLOAT3(1, 0, 0);
 	//Move(MoveTest);
 
 	CGameObject::Update(gt);
 	m_pMesh->Update(gt);
+
+	Animate(gt);
+
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
 	
@@ -327,6 +298,7 @@ HRESULT Insec::Initialize()
 
 void Insec::Free()
 {
+	CGameObject::Free();
 }
 
 void Insec::Render_Head(ID3D12GraphicsCommandList * cmdList)
@@ -357,13 +329,15 @@ void Insec::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
+	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][1];
+
 
 
 	//cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1, Element_Head.StartIndexLocation, Element_Head.BaseVertexLocation , 0);
 	//	dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0].
-	cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1,
-		Element_Head.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[0][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
-		Element_Head.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[0][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[0][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
+	cmdList->DrawIndexedInstanced(indexcnt, 1,
+		dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[0][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
+		dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[0][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[0][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		0);
 }
 void Insec::Render_Body(ID3D12GraphicsCommandList * cmdList)
@@ -393,9 +367,9 @@ void Insec::Render_Body(ID3D12GraphicsCommandList * cmdList)
 
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
+	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][1];
 
-
-	cmdList->DrawIndexedInstanced(Element_Body.IndexCount, 1,
+	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Body.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		Element_Body.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		0);
@@ -429,9 +403,10 @@ void Insec::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
+	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][1];
 
 
-	cmdList->DrawIndexedInstanced(Element_Right.IndexCount, 1, 
+	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Right.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		Element_Right.BaseVertexLocation +  dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		0);
@@ -530,17 +505,98 @@ void Insec::MoveForward(float fDistance)
 
 void Insec::Rotate(float fPitch, float fYaw, float fRoll)
 {
+	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fYaw), XMConvertToRadians(fRoll));
+	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
 void Insec::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
 {
+	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(pxmf3Axis), XMConvertToRadians(fAngle));
+	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
 
 void Insec::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 {
-	XMFLOAT3 PosTest = XMFLOAT3(World._41, World._42, World._43);
 
-	m_xmf3Position = Vector3::Add(PosTest, xmf3Shift);
-	SetPosition(m_xmf3Position);
+
+	XMFLOAT3 CurPos = XMFLOAT3(World._41, World._42, World._43);
+
+	m_xmf3Position = Vector3::Add(CurPos, xmf3Shift);
+	
+	XMFLOAT3 xmf3shiftTest = xmf3Shift;
+
+	//XMFLOAT3 test = Vector3::Subtract(CurPos, xmf3shiftTest);
+
+	//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+
+
+
+	World._41 = m_xmf3Position.x;
+	World._42 = m_xmf3Position.y;
+	World._43 = m_xmf3Position.z;
+
+}
+
+void Insec::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+{
+	if (dwDirection)
+	{
+		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
+		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
+		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
+		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
+
+
+		//xmf3Shift = XMFLOAT3(-xmf3Shift.x, -xmf3Shift.y, -xmf3Shift.z);
+		
+		Move(xmf3Shift, bUpdateVelocity);
+
+		/*XMFLOAT3 Axis = GetUp();
+
+		Rotate(&Axis, 0.1);*/
+
+		if (dwDirection & DIR_FORWARD)
+		{
+
+		
+		}
+		else if (dwDirection & DIR_BACKWARD)
+		{
+		
+		}
+		else if (dwDirection & DIR_RIGHT)
+		{
+
+	
+			if (RotationDeltaRIGHT > -90.0f)
+			{
+				RotationDeltaFORWARD -= 10.0f;
+				RotationDeltaBACKWARD -= 10.0f;
+
+				RotationDeltaRIGHT -= 10.0f;
+				RotationDeltaLEFT -= 10.0f;
+
+				Rotate(0.0f, 0.0f, -10.0f);
+
+			}
+		}
+		else if (dwDirection & DIR_LEFT)
+		{
+			if (RotationDeltaLEFT < 90.0f)
+			{
+				RotationDeltaFORWARD += 10.0f;
+				RotationDeltaBACKWARD += 10.0f;
+
+				RotationDeltaRIGHT += 10.0f;
+				RotationDeltaLEFT += 10.0f;
+				Rotate(0.0f, 0.0f, 10.0f);
+
+			}
+		}
+
+
+
+	}
 }

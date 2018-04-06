@@ -303,9 +303,9 @@ int Camera::Update()
 		XMFLOAT4X4 world = m_pObject->GetWorld();
 		XMFLOAT3 vPos, vLook;
 		memcpy(&vLook, &world._41, sizeof(XMFLOAT3));
-		vPos.x = vLook.x + 10.f;
-		vPos.y = vLook.y + 10.f;
-		vPos.z = vLook.z + 10.f;
+		vPos.x = vLook.x;// + 10.f;
+		vPos.y = vLook.y + 20.f;
+		vPos.z = vLook.z - 20.f;
 
 		LookAt(vPos, vLook, XMFLOAT3(0, 1, 0));
 	}

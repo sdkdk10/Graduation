@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Management.h"
 #include "Mesh.h"
+#include "Transform.h"
 
 CGameObject::CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
@@ -41,6 +42,8 @@ void CGameObject::RenderBounds(ID3D12GraphicsCommandList * cmdList)
 
 void CGameObject::Free()
 {
+	Safe_Release(m_pMesh);
+	Safe_Release(m_pTransCom);
 }
 
 XMFLOAT3 CGameObject::GetPosition()
@@ -115,4 +118,5 @@ void CGameObject::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
 void CGameObject::Animate(const GameTimer & gt)
 {
 	// Animate
+
 }

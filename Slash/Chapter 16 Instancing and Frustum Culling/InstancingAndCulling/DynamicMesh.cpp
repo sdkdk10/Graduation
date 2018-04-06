@@ -357,7 +357,7 @@ void DynamicMesh::Draw()
 {
 }
 
-void DynamicMesh::Release()
+void DynamicMesh::Free()
 {
 }
 

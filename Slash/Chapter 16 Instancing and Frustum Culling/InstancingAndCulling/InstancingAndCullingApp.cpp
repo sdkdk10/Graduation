@@ -1378,6 +1378,7 @@ void InstancingAndCullingApp::BuildBarrelGeometry()
 
 void InstancingAndCullingApp::BuildPSOs()
 {
+	
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 
 	//
@@ -1388,16 +1389,14 @@ void InstancingAndCullingApp::BuildPSOs()
 	opaquePsoDesc.pRootSignature = mRootSignature.Get();
 	opaquePsoDesc.VS =
 	{
-		reinterpret_cast<BYTE*>(mShaders["InstancingVS"]->GetBufferPointer()),
-		mShaders["InstancingVS"]->GetBufferSize()
+		reinterpret_cast<BYTE*>(mShaders["ObjectVS"]->GetBufferPointer()),
+		mShaders["ObjectVS"]->GetBufferSize()
 	};
 	opaquePsoDesc.PS =
 	{
-		reinterpret_cast<BYTE*>(mShaders["InstancingPS"]->GetBufferPointer()),
-		mShaders["InstancingPS"]->GetBufferSize()
+		reinterpret_cast<BYTE*>(mShaders["ObjectPS"]->GetBufferPointer()),
+		mShaders["ObjectPS"]->GetBufferSize()
 	};
-
-
 	opaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	opaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	opaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
@@ -1408,28 +1407,25 @@ void InstancingAndCullingApp::BuildPSOs()
 	opaquePsoDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
 	opaquePsoDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
 	opaquePsoDesc.DSVFormat = mDepthStencilFormat;
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["InstancingOpaque"])));
-
-	//
-	// PSO for Instance pass.
-
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC InstancingOpaquePsoDesc = opaquePsoDesc;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["Opaque"])));
 
 	//
 	// PSO for opaque objects.
 	//
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC InstancingOpaquePsoDesc = opaquePsoDesc;
 	InstancingOpaquePsoDesc.VS =
 	{
-		reinterpret_cast<BYTE*>(mShaders["ObjectVS"]->GetBufferPointer()),
-		mShaders["ObjectVS"]->GetBufferSize()
+		reinterpret_cast<BYTE*>(mShaders["InstancingVS"]->GetBufferPointer()),
+		mShaders["InstancingVS"]->GetBufferSize()
 	};
 	InstancingOpaquePsoDesc.PS =
 	{
-		reinterpret_cast<BYTE*>(mShaders["ObjectPS"]->GetBufferPointer()),
-		mShaders["ObjectPS"]->GetBufferSize()
+		reinterpret_cast<BYTE*>(mShaders["InstancingPS"]->GetBufferPointer()),
+		mShaders["InstancingPS"]->GetBufferSize()
 	};
 
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingOpaquePsoDesc, IID_PPV_ARGS(&mPSOs["Opaque"])));
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingOpaquePsoDesc, IID_PPV_ARGS(&mPSOs["InstancingOpaque"])));
 
 	//
 	// PSO for sky.

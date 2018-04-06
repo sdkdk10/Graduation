@@ -31,6 +31,8 @@ private:
 	BYTE m_byKeyCur[256];
 	BYTE m_byKeyOld[256];
 	BYTE m_byKeyMap[256];
+
+	bool m_IsNone = false;
 private:
 	LPDIRECTINPUTDEVICE8 m_pMouse;
 	DIMOUSESTATE m_MState;

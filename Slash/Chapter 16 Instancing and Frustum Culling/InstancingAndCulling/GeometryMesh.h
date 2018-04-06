@@ -12,7 +12,7 @@ public:
 	virtual HRESULT Initialize();
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
-	virtual void Release();
+	virtual void Free();
 
 	vector <std::unique_ptr<MeshGeometry>>	m_Geometry;
 };

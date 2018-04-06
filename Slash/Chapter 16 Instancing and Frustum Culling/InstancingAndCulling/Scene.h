@@ -42,7 +42,7 @@ public:
 	HRESULT			Ready_GameObject(wchar_t* pLayerTag, CGameObject* pObj);
 	HRESULT			Ready_Layer(wchar_t* pLayerTag);
 
-private:
+protected:
 	virtual void	Free();
 
 };

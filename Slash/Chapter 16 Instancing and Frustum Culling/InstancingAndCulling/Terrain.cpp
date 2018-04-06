@@ -95,7 +95,7 @@ HRESULT Terrain::Initialize()
 
 	/* CB(World,TextureTranform...) Build */
 
-	XMStoreFloat4x4(&World, XMMatrixScaling(10.0f, 1.0f, 10.0f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = 2;
 

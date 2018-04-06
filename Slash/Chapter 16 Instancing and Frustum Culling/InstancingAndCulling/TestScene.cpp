@@ -77,4 +77,5 @@ CTestScene * CTestScene::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, 
 
 void CTestScene::Free()
 {
+	CScene::Free();
 }

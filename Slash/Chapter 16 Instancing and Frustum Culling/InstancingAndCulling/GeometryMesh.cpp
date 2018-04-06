@@ -144,6 +144,6 @@ void GeometryMesh::Draw()
 {
 }
 
-void GeometryMesh::Release()
+void GeometryMesh::Free()
 {
 }

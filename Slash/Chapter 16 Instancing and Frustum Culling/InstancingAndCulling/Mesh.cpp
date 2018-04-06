@@ -29,6 +29,6 @@ void Mesh::Render()
 {
 }
 
-void Mesh::Release()
+void Mesh::Free()
 {
 }
