@@ -29,6 +29,8 @@ public:
 	void					SetCamera(Camera* pCam) { m_pCamera = pCam; }
 	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
 
+public:
+	std::vector<InstanceData> GetvecInstances() { return vecInstances; }
 private:
 	UINT						InstanceCount;
 	std::vector<InstanceData>	vecInstances;

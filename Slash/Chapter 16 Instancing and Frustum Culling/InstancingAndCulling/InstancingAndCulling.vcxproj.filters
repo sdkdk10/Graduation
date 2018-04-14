@@ -100,9 +100,6 @@
     <Filter Include="01. Scene\99. Layer">
       <UniqueIdentifier>{6ab58482-a619-4bfe-ba37-57ba3f50d20d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Scene\00. TestScene">
-      <UniqueIdentifier>{92d47f70-c890-4bfa-a7a6-b5c4fa2ff018}</UniqueIdentifier>
-    </Filter>
     <Filter Include="95. Manager\02. Component_Manager">
       <UniqueIdentifier>{452e8a37-c66e-42f3-9ba1-51c30f84a3a7}</UniqueIdentifier>
     </Filter>
@@ -111,6 +108,9 @@
     </Filter>
     <Filter Include="93. Component\03.Collision_Manager">
       <UniqueIdentifier>{b1fdd553-a3ce-47d5-95eb-62be6a69815d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\00. TestScene">
+      <UniqueIdentifier>{92d47f70-c890-4bfa-a7a6-b5c4fa2ff018}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

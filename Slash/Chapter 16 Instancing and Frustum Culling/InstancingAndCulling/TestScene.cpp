@@ -60,7 +60,32 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
+	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
 
+	auto instanceData = dynamic_cast<CInstancingObject*>(m_pInstance)->GetvecInstances();
+	
+
+	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+
+	for (int i = 0; i < instanceData.size(); ++i)
+	{
+		XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+
+		XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+		// View space to the object's local space.
+
+		BoundingOrientedBox mLocalPlayerBounds ;
+		// Transform the camera frustum from view space to the object's local space.
+		m_pPlayer->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+		// Perform the box/frustum intersection test in local space.
+		if (mLocalPlayerBounds.Contains(m_pInstance->GetBounds()) != DirectX::DISJOINT)
+		{
+			cout << "인스턴싱 오브젝트랑 충돌" << endl;
+		}
+		
+	}
 	//cout << m_pPlayer->GetPosition().x << "\t" << m_pPlayer->GetPosition().y << m_pPlayer->GetPosition().z << endl;
 
 	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&XMFLOAT4X4(m_pPlayer->GetRight().x, m_pPlayer->GetRight().y, m_pPlayer->GetRight().z, 0, m_pPlayer->GetUp().x, m_pPlayer->GetUp().y, m_pPlayer->GetUp().z, 0, m_pPlayer->GetLook().x, m_pPlayer->GetLook().y, m_pPlayer->GetLook().z, 0, m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z, 1)));
@@ -92,7 +117,7 @@ bool CTestScene::Update(const GameTimer & gt)
 	//cout << m_pBarrel->GetBounds().Extents.x << "\t" << m_pBarrel->GetBounds().Extents.y << "\t" << m_pBarrel->GetBounds().Extents.z << endl;
 	//cout << "---------------------------------------------------------" << endl;
 
-	if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
+	if (m_pPlayer->m_xmOOBB.Contains(m_pBarrel->m_xmOOBB))
 	{
 		cout << "충돌 " << endl;
 	}
