@@ -25,9 +25,16 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 	std::vector<std::int32_t> indices;
 
 
-	for (int i = 0; i < pFilePath.size(); ++i)
+	XMFLOAT3 vMinf3(+MathHelper::Infinity, +MathHelper::Infinity, +MathHelper::Infinity);
+	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
+
+	vMin = XMLoadFloat3(&vMinf3);
+
+	vMax = XMLoadFloat3(&vMaxf3);
+
+	for (int filePath = 0; filePath < pFilePath.size(); ++filePath)
 	{
-		std::ifstream fin(pFilePath[i].second);
+		std::ifstream fin(pFilePath[filePath].second);
 
 		if (!fin)
 		{
@@ -197,8 +204,16 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 
 								tCurBoneInfo.realvecVertex[realvecVertexIndex].Pos = tCurBoneInfo.vecVertex[vertexIndex].Pos;
 								tCurBoneInfo.realvecVertex[realvecVertexIndex].Normal = tCurBoneInfo.vecVertex[vertexIndex].Normal;
+
+								XMVECTOR P = XMLoadFloat3(&tCurBoneInfo.realvecVertex[realvecVertexIndex].Pos);
+
+								if (filePath == 0) // Idle¸¸
+								{
+									vMin = XMVectorMin(vMin, P);
+									vMax = XMVectorMax(vMax, P);
+								}
 							}
-							vecBoneInfo[i].push_back(tCurBoneInfo);
+							vecBoneInfo[filePath].push_back(tCurBoneInfo);
 						}
 					}
 				}
@@ -257,6 +272,10 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 
 		}
 
+		BoundingBox bounds;
+		XMStoreFloat3(&bounds.Center, 0.5f*(vMin + vMax));
+		XMStoreFloat3(&bounds.Extents, 0.5f*(vMax - vMin));
+
 		const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 		const UINT ibByteSize = (UINT)indices.size() * sizeof(std::int32_t);
 
@@ -284,6 +303,7 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 		submesh.IndexCount = (UINT)indices.size();
 		submesh.StartIndexLocation = 0;
 		submesh.BaseVertexLocation = 0;
+		submesh.Bounds = bounds;
 
 		geo->DrawArgs[boneName[boneCnt]] = submesh;
 		m_Geometry.push_back(std::move(geo));// = std::move(geo);

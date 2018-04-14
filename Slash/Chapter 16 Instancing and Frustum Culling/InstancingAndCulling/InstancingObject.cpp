@@ -166,6 +166,8 @@ bool CInstancingObject::Update(const GameTimer & gt)
 
 	int visibleInstanceCount = 0;
 
+	auto Player = CManagement::GetInstance()->Find_Object(L"Layer_Player", 0);
+
 	for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 	{
 		XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);

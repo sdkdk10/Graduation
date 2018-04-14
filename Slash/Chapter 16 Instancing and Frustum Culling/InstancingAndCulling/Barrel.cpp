@@ -23,7 +23,6 @@ bool Barrel::Update(const GameTimer & gt)
 
 	//auto currObjectCB2 = m_pFrameResource->InstanceBuffer.get();
 
-	World._43 = 1.0f;
 	XMMATRIX world = XMLoadFloat4x4(&World);
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
@@ -110,7 +109,7 @@ HRESULT Barrel::Initialize()
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
-	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixTranslation(0.0f, 1.0f, 0.0f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = 1;
 
@@ -119,6 +118,10 @@ HRESULT Barrel::Initialize()
 	IndexCount = Geo->DrawArgs["Barrel"].IndexCount;
 	StartIndexLocation = Geo->DrawArgs["Barrel"].StartIndexLocation;
 	BaseVertexLocation = Geo->DrawArgs["Barrel"].BaseVertexLocation;
+	Bounds = Geo->DrawArgs["Barrel"].Bounds;
+	
+
+	SetOOBB(XMFLOAT3(Bounds.Center.x * 0.1f , Bounds.Center.y * 0.1f , Bounds.Center.z * 0.1f ), XMFLOAT3(Bounds.Extents.x * 0.1f , Bounds.Extents.y * 0.1f , Bounds.Extents.z * 0.1f ), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	return S_OK;
 }

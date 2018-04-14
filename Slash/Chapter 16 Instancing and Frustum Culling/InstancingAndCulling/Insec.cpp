@@ -27,7 +27,6 @@ void Insec::Animate(const GameTimer & gt)
 
 	DWORD dwDirection = 0;
 
-
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
 		KeyInputTest = 1;
@@ -62,7 +61,6 @@ void Insec::Animate(const GameTimer & gt)
 
 		Move(dwDirection, 15.0f * gt.DeltaTime(), true);
 	}
-
 
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
@@ -133,6 +131,7 @@ void Insec::Animate(const GameTimer & gt)
 
 bool Insec::Update(const GameTimer & gt)
 {
+	
 
 	/*m_pBoundMesh->SetPosition(GetPosition());
 	m_pBoundMesh->Update(gt);*/
@@ -238,7 +237,7 @@ void Insec::Render(ID3D12GraphicsCommandList * cmdList)
 HRESULT Insec::Initialize()
 {
 	m_pMesh = new DynamicMesh(m_d3dDevice);
-	World._43 = 1.f;
+
 
 
 	vector<pair<const string, const string>> path;
@@ -267,6 +266,8 @@ HRESULT Insec::Initialize()
 	Element_Head.IndexCount = Geo_Head->DrawArgs[" \"_head\""].IndexCount;
 	Element_Head.StartIndexLocation = Geo_Head->DrawArgs[" \"_head\""].StartIndexLocation;
 	Element_Head.BaseVertexLocation = Geo_Head->DrawArgs[" \"_head\""].BaseVertexLocation;
+	Bounds = Geo_Head->DrawArgs[" \"_head\""].Bounds;
+
 
 	Geo_Body = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[1].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -281,6 +282,10 @@ HRESULT Insec::Initialize()
 	Element_Right.StartIndexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].StartIndexLocation;
 	Element_Right.BaseVertexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].BaseVertexLocation;
 
+	
+
+
+	SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	//Geo_Left = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[3].get();
 	//PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -288,7 +293,7 @@ HRESULT Insec::Initialize()
 	//Element_Left.StartIndexLocation = Geo_Left->DrawArgs["mage_Left"].StartIndexLocation;
 	//Element_Left.BaseVertexLocation = Geo_Left->DrawArgs["mage_Left"].BaseVertexLocation;
 
-
+	BuildOOBBRenderer(m_xmOOBB);
 	//m_pBoundMesh = dynam
 
 
@@ -304,7 +309,7 @@ void Insec::Free()
 void Insec::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {
 
-
+	
 
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));

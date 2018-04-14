@@ -46,6 +46,11 @@ void CGameObject::Free()
 	Safe_Release(m_pTransCom);
 }
 
+void CGameObject::BuildOOBBRenderer(BoundingOrientedBox m_xmOOBB)
+{
+	
+}
+
 XMFLOAT3 CGameObject::GetPosition()
 {
 	return(XMFLOAT3(World._41, World._42, World._43));

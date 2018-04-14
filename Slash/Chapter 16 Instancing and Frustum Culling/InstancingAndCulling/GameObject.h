@@ -16,6 +16,14 @@ struct CB_ObjectConstants
 class CGameObject
 	: public CBase
 {
+public:
+	void BuildOOBBRenderer(BoundingOrientedBox		m_xmOOBB);
+public:
+	BoundingOrientedBox		m_xmOOBB;
+	BoundingOrientedBox		m_xmOOBBTransformed;
+
+	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation) { m_xmOOBBTransformed = m_xmOOBB = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation); }
+
 ////////////////////////////////////////////////////////
 public:
 	XMFLOAT3 GetPosition();
@@ -92,7 +100,8 @@ protected:
 public:
 	Mesh*				m_pMesh;
 	CTransform*			m_pTransCom;
-
+public:
+	BoundingBox GetBounds() { return Bounds; }
 
 public:
 	virtual bool			Update(const GameTimer & gt);

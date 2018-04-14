@@ -10,6 +10,8 @@
 #include "Management.h"
 #include "Renderer.h"
 #include "Terrain.h"
+#include "Collision_Manager.h"
+
 
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
@@ -56,6 +58,49 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
+	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
+
+	//cout << m_pPlayer->GetPosition().x << "\t" << m_pPlayer->GetPosition().y << m_pPlayer->GetPosition().z << endl;
+
+	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&XMFLOAT4X4(m_pPlayer->GetRight().x, m_pPlayer->GetRight().y, m_pPlayer->GetRight().z, 0, m_pPlayer->GetUp().x, m_pPlayer->GetUp().y, m_pPlayer->GetUp().z, 0, m_pPlayer->GetLook().x, m_pPlayer->GetLook().y, m_pPlayer->GetLook().z, 0, m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z, 1)));
+	
+	XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
+	
+	/*cout << m_pPlayer->m_xmOOBB.Center.x << "\t" << m_pPlayer->m_xmOOBB.Center.y << "\t" << m_pPlayer->m_xmOOBB.Center.z << endl;
+	cout << m_pPlayer->m_xmOOBB.Extents.x << "\t" << m_pPlayer->m_xmOOBB.Extents.y << "\t" << m_pPlayer->m_xmOOBB.Extents.z << endl;*/
+
+	//cout << "---------------------------------------------------------" << endl;
+	//cout << " Barrel Center : " << m_pBarrel->m_xmOOBB.Center.x << "\t" << m_pBarrel->m_xmOOBB.Center.y << "\t" << m_pBarrel->m_xmOOBB.Center.z << endl;
+	//cout << " Barrel Extent : " << m_pBarrel->m_xmOOBB.Extents.x << "\t" << m_pBarrel->m_xmOOBB.Extents.y << "\t" << m_pBarrel->m_xmOOBB.Extents.z << endl;
+	//cout << " Barrel Pos : " << m_pBarrel->GetPosition().x << "\t" << m_pBarrel->GetPosition().y << "\t" << m_pBarrel->GetPosition().z << endl;
+	//cout << "---------------------------------------------------------" << endl;
+
+	//cout << "---------------------------------------------------------" << endl;
+	//cout << " Player Center : " << m_pPlayer->m_xmOOBB.Center.x << "\t" << m_pPlayer->m_xmOOBB.Center.y << "\t" << m_pPlayer->m_xmOOBB.Center.z << endl;
+	//cout << " Player Extent : " << m_pPlayer->m_xmOOBB.Extents.x << "\t" << m_pPlayer->m_xmOOBB.Extents.y << "\t" << m_pPlayer->m_xmOOBB.Extents.z << endl;
+	//cout << " Player Pos : " << m_pPlayer->GetPosition().x << "\t" << m_pPlayer->GetPosition().y << "\t" << m_pPlayer->GetPosition().z << endl;
+
+	//cout << "---------------------------------------------------------" << endl;
+
+	//cout << m_pPlayer->GetBounds().Center.x << "\t" << m_pPlayer->GetBounds().Center.y << "\t" << m_pPlayer->GetBounds().Center.z << endl;
+	//cout << m_pPlayer->GetBounds().Extents.x << "\t" << m_pPlayer->GetBounds().Extents.y << "\t" << m_pPlayer->GetBounds().Extents.z << endl;
+
+
+	//cout << "---------------------------------------------------------" << endl;
+	//cout << m_pBarrel->GetBounds().Center.x << "\t" << m_pBarrel->GetBounds().Center.y << "\t" << m_pBarrel->GetBounds().Center.z << endl;
+	//cout << m_pBarrel->GetBounds().Extents.x << "\t" << m_pBarrel->GetBounds().Extents.y << "\t" << m_pBarrel->GetBounds().Extents.z << endl;
+	//cout << "---------------------------------------------------------" << endl;
+
+	if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
+	{
+		cout << "충돌 " << endl;
+	}
+	else
+	{
+		cout << "충돌 아님" << endl;
+	}
+	//Collision_Manager::CollisionDetect();
 	return true;
 }
 

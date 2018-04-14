@@ -109,6 +109,9 @@
     <Filter Include="02. GameObject\99. BoundingBox">
       <UniqueIdentifier>{70d1514c-eb60-4c74-824b-b8e398c9ca04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="93. Component\03.Collision_Manager">
+      <UniqueIdentifier>{b1fdd553-a3ce-47d5-95eb-62be6a69815d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -198,6 +201,9 @@
     </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
       <Filter>02. GameObject\99. BoundingBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision_Manager.cpp">
+      <Filter>93. Component\03.Collision_Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,6 +315,9 @@
     </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>02. GameObject\99. BoundingBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision_Manager.h">
+      <Filter>93. Component\03.Collision_Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
