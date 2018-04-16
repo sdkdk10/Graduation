@@ -5,6 +5,9 @@
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/stdafx.h"
 #include "d3dApp.h"
 #include <WindowsX.h>
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/GameTimer_Manager.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Frame_Manager.h"
+#include "GameTimer.h"
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -70,10 +73,24 @@ int D3DApp::Run()
 {
 	MSG msg = {0};
  
-	mTimer.Reset();
+	CGameTimer_Manager::GetInstance()->Ready_Timers(L"Time_Default");
+	CGameTimer_Manager::GetInstance()->Ready_Timers(L"Timer_FPS");
+
+	CFrame_Manager::GetInstance()->Ready_Frames(L"Frame 30", 30.f);
+	CFrame_Manager::GetInstance()->Ready_Frames(L"Frame 60", 60.f);
+	CFrame_Manager::GetInstance()->Ready_Frames(L"Frame 100", 100.f);
+	CFrame_Manager::GetInstance()->Ready_Frames(L"Frame 3000", 3000.f);
+
+	const wchar_t* wstrFrame[FPS_END] = { L"Frame 30", L"Frame 60", L"Frame 100" , L"Frame 3000" };
+
+	//mTimer.Reset();
+	CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->Reset();
+	CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default")->Reset();
+	//CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS").Reset();
 
 	while(msg.message != WM_QUIT)
 	{
+
 		// If there are Window messages then process them.
 		if(PeekMessage( &msg, 0, 0, 0, PM_REMOVE ))
 		{
@@ -83,13 +100,19 @@ int D3DApp::Run()
 		// Otherwise, do animation/game stuff.
 		else
         {	
-			mTimer.Tick();
-
+			//mTimer.Tick();
+			CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Time_Default");
 			if( !mAppPaused )
 			{
-				CalculateFrameStats();
-				Update(mTimer);	
-                Draw(mTimer);
+				GameTimer pTimer = *(CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default"));
+				if (CFrame_Manager::GetInstance()->Permit_Call(wstrFrame[m_eCurFrameState], const_cast<GameTimer&>(pTimer)))
+				{
+					CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Timer_FPS");
+					GameTimer pFPSTimer = *CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS");
+					CalculateFrameStats();
+					Update(const_cast<GameTimer&>(pFPSTimer));
+					Draw(const_cast<GameTimer&>(pFPSTimer));
+				}
 			}
 			else
 			{
@@ -352,6 +375,12 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             Set4xMsaaState(!m4xMsaaState);
 
         return 0;
+
+	case WM_KEYDOWN:
+		if (wParam == VK_OEM_6)
+		{
+			m_eCurFrameState = Frame_State((m_eCurFrameState + 1) % FPS_END);
+		}
 	}
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -575,7 +604,7 @@ void D3DApp::CalculateFrameStats()
 	frameCnt++;
 
 	// Compute averages over one second period.
-	if( (mTimer.TotalTime() - timeElapsed) >= 1.0f )
+	if( (CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->TotalTime() - timeElapsed) >= 1.0f )
 	{
 		float fps = (float)frameCnt; // fps = frameCnt / 1
 		float mspf = 1000.0f / fps;

@@ -125,3 +125,7 @@ void GameTimer::Tick()
 	}
 }
 
+void GameTimer::Free()
+{
+}
+

@@ -383,7 +383,7 @@ void StaticMesh::BuildBounds()
 	geo->IndexBufferByteSize = ibByteSize;
 
 	SubmeshGeometry submesh2;
-	submesh2.IndexCount = indices.size();//(UINT)indices.size();
+	submesh2.IndexCount = (UINT)indices.size();//(UINT)indices.size();
 	submesh2.StartIndexLocation = 0;
 	submesh2.BaseVertexLocation = 0;
 	submesh2.Bounds = bounds;

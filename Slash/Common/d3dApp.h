@@ -13,6 +13,8 @@
 
 class D3DApp
 {
+public:
+	enum Frame_State {FPS_30, FPS_60, FPS_100, FPS_NON, FPS_END};
 protected:
 
     D3DApp(HINSTANCE hInstance);
@@ -118,5 +120,7 @@ protected:
     DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	int mClientWidth = 800;
 	int mClientHeight = 600;
+
+	Frame_State			m_eCurFrameState = FPS_NON;
 };
 

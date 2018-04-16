@@ -4,8 +4,10 @@
 
 #ifndef GAMETIMER_H
 #define GAMETIMER_H
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Base.h"
 
 class GameTimer
+	: public CBase
 {
 public:
 	GameTimer();
@@ -29,6 +31,9 @@ private:
 	__int64 mCurrTime;
 
 	bool mStopped;
+
+private:
+	virtual void Free();
 };
 
 #endif // GAMETIMER_H
