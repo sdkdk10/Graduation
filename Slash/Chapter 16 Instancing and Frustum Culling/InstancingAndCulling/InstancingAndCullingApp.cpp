@@ -38,11 +38,11 @@ typedef struct character
 
 }Character;
 
-struct AnimInfo
+typedef struct animInfo
 {
 	vector<Character>				mapAnimationModel;			// 애니메이션 프레임 마다의 정점들
 	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
-};
+}AnimInfo;
 
 
 enum class RenderLayer : int
@@ -663,6 +663,13 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), grassTex->Filename.c_str(),
 		grassTex->Resource, grassTex->UploadHeap));
 
+	auto SpiderTex = std::make_unique<Texture>();
+	SpiderTex->Name = "SpiderTex";
+	SpiderTex->Filename = L"../../Textures/spider.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), SpiderTex->Filename.c_str(),
+		SpiderTex->Resource, SpiderTex->UploadHeap));
+
 	/*auto defaultTex = std::make_unique<Texture>();
 	defaultTex->Name = "defaultTex";
 	defaultTex->Filename = L"../../Textures/white1x1.dds";
@@ -701,7 +708,7 @@ void InstancingAndCullingApp::LoadTextures()
 	mMaterials_Instancing[InsecTex->Name] = std::move(InsecTex);
 	mMaterials_Instancing[SkyTex->Name] = std::move(SkyTex);
 	mMaterials_Instancing[FenceTex->Name] = std::move(FenceTex);
-
+	mMaterials_Instancing[SpiderTex->Name] = std::move(SpiderTex);
 }
 
 void InstancingAndCullingApp::BuildRootSignature()
@@ -774,7 +781,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = 4;
+	srvHeapDesc2.NumDescriptors = 5;
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -804,6 +811,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto InsecTex = mMaterials_Instancing["InsecTex"]->Resource;
 	auto SkyTex = mMaterials_Instancing["SkyTex"]->Resource;
 	auto FenceTex = mMaterials_Instancing["FenceTex"]->Resource;
+	auto SpiderTex = mMaterials_Instancing["SpiderTex"]->Resource;
 
 
 
@@ -855,7 +863,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 	////////////////////////
 
-	//Default
+	//Default Insec
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc_Default = {};
 	srvDesc_Default.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc_Default.Format = InsecTex->GetDesc().Format;
@@ -865,22 +873,28 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Texture2D.ResourceMinLODClamp = 0.0f;
 	md3dDevice->CreateShaderResourceView(InsecTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
-	// next descriptor 1
+	// next descriptor 1 Barrel
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc_Default.Format = FenceTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = FenceTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(FenceTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
-	// next descriptor 2
+	// next descriptor 2 Terrain
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc_Default.Format = stoneTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc_Default, hDescriptor_Default);
+	
+	// next descriptor 3 Spdier
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
-	// next descriptor 3
+	srvDesc_Default.Format = SpiderTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = SpiderTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(SpiderTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
+	// next descriptor 4 SkyBox
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
@@ -1572,25 +1586,22 @@ void InstancingAndCullingApp::BuildMaterials()
 void InstancingAndCullingApp::BuildRenderItems()
 {
 	auto skullRitem = std::make_unique<RenderItem>();
-
 	mAllRitems.push_back(std::move(skullRitem));
 
+	auto SpiderRitem = std::make_unique<RenderItem>();
+	mAllRitems.push_back(std::move(SpiderRitem));
+
 	auto BarrelRitem = std::make_unique<RenderItem>();
-
-
 	mAllRitems.push_back(std::move(BarrelRitem));
 
 	auto TerrainRitem = std::make_unique<RenderItem>();
-
 	mAllRitems.push_back(std::move(TerrainRitem));
 
 
 	auto skyRitem = std::make_unique<RenderItem>();
-
 	mAllRitems.push_back(std::move(skyRitem));
 
 	auto TerrainRitem1 = std::make_unique<RenderItem>();
-
 	mAllRitems.push_back(std::move(TerrainRitem1));
 
 

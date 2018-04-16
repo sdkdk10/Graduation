@@ -6,6 +6,7 @@
 #include "Barrel.h"
 #include "SkyBox.h"
 #include "InstancingObject.h"
+#include "Spider.h"
 #include "Layer.h"
 #include "Management.h"
 #include "Renderer.h"
@@ -36,6 +37,11 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
+	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	Ready_GameObject(L"Layer_Spider", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
+
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	Ready_GameObject(L"Layer_Barrel", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -82,7 +88,7 @@ bool CTestScene::Update(const GameTimer & gt)
 		// Perform the box/frustum intersection test in local space.
 		if (mLocalPlayerBounds.Contains(m_pInstance->GetBounds()) != DirectX::DISJOINT)
 		{
-			cout << "인스턴싱 오브젝트랑 충돌" << endl;
+			//cout << "인스턴싱 오브젝트랑 충돌" << endl;
 		}
 		
 	}
@@ -119,11 +125,11 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	if (m_pPlayer->m_xmOOBB.Contains(m_pBarrel->m_xmOOBB))
 	{
-		cout << "충돌 " << endl;
+		//cout << "충돌 " << endl;
 	}
 	else
 	{
-		cout << "충돌 아님" << endl;
+		//cout << "충돌 아님" << endl;
 	}
 	//Collision_Manager::CollisionDetect();
 	return true;

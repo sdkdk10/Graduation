@@ -69,7 +69,7 @@ void SkyBox::Render(ID3D12GraphicsCommandList * cmdList)
 	D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE skyTexDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	skyTexDescriptor.Offset(3 /*BuildDescriptorHeap에서 SkyBox Index*/, mCbvSrvDescriptorSize);
+	skyTexDescriptor.Offset(Mat->DiffuseSrvHeapIndex /*BuildDescriptorHeap에서 SkyBox Index*/, mCbvSrvDescriptorSize);
 	mCommandList->SetGraphicsRootDescriptorTable(6, skyTexDescriptor);
 
 	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
@@ -92,8 +92,8 @@ HRESULT SkyBox::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
-	Mat->MatCBIndex = 3;
-	Mat->DiffuseSrvHeapIndex = 3;
+	Mat->MatCBIndex = 4;
+	Mat->DiffuseSrvHeapIndex = 4;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
@@ -102,7 +102,7 @@ HRESULT SkyBox::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 5.0f, 5.0f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 3;
+	ObjCBIndex = 4;
 
 	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
