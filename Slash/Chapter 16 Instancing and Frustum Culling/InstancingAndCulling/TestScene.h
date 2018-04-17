@@ -13,6 +13,8 @@ public:
 public:
 	virtual HRESULT Initialize();
 	virtual bool	Update(const GameTimer& gt);
+	void UpdateOOBB();
+
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 	virtual void	CollisionProcess();
 private:

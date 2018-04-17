@@ -25,6 +25,7 @@ bool Spider::Update(const GameTimer & gt)
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
 
+	World._43 = 20;
 	//auto currObjectCB2 = m_pFrameResource->InstanceBuffer.get();
 
 	XMMATRIX world = XMLoadFloat4x4(&World);
@@ -150,7 +151,7 @@ HRESULT Spider::Initialize()
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
-	XMStoreFloat4x4(&World, XMMatrixScaling(2.0f, 2.0f, 2.0f)*XMMatrixTranslation(0.0f, 1.0f, 0.0f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(m_fScale, m_fScale, m_fScale)*XMMatrixTranslation(0.0f, 0.0f, 0.0f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = 3;
 
@@ -163,7 +164,7 @@ HRESULT Spider::Initialize()
 
 
 
-	SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	SetOOBB(XMFLOAT3(Bounds.Center.x *m_fScale, Bounds.Center.y * m_fScale, Bounds.Center.z *m_fScale), XMFLOAT3(Bounds.Extents.x * m_fScale, Bounds.Extents.y * m_fScale, Bounds.Extents.z * m_fScale), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	BuildOOBBRenderer(m_xmOOBB);
 

@@ -92,8 +92,8 @@ HRESULT SkyBox::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
-	Mat->MatCBIndex = 4;
-	Mat->DiffuseSrvHeapIndex = 4;
+	Mat->MatCBIndex = 5;
+	Mat->DiffuseSrvHeapIndex = 5;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
@@ -102,7 +102,7 @@ HRESULT SkyBox::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 5.0f, 5.0f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 4;
+	ObjCBIndex = 5;
 
 	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

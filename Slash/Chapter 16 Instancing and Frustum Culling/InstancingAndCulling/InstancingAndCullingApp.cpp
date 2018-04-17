@@ -698,6 +698,13 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), FenceTex->Filename.c_str(),
 		FenceTex->Resource, FenceTex->UploadHeap));
 
+	auto DragonTex = std::make_unique<Texture>();
+	DragonTex->Name = "DragonTex";
+	DragonTex->Filename = L"../../Textures/DragonTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), DragonTex->Filename.c_str(),
+		DragonTex->Resource, DragonTex->UploadHeap));
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -709,6 +716,8 @@ void InstancingAndCullingApp::LoadTextures()
 	mMaterials_Instancing[SkyTex->Name] = std::move(SkyTex);
 	mMaterials_Instancing[FenceTex->Name] = std::move(FenceTex);
 	mMaterials_Instancing[SpiderTex->Name] = std::move(SpiderTex);
+	mMaterials_Instancing[DragonTex->Name] = std::move(DragonTex);
+
 }
 
 void InstancingAndCullingApp::BuildRootSignature()
@@ -781,7 +790,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = 5;
+	srvHeapDesc2.NumDescriptors = 6;
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -812,6 +821,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto SkyTex = mMaterials_Instancing["SkyTex"]->Resource;
 	auto FenceTex = mMaterials_Instancing["FenceTex"]->Resource;
 	auto SpiderTex = mMaterials_Instancing["SpiderTex"]->Resource;
+	auto DragonTex = mMaterials_Instancing["DragonTex"]->Resource;
 
 
 
@@ -894,7 +904,14 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Texture2D.MipLevels = SpiderTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(SpiderTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
-	// next descriptor 4 SkyBox
+	// next descriptor 4 Dragon
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc_Default.Format = DragonTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = DragonTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(DragonTex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	// next descriptor 5 SkyBox
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
@@ -1604,6 +1621,8 @@ void InstancingAndCullingApp::BuildRenderItems()
 	auto TerrainRitem1 = std::make_unique<RenderItem>();
 	mAllRitems.push_back(std::move(TerrainRitem1));
 
+	auto DragonRiTem = std::make_unique<RenderItem>();
+	mAllRitems.push_back(std::move(DragonRiTem));
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)

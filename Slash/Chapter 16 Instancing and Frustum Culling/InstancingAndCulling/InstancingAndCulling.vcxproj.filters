@@ -133,6 +133,9 @@
     <Filter Include="03. Mesh\03. DynamicMeshSingle">
       <UniqueIdentifier>{c08eed5f-56f0-49ef-b4eb-f394dbf6d834}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\06. Dragon">
+      <UniqueIdentifier>{12f72f4b-8407-44d5-8f23-5ff39cbdf5d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -240,6 +243,9 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>02. GameObject\00. AnimObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Dragon.cpp">
+      <Filter>02. GameObject\06. Dragon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -369,6 +375,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>02. GameObject\00. AnimObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Dragon.h">
+      <Filter>02. GameObject\06. Dragon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

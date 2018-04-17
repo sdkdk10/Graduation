@@ -13,6 +13,7 @@ typedef struct objdrawelement
 
 class Player : public CGameObject
 {
+	const float m_fScale = 0.05f;
 	float RotationAngle = 0.0f;
 
 	float RotationDeltaRIGHT = 0.0f;

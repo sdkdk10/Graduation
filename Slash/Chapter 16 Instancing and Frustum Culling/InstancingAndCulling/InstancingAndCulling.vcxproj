@@ -157,6 +157,7 @@
     <ClCompile Include="Collision_Manager.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Component_Manager.cpp" />
+    <ClCompile Include="Dragon.cpp" />
     <ClCompile Include="DynamicMesh.cpp" />
     <ClCompile Include="DynamicMeshSingle.cpp" />
     <ClCompile Include="Frame.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="Component_Manager.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="Dragon.h" />
     <ClInclude Include="DynamicMesh.h" />
     <ClInclude Include="DynamicMeshSingle.h" />
     <ClInclude Include="Frame.h" />

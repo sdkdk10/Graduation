@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "Terrain.h"
 #include "Collision_Manager.h"
+#include "Dragon.h"
 
 
 
@@ -43,6 +44,11 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
+	pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	Ready_GameObject(L"Layer_Dragon", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
 
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -68,9 +74,28 @@ bool CTestScene::Update(const GameTimer & gt)
 	CScene::Update(gt);
 
 	CollisionProcess();
+	UpdateOOBB();
 	return true;
 }
 
+void CTestScene::UpdateOOBB()
+{
+	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
+	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
+	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
+
+
+	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&(m_pPlayer->GetWorld())));
+	XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
+
+	//cout << m_pSpider->m_xmOOBB.Center.x << "\t" << m_pSpider->m_xmOOBB.Center.y << "\t" <<  m_pSpider->m_xmOOBB.Center.z << endl;
+
+	m_pSpider->m_xmOOBBTransformed.Transform(m_pSpider->m_xmOOBB, XMLoadFloat4x4(&(m_pSpider->GetWorld())));
+	XMStoreFloat4(&m_pSpider->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pSpider->m_xmOOBBTransformed.Orientation)));
+
+
+}
 void CTestScene::Render(ID3D12GraphicsCommandList * cmdList)
 {
 }
@@ -100,20 +125,24 @@ void CTestScene::CollisionProcess()
 		m_pPlayer->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
 
 		// Perform the box/frustum intersection test in local space.
-		if (mLocalPlayerBounds.Contains(m_pInstance->GetBounds()) != DirectX::DISJOINT)
+		if (mLocalPlayerBounds.Intersects(m_pInstance->GetBounds()) != DirectX::DISJOINT)
 		{
 			//cout << "인스턴싱 오브젝트랑 충돌" << endl;
 		}
 
 	}
-	//cout << m_pPlayer->GetPosition().x << "\t" << m_pPlayer->GetPosition().y << m_pPlayer->GetPosition().z << endl;
-	//&XMFLOAT4X4(m_pPlayer->GetRight().x, m_pPlayer->GetRight().y, m_pPlayer->GetRight().z, 0, m_pPlayer->GetUp().x, m_pPlayer->GetUp().y, m_pPlayer->GetUp().z, 0, m_pPlayer->GetLook().x, m_pPlayer->GetLook().y, m_pPlayer->GetLook().z, 0, m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z, 1))
-	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&(m_pPlayer->GetWorld())));
 
-	XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
+	if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
+	{
+		//cout << " Barrel 충돌 " << endl;
+	}
+	else
+	{
+		//cout << " Barrel 충돌 아님" << endl;
+	}
 
-
-	if (m_pPlayer->m_xmOOBB.Contains(m_pBarrel->m_xmOOBB))
+	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
+	if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider->m_xmOOBB))
 	{
 		//cout << "충돌 " << endl;
 	}
@@ -121,10 +150,7 @@ void CTestScene::CollisionProcess()
 	{
 		//cout << "충돌 아님" << endl;
 	}
-	//Collision_Manager::CollisionDetect();
 
-	//cout << m_pSpider->m_xmOOBB.Center.x << "\t" << m_pSpider->m_xmOOBB.Center.y << "\t" << m_pSpider->m_xmOOBB.Center.z << endl;
-//	cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y << "\t" << m_pSpider->m_xmOOBB.Extents.z << endl;
 
 }
 

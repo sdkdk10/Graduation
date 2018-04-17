@@ -33,11 +33,11 @@ typedef struct bone
 }Bone;
 
 
-typedef struct AnimInfo
+typedef struct animInfo
 {
 	vector<Mesh::Character>			AnimationModel;			// 애니메이션 프레임 마다의 정점들
 	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
-};
+}AnimInfo;
 
 
 class DynamicMeshSingle : public Mesh
