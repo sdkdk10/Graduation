@@ -29,7 +29,6 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
 
 	vMin = XMLoadFloat3(&vMinf3);
-
 	vMax = XMLoadFloat3(&vMaxf3);
 
 	for (int filePath = 0; filePath < pFilePath.size(); ++filePath)

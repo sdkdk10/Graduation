@@ -11,7 +11,7 @@ typedef struct objdrawelement
 	int BaseVertexLocation = 0;
 }DrawElement;
 
-class Insec : public CGameObject
+class Player : public CGameObject
 {
 	float RotationAngle = 0.0f;
 
@@ -64,9 +64,9 @@ public:
 	float fAngleTestSum2 = 0.0f;
 	CBoundingBox*						m_pBoundMesh = nullptr;
 private:
-	Insec(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+	Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 public:
-	virtual ~Insec();
+	virtual ~Player();
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
@@ -80,6 +80,6 @@ public:
 	void					Render_Right(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	static Insec* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+	static Player* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 };
 

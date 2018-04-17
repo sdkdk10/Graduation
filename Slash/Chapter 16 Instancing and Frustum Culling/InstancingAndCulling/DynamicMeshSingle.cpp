@@ -17,7 +17,6 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
 
 	vMin = XMLoadFloat3(&vMinf3);
-
 	vMax = XMLoadFloat3(&vMaxf3);
 
 	for (int filePath = 0; filePath < pFilePath.size(); ++filePath) // Idle, Walk... 애니메이션 읽어오기
@@ -192,7 +191,6 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 
 	///////////////////////////////////////////////////////////////////////////////////////
 
-
 	std::vector<Vertex> vertices;
 	std::vector<std::int32_t> indices;
 
@@ -253,6 +251,12 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 
 	int indexTest = indices.size();
 
+
+	BoundingBox bounds;
+	XMStoreFloat3(&bounds.Center, 0.5f*(vMin + vMax));
+	XMStoreFloat3(&bounds.Extents, 0.5f*(vMax - vMin));
+
+
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::int32_t);
@@ -281,6 +285,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 	submesh.IndexCount = indexTest;//(UINT)indices.size();
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
+	submesh.Bounds = bounds;
 
 	geo->DrawArgs["Spider"] = submesh;
 
@@ -291,7 +296,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 
 int DynamicMeshSingle::Update(const GameTimer & gt)
 {
-	cout << m_fTest << endl;
+	//cout << m_fTest << endl;
 	m_fTest += gt.DeltaTime() * 10;
 	if (m_fTest > vecAnimFrame[0])
 	{

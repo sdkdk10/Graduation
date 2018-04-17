@@ -2,7 +2,8 @@
 #include "Barrel.h"
 #include "Define.h"
 #include "StaticMesh.h"
-
+#include "Camera.h"
+#include "Management.h"
 
 Barrel::Barrel(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize) 
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -18,6 +19,9 @@ bool Barrel::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
 	m_pMesh->Update(gt);
+	m_pCamera = CManagement::GetInstance()->Get_MainCam();
+	XMMATRIX view = m_pCamera->GetView();
+	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
 
@@ -26,12 +30,34 @@ bool Barrel::Update(const GameTimer & gt)
 	XMMATRIX world = XMLoadFloat4x4(&World);
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
-	ObjectConstants objConstants;
-	XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
-	XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
-	objConstants.MaterialIndex = Mat->MatCBIndex;
+	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
 
-	currObjectCB->CopyData(ObjCBIndex, objConstants);
+	// View space to the object's local space.
+	XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
+
+	// Transform the camera frustum from view space to the object's local space.
+	BoundingFrustum localSpaceFrustum;
+	mCamFrustum = *CManagement::GetInstance()->Get_CurScene()->Get_CamFrustum();
+	mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
+
+	// Perform the box/frustum intersection test in local space.
+	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+	{
+		//cout << "보인당!" << endl;
+		m_bIsVisiable = true;
+		ObjectConstants objConstants;
+		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+		XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
+		objConstants.MaterialIndex = Mat->MatCBIndex;
+
+		currObjectCB->CopyData(ObjCBIndex, objConstants);
+	}
+	else
+	{
+		//cout << "안보인당!" << endl;
+		m_bIsVisiable = false;
+	}
+	
 
 
 	//////////////////////////////////////////////////
@@ -57,31 +83,35 @@ bool Barrel::Update(const GameTimer & gt)
 
 void Barrel::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
-	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
+	if (m_bIsVisiable)
+	{
+		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
-	auto objectCB = m_pFrameResource->ObjectCB->Resource();
-	auto matCB = m_pFrameResource->MaterialCB->Resource();
+		auto objectCB = m_pFrameResource->ObjectCB->Resource();
+		auto matCB = m_pFrameResource->MaterialCB->Resource();
 
-	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
-	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
-	cmdList->IASetPrimitiveTopology(PrimitiveType);
+		cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
+		cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
+		cmdList->IASetPrimitiveTopology(PrimitiveType);
 
-	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+		CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
-	Mat->DiffuseSrvHeapIndex;
-	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
-	D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
+		Mat->DiffuseSrvHeapIndex;
+		D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
+		D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
 
-	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
-	//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
-	cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
+		cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
+		//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
+		cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
 
-	cmdList->SetGraphicsRootDescriptorTable(7, tex);
+		cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
-	cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
+		cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
 
+	}
+	
 
 }
 

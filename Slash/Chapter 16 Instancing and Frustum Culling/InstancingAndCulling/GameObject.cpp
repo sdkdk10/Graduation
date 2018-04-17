@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Management.h"
 #include "Mesh.h"
+#include "Camera.h"
 #include "Transform.h"
 
 CGameObject::CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)

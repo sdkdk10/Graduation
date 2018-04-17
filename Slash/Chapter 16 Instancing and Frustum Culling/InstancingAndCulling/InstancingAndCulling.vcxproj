@@ -166,7 +166,7 @@
     <ClCompile Include="GameTimer_Manager.cpp" />
     <ClCompile Include="GeometryMesh.cpp" />
     <ClCompile Include="InputDevice.cpp" />
-    <ClCompile Include="Insec.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="InstancingAndCullingApp.cpp" />
     <ClCompile Include="InstancingObject.cpp" />
     <ClCompile Include="Layer.cpp" />
@@ -210,7 +210,7 @@
     <ClInclude Include="GameTimer_Manager.h" />
     <ClInclude Include="GeometryMesh.h" />
     <ClInclude Include="InputDevice.h" />
-    <ClInclude Include="Insec.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="InstancingAndCullingApp.h" />
     <ClInclude Include="InstancingObject.h" />
     <ClInclude Include="Layer.h" />

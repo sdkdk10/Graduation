@@ -168,9 +168,6 @@
     <ClCompile Include="InputDevice.cpp">
       <Filter>94. Manager\01. InputDevice</Filter>
     </ClCompile>
-    <ClCompile Include="Insec.cpp">
-      <Filter>02. GameObject\00. AnimObject</Filter>
-    </ClCompile>
     <ClCompile Include="StaticMesh.cpp">
       <Filter>03. Mesh\01. StaticMesh</Filter>
     </ClCompile>
@@ -241,6 +238,9 @@
     <ClCompile Include="DynamicMeshSingle.cpp">
       <Filter>03. Mesh\03. DynamicMeshSingle</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>02. GameObject\00. AnimObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\d3dApp.h">
@@ -281,9 +281,6 @@
     </ClInclude>
     <ClInclude Include="InputDevice.h">
       <Filter>94. Manager\01. InputDevice</Filter>
-    </ClInclude>
-    <ClInclude Include="Insec.h">
-      <Filter>02. GameObject\00. AnimObject</Filter>
     </ClInclude>
     <ClInclude Include="Macro.h">
       <Filter>98. Header</Filter>
@@ -369,6 +366,9 @@
     </ClInclude>
     <ClInclude Include="DynamicMeshSingle.h">
       <Filter>03. Mesh\03. DynamicMeshSingle</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>02. GameObject\00. AnimObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

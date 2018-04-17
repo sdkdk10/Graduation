@@ -1,18 +1,17 @@
 #include "stdafx.h"
-#include "Insec.h"
+#include "Player.h"
 #include "Define.h"
 #include "DynamicMesh.h"
 #include "InputDevice.h"
-#include "BoundingBox.h"
 
 
 
-Insec::Insec(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
+Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
 }
 
-Insec::~Insec()
+Player::~Player()
 {
 	delete m_pMesh;
 
@@ -22,7 +21,7 @@ Insec::~Insec()
 }
 
 
-void Insec::Animate(const GameTimer & gt)
+void Player::Animate(const GameTimer & gt)
 {
 
 	DWORD dwDirection = 0;
@@ -129,17 +128,9 @@ void Insec::Animate(const GameTimer & gt)
 
 }
 
-bool Insec::Update(const GameTimer & gt)
+bool Player::Update(const GameTimer & gt)
 {
 	
-
-	/*m_pBoundMesh->SetPosition(GetPosition());
-	m_pBoundMesh->Update(gt);*/
-	//OnPrepareRender(); 
-
-	//XMFLOAT3 MoveTest = XMFLOAT3(1, 0, 0);
-	//Move(MoveTest);
-
 	CGameObject::Update(gt);
 	m_pMesh->Update(gt);
 
@@ -189,7 +180,7 @@ bool Insec::Update(const GameTimer & gt)
 	return true;
 }
 
-void Insec::Render(ID3D12GraphicsCommandList * cmdList)
+void Player::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	//m_pBoundMesh->Render(cmdList);
 
@@ -234,7 +225,7 @@ void Insec::Render(ID3D12GraphicsCommandList * cmdList)
 
 }
 
-HRESULT Insec::Initialize()
+HRESULT Player::Initialize()
 {
 	m_pMesh = new DynamicMesh(m_d3dDevice);
 
@@ -301,12 +292,12 @@ HRESULT Insec::Initialize()
 	return S_OK;
 }
 
-void Insec::Free()
+void Player::Free()
 {
 	CGameObject::Free();
 }
 
-void Insec::Render_Head(ID3D12GraphicsCommandList * cmdList)
+void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {
 
 	
@@ -345,7 +336,7 @@ void Insec::Render_Head(ID3D12GraphicsCommandList * cmdList)
 		dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[0][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[0][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		0);
 }
-void Insec::Render_Body(ID3D12GraphicsCommandList * cmdList)
+void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 {
 	
 
@@ -382,7 +373,7 @@ void Insec::Render_Body(ID3D12GraphicsCommandList * cmdList)
 }
 
 
-void Insec::Render_Right(ID3D12GraphicsCommandList * cmdList)
+void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 {
 
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
@@ -417,20 +408,20 @@ void Insec::Render_Right(ID3D12GraphicsCommandList * cmdList)
 		0);
 }
 
-Insec * Insec::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
+Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
 {
-	Insec* pInstance = new Insec(d3dDevice, srv, srvSize);
+	Player* pInstance = new Player(d3dDevice, srv, srvSize);
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX(L"Insec Created Failed");
+		MSG_BOX(L"Player Created Failed");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-//void Insec::Render_Left(ID3D12GraphicsCommandList * cmdList)
+//void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)
 //{
 //	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 //	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -465,7 +456,7 @@ Insec * Insec::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3
 //	//cmdList->DrawIndexedInstanced(Element_Left.IndexCount, 1, Element_Left.StartIndexLocation, Element_Left.BaseVertexLocation, 0);
 //}
 
-void Insec::OnPrepareRender()
+void Player::OnPrepareRender()
 {
 	World._11 = m_xmf3Right.x; 
 	World._12 = m_xmf3Right.y;
@@ -484,44 +475,44 @@ void Insec::OnPrepareRender()
 	World._43 = m_xmf3Position.z;
 }
 
-void Insec::SetPosition(float x, float y, float z)
+void Player::SetPosition(float x, float y, float z)
 {
 	World._41 = x;
 	World._42 = y;
 	World._43 = z;
 }
 
-void Insec::SetPosition(XMFLOAT3 xmf3Position)
+void Player::SetPosition(XMFLOAT3 xmf3Position)
 {
 	Move(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 }
 
-void Insec::MoveStrafe(float fDistance)
+void Player::MoveStrafe(float fDistance)
 {
 }
 
-void Insec::MoveUp(float fDistance)
+void Player::MoveUp(float fDistance)
 {
 }
 
-void Insec::MoveForward(float fDistance)
+void Player::MoveForward(float fDistance)
 {
 }
 
-void Insec::Rotate(float fPitch, float fYaw, float fRoll)
+void Player::Rotate(float fPitch, float fYaw, float fRoll)
 {
 	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fYaw), XMConvertToRadians(fRoll));
 	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
-void Insec::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
+void Player::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
 {
 	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(pxmf3Axis), XMConvertToRadians(fAngle));
 	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
 
-void Insec::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
+void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 {
 
 
@@ -543,7 +534,7 @@ void Insec::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 }
 
-void Insec::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 {
 	if (dwDirection)
 	{

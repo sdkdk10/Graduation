@@ -1,6 +1,7 @@
 #pragma once
 #include "Base.h"
 
+class Camera;
 class Mesh;
 class GameTimer;
 class CTransform;
@@ -16,6 +17,15 @@ struct CB_ObjectConstants
 class CGameObject
 	: public CBase
 {
+public:
+	bool m_bIsVisiable = true;
+	Camera * m_pCamera;
+	BoundingFrustum				mCamFrustum;
+	bool						mFrustumCullingEnabled = true;
+
+	void					SetCamera(Camera* pCam) { m_pCamera = pCam; }
+	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
+
 public:
 	void BuildOOBBRenderer(BoundingOrientedBox		m_xmOOBB);
 public:

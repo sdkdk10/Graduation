@@ -26,18 +26,11 @@ public:
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	void					SetCamera(Camera* pCam) { m_pCamera = pCam; }
-	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
-
-public:
 	std::vector<InstanceData> GetvecInstances() { return vecInstances; }
 private:
 	UINT						InstanceCount;
 	std::vector<InstanceData>	vecInstances;
 
-	Camera*						m_pCamera;
-	BoundingFrustum				mCamFrustum;
-	bool						mFrustumCullingEnabled = true;
 
 	std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
 
