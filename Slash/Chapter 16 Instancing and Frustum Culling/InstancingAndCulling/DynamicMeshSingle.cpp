@@ -262,7 +262,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::int32_t);
 
 	auto geo = std::make_unique<MeshGeometry>();
-	geo->Name = "SpiderGeo";
+	geo->Name = "SingleMeshGeo";
 
 	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
 	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
@@ -287,7 +287,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 	submesh.BaseVertexLocation = 0;
 	submesh.Bounds = bounds;
 
-	geo->DrawArgs["Spider"] = submesh;
+	geo->DrawArgs["SingleMesh"] = submesh;
 
 	m_Geometry.push_back(std::move(geo));
 

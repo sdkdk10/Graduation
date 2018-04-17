@@ -84,7 +84,7 @@ void CTestScene::UpdateOOBB()
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
 	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
-
+	auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
 
 	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&(m_pPlayer->GetWorld())));
 	XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
@@ -93,6 +93,10 @@ void CTestScene::UpdateOOBB()
 
 	m_pSpider->m_xmOOBBTransformed.Transform(m_pSpider->m_xmOOBB, XMLoadFloat4x4(&(m_pSpider->GetWorld())));
 	XMStoreFloat4(&m_pSpider->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pSpider->m_xmOOBBTransformed.Orientation)));
+
+
+	m_pDragon->m_xmOOBBTransformed.Transform(m_pDragon->m_xmOOBB, XMLoadFloat4x4(&(m_pDragon->GetWorld())));
+	XMStoreFloat4(&m_pDragon->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pDragon->m_xmOOBBTransformed.Orientation)));
 
 
 }
@@ -107,6 +111,7 @@ void CTestScene::CollisionProcess()
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
 	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
+	auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
 
 	auto instanceData = dynamic_cast<CInstancingObject*>(m_pInstance)->GetvecInstances();
 
@@ -144,11 +149,20 @@ void CTestScene::CollisionProcess()
 	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
 	if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider->m_xmOOBB))
 	{
-		//cout << "충돌 " << endl;
+		//cout << "거미 충돌 " << endl;
 	}
 	else
 	{
-		//cout << "충돌 아님" << endl;
+		//cout << "거미 충돌 아님" << endl;
+	}
+
+	if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
+	{
+		cout << "드래곤 충돌 " << endl;
+	}
+	else
+	{
+		cout << "드래곤 충돌 아님" << endl;
 	}
 
 

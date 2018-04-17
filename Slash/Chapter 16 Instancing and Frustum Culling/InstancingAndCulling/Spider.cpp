@@ -157,14 +157,17 @@ HRESULT Spider::Initialize()
 
 	Geo = dynamic_cast<DynamicMeshSingle*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs["Spider"].IndexCount;
-	StartIndexLocation = Geo->DrawArgs["Spider"].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs["Spider"].BaseVertexLocation;
-	Bounds = Geo->DrawArgs["Spider"].Bounds;
+	IndexCount = Geo->DrawArgs["SingleMesh"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["SingleMesh"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["SingleMesh"].BaseVertexLocation;
+	Bounds = Geo->DrawArgs["SingleMesh"].Bounds;
 
 
 
-	SetOOBB(XMFLOAT3(Bounds.Center.x *m_fScale, Bounds.Center.y * m_fScale, Bounds.Center.z *m_fScale), XMFLOAT3(Bounds.Extents.x * m_fScale, Bounds.Extents.y * m_fScale, Bounds.Extents.z * m_fScale), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	//SetOOBB(XMFLOAT3(Bounds.Center.x *m_fScale, Bounds.Center.y * m_fScale, Bounds.Center.z *m_fScale), XMFLOAT3(Bounds.Extents.x * m_fScale, Bounds.Extents.y * m_fScale, Bounds.Extents.z * m_fScale), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	SetOOBB(XMFLOAT3(Bounds.Center.x, Bounds.Center.y, Bounds.Center.z), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
 
 	BuildOOBBRenderer(m_xmOOBB);
 
