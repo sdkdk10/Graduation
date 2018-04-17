@@ -127,6 +127,12 @@
     <Filter Include="95. Frame\01. Frame">
       <UniqueIdentifier>{58721551-4c99-48ac-8897-9e229678a6f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\05. Spider">
+      <UniqueIdentifier>{272a802b-a283-4f26-b885-29f563b068f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Mesh\03. DynamicMeshSingle">
+      <UniqueIdentifier>{c08eed5f-56f0-49ef-b4eb-f394dbf6d834}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -228,6 +234,12 @@
     </ClCompile>
     <ClCompile Include="Frame_Manager.cpp">
       <Filter>95. Frame\00. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Spider.cpp">
+      <Filter>02. GameObject\05. Spider</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicMeshSingle.cpp">
+      <Filter>03. Mesh\03. DynamicMeshSingle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +363,12 @@
     </ClInclude>
     <ClInclude Include="Frame_Manager.h">
       <Filter>95. Frame\00. Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Spider.h">
+      <Filter>02. GameObject\05. Spider</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicMeshSingle.h">
+      <Filter>03. Mesh\03. DynamicMeshSingle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

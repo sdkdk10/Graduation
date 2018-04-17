@@ -158,6 +158,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Component_Manager.cpp" />
     <ClCompile Include="DynamicMesh.cpp" />
+    <ClCompile Include="DynamicMeshSingle.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="Frame_Manager.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="Spider.cpp" />
     <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -198,6 +200,7 @@
     <ClInclude Include="Component_Manager.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="DynamicMesh.h" />
+    <ClInclude Include="DynamicMeshSingle.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="Frame_Manager.h" />
@@ -217,6 +220,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="Spider.h" />
     <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Terrain.h" />
