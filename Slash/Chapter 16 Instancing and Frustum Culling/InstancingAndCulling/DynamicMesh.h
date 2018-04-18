@@ -24,7 +24,7 @@ typedef struct bone
 
 	vector<Vertex> realvecVertex;
 
-	static bool Comp(const bone &t1, const bone &t2) 
+	static bool Comp(const bone &t1, const bone &t2)
 	{
 		return (t1.boneName < t2.boneName);
 	}
@@ -59,6 +59,11 @@ public:
 	virtual HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
+
+public:
+	static DynamicMesh* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>> & pFilePath);
+
+	virtual CComponent* Clone(void);
 	virtual void Free();
 
 	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath);
@@ -92,9 +97,9 @@ public:
 public:
 	vector <std::unique_ptr<MeshGeometry>>	m_Geometry;
 
-//public:
-//	std::unique_ptr<MeshGeometry> GetGeometry
-//	{
-//		return m_Geometry;
-//	}
+	//public:
+	//	std::unique_ptr<MeshGeometry> GetGeometry
+	//	{
+	//		return m_Geometry;
+	//	}
 };

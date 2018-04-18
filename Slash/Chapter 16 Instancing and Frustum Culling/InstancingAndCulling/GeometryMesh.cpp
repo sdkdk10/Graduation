@@ -147,3 +147,21 @@ void GeometryMesh::Draw()
 void GeometryMesh::Free()
 {
 }
+
+GeometryMesh * GeometryMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice)
+{
+	GeometryMesh* pInstance = new GeometryMesh(d3dDevice);
+	if (FAILED(pInstance->Initialize()))
+	{
+		MSG_BOX(L"GeometryMesh Created Failed");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+CComponent * GeometryMesh::Clone(void)
+{
+	AddRef();
+	return this;
+}
+
