@@ -28,15 +28,15 @@ void Player::Animate(const GameTimer & gt)
 
 	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS)
 	{
-		World._42 += 0.1;
+		World._42 += 0.1f;
 	}
 	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS)
 	{
-		World._42 -= 0.1;
+		World._42 -= 0.1f;
 	}
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
-		KeyInputTest = 0.001;
+		KeyInputTest = 1;
 		dwDirection |= DIR_FORWARD;
 
 	}

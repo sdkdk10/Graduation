@@ -9,6 +9,13 @@ struct RenderItem;
 
 class GeometryMesh;
 
+typedef struct objdrawelement
+{
+	UINT IndexCount = 0;
+	UINT StartIndexLocation = 0;
+	int BaseVertexLocation = 0;
+}DrawElement;
+
 struct CB_ObjectConstants
 {
 	DirectX::XMFLOAT4X4 World = MathHelper::Identity4x4();
@@ -53,6 +60,7 @@ public:
 
 	virtual void Animate(const GameTimer & gt);
 
+	virtual void Set_AnimState(int iState) {}
 	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
