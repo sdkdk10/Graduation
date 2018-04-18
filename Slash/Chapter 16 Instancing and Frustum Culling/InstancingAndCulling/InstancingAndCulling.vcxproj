@@ -167,6 +167,7 @@
     <ClCompile Include="GameTimer_Manager.cpp" />
     <ClCompile Include="GeometryMesh.cpp" />
     <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="InstancingAndCullingApp.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="GameTimer_Manager.h" />
     <ClInclude Include="GeometryMesh.h" />
     <ClInclude Include="InputDevice.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="Npc.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="InstancingAndCullingApp.h" />
@@ -221,6 +223,7 @@
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Management.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Protocol.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SkyBox.h" />

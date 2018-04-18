@@ -9,7 +9,7 @@
 #include "Management.h"
 #include "Renderer.h"
 #include "TestScene.h"
-
+#include "Network.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -144,6 +144,8 @@ bool InstancingAndCullingApp::Initialize()
 
 	// Wait until initialization is complete.
 	FlushCommandQueue();
+
+	//CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	return true;
 }

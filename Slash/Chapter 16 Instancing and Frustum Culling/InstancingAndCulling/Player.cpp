@@ -3,7 +3,7 @@
 #include "Define.h"
 #include "DynamicMesh.h"
 #include "InputDevice.h"
-
+#include "Network.h"
 
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
@@ -65,7 +65,7 @@ void Player::Animate(const GameTimer & gt)
 
 	if (dwDirection != 0)
 	{
-
+		//CNetwork::GetInstance()->SendPacket(dwDirection);
 		Move(dwDirection, 15.0f * gt.DeltaTime(), true);
 	}
 

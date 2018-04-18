@@ -7,6 +7,7 @@
 #include <WindowsX.h>
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/GameTimer_Manager.h"
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Frame_Manager.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Network.h"
 #include "GameTimer.h"
 
 LRESULT CALLBACK
@@ -376,11 +377,29 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         return 0;
 
-	case WM_KEYDOWN:
-		if (wParam == VK_OEM_6)
-		{
-			m_eCurFrameState = Frame_State((m_eCurFrameState + 1) % FPS_END);
+	//case WM_KEYDOWN:
+	//	if (wParam == VK_OEM_6)
+	//	{
+	//		m_eCurFrameState = Frame_State((m_eCurFrameState + 1) % FPS_END);
+	//	}
+	//	return 0;
+	case WM_SOCKET:
+	{
+		if (WSAGETSELECTERROR(lParam)) {
+			closesocket((SOCKET)wParam);
+			exit(-1);
+			break;
 		}
+		switch (WSAGETSELECTEVENT(lParam)) {
+		case FD_READ:
+			CNetwork::GetInstance()->ReadPacket((SOCKET)wParam);
+			break;
+		case FD_CLOSE:
+			closesocket((SOCKET)wParam);
+			exit(-1);
+			break;
+		}
+	}
 	}
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
