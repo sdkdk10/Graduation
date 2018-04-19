@@ -27,6 +27,8 @@ public:
 	void				Render_Priority(ID3D12GraphicsCommandList* cmdList);
 	void				Render_ForWard(ID3D12GraphicsCommandList* cmdList);
 	void				Render_Instancing(ID3D12GraphicsCommandList* cmdList);
+	void				Render_UI(ID3D12GraphicsCommandList* cmdList);
+
 	//void Render_Alpha(ID3D12GraphicsCommandList* cmdList);
 	//void Render_UI(ID3D12GraphicsCommandList* cmdList);
 	

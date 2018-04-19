@@ -67,9 +67,6 @@
     <Filter Include="02. GameObject\04. SkyBox">
       <UniqueIdentifier>{604da928-4874-4429-a4d1-7d24805b3dc5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\03.Terrain">
-      <UniqueIdentifier>{f31620ca-ff9f-4fd4-946b-3113a144774c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base">
       <UniqueIdentifier>{dd35b52b-4c28-4eb4-9a33-3cc39acf4ad8}</UniqueIdentifier>
     </Filter>
@@ -148,6 +145,15 @@
     <Filter Include="02. GameObject\01. StaticObject\01. MapObject">
       <UniqueIdentifier>{4c0a9d27-91a0-4be4-8610-c650aa9b57b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\03. Terrain">
+      <UniqueIdentifier>{f31620ca-ff9f-4fd4-946b-3113a144774c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\07. UI">
+      <UniqueIdentifier>{916db32d-3de6-4ca6-8443-b94aef4ac9bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Mesh\03. UIMesh">
+      <UniqueIdentifier>{44272521-deb8-4584-89cb-873c1def36f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -203,7 +209,7 @@
       <Filter>03. Mesh\02. GeometryMesh</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
-      <Filter>02. GameObject\03.Terrain</Filter>
+      <Filter>02. GameObject\03. Terrain</Filter>
     </ClCompile>
     <ClCompile Include="Management.cpp">
       <Filter>94. Manager\00. Management</Filter>
@@ -267,6 +273,12 @@
     </ClCompile>
     <ClCompile Include="MapObject.cpp">
       <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>02. GameObject\07. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMesh.cpp">
+      <Filter>03. Mesh\03. UIMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -332,7 +344,7 @@
       <Filter>03. Mesh\02. GeometryMesh</Filter>
     </ClInclude>
     <ClInclude Include="Terrain.h">
-      <Filter>02. GameObject\03.Terrain</Filter>
+      <Filter>02. GameObject\03. Terrain</Filter>
     </ClInclude>
     <ClInclude Include="Base.h">
       <Filter>Base</Filter>
@@ -412,6 +424,12 @@
     <ClInclude Include="MapObject.h">
       <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
     </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>02. GameObject\07. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMesh.h">
+      <Filter>03. Mesh\03. UIMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsl">
@@ -431,6 +449,9 @@
     </None>
     <None Include="Base.inl">
       <Filter>Base</Filter>
+    </None>
+    <None Include="Shaders\UI.hlsl">
+      <Filter>93. Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

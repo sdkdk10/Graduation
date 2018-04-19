@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Npc.h"
 #include "DynamicMesh.h"
+#include "Camera.h"
+#include "Management.h"
 
 CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, vector<pair<const string, const string>> path)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -83,7 +85,9 @@ bool CNpc::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
 	m_pMesh->Update(gt);
-
+	m_pCamera = CManagement::GetInstance()->Get_MainCam();
+	XMMATRIX view = m_pCamera->GetView();
+	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 	Animate(gt);
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
@@ -91,6 +95,35 @@ bool CNpc::Update(const GameTimer & gt)
 
 	XMMATRIX world = XMLoadFloat4x4(&World);
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
+
+
+	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+	// View space to the object's local space.
+	XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
+
+	// Transform the camera frustum from view space to the object's local space.
+	BoundingFrustum localSpaceFrustum;
+	mCamFrustum = *CManagement::GetInstance()->Get_CurScene()->Get_CamFrustum();
+	mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
+	if ((localSpaceFrustum.Contains(Bounds /*m_xmOOBB*/) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+	{
+		//cout << "보인당!" << endl;
+
+		m_bIsVisiable = true;
+		ObjectConstants objConstants;
+		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+		XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
+		objConstants.MaterialIndex = Mat->MatCBIndex;
+
+		currObjectCB->CopyData(ObjCBIndex, objConstants);
+	}
+	else
+	{
+		//cout << "안보인당!" << endl;
+
+		m_bIsVisiable = false;
+	}
 
 	ObjectConstants objConstants;
 	XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
@@ -132,12 +165,16 @@ bool CNpc::Update(const GameTimer & gt)
 
 void CNpc::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk= true;
-	iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
+	if (m_bIsVisiable)
+	{
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk = true;
+		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
 
-	Render_Head(cmdList);
-	Render_Body(cmdList);
-	Render_Right(cmdList);
+		Render_Head(cmdList);
+		Render_Body(cmdList);
+		Render_Right(cmdList);
+	}
+	
 }
 void CNpc::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {

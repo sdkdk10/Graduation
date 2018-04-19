@@ -14,6 +14,7 @@
 #include "Collision_Manager.h"
 #include "Dragon.h"
 #include "Npc.h"
+#include "UI.h"
 
 
 
@@ -49,6 +50,7 @@ HRESULT CTestScene::Initialize()
 	//path.push_back(make_pair("Back", "Models/Mage/Warrior_Attack3.ASE"));
 
 	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, path);
+	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_NPC", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
@@ -78,6 +80,13 @@ HRESULT CTestScene::Initialize()
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_Instance", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
+
+	/*pObject = UI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	Ready_GameObject(L"Layer_UI", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+*/
+
 
 	return S_OK;
 }
@@ -171,11 +180,11 @@ void CTestScene::CollisionProcess()
 
 	if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
 	{
-		cout << "µå·¡°ï Ãæµ¹ " << endl;
+		//cout << "µå·¡°ï Ãæµ¹ " << endl;
 	}
 	else
 	{
-		cout << "µå·¡°ï Ãæµ¹ ¾Æ´Ô" << endl;
+		//cout << "µå·¡°ï Ãæµ¹ ¾Æ´Ô" << endl;
 	}
 
 

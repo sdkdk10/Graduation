@@ -146,3 +146,15 @@ struct VertexOut_Sky
 	float4 PosH : SV_POSITION;
 	float3 PosL : POSITION;
 };
+
+struct VertexIn_UI
+{
+	float3 PosL    : POSITION;
+	float2 TexC    : TEXCOORD;
+};
+
+struct VertexOut_UI
+{
+	float3 PosL    : POSITION;
+	float2 TexC    : TEXCOORD;
+};

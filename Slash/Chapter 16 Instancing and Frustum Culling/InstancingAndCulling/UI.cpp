@@ -1,0 +1,102 @@
+#include "stdafx.h"
+
+#include "GeometryMesh.h"
+#include "UI.h"
+#include "UIMesh.h"
+#include "Define.h"
+
+
+UI::UI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
+	: CGameObject(d3dDevice, srv, srvSize)
+{
+}
+
+
+
+UI::~UI()
+{
+}
+
+bool UI::Update(const GameTimer & gt)
+{
+	CGameObject::Update(gt);
+	return true;
+}
+
+void UI::Render(ID3D12GraphicsCommandList * cmdList)
+{
+	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
+
+	auto objectCB = m_pFrameResource->ObjectCB->Resource();
+	auto matCB = m_pFrameResource->MaterialCB->Resource();
+
+	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
+	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
+	cmdList->IASetPrimitiveTopology(PrimitiveType);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+
+	Mat->DiffuseSrvHeapIndex;
+	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
+	D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
+
+	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
+	//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
+	cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
+
+	cmdList->SetGraphicsRootDescriptorTable(7, tex);
+
+	cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
+}
+
+HRESULT UI::Initialize()
+{
+	m_pMesh = new UIMesh(m_d3dDevice);
+
+	if (FAILED(m_pMesh->Initialize()))
+		return E_FAIL;
+
+	/* Material Build */
+	Mat = new Material;
+	Mat->Name = "TerrainMat";
+	Mat->MatCBIndex = 2;
+	Mat->DiffuseSrvHeapIndex = 2;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Mat->Roughness = 0.3f;
+
+	/* CB(World,TextureTranform...) Build */
+
+	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));
+	TexTransform = MathHelper::Identity4x4();
+	ObjCBIndex = 6;
+
+	Geo = dynamic_cast<UIMesh*>(m_pMesh)->m_Geometry[0].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	IndexCount = Geo->DrawArgs["UI"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["UI"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
+
+	return S_OK;
+}
+
+UI * UI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
+{
+
+	UI* pInstance = new UI(d3dDevice, srv, srvSize);
+
+	if (FAILED(pInstance->Initialize()))
+	{
+		MSG_BOX(L"Player Created Failed");
+		Safe_Release(pInstance);
+	}
+
+
+	return pInstance;
+}
+
+void UI::Free()
+{
+}

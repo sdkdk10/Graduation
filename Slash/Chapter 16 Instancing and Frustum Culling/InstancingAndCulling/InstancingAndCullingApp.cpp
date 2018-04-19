@@ -967,6 +967,9 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
+	//mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
+	//mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
+
 
 	mInputLayout =
 	{
@@ -1477,6 +1480,35 @@ void InstancingAndCullingApp::BuildPSOs()
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingOpaquePsoDesc, IID_PPV_ARGS(&mPSOs["InstancingOpaque"])));
 
 	//
+	// PSO for UI objects.
+	//
+
+	//D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
+	//// The camera is inside the sky sphere, so just turn off culling.
+	//UIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; //카메라가 구 내부에 있음으로 후면선별을 끔 
+
+
+	//															// Make sure the depth function is LESS_EQUAL and not just LESS.  
+	//															// Otherwise, the normalized depth values at z = 1 (NDC) will 
+	//															// fail the depth test if the depth buffer was cleared to 1.
+	//UIPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //깊이판정 LESS_EQUAL해야 구가 깊이판정 통과함
+	//UIPsoDesc.pRootSignature = mRootSignature.Get();
+
+	//UIPsoDesc.VS =
+	//{
+	//	reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
+	//	mShaders["UIVS"]->GetBufferSize()
+	//};
+	//UIPsoDesc.PS =
+	//{
+	//	reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
+	//	mShaders["UIPS"]->GetBufferSize()
+	//};
+
+	//ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
+
+
+	//
 	// PSO for sky.
 	//
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC skyPsoDesc = opaquePsoDesc;
@@ -1645,6 +1677,8 @@ void InstancingAndCullingApp::BuildRenderItems()
 	auto MageRiTem = std::make_unique<RenderItem>();
 	mAllRitems.push_back(std::move(MageRiTem));
 
+	//auto UIRItem = std::make_unique<RenderItem>();
+	//mAllRitems.push_back(std::move(UIRItem));
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
