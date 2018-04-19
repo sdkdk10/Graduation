@@ -19,7 +19,7 @@ public:
 
 private:
 	int iTest = 0;
-	int m_iCurAnimState = 0;
+	int m_iCurAnimState = 1;
 
 	vector<pair<const string, const string>>			m_vecMeshPath;
 	MeshGeometry* Geo_Body = nullptr;
