@@ -38,15 +38,15 @@ HRESULT CNpc::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
-	Mat->MatCBIndex = 0;
-	Mat->DiffuseSrvHeapIndex = 0;
+	Mat->MatCBIndex = 5;
+	Mat->DiffuseSrvHeapIndex = 5;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
-	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 1.0f, 0.f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 20.f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 6;
+	ObjCBIndex = 5;
 
 	Geo_Head = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -132,8 +132,8 @@ bool CNpc::Update(const GameTimer & gt)
 
 void CNpc::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestIdle = true;
-	iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex;
+	dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk= true;
+	iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
 
 	Render_Head(cmdList);
 	Render_Body(cmdList);

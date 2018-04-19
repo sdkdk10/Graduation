@@ -33,6 +33,7 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 
 	for (int filePath = 0; filePath < pFilePath.size(); ++filePath)
 	{
+		bool bAnimCntforOverlap = false;
 		std::ifstream fin(pFilePath[filePath].second);
 
 		if (!fin)
@@ -64,7 +65,12 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 					if (ignore == "*GEOMOBJECT")  // 뼈 하나 다 읽을경우
 					{
 						if(iAnimframe != 0)
-							vecAnimFrame.push_back(iAnimframe);
+							if (!bAnimCntforOverlap)
+							{
+								bAnimCntforOverlap = true;
+								vecAnimFrame.push_back(iAnimframe);
+							}
+						
 						iAnimframe = 0;
 						bFirstBone = false;
 						break;
@@ -223,7 +229,7 @@ HRESULT DynamicMesh::Initialize(vector<pair<const string, const string>> &pFileP
 
 
 
-	vecAnimFrame.erase(unique(vecAnimFrame.begin(), vecAnimFrame.end()), vecAnimFrame.end());
+	//vecAnimFrame.erase(unique(vecAnimFrame.begin(), vecAnimFrame.end()), vecAnimFrame.end());
 
 
 	vector<string> boneName;

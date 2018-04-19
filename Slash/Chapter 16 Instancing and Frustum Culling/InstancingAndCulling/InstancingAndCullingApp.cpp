@@ -707,6 +707,13 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), DragonTex->Filename.c_str(),
 		DragonTex->Resource, DragonTex->UploadHeap));
 
+	auto MageTex = std::make_unique<Texture>();
+	MageTex->Name = "MageTex";
+	MageTex->Filename = L"../../Textures/MageTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), MageTex->Filename.c_str(),
+		MageTex->Resource, MageTex->UploadHeap));
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -719,6 +726,7 @@ void InstancingAndCullingApp::LoadTextures()
 	mMaterials_Instancing[FenceTex->Name] = std::move(FenceTex);
 	mMaterials_Instancing[SpiderTex->Name] = std::move(SpiderTex);
 	mMaterials_Instancing[DragonTex->Name] = std::move(DragonTex);
+	mMaterials_Instancing[MageTex->Name] = std::move(MageTex);
 
 }
 
@@ -792,7 +800,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = 6;
+	srvHeapDesc2.NumDescriptors = 7;
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -824,6 +832,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto FenceTex = mMaterials_Instancing["FenceTex"]->Resource;
 	auto SpiderTex = mMaterials_Instancing["SpiderTex"]->Resource;
 	auto DragonTex = mMaterials_Instancing["DragonTex"]->Resource;
+	auto MageTex = mMaterials_Instancing["MageTex"]->Resource;
 
 
 
@@ -912,6 +921,13 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = DragonTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = DragonTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(DragonTex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	// next descriptor 5 Mage
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc_Default.Format = MageTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = MageTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(MageTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
 	// next descriptor 5 SkyBox
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
@@ -1516,7 +1532,7 @@ void InstancingAndCullingApp::BuildFrameResources()
 	for (int i = 0; i < gNumFrameResources; ++i)
 	{
 		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-			1, (UINT)mAllRitems.size() + 1, (UINT)mMaterials.size()));
+			1, (UINT)mAllRitems.size(), (UINT)mMaterials.size()));
 	}
 }
 
@@ -1625,6 +1641,10 @@ void InstancingAndCullingApp::BuildRenderItems()
 
 	auto DragonRiTem = std::make_unique<RenderItem>();
 	mAllRitems.push_back(std::move(DragonRiTem));
+
+	auto MageRiTem = std::make_unique<RenderItem>();
+	mAllRitems.push_back(std::move(MageRiTem));
+
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
