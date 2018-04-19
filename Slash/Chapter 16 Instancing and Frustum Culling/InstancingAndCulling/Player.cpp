@@ -36,7 +36,7 @@ void Player::Animate(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
-		KeyInputTest = 1;
+		KeyInputTest = 0.001;
 		dwDirection |= DIR_FORWARD;
 
 	}
