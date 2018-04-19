@@ -32,15 +32,15 @@ HRESULT CTransform::Initialize()
 void CTransform::Update_Component(const CGameTimer & gt)
 {
 	XMMATRIX matWorld;
-	XMVECTOR vScale, vRot, vTrans;
+	XMVECTOR vScale, vRot, vTrans;	
 	vScale = XMLoadFloat3(&m_f3Scale);
 	vRot = XMLoadFloat3(&m_f3Rotation);
 	vTrans = XMLoadFloat3(&m_f3Position);
 	vRot = XMQuaternionRotationRollPitchYaw(m_f3Rotation.x, m_f3Rotation.y, m_f3Rotation.z);
-
+	
 	XMFLOAT3 f3Default = XMFLOAT3(1.f, 1.f, 1.f);
 	XMVECTOR vDefault = XMLoadFloat3(&f3Default);
-
+	
 	matWorld = XMMatrixTransformation(vDefault, vDefault, vScale, XMVectorZero(), vRot, vTrans);
 	XMStoreFloat4x4(&m_f4x4World, matWorld);
 

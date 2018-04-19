@@ -380,22 +380,3 @@ void DynamicMesh::Free()
 {
 }
 
-DynamicMesh * DynamicMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>>& pFilePath)
-{
-	DynamicMesh* pInstance = new DynamicMesh(d3dDevice);
-
-	if (FAILED(pInstance->Initialize(pFilePath)))
-	{
-		MSG_BOX(L"DynamicMesh Created Failed");
-		Safe_Release(pInstance);
-	}
-
-	return pInstance;
-}
-
-CComponent * DynamicMesh::Clone(void)
-{
-	AddRef();
-	return this;
-}
-

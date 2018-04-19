@@ -313,27 +313,11 @@ void DynamicMeshSingle::Free()
 {
 }
 
-DynamicMeshSingle * DynamicMeshSingle::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>>& pFilePath)
-{
-	DynamicMeshSingle* pInstance = new DynamicMeshSingle(d3dDevice);
-	if (FAILED(pInstance->Initialize(pFilePath)))
-	{
-		MSG_BOX(L"DynamicMeshSingle Created Failed");
-		Safe_Release(pInstance);
-	}
-	return pInstance;
-}
-
-CComponent * DynamicMeshSingle::Clone(void)
-{
-	AddRef();
-	return this;
-}
-
 DynamicMeshSingle::DynamicMeshSingle(Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice)
 	: Mesh(md3dDevice)
 {
 }
+
 
 DynamicMeshSingle::~DynamicMeshSingle()
 {

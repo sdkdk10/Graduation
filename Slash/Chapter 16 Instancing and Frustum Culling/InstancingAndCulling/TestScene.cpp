@@ -13,7 +13,6 @@
 #include "Terrain.h"
 #include "Collision_Manager.h"
 #include "Dragon.h"
-#include "Npc.h"
 
 
 
@@ -39,17 +38,7 @@ HRESULT CTestScene::Initialize()
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
-	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, path);
-	Ready_GameObject(L"Layer_Player", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
+	
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Spider", pObject);

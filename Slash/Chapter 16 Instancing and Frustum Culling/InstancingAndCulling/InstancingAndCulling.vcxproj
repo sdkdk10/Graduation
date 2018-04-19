@@ -22,7 +22,7 @@
     <ProjectGuid>{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>InstancingAndCulling</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>Slash</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -167,8 +167,6 @@
     <ClCompile Include="GameTimer_Manager.cpp" />
     <ClCompile Include="GeometryMesh.cpp" />
     <ClCompile Include="InputDevice.cpp" />
-    <ClCompile Include="Network.cpp" />
-    <ClCompile Include="Npc.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="InstancingAndCullingApp.cpp" />
     <ClCompile Include="InstancingObject.cpp" />
@@ -214,8 +212,6 @@
     <ClInclude Include="GameTimer_Manager.h" />
     <ClInclude Include="GeometryMesh.h" />
     <ClInclude Include="InputDevice.h" />
-    <ClInclude Include="Network.h" />
-    <ClInclude Include="Npc.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="InstancingAndCullingApp.h" />
     <ClInclude Include="InstancingObject.h" />
@@ -223,7 +219,6 @@
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Management.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Protocol.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SkyBox.h" />

@@ -3,7 +3,7 @@
 #include "Define.h"
 #include "DynamicMesh.h"
 #include "InputDevice.h"
-#include "Network.h"
+
 
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
@@ -28,11 +28,11 @@ void Player::Animate(const GameTimer & gt)
 
 	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS)
 	{
-		World._42 += 0.1f;
+		World._42 += 0.1;
 	}
 	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS)
 	{
-		World._42 -= 0.1f;
+		World._42 -= 0.1;
 	}
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
@@ -65,7 +65,7 @@ void Player::Animate(const GameTimer & gt)
 
 	if (dwDirection != 0)
 	{
-		//CNetwork::GetInstance()->SendPacket(dwDirection);
+
 		Move(dwDirection, 15.0f * gt.DeltaTime(), true);
 	}
 

@@ -12,11 +12,6 @@ public:
 	virtual HRESULT Initialize();
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
-
-public:
-	static GeometryMesh* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);
-
-	virtual CComponent* Clone(void);
 	virtual void Free();
 
 	vector <std::unique_ptr<MeshGeometry>>	m_Geometry;

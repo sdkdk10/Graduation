@@ -4,6 +4,13 @@
 
 class CBoundingBox;
 
+typedef struct objdrawelement
+{
+	UINT IndexCount = 0;
+	UINT StartIndexLocation = 0;
+	int BaseVertexLocation = 0;
+}DrawElement;
+
 class Player : public CGameObject
 {
 	const float m_fScale = 0.05f;
@@ -66,7 +73,6 @@ public:
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
 	virtual HRESULT			Initialize();
 	virtual void			Free();
-	virtual void Set_AnimState(int iState) { KeyInputTest = iState; }
 
 public:
 	void					Render_Body(ID3D12GraphicsCommandList* cmdList);

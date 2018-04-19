@@ -1,6 +1,0 @@
-﻿  ServerMain.cpp
-c:\users\thelo\desktop\졸작\graduation0417_2\slashserver\slashserver\servermain.cpp(115): warning C4305: '-=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\thelo\desktop\졸작\graduation0417_2\slashserver\slashserver\servermain.cpp(119): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\thelo\desktop\졸작\graduation0417_2\slashserver\slashserver\servermain.cpp(123): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\thelo\desktop\졸작\graduation0417_2\slashserver\slashserver\servermain.cpp(127): warning C4305: '-=': 'double'에서 'float'(으)로 잘립니다.
-  SlashServer.vcxproj -> C:\Users\thelo\Desktop\졸작\Graduation0417_2\SlashServer\Debug\SlashServer.exe
