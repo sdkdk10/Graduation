@@ -1,11 +1,12 @@
 #pragma once
-#include "Base.h"
+#include "Component.h"
 #include "GameTimer.h"
+#include "Define.h"
 
 using namespace std;
 
 class Mesh
-	: public CBase
+	: public CComponent
 {
 public:
 	XMVECTOR vMin;
@@ -36,12 +37,15 @@ public:
 	virtual ~Mesh();
 
 public:
-	virtual HRESULT Initialize(vector<pair<const string, const string>> &pFilePath);
 	virtual HRESULT Initialize();
+	//virtual HRESULT Initialize(const string& pFilePath);
+	virtual HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Render();
 	virtual void Free();
 
+public:
+	virtual CComponent* Clone() = 0;
 public:
 	//virtual HRESULT LoadMesh(const wchar_t* AnimName, const char* pFilePath) = 0;
 

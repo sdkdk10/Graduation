@@ -271,6 +271,23 @@ void StaticMesh::Free()
 {
 }
 
+StaticMesh * StaticMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>> & pFilePath)
+{
+	StaticMesh* pInstance = new StaticMesh(d3dDevice);
+	if (FAILED(pInstance->Initialize(pFilePath)))
+	{
+		MSG_BOX(L"StaticMesh Created Failed");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+CComponent * StaticMesh::Clone(void)
+{
+	AddRef();
+	return this;
+}
+
 void StaticMesh::BuildBounds()
 {
 	BoundingBox bounds;

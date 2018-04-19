@@ -116,7 +116,7 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 		auto pMesh = dynamic_cast<DynamicMeshSingle*>(m_pMesh);
 
 
-		int iTest = pMesh->m_fTest;
+		int iTest = (int)pMesh->m_fTest;
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
 			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[0] /*+ pMesh->IndexAnimoffset[0]*/,
 			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[0]/*+ pMesh->VertexAnimoffset[0]*/, 0);
