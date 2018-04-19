@@ -182,7 +182,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 			}
 		}
 
-		tAnimInfo.iAnimationFrameSize = tAnimInfo.AnimationModel.size();
+		tAnimInfo.iAnimationFrameSize = int(tAnimInfo.AnimationModel.size());
 		vecAnimFrame.push_back(iAnimframe);
 
 	}
@@ -206,7 +206,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 	for (iter; iter != iter_end; ++iter)
 	{
 		Vertexoffset.push_back(nVertexoffset);
-		nVertexoffset += (*iter).uv.size();
+		nVertexoffset += int((*iter).uv.size());
 
 		Indexoffset.push_back(nIndexoffset);
 		nIndexoffset += (*iter).iNumIndex * 3;
@@ -249,7 +249,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 
 	}
 
-	int indexTest = indices.size();
+	int indexTest = int(indices.size());
 
 
 	BoundingBox bounds;

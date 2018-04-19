@@ -41,6 +41,35 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 	while (!fin.eof())
 	{
 		fin >> ignore;
+		if (ignore == "*MATERIAL_LIST")
+		{
+			fin >> ignore;
+
+			while (ignore != "}")
+			{
+				fin >> ignore;
+				if (ignore == "*BITMAP")
+				{
+					wstring wstrFileName;
+					fin >> ignore;
+					auto b = ignore.begin();
+					auto e = ignore.end();
+					fs::path t_Path = wstrFileName.assign(++b, --e);									// > " 빼고 경로 넣음
+					wstrFileName = t_Path.filename();													// > TextureName.tga/png/... 파일 이름 가져오기 
+					size_t iLength = wstrFileName.length();
+					size_t iDotPos = wstrFileName.rfind(L".");											// > .tga에서 .위치 찾기
+					wstrFileName.erase(iDotPos, iLength);												// > TextureName만 남기기
+					wstring wstrTexPath = L"../../Textures/" + wstrFileName + L".dds";					// > 경로 지정 L"../../Textures/TextureName.dds"
+					auto bricksTex = std::make_unique<Texture>();
+					string texName;
+					bricksTex->Name = texName.assign(wstrFileName.begin(), wstrFileName.end());
+					bricksTex->Filename = wstrTexPath;
+					/*ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(m_d3dDevice.Get(),
+					mCommandList.Get(), bricksTex->Filename.c_str(),
+					bricksTex->Resource, bricksTex->UploadHeap));*/
+				}
+			}
+		}
 
 		if (ignore == "*TIMEVALUE")
 		{

@@ -167,6 +167,7 @@
     <ClCompile Include="GameTimer_Manager.cpp" />
     <ClCompile Include="GeometryMesh.cpp" />
     <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="GameTimer_Manager.h" />
     <ClInclude Include="GeometryMesh.h" />
     <ClInclude Include="InputDevice.h" />
+    <ClInclude Include="MapObject.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Npc.h" />
     <ClInclude Include="Player.h" />

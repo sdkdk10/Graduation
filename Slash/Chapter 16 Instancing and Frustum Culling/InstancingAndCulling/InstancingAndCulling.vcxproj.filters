@@ -145,6 +145,9 @@
     <Filter Include="91. Network">
       <UniqueIdentifier>{81a480a6-f5a1-4790-8b12-5d6a16da6014}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\01. StaticObject\01. MapObject">
+      <UniqueIdentifier>{4c0a9d27-91a0-4be4-8610-c650aa9b57b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -261,6 +264,9 @@
     </ClCompile>
     <ClCompile Include="Network.cpp">
       <Filter>91. Network</Filter>
+    </ClCompile>
+    <ClCompile Include="MapObject.cpp">
+      <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -402,6 +408,9 @@
     </ClInclude>
     <ClInclude Include="Protocol.h">
       <Filter>98. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="MapObject.h">
+      <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

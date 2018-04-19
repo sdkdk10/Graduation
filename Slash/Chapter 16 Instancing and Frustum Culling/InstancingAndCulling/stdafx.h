@@ -28,8 +28,6 @@
 
 #include <dinput.h>
 
-using namespace std;
-
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <D3Dcompiler.h>
@@ -44,8 +42,11 @@ using namespace std;
 #include <algorithm>
 #include <memory.h>
 #include <iostream>
+#include <filesystem>
 
 using namespace std;
+
+namespace fs = std::experimental::filesystem;
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
