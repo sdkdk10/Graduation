@@ -223,9 +223,6 @@
     <ClCompile Include="Layer.cpp">
       <Filter>01. Scene\99. Layer</Filter>
     </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>01. Scene\00. TestScene</Filter>
-    </ClCompile>
     <ClCompile Include="Component_Manager.cpp">
       <Filter>94. Manager\02. Component_Manager</Filter>
     </ClCompile>
@@ -267,6 +264,9 @@
     </ClCompile>
     <ClCompile Include="MapObject.cpp">
       <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>01. Scene\00. TestScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
