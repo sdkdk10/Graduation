@@ -15,10 +15,15 @@ private:
 	virtual ~CComponent_Manager();
 
 public:
-	CComponent* Clone_Component();
+	CComponent* Clone_Component(wchar_t* pTag);
+	HRESULT		Ready_Component(wchar_t* pTag, CComponent* pComponent);
+
+private:
+	CComponent* Find_Component(wchar_t* pTag);
+
 
 public:
-	vector<CComponent*>			m_vecComponet;
+	unordered_map<wstring, CComponent*>			m_mapComponent;
 
 private:
 	virtual void Free();
