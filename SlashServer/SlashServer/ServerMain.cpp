@@ -270,7 +270,7 @@ void AcceptThread()
 				SendPacket(i, &p);
 		}
 		// 나에게 접속중인 다른 플레이어 정보를 전송
-		/*for (int i = 0; i < MAX_USER; ++i) {
+		for (int i = 0; i < MAX_USER; ++i) {
 			if (true == g_clients[i].in_use)
 				if (i != new_key) {
 					p.id = i;
@@ -278,7 +278,7 @@ void AcceptThread()
 					p.y = g_clients[i].y;
 					SendPacket(new_key, &p);
 				}
-		}*/
+		}
 	}
 }
 

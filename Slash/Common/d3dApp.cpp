@@ -374,9 +374,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         else if((int)wParam == VK_F2)
             Set4xMsaaState(!m4xMsaaState);
-
-        return 0;
-
+		return 0;
 	//case WM_KEYDOWN:
 	//	if (wParam == VK_OEM_6)
 	//	{
