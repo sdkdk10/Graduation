@@ -14,6 +14,7 @@
 #include "Collision_Manager.h"
 #include "Dragon.h"
 #include "Npc.h"
+#include "Network.h"
 
 
 
@@ -31,24 +32,25 @@ CTestScene::~CTestScene()
 
 HRESULT CTestScene::Initialize()
 {
-	CGameObject* pObject = SkyBox::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	Ready_GameObject(L"Layer_SkyBox", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
-
-	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_Player", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
-	vector<pair<const string, const string>> path;
+	// 처음에 애니메이션 넣기
 	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
-	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, path);
+
+	CGameObject* pObject = SkyBox::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	Ready_GameObject(L"Layer_SkyBox", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
+
+	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버로 돌리면 주석처리 시작
+	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
+	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, path); 
+	Ready_GameObject(L"Layer_Player", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject); // 주석처리 끝
 
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -83,6 +85,8 @@ HRESULT CTestScene::Initialize()
 bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
+
+	// 접속이 들어왔는지 검사하고 왔으면 객체 생성
 
 	CollisionProcess();
 	UpdateOOBB();
@@ -158,23 +162,23 @@ void CTestScene::CollisionProcess()
 	}
 
 	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
-	if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider->m_xmOOBB))
-	{
-		//cout << "거미 충돌 " << endl;
-	}
-	else
-	{
-		//cout << "거미 충돌 아님" << endl;
-	}
+	//if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider->m_xmOOBB))
+	//{
+	//	//cout << "거미 충돌 " << endl;
+	//}
+	//else
+	//{
+	//	//cout << "거미 충돌 아님" << endl;
+	//}
 
-	if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
-	{
-		cout << "드래곤 충돌 " << endl;
-	}
-	else
-	{
-		cout << "드래곤 충돌 아님" << endl;
-	}
+	//if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
+	//{
+	//	cout << "드래곤 충돌 " << endl;
+	//}
+	//else
+	//{
+	//	cout << "드래곤 충돌 아님" << endl;
+	//}
 
 
 }
@@ -189,6 +193,28 @@ CTestScene * CTestScene::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, 
 		Safe_Release(pInstance);
 	}
 	return pInstance;
+}
+
+void CTestScene::Put_Player(const float& x, const float& y, const float& z, const int& id)
+{
+	CGameObject* pObject = nullptr;
+
+	if (MYPLAYERID == id)
+	{
+		pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Player", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		pObject->SetPosition(x, y, z);
+		m_pMainCam->Set_Object(pObject);
+	}
+	else // 서버는 접속순서대로 클라에 ID를 부여함 // 클라이언트는 서버에서 보내주는대로 레이어 백터에 푸시백함 (맨 처음은 무조건 클라이언트 왜? 처음오는 패킷을 내 아이디로 쓰니까)
+	{
+		pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, path);
+		Ready_GameObject(L"Layer_Player", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		pObject->SetPosition(x, y, z);
+	}
 }
 
 void CTestScene::Free()

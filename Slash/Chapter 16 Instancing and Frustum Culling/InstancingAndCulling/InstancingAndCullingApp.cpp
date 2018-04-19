@@ -7,9 +7,11 @@
 #include "InstancingObject.h"
 #include "InputDevice.h"
 #include "Management.h"
+#include "Component_Manager.h"
 #include "Renderer.h"
 #include "TestScene.h"
 #include "Network.h"
+#include "DynamicMesh.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -38,11 +40,11 @@ typedef struct character
 
 }Character;
 
-typedef struct animInfo
-{
-	vector<Character>				mapAnimationModel;			// 애니메이션 프레임 마다의 정점들
-	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
-}AnimInfo;
+//typedef struct animInfo
+//{
+//	vector<Character>				mapAnimationModel;			// 애니메이션 프레임 마다의 정점들
+//	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
+//}AnimInfo;
 
 
 enum class RenderLayer : int
@@ -124,7 +126,8 @@ bool InstancingAndCullingApp::Initialize()
 
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
 	CManagement::GetInstance()->Init_Management(pRenderer);
-	
+
+	//CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	BuildPSOs();
 	BuildMaterials();
@@ -135,6 +138,7 @@ bool InstancingAndCullingApp::Initialize()
 	CManagement::GetInstance()->GetRenderer()->SetPSOs(mPSOs);
 	CManagement::GetInstance()->Get_CurScene()->Set_MainCam(&mCamera);
 	CManagement::GetInstance()->Get_CurScene()->Set_CamFrustum(&mCamFrustum);
+
 	mCamera.Set_Object(CManagement::GetInstance()->Get_CurScene()->Find_Object(L"Layer_Player", 0));
 
 	// Execute the initialization commands.
@@ -144,8 +148,6 @@ bool InstancingAndCullingApp::Initialize()
 
 	// Wait until initialization is complete.
 	FlushCommandQueue();
-
-	//CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	return true;
 }
@@ -962,253 +964,253 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 
 void InstancingAndCullingApp::BuildSkullGeometry()
 {
-	AnimInfo tAnimInfo;
+	//AnimInfo tAnimInfo;
 
-	UINT vcount = 0;
-	UINT tcount = 0;
-	std::string ignore;
-	bool countStart = false;
-	std::ifstream fin("Models/SpiderAnim/spider_Idle.ASE", ios::binary);
-
-
-	if (!fin)
-	{
-		exit(-1);
-	}
-
-	//애니메이션 갯수 세기
-	while (!fin.eof())
-	{
-		fin >> ignore;
-
-		if (ignore == "*TIMEVALUE" && countStart)
-		{
-			//정점 좌표 읽어오기
-			Character curCharacter;
-			fin >> curCharacter.iTimeValue;
-			fin >> ignore; //*MESH_NUMVERTEX 
-			fin >> curCharacter.iNumVertex;
-			fin >> ignore; //*MESH_NUMFACES 
-			fin >> curCharacter.iNumIndex;
-			fin >> ignore; //*MESH_VERTEX_LIST 
-			fin >> ignore; //{
-			for (int i = 0; i < curCharacter.iNumVertex; ++i)
-			{
-				Vertex curPos;
-				fin >> ignore; //*MESH_VERTEX
-				fin >> ignore; // Index;
-				fin >> curPos.Pos.x;
-				fin >> curPos.Pos.y;
-				fin >> curPos.Pos.z;
-
-				curCharacter.vecVertex.push_back(curPos);
-
-			}
-			//인덱스 읽어오기
-			fin >> ignore; //}
-			fin >> ignore; //*MESH_FACE_LIST 
-			fin >> ignore; // {
-
-			for (int i = 0; i < curCharacter.iNumIndex; ++i)
-			{
-				fin >> ignore; //*MESH_FACE 
-				fin >> ignore; // Index:
-				fin >> ignore; // A:
-				fin >> ignore;
-				curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore; // B:
-				fin >> ignore;
-				curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore; // C:
-				fin >> ignore;
-				curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore;
-			}
-
-			//텍스쳐 좌표 읽어오기
-			fin >> ignore; // }
-			fin >> ignore; // *MESH_NUMTVERTEX 
-			fin >> curCharacter.iNumTexCnt;
-			fin >> ignore; // *MESH_TVERLIST
-			fin >> ignore; // {
-			for (int i = 0; i < curCharacter.iNumTexCnt; ++i)
-			{
-				XMFLOAT2 curUV;
-
-				fin >> ignore; // *MESH_TVERT
-				fin >> ignore; // Index;
-				fin >> curUV.x;
-				fin >> curUV.y;
-				fin >> ignore; // w
-
-				curUV.y = 1.0f - curUV.y;
-
-				curCharacter.uv.push_back(curUV);
-			}
-
-			//텍스쳐 좌표 인덱스 읽어오기
-			fin >> ignore; // }
-			fin >> ignore;
-
-			fin >> curCharacter.iNumTexIndex;
-			fin >> ignore; // *MESH_TFACELIST
-			fin >> ignore; // {
-			for (int i = 0; i < curCharacter.iNumTexIndex; ++i)
-			{
-				fin >> ignore; // *MESH_TFACE
-				fin >> ignore; // INDEX
-				fin >> ignore;
-				curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore;
-				curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore;
-				curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
-			}
+	//UINT vcount = 0;
+	//UINT tcount = 0;
+	//std::string ignore;
+	//bool countStart = false;
+	//std::ifstream fin("Models/SpiderAnim/spider_Idle.ASE", ios::binary);
 
 
-			while (ignore != "*MESH_NORMALS")
-			{
-				fin >> ignore; // 계속읽어
+	//if (!fin)
+	//{
+	//	exit(-1);
+	//}
 
-			}
-			if (ignore == "*MESH_NORMALS")
-			{
+	////애니메이션 갯수 세기
+	//while (!fin.eof())
+	//{
+	//	fin >> ignore;
 
-				fin >> ignore; //{
-				for (int i = 0; i < curCharacter.iNumIndex; ++i)
-				{
-					int index = 0;
+	//	if (ignore == "*TIMEVALUE" && countStart)
+	//	{
+	//		//정점 좌표 읽어오기
+	//		Character curCharacter;
+	//		fin >> curCharacter.iTimeValue;
+	//		fin >> ignore; //*MESH_NUMVERTEX 
+	//		fin >> curCharacter.iNumVertex;
+	//		fin >> ignore; //*MESH_NUMFACES 
+	//		fin >> curCharacter.iNumIndex;
+	//		fin >> ignore; //*MESH_VERTEX_LIST 
+	//		fin >> ignore; //{
+	//		for (int i = 0; i < curCharacter.iNumVertex; ++i)
+	//		{
+	//			Vertex curPos;
+	//			fin >> ignore; //*MESH_VERTEX
+	//			fin >> ignore; // Index;
+	//			fin >> curPos.Pos.x;
+	//			fin >> curPos.Pos.y;
+	//			fin >> curPos.Pos.z;
 
-					fin >> ignore; //*MESH_FACENORMAL 
-					fin >> ignore; // FaceIndex
+	//			curCharacter.vecVertex.push_back(curPos);
 
-					atoi(ignore.c_str());
-					fin >> ignore >> ignore >> ignore;
+	//		}
+	//		//인덱스 읽어오기
+	//		fin >> ignore; //}
+	//		fin >> ignore; //*MESH_FACE_LIST 
+	//		fin >> ignore; // {
 
-					for (int k = 0; k < 3; ++k)
-					{
-						fin >> ignore; //*MESH_VERTEXNORMAL 
-						fin >> index; // index;
-						fin >> curCharacter.vecVertex[index].Normal.x;
-						fin >> curCharacter.vecVertex[index].Normal.y;
-						fin >> curCharacter.vecVertex[index].Normal.z;
+	//		for (int i = 0; i < curCharacter.iNumIndex; ++i)
+	//		{
+	//			fin >> ignore; //*MESH_FACE 
+	//			fin >> ignore; // Index:
+	//			fin >> ignore; // A:
+	//			fin >> ignore;
+	//			curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore; // B:
+	//			fin >> ignore;
+	//			curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore; // C:
+	//			fin >> ignore;
+	//			curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore;
+	//		}
 
-					}
+	//		//텍스쳐 좌표 읽어오기
+	//		fin >> ignore; // }
+	//		fin >> ignore; // *MESH_NUMTVERTEX 
+	//		fin >> curCharacter.iNumTexCnt;
+	//		fin >> ignore; // *MESH_TVERLIST
+	//		fin >> ignore; // {
+	//		for (int i = 0; i < curCharacter.iNumTexCnt; ++i)
+	//		{
+	//			XMFLOAT2 curUV;
 
+	//			fin >> ignore; // *MESH_TVERT
+	//			fin >> ignore; // Index;
+	//			fin >> curUV.x;
+	//			fin >> curUV.y;
+	//			fin >> ignore; // w
 
-				}
-			}
-			curCharacter.realvecVertex.resize(curCharacter.uv.size());
+	//			curUV.y = 1.0f - curUV.y;
 
-			for (int i = 0; i < curCharacter.uv.size(); ++i)
-			{
-				curCharacter.realvecVertex[i].TexC = curCharacter.uv[i];
-			}
-			for (int i = 0; i < curCharacter.vecIndex.size(); ++i)
-			{
-				int vertexIndex = curCharacter.vecIndex[i];
-				int realvecVertexIndex = curCharacter.uvIndex[i];
+	//			curCharacter.uv.push_back(curUV);
+	//		}
 
-				curCharacter.realvecVertex[realvecVertexIndex].Pos = curCharacter.vecVertex[vertexIndex].Pos;
-				curCharacter.realvecVertex[realvecVertexIndex].Normal = curCharacter.vecVertex[vertexIndex].Normal;
+	//		//텍스쳐 좌표 인덱스 읽어오기
+	//		fin >> ignore; // }
+	//		fin >> ignore;
 
-			}
-
-			tAnimInfo.mapAnimationModel.push_back(curCharacter);
-		}
-		if (ignore == "*MESH_ANIMATION")
-		{
-			countStart = true;
-		}
-	}
-	fin.close();
-
-	tAnimInfo.iAnimationFrameSize = (int)tAnimInfo.mapAnimationModel.size();
-	m_vecAnimPerFrameSize.push_back((int)(tAnimInfo.mapAnimationModel.size()));
-
-	//m_mapAnimations[const_cast<wchar_t*>(AnimName)] = tAnimInfo;
-
-
-	///////////////////////////////////////////////////////////////////////////////////////
-
-
-	std::vector<Vertex> vertices;
-	std::vector<std::int32_t> indices;
-
-	int nAnimVertexoffset = 0;
-	int nAnimIndexoffset = 0;
-
-	//Idle 애니메이션 정점, 인덱스 초기화
-	int nVertexoffset = 0;
-	int nIndexoffset = 0;
-
-	//Idle 버텍스 / 인덱스 오프셋 셋팅
-	auto iter = tAnimInfo.mapAnimationModel.begin();
-	auto iter_end = tAnimInfo.mapAnimationModel.end();
-
-	for (iter; iter != iter_end; ++iter)
-	{
-		m_vecVertexOffset.push_back(nVertexoffset);
-		nVertexoffset += (int)((*iter).uv.size());
-
-		m_vecIndexOffset.push_back(nIndexoffset);
-		nIndexoffset += (*iter).iNumIndex * 3;
-	}
-
-	//Idle 애니메이션 버텍스 넣음
-	iter = tAnimInfo.mapAnimationModel.begin();
-	for (iter; iter != iter_end; ++iter)
-	{
-		for (int i = 0; i < (*iter).realvecVertex/*vecVertex*/.size(); ++i)
-		{
-			vertices.push_back((*iter).realvecVertex/*vecVertex*/[i]);
-		}
-	}
-
-	//Idle 인덱스 셋팅
-	int iSize = (int)tAnimInfo.mapAnimationModel.size();
-
-	for (int i = 0; i < iSize; ++i)
-	{
-		indices.insert(indices.end(), std::begin(tAnimInfo.mapAnimationModel[i].uvIndex/*vecIndex*/), std::end(tAnimInfo.mapAnimationModel[i].uvIndex/*vecIndex*/));
-	}
+	//		fin >> curCharacter.iNumTexIndex;
+	//		fin >> ignore; // *MESH_TFACELIST
+	//		fin >> ignore; // {
+	//		for (int i = 0; i < curCharacter.iNumTexIndex; ++i)
+	//		{
+	//			fin >> ignore; // *MESH_TFACE
+	//			fin >> ignore; // INDEX
+	//			fin >> ignore;
+	//			curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore;
+	//			curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore;
+	//			curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
+	//		}
 
 
+	//		while (ignore != "*MESH_NORMALS")
+	//		{
+	//			fin >> ignore; // 계속읽어
 
-	size_t indexTest = indices.size();
+	//		}
+	//		if (ignore == "*MESH_NORMALS")
+	//		{
 
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+	//			fin >> ignore; //{
+	//			for (int i = 0; i < curCharacter.iNumIndex; ++i)
+	//			{
+	//				int index = 0;
 
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::int32_t);
+	//				fin >> ignore; //*MESH_FACENORMAL 
+	//				fin >> ignore; // FaceIndex
 
-	auto geo = std::make_unique<MeshGeometry>();
-	geo->Name = "SpiderGeo";
+	//				atoi(ignore.c_str());
+	//				fin >> ignore >> ignore >> ignore;
 
-	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+	//				for (int k = 0; k < 3; ++k)
+	//				{
+	//					fin >> ignore; //*MESH_VERTEXNORMAL 
+	//					fin >> index; // index;
+	//					fin >> curCharacter.vecVertex[index].Normal.x;
+	//					fin >> curCharacter.vecVertex[index].Normal.y;
+	//					fin >> curCharacter.vecVertex[index].Normal.z;
 
-	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+	//				}
 
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
 
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+	//			}
+	//		}
+	//		curCharacter.realvecVertex.resize(curCharacter.uv.size());
 
-	geo->VertexByteStride = sizeof(Vertex);
-	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R32_UINT;
-	geo->IndexBufferByteSize = ibByteSize;
+	//		for (int i = 0; i < curCharacter.uv.size(); ++i)
+	//		{
+	//			curCharacter.realvecVertex[i].TexC = curCharacter.uv[i];
+	//		}
+	//		for (int i = 0; i < curCharacter.vecIndex.size(); ++i)
+	//		{
+	//			int vertexIndex = curCharacter.vecIndex[i];
+	//			int realvecVertexIndex = curCharacter.uvIndex[i];
 
-	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)indexTest;//(UINT)indices.size();
-	submesh.StartIndexLocation = 0;
-	submesh.BaseVertexLocation = 0;
+	//			curCharacter.realvecVertex[realvecVertexIndex].Pos = curCharacter.vecVertex[vertexIndex].Pos;
+	//			curCharacter.realvecVertex[realvecVertexIndex].Normal = curCharacter.vecVertex[vertexIndex].Normal;
 
-	geo->DrawArgs["Spider"] = submesh;
+	//		}
 
-	mGeometries[geo->Name] = std::move(geo);
+	//		tAnimInfo.mapAnimationModel.push_back(curCharacter);
+	//	}
+	//	if (ignore == "*MESH_ANIMATION")
+	//	{
+	//		countStart = true;
+	//	}
+	//}
+	//fin.close();
+
+	//tAnimInfo.iAnimationFrameSize = (int)tAnimInfo.mapAnimationModel.size();
+	//m_vecAnimPerFrameSize.push_back((int)(tAnimInfo.mapAnimationModel.size()));
+
+	////m_mapAnimations[const_cast<wchar_t*>(AnimName)] = tAnimInfo;
+
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+
+
+	//std::vector<Vertex> vertices;
+	//std::vector<std::int32_t> indices;
+
+	//int nAnimVertexoffset = 0;
+	//int nAnimIndexoffset = 0;
+
+	////Idle 애니메이션 정점, 인덱스 초기화
+	//int nVertexoffset = 0;
+	//int nIndexoffset = 0;
+
+	////Idle 버텍스 / 인덱스 오프셋 셋팅
+	//auto iter = tAnimInfo.mapAnimationModel.begin();
+	//auto iter_end = tAnimInfo.mapAnimationModel.end();
+
+	//for (iter; iter != iter_end; ++iter)
+	//{
+	//	m_vecVertexOffset.push_back(nVertexoffset);
+	//	nVertexoffset += (int)((*iter).uv.size());
+
+	//	m_vecIndexOffset.push_back(nIndexoffset);
+	//	nIndexoffset += (*iter).iNumIndex * 3;
+	//}
+
+	////Idle 애니메이션 버텍스 넣음
+	//iter = tAnimInfo.mapAnimationModel.begin();
+	//for (iter; iter != iter_end; ++iter)
+	//{
+	//	for (int i = 0; i < (*iter).realvecVertex/*vecVertex*/.size(); ++i)
+	//	{
+	//		vertices.push_back((*iter).realvecVertex/*vecVertex*/[i]);
+	//	}
+	//}
+
+	////Idle 인덱스 셋팅
+	//int iSize = (int)tAnimInfo.mapAnimationModel.size();
+
+	//for (int i = 0; i < iSize; ++i)
+	//{
+	//	indices.insert(indices.end(), std::begin(tAnimInfo.mapAnimationModel[i].uvIndex/*vecIndex*/), std::end(tAnimInfo.mapAnimationModel[i].uvIndex/*vecIndex*/));
+	//}
+
+
+
+	//size_t indexTest = indices.size();
+
+	//const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+	//const UINT ibByteSize = (UINT)indices.size() * sizeof(std::int32_t);
+
+	//auto geo = std::make_unique<MeshGeometry>();
+	//geo->Name = "SpiderGeo";
+
+	//ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	//CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	//ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	//CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	//geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	//	mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	//geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	//	mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	//geo->VertexByteStride = sizeof(Vertex);
+	//geo->VertexBufferByteSize = vbByteSize;
+	//geo->IndexFormat = DXGI_FORMAT_R32_UINT;
+	//geo->IndexBufferByteSize = ibByteSize;
+
+	//SubmeshGeometry submesh;
+	//submesh.IndexCount = (UINT)indexTest;//(UINT)indices.size();
+	//submesh.StartIndexLocation = 0;
+	//submesh.BaseVertexLocation = 0;
+
+	//geo->DrawArgs["Spider"] = submesh;
+
+	//mGeometries[geo->Name] = std::move(geo);
 
 
 	
@@ -1216,195 +1218,195 @@ void InstancingAndCullingApp::BuildSkullGeometry()
 
 void InstancingAndCullingApp::BuildBarrelGeometry()
 {
-	std::ifstream fin("Models/StaticMesh/staticMesh.ASE");
+	//std::ifstream fin("Models/StaticMesh/staticMesh.ASE");
 
-	if (!fin)
-	{
-		exit(-1);
-	}
+	//if (!fin)
+	//{
+	//	exit(-1);
+	//}
 
-	UINT vcount = 0;
-	UINT tcount = 0;
-	std::string ignore;
-	Character curCharacter;
-
-
-	//애니메이션 갯수 세기
-	while (!fin.eof())
-	{
-		fin >> ignore;
-
-		if (ignore == "*TIMEVALUE")
-		{
-			//정점 좌표 읽어오기
-			fin >> curCharacter.iTimeValue;
-			fin >> ignore; //*MESH_NUMVERTEX 
-			fin >> curCharacter.iNumVertex;
-			fin >> ignore; //*MESH_NUMFACES 
-			fin >> curCharacter.iNumIndex;
-			fin >> ignore; //*MESH_VERTEX_LIST 
-			fin >> ignore; //{
-			for (int i = 0; i < curCharacter.iNumVertex; ++i)
-			{
-				Vertex curPos;
-				fin >> ignore; //*MESH_VERTEX
-				fin >> ignore; // Index;
-				fin >> curPos.Pos.x;
-				fin >> curPos.Pos.y;
-				fin >> curPos.Pos.z;
-
-				curCharacter.vecVertex.push_back(curPos);
-
-			}
-			//인덱스 읽어오기
-			fin >> ignore; //}
-			fin >> ignore; //*MESH_FACE_LIST 
-			fin >> ignore; // {
-			fin >> ignore; //*MESH_FACE 
-
-			for (int i = 0; i < curCharacter.iNumIndex; ++i)
-			{
-				fin >> ignore; // Index:
-				fin >> ignore; // A:
-				fin >> ignore;
-				curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore; // B:
-				fin >> ignore;
-				curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore; // C:
-				fin >> ignore;
-				curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
-				while (ignore != "*MESH_FACE" && ignore != "}")
-					fin >> ignore;
-			}
-
-			//텍스쳐 좌표 읽어오기
-			fin >> ignore; // *MESH_NUMTVERTEX 
-			fin >> curCharacter.iNumTexCnt;
-			fin >> ignore; // *MESH_TVERLIST
-			fin >> ignore; // {
-			for (int i = 0; i < curCharacter.iNumTexCnt; ++i)
-			{
-				XMFLOAT2 curUV;
-
-				fin >> ignore; // *MESH_TVERT
-				fin >> ignore; // Index;
-				fin >> curUV.x;
-				fin >> curUV.y;
-				fin >> ignore; // w
-
-				curUV.y = 1.0f - curUV.y;
-
-				curCharacter.uv.push_back(curUV);
-			}
-
-			//텍스쳐 좌표 인덱스 읽어오기
-			fin >> ignore; // }
-			fin >> ignore;
-
-			fin >> curCharacter.iNumTexIndex;
-			fin >> ignore; // *MESH_TFACELIST
-			fin >> ignore; // {
-			for (int i = 0; i < curCharacter.iNumTexIndex; ++i)
-			{
-				fin >> ignore; // *MESH_TFACE
-				fin >> ignore; // INDEX
-				fin >> ignore;
-				curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore;
-				curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
-				fin >> ignore;
-				curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
-			}
+	//UINT vcount = 0;
+	//UINT tcount = 0;
+	//std::string ignore;
+	//Character curCharacter;
 
 
-			while (ignore != "*MESH_NORMALS")
-			{
-				fin >> ignore; // 계속읽어
+	////애니메이션 갯수 세기
+	//while (!fin.eof())
+	//{
+	//	fin >> ignore;
 
-			}
-			if (ignore == "*MESH_NORMALS")
-			{
+	//	if (ignore == "*TIMEVALUE")
+	//	{
+	//		//정점 좌표 읽어오기
+	//		fin >> curCharacter.iTimeValue;
+	//		fin >> ignore; //*MESH_NUMVERTEX 
+	//		fin >> curCharacter.iNumVertex;
+	//		fin >> ignore; //*MESH_NUMFACES 
+	//		fin >> curCharacter.iNumIndex;
+	//		fin >> ignore; //*MESH_VERTEX_LIST 
+	//		fin >> ignore; //{
+	//		for (int i = 0; i < curCharacter.iNumVertex; ++i)
+	//		{
+	//			Vertex curPos;
+	//			fin >> ignore; //*MESH_VERTEX
+	//			fin >> ignore; // Index;
+	//			fin >> curPos.Pos.x;
+	//			fin >> curPos.Pos.y;
+	//			fin >> curPos.Pos.z;
 
-				fin >> ignore; //{
-				for (int i = 0; i < curCharacter.iNumIndex; ++i)
-				{
-					int index = 0;
+	//			curCharacter.vecVertex.push_back(curPos);
 
-					fin >> ignore; //*MESH_FACENORMAL 
-					fin >> ignore; // FaceIndex
+	//		}
+	//		//인덱스 읽어오기
+	//		fin >> ignore; //}
+	//		fin >> ignore; //*MESH_FACE_LIST 
+	//		fin >> ignore; // {
+	//		fin >> ignore; //*MESH_FACE 
 
-					atoi(ignore.c_str());
-					fin >> ignore >> ignore >> ignore;
+	//		for (int i = 0; i < curCharacter.iNumIndex; ++i)
+	//		{
+	//			fin >> ignore; // Index:
+	//			fin >> ignore; // A:
+	//			fin >> ignore;
+	//			curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore; // B:
+	//			fin >> ignore;
+	//			curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore; // C:
+	//			fin >> ignore;
+	//			curCharacter.vecIndex.push_back(atoi(ignore.c_str()));
+	//			while (ignore != "*MESH_FACE" && ignore != "}")
+	//				fin >> ignore;
+	//		}
 
-					for (int k = 0; k < 3; ++k)
-					{
-						fin >> ignore; //*MESH_VERTEXNORMAL 
-						fin >> index; // index;
-						fin >> curCharacter.vecVertex[index].Normal.x;
-						fin >> curCharacter.vecVertex[index].Normal.y;
-						fin >> curCharacter.vecVertex[index].Normal.z;
+	//		//텍스쳐 좌표 읽어오기
+	//		fin >> ignore; // *MESH_NUMTVERTEX 
+	//		fin >> curCharacter.iNumTexCnt;
+	//		fin >> ignore; // *MESH_TVERLIST
+	//		fin >> ignore; // {
+	//		for (int i = 0; i < curCharacter.iNumTexCnt; ++i)
+	//		{
+	//			XMFLOAT2 curUV;
 
-					}
+	//			fin >> ignore; // *MESH_TVERT
+	//			fin >> ignore; // Index;
+	//			fin >> curUV.x;
+	//			fin >> curUV.y;
+	//			fin >> ignore; // w
+
+	//			curUV.y = 1.0f - curUV.y;
+
+	//			curCharacter.uv.push_back(curUV);
+	//		}
+
+	//		//텍스쳐 좌표 인덱스 읽어오기
+	//		fin >> ignore; // }
+	//		fin >> ignore;
+
+	//		fin >> curCharacter.iNumTexIndex;
+	//		fin >> ignore; // *MESH_TFACELIST
+	//		fin >> ignore; // {
+	//		for (int i = 0; i < curCharacter.iNumTexIndex; ++i)
+	//		{
+	//			fin >> ignore; // *MESH_TFACE
+	//			fin >> ignore; // INDEX
+	//			fin >> ignore;
+	//			curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore;
+	//			curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
+	//			fin >> ignore;
+	//			curCharacter.uvIndex.push_back(atoi(ignore.c_str()));
+	//		}
 
 
-				}
-			}
-			curCharacter.realvecVertex.resize(curCharacter.uv.size());
+	//		while (ignore != "*MESH_NORMALS")
+	//		{
+	//			fin >> ignore; // 계속읽어
 
-			for (int i = 0; i < curCharacter.uv.size(); ++i)
-			{
-				curCharacter.realvecVertex[i].TexC = curCharacter.uv[i];
-			}
-			for (int i = 0; i < curCharacter.vecIndex.size(); ++i)
-			{
-				int vertexIndex = curCharacter.vecIndex[i];
-				int realvecVertexIndex = curCharacter.uvIndex[i];
+	//		}
+	//		if (ignore == "*MESH_NORMALS")
+	//		{
 
-				curCharacter.realvecVertex[realvecVertexIndex].Pos = curCharacter.vecVertex[vertexIndex].Pos;
-				curCharacter.realvecVertex[realvecVertexIndex].Normal = curCharacter.vecVertex[vertexIndex].Normal;
+	//			fin >> ignore; //{
+	//			for (int i = 0; i < curCharacter.iNumIndex; ++i)
+	//			{
+	//				int index = 0;
 
-			}
-			break;
-		}
+	//				fin >> ignore; //*MESH_FACENORMAL 
+	//				fin >> ignore; // FaceIndex
 
-	}
-	fin.close();
+	//				atoi(ignore.c_str());
+	//				fin >> ignore >> ignore >> ignore;
 
-	size_t indexTest = curCharacter.uvIndex.size();
+	//				for (int k = 0; k < 3; ++k)
+	//				{
+	//					fin >> ignore; //*MESH_VERTEXNORMAL 
+	//					fin >> index; // index;
+	//					fin >> curCharacter.vecVertex[index].Normal.x;
+	//					fin >> curCharacter.vecVertex[index].Normal.y;
+	//					fin >> curCharacter.vecVertex[index].Normal.z;
 
-	const UINT vbByteSize = (UINT)curCharacter.realvecVertex.size() * sizeof(Vertex);
+	//				}
 
-	const UINT ibByteSize = (UINT)curCharacter.uvIndex.size() * sizeof(std::int32_t);
 
-	auto geo = std::make_unique<MeshGeometry>();
-	geo->Name = "BarrelGeo";
+	//			}
+	//		}
+	//		curCharacter.realvecVertex.resize(curCharacter.uv.size());
 
-	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), curCharacter.realvecVertex.data(), vbByteSize);
+	//		for (int i = 0; i < curCharacter.uv.size(); ++i)
+	//		{
+	//			curCharacter.realvecVertex[i].TexC = curCharacter.uv[i];
+	//		}
+	//		for (int i = 0; i < curCharacter.vecIndex.size(); ++i)
+	//		{
+	//			int vertexIndex = curCharacter.vecIndex[i];
+	//			int realvecVertexIndex = curCharacter.uvIndex[i];
 
-	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), curCharacter.uvIndex.data(), ibByteSize);
+	//			curCharacter.realvecVertex[realvecVertexIndex].Pos = curCharacter.vecVertex[vertexIndex].Pos;
+	//			curCharacter.realvecVertex[realvecVertexIndex].Normal = curCharacter.vecVertex[vertexIndex].Normal;
 
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), curCharacter.realvecVertex.data(), vbByteSize, geo->VertexBufferUploader);
+	//		}
+	//		break;
+	//	}
 
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), curCharacter.uvIndex.data(), ibByteSize, geo->IndexBufferUploader);
+	//}
+	//fin.close();
 
-	geo->VertexByteStride = sizeof(Vertex);
-	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R32_UINT;
-	geo->IndexBufferByteSize = ibByteSize;
+	//size_t indexTest = curCharacter.uvIndex.size();
 
-	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)curCharacter.uvIndex.size();//(UINT)indices.size();
-	submesh.StartIndexLocation = 0;
-	submesh.BaseVertexLocation = 0;
+	//const UINT vbByteSize = (UINT)curCharacter.realvecVertex.size() * sizeof(Vertex);
 
-	geo->DrawArgs["Barrel"] = submesh;
+	//const UINT ibByteSize = (UINT)curCharacter.uvIndex.size() * sizeof(std::int32_t);
 
-	mGeometries[geo->Name] = std::move(geo);
+	//auto geo = std::make_unique<MeshGeometry>();
+	//geo->Name = "BarrelGeo";
+
+	//ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	//CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), curCharacter.realvecVertex.data(), vbByteSize);
+
+	//ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	//CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), curCharacter.uvIndex.data(), ibByteSize);
+
+	//geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	//	mCommandList.Get(), curCharacter.realvecVertex.data(), vbByteSize, geo->VertexBufferUploader);
+
+	//geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	//	mCommandList.Get(), curCharacter.uvIndex.data(), ibByteSize, geo->IndexBufferUploader);
+
+	//geo->VertexByteStride = sizeof(Vertex);
+	//geo->VertexBufferByteSize = vbByteSize;
+	//geo->IndexFormat = DXGI_FORMAT_R32_UINT;
+	//geo->IndexBufferByteSize = ibByteSize;
+
+	//SubmeshGeometry submesh;
+	//submesh.IndexCount = (UINT)curCharacter.uvIndex.size();//(UINT)indices.size();
+	//submesh.StartIndexLocation = 0;
+	//submesh.BaseVertexLocation = 0;
+
+	//geo->DrawArgs["Barrel"] = submesh;
+
+	//mGeometries[geo->Name] = std::move(geo);
 
 
 }
@@ -1629,6 +1631,18 @@ void InstancingAndCullingApp::BuildRenderItems()
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.get());
+
+
+
+	vector<pair<const string, const string>> path;
+	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
+
+	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
 
 	CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 	CManagement::GetInstance()->Change_Scene(pScene);

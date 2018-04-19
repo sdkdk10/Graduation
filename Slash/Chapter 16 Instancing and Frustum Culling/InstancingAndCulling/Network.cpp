@@ -2,6 +2,7 @@
 #include "Network.h"
 #include "GameObject.h"
 #include "Management.h"
+#include "TestScene.h"
 
 IMPLEMENT_SINGLETON(CNetwork)
 
@@ -38,7 +39,8 @@ void CNetwork::InitSock(HWND MainWnd)
 	recv_wsabuf.buf = recv_buffer;
 	recv_wsabuf.len = BUF_SIZE;
 
-	pObj = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	//pObj = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	int i = 0;
 }
 
 void CNetwork::ReadPacket(SOCKET sock)
@@ -92,22 +94,27 @@ void CNetwork::SendPacket(const DWORD& keyInput)
 
 void CNetwork::ProcessPacket(char * ptr)
 {
-	static bool first_time = true;
 	switch (ptr[1])
 	{
 		case SC_PUT_PLAYER:
 		{
 			sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
-			pObj->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-			cout << "초기값 갱신" << endl;
-			cout << my_packet->x << " " << my_packet->y << " " << my_packet->z << endl;
+			static bool first_time = true;
+			int id = my_packet->id;
+			if (first_time) {
+				first_time = false;
+				myid = my_packet->id;
+			}
+			serverid_to_objectvindex(id);
+			dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene())->Put_Player(my_packet->x, my_packet->y, my_packet->z, id);
 			break;
 		}
 		case SC_POS:
 		{
 			sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
-			pObj->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-			cout << my_packet->x << " " << my_packet->y << " " << my_packet->z << "POS" << endl;
+			int id = my_packet->id;
+			serverid_to_objectvindex(id);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
 			break;
 		}
 	}
@@ -201,4 +208,12 @@ void CNetwork::ProcessPacket(char * ptr)
 
 void CNetwork::Free()
 {
+}
+
+void CNetwork::serverid_to_objectvindex(int& id)
+{
+	if (id == myid)
+		id = MYPLAYERID;
+	else if (id < myid)
+		id++;
 }

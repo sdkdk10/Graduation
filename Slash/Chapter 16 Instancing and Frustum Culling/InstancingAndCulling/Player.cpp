@@ -4,7 +4,7 @@
 #include "DynamicMesh.h"
 #include "InputDevice.h"
 #include "Network.h"
-
+#include "Component_Manager.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -235,7 +235,11 @@ void Player::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Player::Initialize()
 {
-	m_pMesh = new DynamicMesh(m_d3dDevice);
+	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
+
+	if (nullptr == m_pMesh)
+		return E_FAIL;
+		/*= new DynamicMesh(m_d3dDevice);
 
 
 
@@ -246,7 +250,7 @@ HRESULT Player::Initialize()
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
 	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";

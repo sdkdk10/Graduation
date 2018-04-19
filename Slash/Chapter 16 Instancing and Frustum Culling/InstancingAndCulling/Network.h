@@ -7,6 +7,7 @@
 #pragma comment (lib, "ws2_32.lib")
 
 #define	WM_SOCKET				WM_USER + 1
+const int MYPLAYERID = 0;
 
 #include "Base.h"
 #include "Define.h"
@@ -26,6 +27,9 @@ public:
 	void ReadPacket(SOCKET sock);
 	void SendPacket(const DWORD& keyInput);
 	void ProcessPacket(char* ptr);
+	int GetMyID() {
+		return myid;
+	}
 public:
 	SOCKET mysocket;
 	WSABUF	send_wsabuf;
@@ -38,5 +42,6 @@ public:
 	int		myid;
 private:
 	virtual void Free();
+	void serverid_to_objectvindex(int& id);
 	CGameObject* pObj;
 };

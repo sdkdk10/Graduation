@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Npc.h"
+#include "Component_Manager.h"
 #include "DynamicMesh.h"
 
 CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, vector<pair<const string, const string>> path)
@@ -23,17 +24,9 @@ void CNpc::Animate(const GameTimer & gt)
 
 HRESULT CNpc::Initialize()
 {
-	m_pMesh = new DynamicMesh(m_d3dDevice);
+	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
 
-
-
-	//vector<pair<const string, const string>> path;
-	//path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
-	//path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
-	//path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
-	//path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
-	//path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
-	if (FAILED(m_pMesh->Initialize(m_vecMeshPath)))
+	if (nullptr == m_pMesh)
 		return E_FAIL;
 
 	Mat = new Material;
