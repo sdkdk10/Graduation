@@ -7,7 +7,7 @@ class CNpc
 	: public CGameObject
 {
 private:
-	explicit CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, vector<pair<const string, const string>> path);
+	explicit CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 public:
 	virtual ~CNpc();
 
@@ -43,7 +43,7 @@ public:
 	void					Render_Right(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	static CNpc* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, vector<pair<const string, const string>> path);
+	static CNpc* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 
 private:
 	virtual void Free();

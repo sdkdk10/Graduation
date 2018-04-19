@@ -14,7 +14,8 @@
 #include "Collision_Manager.h"
 #include "Dragon.h"
 #include "Npc.h"
-#include "UI.h"
+#include "Network.h"
+//#include "UI.h"
 
 
 
@@ -41,15 +42,7 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Mage/Mage_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Mage/Mage_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Attack1.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell1.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell2.ASE"));
-	//path.push_back(make_pair("Back", "Models/Mage/Warrior_Attack3.ASE"));
-
-	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, path);
+	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_NPC", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -81,11 +74,6 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Instance", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
-	/*pObject = UI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_UI", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-*/
 
 
 	return S_OK;
@@ -200,6 +188,29 @@ CTestScene * CTestScene::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, 
 		Safe_Release(pInstance);
 	}
 	return pInstance;
+}
+
+
+void CTestScene::Put_Player(const float& x, const float& y, const float& z, const int& id)
+{
+	CGameObject* pObject = nullptr;
+
+	if (MYPLAYERID == id)
+	{
+		pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Player", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		pObject->SetPosition(x, y, z);
+		m_pMainCam->Set_Object(pObject);
+	}
+	else // 서버는 접속순서대로 클라에 ID를 부여함 // 클라이언트는 서버에서 보내주는대로 레이어 백터에 푸시백함 (맨 처음은 무조건 클라이언트 왜? 처음오는 패킷을 내 아이디로 쓰니까)
+	{
+		pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		Ready_GameObject(L"Layer_Player", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		pObject->SetPosition(x, y, z);
+	}
 }
 
 void CTestScene::Free()

@@ -67,6 +67,9 @@
     <Filter Include="02. GameObject\04. SkyBox">
       <UniqueIdentifier>{604da928-4874-4429-a4d1-7d24805b3dc5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\03.Terrain">
+      <UniqueIdentifier>{f31620ca-ff9f-4fd4-946b-3113a144774c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Base">
       <UniqueIdentifier>{dd35b52b-4c28-4eb4-9a33-3cc39acf4ad8}</UniqueIdentifier>
     </Filter>
@@ -145,14 +148,11 @@
     <Filter Include="02. GameObject\01. StaticObject\01. MapObject">
       <UniqueIdentifier>{4c0a9d27-91a0-4be4-8610-c650aa9b57b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\03. Terrain">
-      <UniqueIdentifier>{f31620ca-ff9f-4fd4-946b-3113a144774c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObject\07. UI">
-      <UniqueIdentifier>{916db32d-3de6-4ca6-8443-b94aef4ac9bd}</UniqueIdentifier>
+      <UniqueIdentifier>{dab1bd9d-672b-42bd-8f20-b47b34060fb6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Mesh\03. UIMesh">
-      <UniqueIdentifier>{44272521-deb8-4584-89cb-873c1def36f8}</UniqueIdentifier>
+    <Filter Include="03. Mesh\04. UIMesh">
+      <UniqueIdentifier>{58d82cd2-adbd-406a-bbcc-4d746ff1af19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -209,7 +209,7 @@
       <Filter>03. Mesh\02. GeometryMesh</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
-      <Filter>02. GameObject\03. Terrain</Filter>
+      <Filter>02. GameObject\03.Terrain</Filter>
     </ClCompile>
     <ClCompile Include="Management.cpp">
       <Filter>94. Manager\00. Management</Filter>
@@ -228,9 +228,6 @@
     </ClCompile>
     <ClCompile Include="Layer.cpp">
       <Filter>01. Scene\99. Layer</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>01. Scene\00. TestScene</Filter>
     </ClCompile>
     <ClCompile Include="Component_Manager.cpp">
       <Filter>94. Manager\02. Component_Manager</Filter>
@@ -274,11 +271,14 @@
     <ClCompile Include="MapObject.cpp">
       <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
     </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>01. Scene\00. TestScene</Filter>
+    </ClCompile>
     <ClCompile Include="UI.cpp">
       <Filter>02. GameObject\07. UI</Filter>
     </ClCompile>
     <ClCompile Include="UIMesh.cpp">
-      <Filter>03. Mesh\03. UIMesh</Filter>
+      <Filter>03. Mesh\04. UIMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,7 +344,7 @@
       <Filter>03. Mesh\02. GeometryMesh</Filter>
     </ClInclude>
     <ClInclude Include="Terrain.h">
-      <Filter>02. GameObject\03. Terrain</Filter>
+      <Filter>02. GameObject\03.Terrain</Filter>
     </ClInclude>
     <ClInclude Include="Base.h">
       <Filter>Base</Filter>
@@ -428,7 +428,7 @@
       <Filter>02. GameObject\07. UI</Filter>
     </ClInclude>
     <ClInclude Include="UIMesh.h">
-      <Filter>03. Mesh\03. UIMesh</Filter>
+      <Filter>03. Mesh\04. UIMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

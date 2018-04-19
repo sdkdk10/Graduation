@@ -56,8 +56,6 @@ private:
 	void BuildRootSignature();
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
-	void BuildSkullGeometry();
-	void BuildBarrelGeometry();
 
 	void BuildPSOs();
 	void BuildFrameResources();

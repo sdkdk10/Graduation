@@ -5,9 +5,9 @@
 #include "Camera.h"
 #include "Management.h"
 
-CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, vector<pair<const string, const string>> path)
+CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
-	, m_vecMeshPath(path)
+	
 {
 
 }
@@ -26,7 +26,7 @@ void CNpc::Animate(const GameTimer & gt)
 
 HRESULT CNpc::Initialize()
 {
-	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
+	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Mage"));
 
 	if (nullptr == m_pMesh)
 		return E_FAIL;
@@ -278,9 +278,9 @@ void CNpc::Render_Right(ID3D12GraphicsCommandList * cmdList)
 		0);
 }
 
-CNpc * CNpc::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, vector<pair<const string, const string>> path)
+CNpc * CNpc::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
 {
-	CNpc* pInstance = new CNpc(d3dDevice, srv, srvSize, path);
+	CNpc* pInstance = new CNpc(d3dDevice, srv, srvSize);
 	
 	if (FAILED(pInstance->Initialize()))
 	{
