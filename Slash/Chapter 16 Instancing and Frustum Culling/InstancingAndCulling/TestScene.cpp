@@ -15,7 +15,7 @@
 #include "Dragon.h"
 #include "Npc.h"
 #include "Network.h"
-//#include "UI.h"
+#include "UI.h"
 
 
 
@@ -73,6 +73,11 @@ HRESULT CTestScene::Initialize()
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_Instance", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
+
+	pObject = UI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	Ready_GameObject(L"Layer_Terrain", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
 
 

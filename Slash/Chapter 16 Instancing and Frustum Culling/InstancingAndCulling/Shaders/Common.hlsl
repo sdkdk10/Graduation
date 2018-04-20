@@ -150,11 +150,12 @@ struct VertexOut_Sky
 struct VertexIn_UI
 {
 	float3 PosL    : POSITION;
+	float3 NormalL : NORMAL;
 	float2 TexC    : TEXCOORD;
 };
 
 struct VertexOut_UI
 {
-	float3 PosL    : POSITION;
+	float4 position : SV_POSITION;
 	float2 TexC    : TEXCOORD;
 };

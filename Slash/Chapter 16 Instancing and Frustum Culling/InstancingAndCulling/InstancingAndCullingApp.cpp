@@ -40,13 +40,6 @@ typedef struct character
 
 }Character;
 
-//typedef struct animInfo
-//{
-//	vector<Character>				mapAnimationModel;			// 애니메이션 프레임 마다의 정점들
-//	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
-//}AnimInfo;
-
-
 enum class RenderLayer : int
 {
 	Opaque = 0,
@@ -152,129 +145,6 @@ bool InstancingAndCullingApp::Initialize()
 	return true;
 }
 
-void InstancingAndCullingApp::BuildShapeGeometry()
-{
-	GeometryGenerator geoGen;
-	GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f, 3);
-	GeometryGenerator::MeshData grid = geoGen.CreateGrid(20.0f, 30.0f, 60, 40);
-	GeometryGenerator::MeshData sphere = geoGen.CreateSphere(0.5f, 20, 20);
-	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20);
-
-	//
-	// We are concatenating all the geometry into one big vertex/index buffer.  So
-	// define the regions in the buffer each submesh covers.
-	//
-
-	// Cache the vertex offsets to each object in the concatenated vertex buffer.
-	UINT boxVertexOffset = 0;
-	UINT gridVertexOffset = (UINT)box.Vertices.size();
-	UINT sphereVertexOffset = gridVertexOffset + (UINT)grid.Vertices.size();
-	UINT cylinderVertexOffset = sphereVertexOffset + (UINT)sphere.Vertices.size();
-
-	// Cache the starting index for each object in the concatenated index buffer.
-	UINT boxIndexOffset = 0;
-	UINT gridIndexOffset = (UINT)box.Indices32.size();
-	UINT sphereIndexOffset = gridIndexOffset + (UINT)grid.Indices32.size();
-	UINT cylinderIndexOffset = sphereIndexOffset + (UINT)sphere.Indices32.size();
-
-	SubmeshGeometry boxSubmesh;
-	boxSubmesh.IndexCount = (UINT)box.Indices32.size();
-	boxSubmesh.StartIndexLocation = boxIndexOffset;
-	boxSubmesh.BaseVertexLocation = boxVertexOffset;
-
-	SubmeshGeometry gridSubmesh;
-	gridSubmesh.IndexCount = (UINT)box.Indices32.size();
-	gridSubmesh.StartIndexLocation = gridIndexOffset;
-	gridSubmesh.BaseVertexLocation = gridVertexOffset;
-
-	SubmeshGeometry sphereSubmesh;
-	sphereSubmesh.IndexCount = (UINT)box.Indices32.size();
-	sphereSubmesh.StartIndexLocation = sphereIndexOffset;
-	sphereSubmesh.BaseVertexLocation = sphereVertexOffset;
-
-	SubmeshGeometry cylinderSubmesh;
-	cylinderSubmesh.IndexCount = (UINT)cylinder.Indices32.size();
-	cylinderSubmesh.StartIndexLocation = cylinderIndexOffset;
-	cylinderSubmesh.BaseVertexLocation = cylinderVertexOffset;
-
-	//
-	// Extract the vertex elements we are interested in and pack the
-	// vertices of all the meshes into one vertex buffer.
-	//
-
-	auto totalVertexCount =
-		box.Vertices.size() +
-		grid.Vertices.size() +
-		sphere.Vertices.size() +
-		cylinder.Vertices.size();
-
-	std::vector<Vertex> vertices(totalVertexCount);
-
-	UINT k = 0;
-	for (size_t i = 0; i < box.Vertices.size(); ++i, ++k)
-	{
-		vertices[k].Pos = box.Vertices[i].Position;
-		vertices[k].Normal = box.Vertices[i].Normal;
-		vertices[k].TexC = box.Vertices[i].TexC;
-	}
-
-	for (size_t i = 0; i < grid.Vertices.size(); ++i, ++k)
-	{
-		vertices[k].Pos = grid.Vertices[i].Position;
-		vertices[k].Normal = grid.Vertices[i].Normal;
-		vertices[k].TexC = grid.Vertices[i].TexC;
-	}
-
-	for (size_t i = 0; i < sphere.Vertices.size(); ++i, ++k)
-	{
-		vertices[k].Pos = sphere.Vertices[i].Position;
-		vertices[k].Normal = sphere.Vertices[i].Normal;
-		vertices[k].TexC = sphere.Vertices[i].TexC;
-	}
-
-	for (size_t i = 0; i < cylinder.Vertices.size(); ++i, ++k)
-	{
-		vertices[k].Pos = cylinder.Vertices[i].Position;
-		vertices[k].Normal = cylinder.Vertices[i].Normal;
-		vertices[k].TexC = cylinder.Vertices[i].TexC;
-	}
-
-	std::vector<std::uint16_t> indices;
-	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
-	indices.insert(indices.end(), std::begin(grid.GetIndices16()), std::end(grid.GetIndices16()));
-	indices.insert(indices.end(), std::begin(sphere.GetIndices16()), std::end(sphere.GetIndices16()));
-	indices.insert(indices.end(), std::begin(cylinder.GetIndices16()), std::end(cylinder.GetIndices16()));
-
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
-	auto geo = std::make_unique<MeshGeometry>();
-	geo->Name = "shapeGeo";
-
-	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-
-	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
-
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
-
-	geo->VertexByteStride = sizeof(Vertex);
-	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
-	geo->IndexBufferByteSize = ibByteSize;
-
-	geo->DrawArgs["box"] = boxSubmesh;
-	geo->DrawArgs["grid"] = gridSubmesh;
-	geo->DrawArgs["sphere"] = sphereSubmesh;
-	geo->DrawArgs["cylinder"] = cylinderSubmesh;
-
-	mGeometries[geo->Name] = std::move(geo);
-}
 
 void InstancingAndCullingApp::OnResize()
 {
@@ -306,12 +176,6 @@ void InstancingAndCullingApp::Update(const GameTimer& gt)
 	}
 
 	AnimateMaterials(gt);
-	//UpdateMaterialBuffer(gt);
-	//UpdateInstanceData(gt);
-
-	/*	UpdateObjectCBs(gt);
-	UpdateMaterialCBs(gt);*/
-
 	CManagement::GetInstance()->Update(gt, mCurrFrameResource);
 
 	UpdateMainPassCB(gt);
@@ -458,83 +322,6 @@ void InstancingAndCullingApp::AnimateMaterials(const GameTimer& gt)
 
 }
 
-void InstancingAndCullingApp::UpdateInstanceData(const GameTimer& gt)
-{
-	XMMATRIX view = mCamera.GetView();
-	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-
-	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
-	for (auto& e : mAllRitems)
-	{
-		const auto& instanceData = e->Instances;
-
-		int visibleInstanceCount = 0;
-
-		for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
-		{
-			XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
-			XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
-
-			XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
-
-			// View space to the object's local space.
-			XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
-
-			// Transform the camera frustum from view space to the object's local space.
-			BoundingFrustum localSpaceFrustum;
-			mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
-
-			// Perform the box/frustum intersection test in local space.
-			if ((localSpaceFrustum.Contains(e->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
-			{
-				InstanceData data;
-				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
-				XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
-				data.MaterialIndex = instanceData[i].MaterialIndex;
-
-				// Write the instance data to structured buffer for the visible objects.
-				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
-			}
-		}
-
-		e->InstanceCount = visibleInstanceCount;
-
-		std::wostringstream outs;
-		outs.precision(6);
-		outs << L"Instancing and Culling Demo" <<
-			L"    " << e->InstanceCount <<
-			L" objects visible out of " << e->Instances.size();
-		mMainWndCaption = outs.str();
-	}
-}
-
-void InstancingAndCullingApp::UpdateMaterialBuffer(const GameTimer& gt)
-{
-	auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
-	for (auto& e : mMaterials)
-	{
-		// Only update the cbuffer data if the constants have changed.  If the cbuffer
-		// data changes, it needs to be updated for each FrameResource.
-		Material* mat = e.second.get();
-	/*	if (mat->NumFramesDirty > 0)
-		{*/
-			XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
-
-			MaterialData matData;
-			matData.DiffuseAlbedo = mat->DiffuseAlbedo;
-			matData.FresnelR0 = mat->FresnelR0;
-			matData.Roughness = mat->Roughness;
-			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
-			matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;
-
-			currMaterialBuffer->CopyData(mat->MatCBIndex, matData);
-
-			// Next FrameResource need to be updated too.
-			//mat->NumFramesDirty--;
-		//}
-	}
-}
-
 void InstancingAndCullingApp::UpdateMainPassCB(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
@@ -568,59 +355,6 @@ void InstancingAndCullingApp::UpdateMainPassCB(const GameTimer& gt)
 
 	auto currPassCB = mCurrFrameResource->PassCB.get();
 	currPassCB->CopyData(0, mMainPassCB);
-}
-
-void InstancingAndCullingApp::UpdateObjectCBs(const GameTimer & gt)
-{
-	auto currObjectCB = mCurrFrameResource->ObjectCB.get();
-	for (auto& e : mAllRitems)
-	{
-		// Only update the cbuffer data if the constants have changed.  
-		// This needs to be tracked per frame resource.
-	/*	if (e->NumFramesDirty > 0)
-		{*/
-			//e->World._42 += 0.01;
-			XMMATRIX world = XMLoadFloat4x4(&e->World);
-			
-			XMMATRIX texTransform = XMLoadFloat4x4(&e->TexTransform);
-
-			ObjectConstants objConstants;
-			XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
-			XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
-
-			currObjectCB->CopyData(e->ObjCBIndex, objConstants);
-
-			// Next FrameResource need to be updated too.
-			//e->NumFramesDirty--;
-		//}
-	}
-}
-
-void InstancingAndCullingApp::UpdateMaterialCBs(const GameTimer & gt)
-{
-	auto currMaterialCB = mCurrFrameResource->MaterialCB.get();
-	for (auto& e : mMaterials)
-	{
-		// Only update the cbuffer data if the constants have changed.  If the cbuffer
-		// data changes, it needs to be updated for each FrameResource.
-		Material* mat = e.second.get();
-	/*	if (mat->NumFramesDirty > 0)
-		{*/
-			XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
-
-			MaterialConstants matConstants;
-			matConstants.DiffuseAlbedo = mat->DiffuseAlbedo;
-			matConstants.FresnelR0 = mat->FresnelR0;
-			matConstants.Roughness = mat->Roughness;
-			XMStoreFloat4x4(&matConstants.MatTransform, XMMatrixTranspose(matTransform));
-
-			currMaterialCB->CopyData(mat->MatCBIndex, matConstants);
-
-			// Next FrameResource need to be updated too.
-			//mat->NumFramesDirty--;
-		//}
-	}
-
 }
 
 void InstancingAndCullingApp::LoadTextures()
@@ -969,8 +703,8 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
-	//mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
-	//mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
+	mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
+	mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
 
 
 	mInputLayout =
@@ -979,6 +713,7 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
+
 }
 
 
@@ -1038,29 +773,21 @@ void InstancingAndCullingApp::BuildPSOs()
 	// PSO for UI objects.
 	//
 
-	//D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
-	//// The camera is inside the sky sphere, so just turn off culling.
-	//UIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; //카메라가 구 내부에 있음으로 후면선별을 끔 
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
 
+	UIPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
+		mShaders["UIVS"]->GetBufferSize()
+	};
+	UIPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
+		mShaders["UIPS"]->GetBufferSize()
+	};
 
-	//															// Make sure the depth function is LESS_EQUAL and not just LESS.  
-	//															// Otherwise, the normalized depth values at z = 1 (NDC) will 
-	//															// fail the depth test if the depth buffer was cleared to 1.
-	//UIPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //깊이판정 LESS_EQUAL해야 구가 깊이판정 통과함
-	//UIPsoDesc.pRootSignature = mRootSignature.Get();
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
-	//UIPsoDesc.VS =
-	//{
-	//	reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
-	//	mShaders["UIVS"]->GetBufferSize()
-	//};
-	//UIPsoDesc.PS =
-	//{
-	//	reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
-	//	mShaders["UIPS"]->GetBufferSize()
-	//};
-
-	//ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
 
 	//
@@ -1232,8 +959,8 @@ void InstancingAndCullingApp::BuildRenderItems()
 	auto MageRiTem = std::make_unique<RenderItem>();
 	mAllRitems.push_back(std::move(MageRiTem));
 
-	//auto UIRItem = std::make_unique<RenderItem>();
-	//mAllRitems.push_back(std::move(UIRItem));
+	auto UIRItem = std::make_unique<RenderItem>();
+	mAllRitems.push_back(std::move(UIRItem));
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
@@ -1269,30 +996,7 @@ void InstancingAndCullingApp::BuildRenderItems()
 void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems )
 {
 
-
-	/*ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap_InstancingTex.Get() };
-	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
-
-
 	CManagement::GetInstance()->Render(cmdList);
-
-	//mCommandList->SetPipelineState(mPSOs["Opaque"].Get());
-
-	//m_vecObjects[0]->Render(cmdList); // 거미
-
-	//m_vecObjects[1]->Render(cmdList); // 배럴
-
-	//m_vecObjects[2]->Render(cmdList); // 지형
-
-	//mCommandList->SetPipelineState(mPSOs["sky"].Get());
-	//m_vecObjects[3]->Render(cmdList); // 스카이박스
-
-
-	//ID3D12DescriptorHeap* descriptorHeaps2[] = { mSrvDescriptorHeap_InstancingTex.Get() };
-	//mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps2), descriptorHeaps2);
-
-	//mCommandList->SetPipelineState(mPSOs["InstancingOpaque"].Get());
-	//m_vecObjects[4]->Render(cmdList);
 
 }
 
@@ -1353,7 +1057,4 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> InstancingAndCullingApp::GetSta
 		anisotropicWrap, anisotropicClamp };
 }
 
-void InstancingAndCullingApp::BuildInsec()
-{
-}
 

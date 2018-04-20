@@ -10,19 +10,7 @@ class CGameObject;
 
 class InstancingAndCullingApp : public D3DApp
 {
-	
-	vector<int>		m_vecAnimPerFrameSize;			// 한 애니메이션의 전체 키 프레임
 
-	vector<int>		m_vecVertexOffset;
-	vector<int>		m_vecIndexOffset;
-
-public:
-	int iTest2 = 0;
-	int iTest = 0;
-
-public:
-	//vector<Character> Model;//애니메이션 갯수만큼 모델 생성
-							////////////////////////////////////////////////////////////
 public:
 	InstancingAndCullingApp(HINSTANCE hInstance);
 	InstancingAndCullingApp(const InstancingAndCullingApp& rhs) = delete;
@@ -31,8 +19,6 @@ public:
 
 	virtual bool Initialize()override;
 	//////////////////////////////////
-	UINT mSkyTexHeapIndex = 0;
-	void BuildShapeGeometry();
 private:
 	virtual void OnResize()override;
 	virtual void Update(const GameTimer& gt)override;
@@ -44,12 +30,8 @@ private:
 
 	void OnKeyboardInput(const GameTimer& gt);
 	void AnimateMaterials(const GameTimer& gt);
-	void UpdateInstanceData(const GameTimer& gt);
-	void UpdateMaterialBuffer(const GameTimer& gt);
 	void UpdateMainPassCB(const GameTimer& gt);
 	//
-	void UpdateObjectCBs(const GameTimer& gt);
-	void UpdateMaterialCBs(const GameTimer& gt);
 	//
 
 	void LoadTextures();
@@ -66,7 +48,6 @@ private:
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 
 	////////////////////
-	void BuildInsec();
 
 private:
 

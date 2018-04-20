@@ -32,7 +32,6 @@ void UI::Render(ID3D12GraphicsCommandList * cmdList)
 	auto matCB = m_pFrameResource->MaterialCB->Resource();
 
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
-	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
@@ -48,7 +47,8 @@ void UI::Render(ID3D12GraphicsCommandList * cmdList)
 
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
-	cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
+
+	cmdList->DrawInstanced(6, 1, 0, 0);
 }
 
 HRESULT UI::Initialize()

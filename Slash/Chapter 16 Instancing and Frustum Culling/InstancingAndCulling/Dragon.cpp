@@ -134,12 +134,7 @@ HRESULT Dragon::Initialize()
 
 	vector<pair<const string, const string>> path;
 	path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));
-	//path.push_back(make_pair("Idle", "Models/Spider/Spider_Walk.ASE"));
 
-	//path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
-	//path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
-	//path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
-	//path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
 	if (FAILED(m_pMesh->Initialize(path)))
 		return E_FAIL;
 
