@@ -76,5 +76,9 @@ public:
 
 public:
 	static Player* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+
+private:
+	float preKeyInputTime;
+	float curKeyInputTime;
 };
 

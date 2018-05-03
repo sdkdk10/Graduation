@@ -9,6 +9,8 @@
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
+	preKeyInputTime = 0;
+	curKeyInputTime = 0;
 }
 
 Player::~Player()
@@ -65,8 +67,14 @@ void Player::Animate(const GameTimer & gt)
 
 	if (dwDirection != 0)
 	{
-		//CNetwork::GetInstance()->SendPacket(dwDirection);
-		Move(dwDirection, 15.0f * gt.DeltaTime(), true);
+		curKeyInputTime = gt.TotalTime();
+		if (curKeyInputTime - preKeyInputTime > CS_SEND_PACKET_DELAY)
+		{
+			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection);
+			preKeyInputTime = gt.TotalTime();
+		}
+
+		//Move(dwDirection, 15.0f * gt.DeltaTime(), true);
 	}
 
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)

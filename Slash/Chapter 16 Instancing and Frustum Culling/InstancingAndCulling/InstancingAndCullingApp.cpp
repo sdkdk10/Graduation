@@ -120,7 +120,7 @@ bool InstancingAndCullingApp::Initialize()
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
 	CManagement::GetInstance()->Init_Management(pRenderer);
 
-	//CNetwork::GetInstance()->InitSock(mhMainWnd);
+	CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	BuildPSOs();
 	BuildMaterials();
