@@ -52,10 +52,10 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_Dragon", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//Ready_GameObject(L"Layer_Dragon", pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -99,7 +99,7 @@ void CTestScene::UpdateOOBB()
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
 	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
-	auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
+	//auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
 
 	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&(m_pPlayer->GetWorld())));
 	XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
@@ -110,8 +110,8 @@ void CTestScene::UpdateOOBB()
 	XMStoreFloat4(&m_pSpider->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pSpider->m_xmOOBBTransformed.Orientation)));
 
 
-	m_pDragon->m_xmOOBBTransformed.Transform(m_pDragon->m_xmOOBB, XMLoadFloat4x4(&(m_pDragon->GetWorld())));
-	XMStoreFloat4(&m_pDragon->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pDragon->m_xmOOBBTransformed.Orientation)));
+	/*m_pDragon->m_xmOOBBTransformed.Transform(m_pDragon->m_xmOOBB, XMLoadFloat4x4(&(m_pDragon->GetWorld())));
+	XMStoreFloat4(&m_pDragon->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pDragon->m_xmOOBBTransformed.Orientation)));*/
 
 
 }
@@ -126,7 +126,7 @@ void CTestScene::CollisionProcess()
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
 	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
-	auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
+	//auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
 
 	auto instanceData = dynamic_cast<CInstancingObject*>(m_pInstance)->GetvecInstances();
 
@@ -171,14 +171,14 @@ void CTestScene::CollisionProcess()
 		//cout << "°Å¹Ì Ãæµ¹ ¾Æ´Ô" << endl;
 	}
 
-	if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
-	{
-		//cout << "µå·¡°ï Ãæµ¹ " << endl;
-	}
-	else
-	{
-		//cout << "µå·¡°ï Ãæµ¹ ¾Æ´Ô" << endl;
-	}
+	//if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
+	//{
+	//	//cout << "µå·¡°ï Ãæµ¹ " << endl;
+	//}
+	//else
+	//{
+	//	//cout << "µå·¡°ï Ãæµ¹ ¾Æ´Ô" << endl;
+	//}
 
 
 }

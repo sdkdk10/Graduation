@@ -27,7 +27,7 @@ void UI::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
-
+	
 	auto objectCB = m_pFrameResource->ObjectCB->Resource();
 	auto matCB = m_pFrameResource->MaterialCB->Resource();
 

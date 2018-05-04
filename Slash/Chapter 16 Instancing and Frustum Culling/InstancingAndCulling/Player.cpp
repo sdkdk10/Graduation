@@ -24,6 +24,14 @@ Player::~Player()
 void Player::Animate(const GameTimer & gt)
 {
 
+	/*cout << endl << endl;
+
+	cout << World._11 << "\t" << World._12 << "\t" << World._13 << endl;
+	cout << World._21 << "\t" << World._22 << "\t" << World._23 << endl;
+	cout << World._31 << "\t" << World._32 << "\t" << World._33 << endl;
+	cout << World._41 << "\t" << World._42 << "\t" << World._43 << endl;*/
+
+	//cout << World._41 << "\t" << World._42 << "\t" << World._43 << endl;
 	DWORD dwDirection = 0;
 
 	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS)
@@ -46,7 +54,6 @@ void Player::Animate(const GameTimer & gt)
 		dwDirection |= DIR_BACKWARD;
 
 	}
-
 	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
 	{
 		KeyInputTest = 1;
@@ -55,36 +62,27 @@ void Player::Animate(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
 	{
-	
 		KeyInputTest = 1;
 		dwDirection |= DIR_LEFT;
-
-
 	}
 
 
 	if (dwDirection != 0)
 	{
 		//CNetwork::GetInstance()->SendPacket(dwDirection);
-		Move(dwDirection, 15.0f * gt.DeltaTime(), true);
+		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true);
 	}
 
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
-
-
 		//KeyInputTest = 2;
-
 		if (KeyInputTest != 2)
 		{
-
 			KeyInputTest = 2;
-
 		}
 		else
 		{
 			KeyInputTest = 4;//3;
-
 			bAttackMotionTest = true;
 		}
 
@@ -102,43 +100,39 @@ void Player::Animate(const GameTimer & gt)
 	{
 		//KeyInputTest = 2;
 		KeyInputTest = 3;
-
-
-
 	}
 	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
 		KeyInputTest = 4;
-
-
 	}
 
+	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
+	{
+		World._41 -= World._21; //모델의 LookVector가 반대로 되있음
+		World._42 -= World._22;
+		World._43 -= World._23;
+	}
 
-	if(CInputDevice::GetInstance()->AnyKeyInput())
+	if (CInputDevice::GetInstance()->AnyKeyInput())
 	{
 		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
-
-
 		if (!pTestMesh->bTimerTestAttack1 &&
 			!pTestMesh->bTimerTestAttack2 &&
 			!pTestMesh->bTimerTestAttack3 &&
 			!pTestMesh->bTimerTestWalk
 			)
 		{
-
 			KeyInputTest = 0;
 
 		}
 	}
-	
-
 
 }
 
 bool Player::Update(const GameTimer & gt)
 {
-	
+
 	CGameObject::Update(gt);
 	m_pMesh->Update(gt);
 
@@ -146,7 +140,7 @@ bool Player::Update(const GameTimer & gt)
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
-	
+
 	XMMATRIX world = XMLoadFloat4x4(&World);
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
@@ -166,8 +160,8 @@ bool Player::Update(const GameTimer & gt)
 
 	// Only update the cbuffer data if the constants have changed.  If the cbuffer
 	// data changes, it needs to be updated for each FrameResource.
-	
-	
+
+
 	XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
 
 	MaterialConstants matConstants;
@@ -183,7 +177,7 @@ bool Player::Update(const GameTimer & gt)
 
 	// Next FrameResource need to be updated too.
 	//mat->NumFramesDirty--;
-	
+
 
 	return true;
 }
@@ -200,7 +194,7 @@ void Player::Render(ID3D12GraphicsCommandList * cmdList)
 	}
 	if (KeyInputTest == 1)
 	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk= true;
+		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk = true;
 
 		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
 
@@ -232,7 +226,6 @@ void Player::Render(ID3D12GraphicsCommandList * cmdList)
 	//Render_Left(cmdList);
 
 }
-
 HRESULT Player::Initialize()
 {
 	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
@@ -251,7 +244,7 @@ HRESULT Player::Initialize()
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = 0;
-	
+
 	Geo_Head = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	Element_Head.IndexCount = Geo_Head->DrawArgs[" \"_head\""].IndexCount;
@@ -273,7 +266,7 @@ HRESULT Player::Initialize()
 	Element_Right.StartIndexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].StartIndexLocation;
 	Element_Right.BaseVertexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].BaseVertexLocation;
 
-	
+
 
 
 	SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -291,16 +284,14 @@ HRESULT Player::Initialize()
 	//m_pBoundMesh = CBoundingBox::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, GetPosition(), XMFLOAT3(0.5f, 0.5f, 0.5f));
 	return S_OK;
 }
-
 void Player::Free()
 {
 	CGameObject::Free();
 }
-
 void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {
 
-	
+
 
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -338,7 +329,7 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 }
 void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 {
-	
+
 
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -371,8 +362,6 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 		0);
 
 }
-
-
 void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 {
 
@@ -404,10 +393,9 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Right.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
-		Element_Right.BaseVertexLocation +  dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
+		Element_Right.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		0);
 }
-
 Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
 {
 	Player* pInstance = new Player(d3dDevice, srv, srvSize);
@@ -456,24 +444,6 @@ Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 //	//cmdList->DrawIndexedInstanced(Element_Left.IndexCount, 1, Element_Left.StartIndexLocation, Element_Left.BaseVertexLocation, 0);
 //}
 
-void Player::OnPrepareRender()
-{
-	World._11 = m_xmf3Right.x; 
-	World._12 = m_xmf3Right.y;
-	World._13 = m_xmf3Right.z;
-
-	World._21 = m_xmf3Up.x;
-	World._22 = m_xmf3Up.y;
-	World._23 = m_xmf3Up.z;
-
-	World._31 = m_xmf3Look.x;
-	World._32 = m_xmf3Look.y;
-	World._33 = m_xmf3Look.z;
-
-	World._41 = m_xmf3Position.x;
-	World._42 = m_xmf3Position.y;
-	World._43 = m_xmf3Position.z;
-}
 
 void Player::SetPosition(float x, float y, float z)
 {
@@ -501,7 +471,7 @@ void Player::MoveForward(float fDistance)
 
 void Player::Rotate(float fPitch, float fYaw, float fRoll)
 {
-	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fYaw), XMConvertToRadians(fRoll));
+	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fRoll), XMConvertToRadians(fYaw));
 	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
@@ -519,7 +489,7 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 	XMFLOAT3 CurPos = XMFLOAT3(World._41, World._42, World._43);
 
 	m_xmf3Position = Vector3::Add(CurPos, xmf3Shift);
-	
+
 	XMFLOAT3 xmf3shiftTest = xmf3Shift;
 
 	//XMFLOAT3 test = Vector3::Subtract(CurPos, xmf3shiftTest);
@@ -536,60 +506,213 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 {
+	
+
 	if (dwDirection)
 	{
 		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
-		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
-		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
+		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fDistance);
+		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fDistance);
+		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fDistance);
+		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fDistance);
 
 
-		//xmf3Shift = XMFLOAT3(-xmf3Shift.x, -xmf3Shift.y, -xmf3Shift.z);
-		
+
 		Move(xmf3Shift, bUpdateVelocity);
 
-		/*XMFLOAT3 Axis = GetUp();
-
-		Rotate(&Axis, 0.1);*/
 
 		if (dwDirection & DIR_FORWARD)
 		{
 
-		
+			xmf3Shift = Vector3::Normalize(xmf3Shift);
+			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+			if (crossVector.y > 0)
+			{
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//	cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
+
+				}
+			}
+			else
+			{
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//	cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, m_fRotateSpeed, 0.0f);
+
+				}
+			}
+
+
 		}
 		else if (dwDirection & DIR_BACKWARD)
 		{
-		
+
+
+			xmf3Shift = Vector3::Normalize(xmf3Shift);
+			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+			if (crossVector.y > 0)
+			{
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//	cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
+
+				}
+			}
+			else
+			{
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//	cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, m_fRotateSpeed, 0.0f);
+
+				}
+			}
+
 		}
 		else if (dwDirection & DIR_RIGHT)
 		{
 
-	
-			if (RotationDeltaRIGHT > -90.0f)
+			/*xmf3Shift = Vector3::Normalize(xmf3Shift);
+
+			cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;*/
+
+			xmf3Shift = Vector3::Normalize(xmf3Shift);
+			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+			if (crossVector.y > 0)
 			{
-				RotationDeltaFORWARD -= 10.0f;
-				RotationDeltaBACKWARD -= 10.0f;
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
 
-				RotationDeltaRIGHT -= 10.0f;
-				RotationDeltaLEFT -= 10.0f;
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
 
-				Rotate(0.0f, 0.0f, -10.0f);
+				float ceta = acos(cosCeta); // 현재 각도
 
+				ceta = ceta * m_fDegree;
+
+				//	cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
+
+				}
 			}
+			else
+			{
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//	cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, m_fRotateSpeed, 0.0f);
+
+				}
+			}
+
 		}
 		else if (dwDirection & DIR_LEFT)
 		{
-			if (RotationDeltaLEFT < 90.0f)
+			xmf3Shift = Vector3::Normalize(xmf3Shift);
+			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+			if (crossVector.y > 0)
 			{
-				RotationDeltaFORWARD += 10.0f;
-				RotationDeltaBACKWARD += 10.0f;
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
 
-				RotationDeltaRIGHT += 10.0f;
-				RotationDeltaLEFT += 10.0f;
-				Rotate(0.0f, 0.0f, 10.0f);
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
 
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
+
+				}
 			}
+			else
+			{
+				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+				float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+				float ceta = acos(cosCeta); // 현재 각도
+
+				ceta = ceta * m_fDegree;
+
+				//cout << ceta << endl;
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, m_fRotateSpeed, 0.0f);
+
+				}
+			}
+
 		}
 
 

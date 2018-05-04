@@ -6,6 +6,9 @@ class CBoundingBox;
 
 class Player : public CGameObject
 {
+	const float m_fMoveSpeed = 10.0f;
+	const float m_fRotateSpeed = 3.0f;
+	const float m_fDegree = 51.2958f;
 	const float m_fScale = 0.05f;
 	float RotationAngle = 0.0f;
 
@@ -21,7 +24,6 @@ class Player : public CGameObject
 
 //////////////////////////////////////////////
 
-	virtual void OnPrepareRender();
 
 	virtual void SetPosition(float x, float y, float z);
 	virtual void SetPosition(XMFLOAT3 xmf3Position);
