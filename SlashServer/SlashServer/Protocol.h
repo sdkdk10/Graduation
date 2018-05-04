@@ -1,3 +1,4 @@
+#pragma once
 
 #define MAX_BUFF_SIZE   4000
 #define MAX_PACKET_SIZE  255
@@ -22,12 +23,13 @@
 #define CS_RIGHT    4
 #define CS_CHAT		5
 
-#define DIR_FORWARD					0x01
-#define DIR_BACKWARD				0x02
-#define DIR_LEFT					0x04
-#define DIR_RIGHT					0x08
-#define DIR_UP						0x10
-#define DIR_DOWN					0x20
+#define CS_DIR_FORWARD				0x01
+#define CS_DIR_BACKWARD				0x02	
+#define CS_DIR_LEFT					0x04
+#define CS_DIR_RIGHT				0x08
+
+#define CS_PLAYER_VEIW_MDOE		1
+#define CS_FREE_VEIW_MDOE		0
 
 #define SC_POS           1
 #define SC_PUT_PLAYER    2
@@ -36,22 +38,7 @@
 
 #pragma pack (push, 1)
 
-struct cs_packet_up {
-	BYTE size;
-	BYTE type;
-};
-
-struct cs_packet_down {
-	BYTE size;
-	BYTE type;
-};
-
-struct cs_packet_left {
-	BYTE size;
-	BYTE type;
-};
-
-struct cs_packet_right {
+struct cs_packet_key {
 	BYTE size;
 	BYTE type;
 };

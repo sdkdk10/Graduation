@@ -25,6 +25,7 @@ struct CLIENT {
 	SOCKET s;
 	bool in_use;
 	float x, y, z;
+	bool isPlayerViewMode;
 	EXOver exover;
 	int packet_size;
 	int prev_size;
@@ -58,6 +59,7 @@ void Initialize()
 		cl.exover.wsabuf.len = sizeof(cl.exover.io_buf);
 		cl.packet_size = 0;
 		cl.prev_size = 0;
+		cl.isPlayerViewMode = false;
 	}
 
 	WSADATA	wsadata;
@@ -105,28 +107,51 @@ void DisconnectPlayer(int cl)
 
 void ProcessPacket(int cl, char *packet)
 {
-	cs_packet_up *p = reinterpret_cast<cs_packet_up *>(packet);
+	cs_packet_key *p = reinterpret_cast<cs_packet_key *>(packet);
 
-	switch (p->type) {
-	case DIR_FORWARD:
-		g_clients[cl].z -= 0.05;
-		//if (0 > g_clients[cl].y) g_clients[cl].y = 0;
-		break;
-	case DIR_BACKWARD:
-		g_clients[cl].z += 0.05;
-		//if (BOARD_HEIGHT <= g_clients[cl].y) g_clients[cl].y = BOARD_HEIGHT - 1;
-		break;
-	case DIR_LEFT:
-		g_clients[cl].x += 0.05;
-		//if (0 > g_clients[cl].x) g_clients[cl].x = 0;
-		break;
-	case DIR_RIGHT:
-		g_clients[cl].x -= 0.05;
-		//if (BOARD_WIDTH <= g_clients[cl].x) g_clients[cl].x = BOARD_WIDTH - 1;
-		break;
-	default: printf("Unknown Protocol from Client[ %d ]\n", cl);
-		return;
-	}
+	//if (g_clients[cl].isPlayerViewMode)
+	//{
+	//	if (p->type == CS_DIR_FORWARD)
+	//		p->type = CS_DIR_BACKWARD;
+	//	else if (p->type == CS_DIR_BACKWARD)
+	//		p->type = CS_DIR_FORWARD;
+	//	else if (p->type == CS_DIR_LEFT)
+	//		p->type = CS_DIR_RIGHT;
+	//	else if (p->type == CS_DIR_RIGHT)
+	//		p->type = CS_DIR_LEFT;
+	//}
+
+	if ((p->type & CS_DIR_FORWARD) == CS_DIR_FORWARD)	g_clients[cl].z -= 0.05;
+	if ((p->type & CS_DIR_BACKWARD) == CS_DIR_BACKWARD)	g_clients[cl].z += 0.05;
+	if ((p->type & CS_DIR_LEFT) == CS_DIR_LEFT)			g_clients[cl].x += 0.05;
+	if ((p->type & CS_DIR_RIGHT) == CS_DIR_RIGHT)		g_clients[cl].x -= 0.05;
+
+	//switch (p->type) {
+	//case CS_DIR_FORWARD:
+	//	g_clients[cl].z -= 0.05;
+	//	//if (0 > g_clients[cl].y) g_clients[cl].y = 0;
+	//	break;
+	//case CS_DIR_BACKWARD:
+	//	g_clients[cl].z += 0.05;
+	//	//if (BOARD_HEIGHT <= g_clients[cl].y) g_clients[cl].y = BOARD_HEIGHT - 1;
+	//	break;
+	//case CS_DIR_LEFT:
+	//	g_clients[cl].x += 0.05;
+	//	//if (0 > g_clients[cl].x) g_clients[cl].x = 0;
+	//	break;
+	//case CS_DIR_RIGHT:
+	//	g_clients[cl].x -= 0.05;
+	//	//if (BOARD_WIDTH <= g_clients[cl].x) g_clients[cl].x = BOARD_WIDTH - 1;
+	//	break;
+	//case CS_PLAYER_VEIW_MDOE:
+	//	g_clients[cl].isPlayerViewMode = true;
+	//	break;
+	//case CS_FREE_VEIW_MDOE:
+	//	g_clients[cl].isPlayerViewMode = false;
+	//	break;
+	//default: printf("Unknown Protocol from Client[ %d ]\n", cl);
+	//	return;
+	//}
 
 	sc_packet_pos sp;
 	sp.id = cl;
@@ -280,6 +305,11 @@ void AcceptThread()
 				}
 		}
 	}
+}
+
+void TimerThread()
+{
+	// PPT보면서 구현해야 함
 }
 
 int main()
