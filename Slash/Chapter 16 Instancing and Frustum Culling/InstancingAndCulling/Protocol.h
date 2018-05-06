@@ -1,5 +1,7 @@
 #pragma once
 
+const float CS_SEND_PACKET_DELAY = 0.001;
+
 #define	BUF_SIZE					1024
 
 #define MAX_BUFF_SIZE   4000
@@ -19,12 +21,6 @@
 
 #define MAX_STR_SIZE  100
 
-#define CS_UP    1
-#define CS_DOWN  2
-#define CS_LEFT  3
-#define CS_RIGHT    4
-#define CS_CHAT		5
-
 #define SC_POS           1
 #define SC_PUT_PLAYER    2
 #define SC_REMOVE_PLAYER 3
@@ -32,22 +28,7 @@
 
 #pragma pack (push, 1)
 
-struct cs_packet_up {
-	BYTE size;
-	BYTE type;
-};
-
-struct cs_packet_down {
-	BYTE size;
-	BYTE type;
-};
-
-struct cs_packet_left {
-	BYTE size;
-	BYTE type;
-};
-
-struct cs_packet_right {
+struct cs_packet_dir {
 	BYTE size;
 	BYTE type;
 };

@@ -16,7 +16,6 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 {
 	std::ifstream fin(pFilePath[0].second);
 
-
 	if (!fin)
 	{
 		

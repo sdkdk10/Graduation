@@ -25,7 +25,7 @@ public:
 	virtual ~CNetwork();
 	void InitSock(HWND MainWnd);
 	void ReadPacket(SOCKET sock);
-	void SendPacket(const DWORD& keyInput);
+	void SendDirKeyPacket(const DWORD& keyInput);
 	void ProcessPacket(char* ptr);
 	int GetMyID() {
 		return myid;

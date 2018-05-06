@@ -25,7 +25,7 @@ void CNetwork::InitSock(HWND MainWnd)
 	ZeroMemory(&ServerAddr, sizeof(SOCKADDR_IN));
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(MY_SERVER_PORT);
-	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.126");
 
 	int Result = WSAConnect(mysocket, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
 
@@ -73,50 +73,46 @@ void CNetwork::ReadPacket(SOCKET sock)
 	}
 }
 
-void CNetwork::SendPacket(const DWORD& keyInput)
+void CNetwork::SendDirKeyPacket(const DWORD& keyInput)
 {
-	cs_packet_up *my_packet = reinterpret_cast<cs_packet_up *>(send_buffer);
+	cs_packet_dir *my_packet = reinterpret_cast<cs_packet_dir *>(send_buffer);
 	my_packet->size = sizeof(my_packet);
 	send_wsabuf.len = sizeof(my_packet);
 	DWORD iobyte;
-	if (DIR_RIGHT == (keyInput & DIR_RIGHT)) my_packet->type = DIR_RIGHT;
-	else if (DIR_LEFT == (keyInput & DIR_LEFT)) my_packet->type = DIR_LEFT;
+	my_packet->type = keyInput; // DWORD -> BYTE 어떻게 짤리는지는 정확히 모름 // 이미 4방향 비트단위로 들어가 있는 상태 // 타입이랑 키인풋 일치시켰음
 	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
 
 	if (ret) {
 		int error_code = WSAGetLastError();
 		printf("Error while sending packet [%d]", error_code);
 	}
-	if (DIR_BACKWARD == (keyInput & DIR_BACKWARD)) my_packet->type = DIR_BACKWARD;
-	else if (DIR_FORWARD == (keyInput & DIR_FORWARD)) my_packet->type = DIR_FORWARD;
-	WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
 }
 
 void CNetwork::ProcessPacket(char * ptr)
 {
 	switch (ptr[1])
 	{
-		case SC_PUT_PLAYER:
-		{
-			sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
-			static bool first_time = true;
-			int id = my_packet->id;
-			if (first_time) {
-				first_time = false;
-				myid = my_packet->id;
-			}
-			serverid_to_objectvindex(id);
-			dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene())->Put_Player(my_packet->x, my_packet->y, my_packet->z, id);
-			break;
+	case SC_PUT_PLAYER:
+	{
+		sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
+		static bool first_time = true;
+		int id = my_packet->id;
+		if (first_time) {
+			first_time = false;
+			myid = my_packet->id;
 		}
-		case SC_POS:
-		{
-			sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
-			int id = my_packet->id;
-			serverid_to_objectvindex(id);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-			break;
-		}
+		serverid_to_objectvindex(id);
+		dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene())->Put_Player(my_packet->x, my_packet->y, my_packet->z, id);
+		break;
+	}
+	case SC_POS:
+	{
+		sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
+		int id = my_packet->id;
+		serverid_to_objectvindex(id);
+		CManagement::GetInstance()->Find_Object(L"Layer_Player", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
+		break;
+	}
 	}
 
 	//switch (ptr[1])
