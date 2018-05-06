@@ -4,6 +4,7 @@
 #include "Management.h"
 #include "Component_Manager.h"
 #include "StaticMesh.h"
+#include "Transform.h"
 
 CMapObject::CMapObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -27,9 +28,11 @@ HRESULT CMapObject::Initialize()
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
+	m_pTransCom = CTransform::Create(this);
+
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 1;
+	ObjCBIndex = 7;
 
 	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -47,6 +50,7 @@ HRESULT CMapObject::Initialize()
 bool CMapObject::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+	m_pTransCom->Update_Component(gt);
 	m_pMesh->Update(gt);
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
@@ -85,6 +89,13 @@ bool CMapObject::Update(const GameTimer & gt)
 	{
 		//cout << "안보인당!" << endl;
 		m_bIsVisiable = false;
+		m_bIsVisiable = true;
+		ObjectConstants objConstants;
+		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+		XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
+		objConstants.MaterialIndex = Mat->MatCBIndex;
+
+		currObjectCB->CopyData(ObjCBIndex, objConstants);
 	}
 
 
@@ -112,6 +123,34 @@ bool CMapObject::Update(const GameTimer & gt)
 
 void CMapObject::Render(ID3D12GraphicsCommandList * cmdList)
 {
+	if (m_bIsVisiable)
+	{
+		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
+
+		auto objectCB = m_pFrameResource->ObjectCB->Resource();
+		auto matCB = m_pFrameResource->MaterialCB->Resource();
+
+		cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
+		cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
+		cmdList->IASetPrimitiveTopology(PrimitiveType);
+
+		CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+
+		Mat->DiffuseSrvHeapIndex;
+		D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
+		D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
+
+		cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
+		//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
+		cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
+
+		cmdList->SetGraphicsRootDescriptorTable(7, tex);
+
+		cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
+
+	}
 }
 
 CMapObject * CMapObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)

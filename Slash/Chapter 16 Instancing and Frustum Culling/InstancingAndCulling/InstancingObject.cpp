@@ -4,10 +4,14 @@
 #include "StaticMesh.h"
 #include "Camera.h"
 #include "Management.h"
+#include "Transform.h"
+#include "Component_Manager.h"
 
-CInstancingObject::CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
+CInstancingObject::CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
+	m_pwstrMeshName = pMesh;
+	m_iSize = iSize;
 }
 
 CInstancingObject::~CInstancingObject()
@@ -16,13 +20,15 @@ CInstancingObject::~CInstancingObject()
 
 HRESULT CInstancingObject::Initialize()
 {
-	m_pMesh = new StaticMesh(m_d3dDevice);
+	/*m_pMesh = new StaticMesh(m_d3dDevice);
 
 	vector<pair<const string, const string>> path;
 	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 
 	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;
+		return E_FAIL;*/
+
+	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
 
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
@@ -117,38 +123,65 @@ HRESULT CInstancingObject::Initialize()
 //	m_GeoBounds = 
 
 	// Generate instance data.
-	const int n = 5;
-	vecInstances.resize(n*n*n);
+	//const int n = 5;
+	//vecInstances.resize(n*n*n);
+	//vecInstances.resize(m_iSize *m_iSize *m_iSize);
+	//m_vecTransCom.resize(m_iSize *m_iSize *m_iSize);
 
-	float width = 200.0f;
-	float height = 200.0f;
-	float depth = 200.0f;
+	//float width = 200.0f;
+	//float height = 200.0f;
+	//float depth = 200.0f;
 
-	float x = -0.5f*width;
-	float y = -0.5f*height;
-	float z = -0.5f*depth;
-	float dx = width / (n - 1);
-	float dy = height / (n - 1);
-	float dz = depth / (n - 1);
-	for (int k = 0; k < n; ++k)
+	//float x = -0.5f*width;
+	//float y = -0.5f*height;
+	//float z = -0.5f*depth;
+	//float dx = width / (m_iSize - 1);
+	//float dy = height / (m_iSize - 1);
+	//float dz = depth / (m_iSize - 1);
+	//for (int k = 0; k < m_iSize; ++k)
+	//{
+	//	for (int i = 0; i < m_iSize; ++i)
+	//	{
+	//		for (int j = 0; j < m_iSize; ++j)
+	//		{
+	//			int index = k * m_iSize*m_iSize + i *m_iSize + j;
+	//			// Position instanced along a 3D grid.
+	//			vecInstances[index].World = XMFLOAT4X4(
+	//				1.0f, 0.0f, 0.0f, 0.0f,
+	//				0.0f, 1.0f, 0.0f, 0.0f,
+	//				0.0f, 0.0f, 1.0f, 0.0f,
+	//				x + j * dx, y + i * dy, z + k * dz, 1.0f);
+
+	//			CTransform* pCom = CTransform::Create(this);
+	//			pCom->GetPosition() = XMFLOAT3(x + j * dx, y + i * dy, z + k * dz);
+	//			pCom->GetScale() = XMFLOAT3(1.f, 1.f, 1.f);
+	//			//m_vecTransCom.push_back(pCom);
+	//			m_vecTransCom[index] = pCom;
+	//			
+	//			XMStoreFloat4x4(&vecInstances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+	//			//vecInstances[index].MaterialIndex = index % (mMaterials.size() - 1);
+	//			vecInstances[index].MaterialIndex = index % 6;
+	//		}
+	//	}
+	//}
+
+	vecInstances.resize(m_iSize);
+	m_vecTransCom.resize(m_iSize);
+
+	for (int i = 0; i < m_iSize; ++i)
 	{
-		for (int i = 0; i < n; ++i)
-		{
-			for (int j = 0; j < n; ++j)
-			{
-				int index = k * n*n + i * n + j;
-				// Position instanced along a 3D grid.
-				vecInstances[index].World = XMFLOAT4X4(
-					1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 1.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-					x + j * dx, y + i * dy, z + k * dz, 1.0f);
+		vecInstances[i].World = XMFLOAT4X4(
+			1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.f, 0.f, 0.f, 1.0f);
 
-				XMStoreFloat4x4(&vecInstances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-				//vecInstances[index].MaterialIndex = index % (mMaterials.size() - 1);
-				vecInstances[index].MaterialIndex = index % 6;
-			}
-		}
+		CTransform* pCom = CTransform::Create(this);
+		pCom->GetPosition().x = i * 10.f;
+		m_vecTransCom[i] = pCom;
+		XMStoreFloat4x4(&vecInstances[i].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+		//vecInstances[index].MaterialIndex = index % (mMaterials.size() - 1);
+		vecInstances[i].MaterialIndex = i % 6;
 	}
 
 	return S_OK;
@@ -170,7 +203,9 @@ bool CInstancingObject::Update(const GameTimer & gt)
 
 	for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 	{
-		XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+		//XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+		m_vecTransCom[i]->Update_Component(gt);
+		XMMATRIX world = XMLoadFloat4x4(&m_vecTransCom[i]->GetWorld());
 		XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
 
 		XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
@@ -246,16 +281,16 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 	auto instanceBuffer = m_pFrameResource->InstanceBuffer->Resource();
 	mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress());
 	
-
+	InstanceCount = vecInstances.size();
 	cmdList->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndexLocation, BaseVertexLocation, 0);
 
 	
 
 }
 
-CInstancingObject * CInstancingObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
+CInstancingObject * CInstancingObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* pMesh, int iSize)
 {
-	CInstancingObject* pInstance = new CInstancingObject(d3dDevice, srv, srvSize);
+	CInstancingObject* pInstance = new CInstancingObject(d3dDevice, srv, srvSize, pMesh, iSize);
 
 	if (FAILED(pInstance->Initialize()))
 	{

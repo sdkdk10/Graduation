@@ -9,7 +9,7 @@ CComponent::~CComponent()
 {
 }
 
-void CComponent::Update_Component(/*const CGameTimer & gt*/)
+void CComponent::Update_Component(const GameTimer & gt)
 {
 }
 

@@ -9,6 +9,8 @@ class Mesh
 	: public CComponent
 {
 public:
+	enum MESHTYPE { MESH_STATIC, MESH_STATIC_INST, MESH_DYNAMIC, MESH_DYNAMIC_SING };
+public:
 	XMVECTOR vMin;
 
 	XMVECTOR vMax;

@@ -2,7 +2,7 @@
 #include "Collision_Manager.h"
 #include "GameObject.h"
 
-void Collision_Manager::Update_Component(const CGameTimer & gt)
+void Collision_Manager::Update_Component(const GameTimer & gt)
 {
 }
 

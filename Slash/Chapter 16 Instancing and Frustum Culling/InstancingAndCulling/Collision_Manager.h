@@ -11,7 +11,7 @@ class Collision_Manager
 {
 public:
 	virtual CComponent* Clone(void) = 0;
-	virtual void Update_Component(const CGameTimer& gt);
+	virtual void Update_Component(const GameTimer& gt);
 
 	void CollisionDetect(CGameObject* pObj1, CGameObject* pObj2);
 public:

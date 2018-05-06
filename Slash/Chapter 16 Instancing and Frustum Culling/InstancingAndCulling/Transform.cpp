@@ -29,7 +29,7 @@ HRESULT CTransform::Initialize()
 	return S_OK;
 }
 
-void CTransform::Update_Component(const CGameTimer & gt)
+void CTransform::Update_Component(const GameTimer & gt)
 {
 	XMMATRIX matWorld;
 	XMVECTOR vScale, vRot, vTrans;
@@ -41,8 +41,8 @@ void CTransform::Update_Component(const CGameTimer & gt)
 	XMFLOAT3 f3Default = XMFLOAT3(1.f, 1.f, 1.f);
 	XMVECTOR vDefault = XMLoadFloat3(&f3Default);
 
-	matWorld = XMMatrixTransformation(vDefault, vDefault, vScale, XMVectorZero(), vRot, vTrans);
-	XMStoreFloat4x4(&m_f4x4World, matWorld);
+	XMStoreFloat4x4(&m_f4x4World, XMMatrixScaling(m_f3Scale.x, m_f3Scale.y, m_f3Scale.z) * XMMatrixRotationX(m_f3Rotation.x) * XMMatrixRotationY(m_f3Rotation.y) * XMMatrixRotationZ(m_f3Rotation.z)
+		*XMMatrixTranslation(m_f3Position.x, m_f3Position.y, m_f3Position.z));
 
 	//if (m_pf4x4ParentWorld != nullptr)
 	//	m_f4x4World *= *m_pf4x4ParentWorld;

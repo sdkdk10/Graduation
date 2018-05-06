@@ -17,7 +17,7 @@ class CInstancingObject
 
 
 public:
-	explicit CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+	explicit CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize);
 	virtual ~CInstancingObject();
 
 public:
@@ -27,6 +27,7 @@ public:
 
 public:
 	std::vector<InstanceData> GetvecInstances() { return vecInstances; }
+	virtual CTransform* GetTransform(int idx = 0) { if (idx > m_iSize) return nullptr; return m_vecTransCom[idx]; }
 private:
 	UINT						InstanceCount;
 	std::vector<InstanceData>	vecInstances;
@@ -35,10 +36,14 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
 
 	MeshGeometry*				m_GeoBounds;
+
+	int							m_iSize;
+
+	vector<CTransform*>			m_vecTransCom;
 	
 
 public:
-	static CInstancingObject* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+	static CInstancingObject* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize);
 
 
 	DrawElement Element_Bounds;

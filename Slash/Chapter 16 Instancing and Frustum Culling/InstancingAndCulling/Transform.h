@@ -15,9 +15,10 @@ public:
 
 public:
 	HRESULT				Initialize();
-	virtual void		Update_Component(const CGameTimer& gt);
+	virtual void		Update_Component(const GameTimer& gt);
 
 
+	// Get / Set
 	// Get / Set
 	inline XMFLOAT4X4&			GetWorld() { return m_f4x4World; }
 
@@ -36,16 +37,27 @@ public:
 	inline void					Translate(const XMVECTOR& vTrans) { m_f3Position += vTrans; }
 	inline void					Translate(const float x, const float y, const float z) { m_f3Position.x += x; m_f3Position.y += y; m_f3Position.z += z; }
 
+	inline void					Translation(const XMFLOAT3& f3Trans) { m_f3Position = f3Trans; }
+	inline void					Translation(const XMVECTOR& vTrans) { XMStoreFloat3(&m_f3Position, vTrans); }
+	inline void					Translation(const float x, const float y, const float z) { m_f3Position.x = x; m_f3Position.y = y; m_f3Position.z = z; }
+
 	// 크기
 	inline void					Scale(const XMFLOAT3& f3Scale) { m_f3Scale += f3Scale; }
 	inline void					Scale(const XMVECTOR& vScale) { m_f3Scale += vScale; }
 	inline void					Scale(const float x, const float y, const float z) { m_f3Scale.x += x; m_f3Scale.y += y; m_f3Scale.z += z; }
+
+	inline void					Scaling(const XMFLOAT3& f3Scale) { m_f3Scale = f3Scale; }
+	inline void					Scaling(const XMVECTOR& vScale) { XMStoreFloat3(&m_f3Scale, vScale); }
+	inline void					Scaling(const float x, const float y, const float z) { m_f3Scale.x = x; m_f3Scale.y = y; m_f3Scale.z = z; }
 
 	// 회전
 	inline void					Rotate(const XMFLOAT3& f3Rot) { m_f3Rotation += f3Rot; }
 	inline void					Rotate(const XMVECTOR& vRot) { m_f3Rotation += vRot; }
 	inline void					Rotate(const float x, const float y, const float z) { m_f3Rotation.x += x; m_f3Rotation.y += y; m_f3Rotation.z += z; }
 
+	inline void					Rotation(const XMFLOAT3& f3Rot) { m_f3Rotation = f3Rot; }
+	inline void					Rotation(const XMVECTOR& vRot) { XMStoreFloat3(&m_f3Rotation, vRot); }
+	inline void					Rotation(const float x, const float y, const float z) { m_f3Rotation.x = x; m_f3Rotation.y = y; m_f3Rotation.z = z; }
 
 private:
 	CGameObject*		m_pObject;

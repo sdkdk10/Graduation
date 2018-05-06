@@ -2,7 +2,7 @@
 
 #include "Base.h"
 
-class CGameTimer;
+class GameTimer;
 
 class CComponent
 	: public CBase
@@ -14,7 +14,7 @@ protected:
 public:
 	virtual CComponent* Clone(void) = 0;
 public:
-	virtual void Update_Component(/*const CGameTimer & gt*/);
+	virtual void Update_Component(const GameTimer & gt);
 protected:
 	virtual void Free(void);
 

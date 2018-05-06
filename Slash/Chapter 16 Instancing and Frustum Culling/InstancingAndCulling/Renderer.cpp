@@ -27,7 +27,7 @@ HRESULT CRenderer::Initialize()
 }
 
 
-void CRenderer::Update_Component(const CGameTimer & gt)
+void CRenderer::Update_Component(const GameTimer & gt)
 {
 }
 
