@@ -10,16 +10,6 @@ Mesh::~Mesh()
 {
 }
 
-HRESULT Mesh::Initialize(vector<pair<const string, const string>>  &pFilePath)
-{
-	return S_OK;
-}
-
-HRESULT Mesh::Initialize()
-{
-	return E_NOTIMPL;
-}
-
 int Mesh::Update(const GameTimer & gt)
 {
 	return 0;

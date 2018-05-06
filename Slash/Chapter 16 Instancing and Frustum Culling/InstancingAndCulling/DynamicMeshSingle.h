@@ -3,42 +3,6 @@
 #include "Mesh.h"
 
 
-typedef struct bone
-{
-
-	int iTimeValue = 0;
-
-	string boneName;
-
-	vector<Vertex> vecVertex;
-	vector<int> vecIndex;
-
-	int iNumVertex = 0;
-	int iNumIndex = 0;
-
-	vector<XMFLOAT2> uv;
-	vector<int>		uvIndex;
-
-	int iNumTexCnt = 0;
-	int iNumTexIndex = 0;
-
-	vector<Vertex> realvecVertex;
-
-	static bool Comp(const bone &t1, const bone &t2)
-	{
-		return (t1.boneName < t2.boneName);
-	}
-
-
-}Bone;
-
-
-typedef struct animInfo
-{
-	vector<Mesh::Character>			AnimationModel;			// 애니메이션 프레임 마다의 정점들
-	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
-}AnimInfo;
-
 
 class DynamicMeshSingle : public Mesh
 {
@@ -54,7 +18,7 @@ public:
 	vector<int> IndexAnimoffset;
 public:
 
-	virtual HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
+	HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
 

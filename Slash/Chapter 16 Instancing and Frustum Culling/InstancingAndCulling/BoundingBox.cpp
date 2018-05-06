@@ -17,10 +17,12 @@ CBoundingBox::~CBoundingBox()
 
 HRESULT CBoundingBox::Initialize()
 {
-	m_pMesh = new GeometryMesh(m_d3dDevice);
+	/*m_pMesh = new GeometryMesh(m_d3dDevice);
 
 	if (FAILED(m_pMesh->Initialize()))
-		return E_FAIL;
+		return E_FAIL;*/
+
+	m_pMesh = GeometryMesh::Create(m_d3dDevice);
 
 	/* Material Build */
 	Mat = new Material;

@@ -166,6 +166,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameTimer_Manager.cpp" />
     <ClCompile Include="GeometryMesh.cpp" />
+    <ClCompile Include="StaticUI.cpp" />
+    <ClCompile Include="HPBar.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="Network.cpp" />
@@ -216,6 +218,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameTimer_Manager.h" />
     <ClInclude Include="GeometryMesh.h" />
+    <ClInclude Include="StaticUI.h" />
+    <ClInclude Include="HPBar.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="Network.h" />

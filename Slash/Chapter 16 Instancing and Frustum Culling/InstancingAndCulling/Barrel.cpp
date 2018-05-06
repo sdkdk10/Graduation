@@ -117,7 +117,7 @@ void Barrel::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Barrel::Initialize()
 {
-	m_pMesh = new StaticMesh(m_d3dDevice);
+	//m_pMesh = new StaticMesh(m_d3dDevice);
 
 	/*if (FAILED(m_pMesh->Initialize(L"Idle", "Models/StaticMesh/staticMesh.ASE")))
 		return E_FAIL;*/
@@ -126,10 +126,11 @@ HRESULT Barrel::Initialize()
 	vector<pair<const string, const string>> path;
 	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 
+	// ¸ÁÇØµû
+	//if (FAILED(m_pMesh->Initialize(path)))
+	//	return E_FAIL;
 
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;
-
+	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
 
 	Mat = new Material;
 	Mat->Name = "BarrelMat";
@@ -141,7 +142,7 @@ HRESULT Barrel::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 1;
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

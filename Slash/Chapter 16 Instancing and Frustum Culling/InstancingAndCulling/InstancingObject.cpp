@@ -16,13 +16,15 @@ CInstancingObject::~CInstancingObject()
 
 HRESULT CInstancingObject::Initialize()
 {
-	m_pMesh = new StaticMesh(m_d3dDevice);
+	/*m_pMesh = new StaticMesh(m_d3dDevice);
 
+
+	if (FAILED(m_pMesh->Initialize(path)))
+		return E_FAIL;*/
 	vector<pair<const string, const string>> path;
 	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;
+	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
 
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";

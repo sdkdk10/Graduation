@@ -121,6 +121,7 @@ public:
 	// create a structured buffer large enough to store the instance data for 1000 instances.  
     std::unique_ptr<UploadBuffer<InstanceData>> InstanceBuffer = nullptr;
 
+	std::unique_ptr<UploadBuffer<Vertex>> VB = nullptr;
     // Fence value to mark commands up to this fence point.  This lets us
     // check if these frame resources are still in use by the GPU.
     UINT64 Fence = 0;

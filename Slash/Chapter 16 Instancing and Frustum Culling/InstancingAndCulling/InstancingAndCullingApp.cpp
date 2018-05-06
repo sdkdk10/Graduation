@@ -12,6 +12,7 @@
 #include "TestScene.h"
 #include "Network.h"
 #include "DynamicMesh.h"
+#include "DynamicMeshSingle.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -120,7 +121,7 @@ bool InstancingAndCullingApp::Initialize()
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
 	CManagement::GetInstance()->Init_Management(pRenderer);
 
-	CNetwork::GetInstance()->InitSock(mhMainWnd);
+	//CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	BuildPSOs();
 	BuildMaterials();
@@ -131,6 +132,7 @@ bool InstancingAndCullingApp::Initialize()
 	CManagement::GetInstance()->GetRenderer()->SetPSOs(mPSOs);
 	CManagement::GetInstance()->Get_CurScene()->Set_MainCam(&mCamera);
 	CManagement::GetInstance()->Get_CurScene()->Set_CamFrustum(&mCamFrustum);
+
 
 	mCamera.Set_Object(CManagement::GetInstance()->Get_CurScene()->Find_Object(L"Layer_Player", 0));
 
@@ -424,7 +426,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto SkyTex = std::make_unique<Texture>();
 	SkyTex->Name = "SkyTex";
-	SkyTex->Filename = L"../../Textures/grasscube1024.dds";
+	SkyTex->Filename = L"../../Textures/desertcube1024.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 	mCommandList.Get(), SkyTex->Filename.c_str(),
 		SkyTex->Resource, SkyTex->UploadHeap));
@@ -450,6 +452,34 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), MageTex->Filename.c_str(),
 		MageTex->Resource, MageTex->UploadHeap));
 
+	auto BloodTex = std::make_unique<Texture>();
+	BloodTex->Name = "BloodTex";
+	BloodTex->Filename = L"../../Textures/blood.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), BloodTex->Filename.c_str(),
+		BloodTex->Resource, BloodTex->UploadHeap));
+
+	auto HeartTex = std::make_unique<Texture>();
+	HeartTex->Name = "HeartTex";
+	HeartTex->Filename = L"../../Textures/PlayerStateUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), HeartTex->Filename.c_str(),
+		HeartTex->Resource, HeartTex->UploadHeap));
+
+	auto WarriorUITex = std::make_unique<Texture>();
+	WarriorUITex->Name = "WarriorUITex";
+	WarriorUITex->Filename = L"../../Textures/warriorUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), WarriorUITex->Filename.c_str(),
+		WarriorUITex->Resource, WarriorUITex->UploadHeap));
+
+	auto MageUITex = std::make_unique<Texture>();
+	MageUITex->Name = "MageUITex";
+	MageUITex->Filename = L"../../Textures/warriorUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), MageUITex->Filename.c_str(),
+		MageUITex->Resource, MageUITex->UploadHeap));
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -463,6 +493,10 @@ void InstancingAndCullingApp::LoadTextures()
 	mMaterials_Instancing[SpiderTex->Name] = std::move(SpiderTex);
 	mMaterials_Instancing[DragonTex->Name] = std::move(DragonTex);
 	mMaterials_Instancing[MageTex->Name] = std::move(MageTex);
+	mMaterials_Instancing[BloodTex->Name] = std::move(BloodTex);
+	mMaterials_Instancing[HeartTex->Name] = std::move(HeartTex);
+	mMaterials_Instancing[WarriorUITex->Name] = std::move(WarriorUITex);
+	mMaterials_Instancing[MageUITex->Name] = std::move(MageUITex);
 
 }
 
@@ -536,7 +570,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = 7;
+	srvHeapDesc2.NumDescriptors = 11;
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -569,8 +603,10 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto SpiderTex = mMaterials_Instancing["SpiderTex"]->Resource;
 	auto DragonTex = mMaterials_Instancing["DragonTex"]->Resource;
 	auto MageTex = mMaterials_Instancing["MageTex"]->Resource;
-
-
+	auto BloodTex = mMaterials_Instancing["BloodTex"]->Resource;
+	auto HeartTex = mMaterials_Instancing["HeartTex"]->Resource;
+	auto WarriorUITex = mMaterials_Instancing["WarriorUITex"]->Resource;
+	auto MageUITex = mMaterials_Instancing["MageUITex"]->Resource;
 
 	// Instancing 
 
@@ -617,6 +653,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Instancing.Format = grassTex->GetDesc().Format;
 	srvDesc_Instancing.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc_Instancing, hDescriptor_Instancing);
+
+
 
 	////////////////////////
 
@@ -665,7 +703,35 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Texture2D.MipLevels = MageTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(MageTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
-	// next descriptor 5 SkyBox
+	// next descriptor 6 BloodTex (HPBar를 위한 텍스쳐)
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc_Default.Format = BloodTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = BloodTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(BloodTex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	// next descriptor 7 HeartTex
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc_Default.Format = HeartTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = HeartTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(HeartTex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	// next descriptor 8 WarriorUITex
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc_Default.Format = WarriorUITex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = WarriorUITex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(WarriorUITex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	// next descriptor 9 MageUITex
+	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc_Default.Format = MageUITex->GetDesc().Format;
+	srvDesc_Default.Texture2D.MipLevels = MageUITex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(MageUITex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	// next descriptor 10 SkyBox
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
@@ -675,7 +741,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = SkyTex->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(SkyTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
-	//mSkyTexHeapIndex = 7;
+	
 	
 }
 
@@ -846,7 +912,7 @@ void InstancingAndCullingApp::BuildFrameResources()
 	for (int i = 0; i < gNumFrameResources; ++i)
 	{
 		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-			1, (UINT)mAllRitems.size(), (UINT)mMaterials.size()));
+			1, MAXOBJECTID, (UINT)mMaterials.size()));
 	}
 }
 
@@ -987,6 +1053,13 @@ void InstancingAndCullingApp::BuildRenderItems()
 
 	pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/Spider/Spider_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Models/Spider/Spider_Walk.ASE"));
+
+	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
 
 
 	CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);

@@ -2,6 +2,14 @@
 
 #include "Scene.h"
 
+typedef struct uiInfo
+{
+	float fSize = 0.0f;
+	float fMoveX = 0.0f;
+	float fMoveY = 0.0f;
+	float fScale = 0.0f;
+}UIInfo;
+
 class CTestScene
 	: public CScene
 {
@@ -14,7 +22,7 @@ public:
 	virtual HRESULT Initialize();
 	virtual bool	Update(const GameTimer& gt);
 	void UpdateOOBB();
-
+	void UpdateUI();
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 	virtual void	CollisionProcess();
 private:

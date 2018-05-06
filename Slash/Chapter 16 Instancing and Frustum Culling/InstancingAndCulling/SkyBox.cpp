@@ -82,18 +82,19 @@ void SkyBox::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT SkyBox::Initialize()
 {
-	m_pMesh = new GeometryMesh(m_d3dDevice);
+	//m_pMesh = new GeometryMesh(m_d3dDevice);
 
-	if (FAILED(m_pMesh->Initialize()))
-		return E_FAIL;
+	//if (FAILED(m_pMesh->Initialize()))
+	//	return E_FAIL;
 
+	m_pMesh = GeometryMesh::Create(m_d3dDevice);
 
 	
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
 	Mat->MatCBIndex = 6;
-	Mat->DiffuseSrvHeapIndex = 6;
+	Mat->DiffuseSrvHeapIndex = 10;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

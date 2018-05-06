@@ -128,15 +128,17 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Dragon::Initialize()
 {
-	m_pMesh = new DynamicMeshSingle(m_d3dDevice);
+	//m_pMesh = new DynamicMeshSingle(m_d3dDevice);
 
 
 
 	vector<pair<const string, const string>> path;
 	path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));
 
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;
+	/*if (FAILED(m_pMesh->Initialize(path)))
+		return E_FAIL;*/
+
+	m_pMesh = DynamicMeshSingle::Create(m_d3dDevice, path);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
@@ -148,7 +150,7 @@ HRESULT Dragon::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(m_fScale, m_fScale, m_fScale)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 4; 
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo = dynamic_cast<DynamicMeshSingle*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -171,7 +173,6 @@ HRESULT Dragon::Initialize()
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x, Bounds.Center.y, Bounds.Center.z), XMFLOAT3(100, 100, 100), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	BuildOOBBRenderer(m_xmOOBB);
 
 	return S_OK;
 }

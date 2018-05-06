@@ -79,10 +79,12 @@ void Terrain::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Terrain::Initialize()
 {
-	m_pMesh = new GeometryMesh(m_d3dDevice);
+	/*m_pMesh = new GeometryMesh(m_d3dDevice);
 
 	if (FAILED(m_pMesh->Initialize()))
-		return E_FAIL;
+		return E_FAIL;*/
+
+	m_pMesh = GeometryMesh::Create(m_d3dDevice);
 
 	/* Material Build */
 	Mat = new Material;
@@ -97,7 +99,7 @@ HRESULT Terrain::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 2;
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

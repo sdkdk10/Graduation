@@ -12,7 +12,7 @@ public:
 	explicit StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);
 	virtual ~StaticMesh();
 public:
-	virtual HRESULT Initialize(vector<pair<const string, const string>> &pFilePath);
+	HRESULT Initialize(vector<pair<const string, const string>> &pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
 
