@@ -22,7 +22,7 @@ public:
 
 public:
 	HRESULT				Initialize();
-	virtual void		Update_Component(const CGameTimer& gt);
+	virtual void		Update_Component(const GameTimer& gt);
 	void				Render(ID3D12GraphicsCommandList* cmdList);
 	void				Render_Priority(ID3D12GraphicsCommandList* cmdList);
 	void				Render_ForWard(ID3D12GraphicsCommandList* cmdList);

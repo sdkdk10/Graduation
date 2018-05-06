@@ -30,6 +30,9 @@ private:
 
 	vector<ComPtr<ID3D12DescriptorHeap>> mSrvDescriptorHeap;
 	UINT mCbvSrvDescriptorSize = 0;
+	
+private:
+	HRESULT Load_Map();
 
 public:
 	static CTestScene* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);

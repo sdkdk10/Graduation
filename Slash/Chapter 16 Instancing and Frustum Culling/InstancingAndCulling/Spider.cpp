@@ -5,6 +5,10 @@
 #include "Camera.h"
 #include "Management.h"
 #include "Component_Manager.h"
+<<<<<<< HEAD
+=======
+#include "Texture_Manager.h"
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 Spider::Spider(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -133,12 +137,21 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 HRESULT Spider::Initialize()
 {
 	m_pMesh = dynamic_cast<DynamicMeshSingle*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Spider"));
+<<<<<<< HEAD
 
+=======
+	if (nullptr == m_pMesh)
+		return E_FAIL;
+
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SpiderTex", CTexture_Manager::TEX_DEFAULT_2D);
+	if (nullptr == tex)
+		return E_FAIL;
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
 	Mat->MatCBIndex = 3;
-	Mat->DiffuseSrvHeapIndex = 3;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

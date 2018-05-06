@@ -151,8 +151,13 @@
     <Filter Include="03. Mesh\04. UIMesh">
       <UniqueIdentifier>{58d82cd2-adbd-406a-bbcc-4d746ff1af19}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
     <Filter Include="03. Mesh\00. DynamicMesh\01. StaticMesh">
       <UniqueIdentifier>{a61a4be6-ff8f-48f3-90b7-c9e4373f82e7}</UniqueIdentifier>
+=======
+    <Filter Include="94. Manager\03. Texture_Manager">
+      <UniqueIdentifier>{77b87e55-4de9-4fa8-9dbc-3f5ff92369bc}</UniqueIdentifier>
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -280,11 +285,16 @@
     <ClCompile Include="UIMesh.cpp">
       <Filter>03. Mesh\04. UIMesh</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="HPBar.cpp">
       <Filter>02. GameObject\07. UI</Filter>
     </ClCompile>
     <ClCompile Include="StaticUI.cpp">
       <Filter>02. GameObject\07. UI</Filter>
+=======
+    <ClCompile Include="Texture_Manager.cpp">
+      <Filter>94. Manager\03. Texture_Manager</Filter>
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -436,11 +446,16 @@
     <ClInclude Include="UIMesh.h">
       <Filter>03. Mesh\04. UIMesh</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="HPBar.h">
       <Filter>02. GameObject\07. UI</Filter>
     </ClInclude>
     <ClInclude Include="StaticUI.h">
       <Filter>02. GameObject\07. UI</Filter>
+=======
+    <ClInclude Include="Texture_Manager.h">
+      <Filter>94. Manager\03. Texture_Manager</Filter>
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

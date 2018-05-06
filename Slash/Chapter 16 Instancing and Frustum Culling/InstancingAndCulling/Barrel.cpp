@@ -4,6 +4,8 @@
 #include "StaticMesh.h"
 #include "Camera.h"
 #include "Management.h"
+#include "Texture_Manager.h"
+#include "Component_Manager.h"
 
 Barrel::Barrel(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize) 
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -119,23 +121,36 @@ HRESULT Barrel::Initialize()
 {
 	//m_pMesh = new StaticMesh(m_d3dDevice);
 
-	/*if (FAILED(m_pMesh->Initialize(L"Idle", "Models/StaticMesh/staticMesh.ASE")))
-		return E_FAIL;*/
+	///*if (FAILED(m_pMesh->Initialize(L"Idle", "Models/StaticMesh/staticMesh.ASE")))
+	//	return E_FAIL;*/
 
 
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
+	//vector<pair<const string, const string>> path;
+	//path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 
 	// ¸ÁÇØµû
 	//if (FAILED(m_pMesh->Initialize(path)))
 	//	return E_FAIL;
 
+<<<<<<< HEAD
 	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
+=======
+	//if (FAILED(m_pMesh->Initialize(path)))
+	//	return E_FAIL;
+
+	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Barrel"));
+	if (nullptr == m_pMesh)
+		return E_FAIL;
+
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("FenceTex", CTexture_Manager::TEX_DEFAULT_2D);
+	if (tex == nullptr)
+		return E_FAIL;
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Mat = new Material;
 	Mat->Name = "BarrelMat";
 	Mat->MatCBIndex = 1;
-	Mat->DiffuseSrvHeapIndex = 1;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

@@ -5,6 +5,7 @@
 #include "InputDevice.h"
 #include "Network.h"
 #include "Component_Manager.h"
+#include "Texture_Manager.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -254,10 +255,14 @@ HRESULT Player::Initialize()
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("VillagerTex", CTexture_Manager::TEX_DEFAULT_2D);
+	if (tex == nullptr)
+		return E_FAIL;
+
 	Mat = new Material;
 	Mat->Name = "InsecMat";
 	Mat->MatCBIndex = 0;
-	Mat->DiffuseSrvHeapIndex = 0;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

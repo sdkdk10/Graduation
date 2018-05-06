@@ -4,12 +4,12 @@
 #include "DynamicMesh.h"
 #include "Camera.h"
 #include "Management.h"
+#include "Texture_Manager.h"
 
-CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
+CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName)
 	: CGameObject(d3dDevice, srv, srvSize)
-	
 {
-
+	m_pwstrMeshName = meshName;
 }
 
 CNpc::~CNpc()
@@ -26,15 +26,19 @@ void CNpc::Animate(const GameTimer & gt)
 
 HRESULT CNpc::Initialize()
 {
-	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Mage"));
+	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
 
 	if (nullptr == m_pMesh)
+		return E_FAIL;
+
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("MageTex", CTexture_Manager::TEX_DEFAULT_2D);
+	if (tex == nullptr)
 		return E_FAIL;
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
 	Mat->MatCBIndex = 5;
-	Mat->DiffuseSrvHeapIndex = 5;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
@@ -277,9 +281,9 @@ void CNpc::Render_Right(ID3D12GraphicsCommandList * cmdList)
 		0);
 }
 
-CNpc * CNpc::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
+CNpc * CNpc::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)
 {
-	CNpc* pInstance = new CNpc(d3dDevice, srv, srvSize);
+	CNpc* pInstance = new CNpc(d3dDevice, srv, srvSize, meshName);
 	
 	if (FAILED(pInstance->Initialize()))
 	{

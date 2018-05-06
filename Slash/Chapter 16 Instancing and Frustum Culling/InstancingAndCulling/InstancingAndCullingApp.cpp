@@ -8,10 +8,16 @@
 #include "InputDevice.h"
 #include "Management.h"
 #include "Component_Manager.h"
+#include "Texture_Manager.h"
 #include "Renderer.h"
 #include "TestScene.h"
 #include "Network.h"
 #include "DynamicMesh.h"
+<<<<<<< HEAD
+=======
+#include "StaticMesh.h"
+#include "GeometryMesh.h"
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 #include "DynamicMeshSingle.h"
 
 const int gNumFrameResources = 3;
@@ -40,6 +46,13 @@ typedef struct character
 	vector<Vertex> realvecVertex;
 
 }Character;
+
+//typedef struct animInfo
+//{
+//	vector<Character>				mapAnimationModel;			// 애니메이션 프레임 마다의 정점들
+//	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
+//}AnimInfo;
+
 
 enum class RenderLayer : int
 {
@@ -178,6 +191,12 @@ void InstancingAndCullingApp::Update(const GameTimer& gt)
 	}
 
 	AnimateMaterials(gt);
+	//UpdateMaterialBuffer(gt);
+	//UpdateInstanceData(gt);
+
+	/*	UpdateObjectCBs(gt);
+	UpdateMaterialCBs(gt);*/
+
 	CManagement::GetInstance()->Update(gt, mCurrFrameResource);
 
 	UpdateMainPassCB(gt);
@@ -361,54 +380,83 @@ void InstancingAndCullingApp::UpdateMainPassCB(const GameTimer& gt)
 
 void InstancingAndCullingApp::LoadTextures()
 {
-	auto bricksTex = std::make_unique<Texture>();
+	// > Instancing Heap 2D Texture Load
+	auto bricksTex = new Texture;
 	bricksTex->Name = "bricksTex";
 	bricksTex->Filename = L"../../Textures/bricks.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), bricksTex->Filename.c_str(),
 		bricksTex->Resource, bricksTex->UploadHeap));
 
-	auto stoneTex = std::make_unique<Texture>();
+	// > Texture Name, Texture, Texture Type(Instacing Texture_2D / Default Texture_2D / Default Texture_Cube
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(bricksTex->Name, bricksTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"brickTex Ready Failed");
+
+
+	auto stoneTex = new Texture;
 	stoneTex->Name = "stoneTex";
 	stoneTex->Filename = L"../../Textures/stone.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), stoneTex->Filename.c_str(),
 		stoneTex->Resource, stoneTex->UploadHeap));
 
-	auto tileTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(stoneTex->Name, stoneTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"stoneTex Ready Failed");
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(stoneTex->Name, stoneTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"InsecTex Ready Failed");
+
+	auto tileTex = new Texture;
 	tileTex->Name = "tileTex";
 	tileTex->Filename = L"../../Textures/tile.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), tileTex->Filename.c_str(),
 		tileTex->Resource, tileTex->UploadHeap));
 
-	auto crateTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(tileTex->Name, tileTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"tileTex Ready Failed");
+
+	auto crateTex = new Texture;
 	crateTex->Name = "crateTex";
 	crateTex->Filename = L"../../Textures/WoodCrate01.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), crateTex->Filename.c_str(),
 		crateTex->Resource, crateTex->UploadHeap));
 
-	auto iceTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(crateTex->Name, crateTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"crateTex Ready Failed");
+
+	auto iceTex = new Texture;
 	iceTex->Name = "iceTex";
 	iceTex->Filename = L"../../Textures/ice.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), iceTex->Filename.c_str(),
 		iceTex->Resource, iceTex->UploadHeap));
 
-	auto grassTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(iceTex->Name, iceTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"iceTex Ready Failed");
+
+	auto grassTex = new Texture;
 	grassTex->Name = "grassTex";
 	grassTex->Filename = L"../../Textures/grass.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), grassTex->Filename.c_str(),
 		grassTex->Resource, grassTex->UploadHeap));
 
-	auto SpiderTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(grassTex->Name, grassTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"grassTex Ready Failed");
+
+
+	// > Default Heap 2D Texture Load
+
+	auto SpiderTex = new Texture;
 	SpiderTex->Name = "SpiderTex";
 	SpiderTex->Filename = L"../../Textures/spider.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), SpiderTex->Filename.c_str(),
 		SpiderTex->Resource, SpiderTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(SpiderTex->Name, SpiderTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SpiderTex Ready Failed");
 
 	/*auto defaultTex = std::make_unique<Texture>();
 	defaultTex->Name = "defaultTex";
@@ -417,41 +465,53 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), defaultTex->Filename.c_str(),
 		defaultTex->Resource, defaultTex->UploadHeap));*/
 
-	auto InsecTex = std::make_unique<Texture>();
-	InsecTex->Name = "InsecTex";
+	auto InsecTex = new Texture;
+	InsecTex->Name = "VillagerTex";
 	InsecTex->Filename = L"../../Textures/villager02_diff.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), InsecTex->Filename.c_str(),
 		InsecTex->Resource, InsecTex->UploadHeap));
 
+<<<<<<< HEAD
 	auto SkyTex = std::make_unique<Texture>();
 	SkyTex->Name = "SkyTex";
 	SkyTex->Filename = L"../../Textures/desertcube1024.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 	mCommandList.Get(), SkyTex->Filename.c_str(),
 		SkyTex->Resource, SkyTex->UploadHeap));
+=======
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(InsecTex->Name, InsecTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"InsecTex Ready Failed");
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
-	auto FenceTex = std::make_unique<Texture>();
+	auto FenceTex = new Texture;
 	FenceTex->Name = "FenceTex";
 	FenceTex->Filename = L"../../Textures/WireFence.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), FenceTex->Filename.c_str(),
 		FenceTex->Resource, FenceTex->UploadHeap));
 
-	auto DragonTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(FenceTex->Name, FenceTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"FenceTex Ready Failed");
+
+	auto DragonTex = new Texture;
 	DragonTex->Name = "DragonTex";
 	DragonTex->Filename = L"../../Textures/DragonTex.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), DragonTex->Filename.c_str(),
 		DragonTex->Resource, DragonTex->UploadHeap));
 
-	auto MageTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(DragonTex->Name, DragonTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"DragonTex Ready Failed");
+
+	auto MageTex = new Texture;
 	MageTex->Name = "MageTex";
 	MageTex->Filename = L"../../Textures/MageTex.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), MageTex->Filename.c_str(),
 		MageTex->Resource, MageTex->UploadHeap));
 
+<<<<<<< HEAD
 	auto BloodTex = std::make_unique<Texture>();
 	BloodTex->Name = "BloodTex";
 	BloodTex->Filename = L"../../Textures/blood.dds";
@@ -479,6 +539,23 @@ void InstancingAndCullingApp::LoadTextures()
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), MageUITex->Filename.c_str(),
 		MageUITex->Resource, MageUITex->UploadHeap));
+=======
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageTex->Name, MageTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"MageTex Ready Failed");
+
+
+	// > Default Heap Cube Texture Load
+	auto SkyTex = new Texture;
+	SkyTex->Name = "SkyTex";
+	SkyTex->Filename = L"../../Textures/grasscube1024.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), SkyTex->Filename.c_str(),
+		SkyTex->Resource, SkyTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(SkyTex->Name, SkyTex, CTexture_Manager::TEX_DEFAULT_CUBE)))
+		MSG_BOX(L"SkyTex Ready Failed");
+
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
@@ -597,7 +674,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto grassTex = mMaterials_Instancing["grassTex"]->Resource;
 	//auto defaultTex = mMaterials["defaultTex"]->Resource;
 	//auto skyTex = mMaterials["skyCubeMap"]->Resource;
-	auto InsecTex = mMaterials_Instancing["InsecTex"]->Resource;
+	auto InsecTex = mMaterials_Instancing["VillagerTex"]->Resource;
 	auto SkyTex = mMaterials_Instancing["SkyTex"]->Resource;
 	auto FenceTex = mMaterials_Instancing["FenceTex"]->Resource;
 	auto SpiderTex = mMaterials_Instancing["SpiderTex"]->Resource;
@@ -612,11 +689,32 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc_Instancing = {};
 	srvDesc_Instancing.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc_Instancing.Format = bricksTex->GetDesc().Format;
 	srvDesc_Instancing.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc_Instancing.Texture2D.MostDetailedMip = 0;
-	srvDesc_Instancing.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
 	srvDesc_Instancing.Texture2D.ResourceMinLODClamp = 0.0f;
+	srvDesc_Instancing.Texture2D.MostDetailedMip = 0;
+
+	auto iter = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_INST_2D).begin();
+	auto iter_end = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_INST_2D).end();
+	int idx = 0;
+
+	srvDesc_Instancing.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
+	srvDesc_Instancing.Format = iter->second->Resource->GetDesc().Format;
+	md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Instancing, hDescriptor_Instancing);
+	iter->second->Num = idx++;
+	++iter;
+
+	for (iter; iter != iter_end; ++iter)
+	{
+		hDescriptor_Instancing.Offset(1, mCbvSrvDescriptorSize);
+
+		srvDesc_Instancing.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
+		srvDesc_Instancing.Format = iter->second->Resource->GetDesc().Format;
+		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Instancing, hDescriptor_Instancing);
+		iter->second->Num = idx++;
+	}
+	/*
+	srvDesc_Instancing.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
+	srvDesc_Instancing.Format = bricksTex->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc_Instancing, hDescriptor_Instancing);
 
 	// next descriptor 1
@@ -653,19 +751,45 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Instancing.Format = grassTex->GetDesc().Format;
 	srvDesc_Instancing.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc_Instancing, hDescriptor_Instancing);
+<<<<<<< HEAD
 
 
 
+=======
+	*/
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 	////////////////////////
 
 	//Default Player
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc_Default = {};
 	srvDesc_Default.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc_Default.Format = InsecTex->GetDesc().Format;
+	srvDesc_Default.Texture2D.ResourceMinLODClamp = 0.0f;
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc_Default.Texture2D.MostDetailedMip = 0;
+
+	iter = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_2D).begin();
+	iter_end = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_2D).end();
+	idx = 0;
+
+	srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
+	srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
+	md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+	iter->second->Num = idx++;
+	++iter;
+
+	for (iter; iter != iter_end; ++iter)
+	{
+		hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+		srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
+		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
+		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+		iter->second->Num = idx++;
+	}
+
+	/*
 	srvDesc_Default.Texture2D.MipLevels = InsecTex->GetDesc().MipLevels;
-	srvDesc_Default.Texture2D.ResourceMinLODClamp = 0.0f;
+	srvDesc_Default.Format = InsecTex->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(InsecTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
 	// next descriptor 1 Barrel
@@ -702,6 +826,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = MageTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = MageTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(MageTex.Get(), &srvDesc_Default, hDescriptor_Default);
+	*/
+
 
 	// next descriptor 6 BloodTex (HPBar를 위한 텍스쳐)
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
@@ -736,10 +862,24 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 	srvDesc_Default.TextureCube.MostDetailedMip = 0;
-	srvDesc_Default.TextureCube.MipLevels = SkyTex->GetDesc().MipLevels;
 	srvDesc_Default.TextureCube.ResourceMinLODClamp = 0.0f;
-	srvDesc_Default.Format = SkyTex->GetDesc().Format;
-	md3dDevice->CreateShaderResourceView(SkyTex.Get(), &srvDesc_Default, hDescriptor_Default);
+
+	iter = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_CUBE).begin();
+	iter_end = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_CUBE).end();
+	//idx = 0;
+
+	for (iter; iter != iter_end; ++iter)
+	{
+		srvDesc_Default.TextureCube.MipLevels = iter->second->Resource->GetDesc().MipLevels;
+		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
+		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+		iter->second->Num = idx++;
+	}
+
+	//srvDesc_Default.TextureCube.MipLevels = SkyTex->GetDesc().MipLevels;
+	//srvDesc_Default.Format = SkyTex->GetDesc().Format;
+	//md3dDevice->CreateShaderResourceView(SkyTex.Get(), &srvDesc_Default, hDescriptor_Default);
+
 
 	
 	
@@ -769,8 +909,8 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
-	mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
-	mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
+	//mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
+	//mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
 
 
 	mInputLayout =
@@ -779,7 +919,6 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
-
 }
 
 
@@ -839,21 +978,29 @@ void InstancingAndCullingApp::BuildPSOs()
 	// PSO for UI objects.
 	//
 
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
+	//D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
+	//// The camera is inside the sky sphere, so just turn off culling.
+	//UIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; //카메라가 구 내부에 있음으로 후면선별을 끔 
 
-	UIPsoDesc.VS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
-		mShaders["UIVS"]->GetBufferSize()
-	};
-	UIPsoDesc.PS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
-		mShaders["UIPS"]->GetBufferSize()
-	};
 
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
+	//															// Make sure the depth function is LESS_EQUAL and not just LESS.  
+	//															// Otherwise, the normalized depth values at z = 1 (NDC) will 
+	//															// fail the depth test if the depth buffer was cleared to 1.
+	//UIPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //깊이판정 LESS_EQUAL해야 구가 깊이판정 통과함
+	//UIPsoDesc.pRootSignature = mRootSignature.Get();
 
+	//UIPsoDesc.VS =
+	//{
+	//	reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
+	//	mShaders["UIVS"]->GetBufferSize()
+	//};
+	//UIPsoDesc.PS =
+	//{
+	//	reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
+	//	mShaders["UIPS"]->GetBufferSize()
+	//};
+
+	//ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
 
 	//
@@ -1025,8 +1172,8 @@ void InstancingAndCullingApp::BuildRenderItems()
 	auto MageRiTem = std::make_unique<RenderItem>();
 	mAllRitems.push_back(std::move(MageRiTem));
 
-	auto UIRItem = std::make_unique<RenderItem>();
-	mAllRitems.push_back(std::move(UIRItem));
+	//auto UIRItem = std::make_unique<RenderItem>();
+	//mAllRitems.push_back(std::move(UIRItem));
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
@@ -1062,6 +1209,27 @@ void InstancingAndCullingApp::BuildRenderItems()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
 
 
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent);
+
+	pComponent = GeometryMesh::Create(md3dDevice);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);
+
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/Spider/Spider_Idle.ASE"));
+	path.push_back(make_pair("Idle", "Models/Spider/Spider_Walk.ASE"));
+	pComponent = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponent);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));
+	pComponent = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Dragon", pComponent);
+
+
 	CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 	CManagement::GetInstance()->Change_Scene(pScene);
 }
@@ -1069,7 +1237,30 @@ void InstancingAndCullingApp::BuildRenderItems()
 void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems )
 {
 
+
+	/*ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap_InstancingTex.Get() };
+	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
+
+
 	CManagement::GetInstance()->Render(cmdList);
+
+	//mCommandList->SetPipelineState(mPSOs["Opaque"].Get());
+
+	//m_vecObjects[0]->Render(cmdList); // 거미
+
+	//m_vecObjects[1]->Render(cmdList); // 배럴
+
+	//m_vecObjects[2]->Render(cmdList); // 지형
+
+	//mCommandList->SetPipelineState(mPSOs["sky"].Get());
+	//m_vecObjects[3]->Render(cmdList); // 스카이박스
+
+
+	//ID3D12DescriptorHeap* descriptorHeaps2[] = { mSrvDescriptorHeap_InstancingTex.Get() };
+	//mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps2), descriptorHeaps2);
+
+	//mCommandList->SetPipelineState(mPSOs["InstancingOpaque"].Get());
+	//m_vecObjects[4]->Render(cmdList);
 
 }
 
@@ -1129,5 +1320,3 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> InstancingAndCullingApp::GetSta
 		linearWrap, linearClamp,
 		anisotropicWrap, anisotropicClamp };
 }
-
-

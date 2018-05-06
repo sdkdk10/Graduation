@@ -16,8 +16,16 @@
 #include "Npc.h"
 #include "Network.h"
 #include "UI.h"
+<<<<<<< HEAD
 #include "HPBar.h"
 #include "StaticUI.h"
+=======
+#include "Mesh.h"
+#include "MapObject.h"
+#include "Transform.h"
+
+
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
@@ -37,20 +45,28 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
+<<<<<<< HEAD
 	// 서버 실행시 주석시작
 
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+=======
+	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버 실행시 주석시작
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_NPC", pObject);
+<<<<<<< HEAD
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
 	// 주석종료
 
+=======
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject); // 주석종료
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -113,11 +129,11 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize);//, "Models/StaticMesh/staticMesh.ASE", 10);
-	pObject->SetCamera(Get_MainCam());
-	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	Ready_GameObject(L"Layer_Instance", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
+	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject->SetCamera(Get_MainCam());
+	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	//Ready_GameObject(L"Layer_Instance", pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
 	XMFLOAT2 move= XMFLOAT2(-0.3f, 7.3f);
 
@@ -135,6 +151,7 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_HPBar", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
+<<<<<<< HEAD
 	move.x = -0.82f;
 	move.y = 0.75f;
 
@@ -164,6 +181,10 @@ HRESULT CTestScene::Initialize()
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
 	
+=======
+	if (FAILED(Load_Map()))
+		return E_FAIL;
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	return S_OK;
 }
@@ -172,10 +193,15 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
+<<<<<<< HEAD
 	CollisionProcess();
 	UpdateOOBB();
 	UpdateUI();
 
+=======
+	//CollisionProcess();
+	//UpdateOOBB();
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 	return true;
 }
 
@@ -298,6 +324,74 @@ void CTestScene::CollisionProcess()
 
 }
 
+HRESULT CTestScene::Load_Map()
+{
+	ifstream fin("../../Data/MapData.txt");
+	if (!fin)
+	{
+		MSG_BOX(L"MapData 못읽음 망해따리 망해따~~~~");
+		return E_FAIL;
+	}
+	string ignore;
+	while (!fin.eof())
+	{
+		fin >> ignore;		// > MeshType
+
+		Mesh::MESHTYPE eType = Mesh::MESHTYPE(std::stoi(ignore));
+
+		fin >> ignore;		// > Com_Mesh_이름
+		wstring wstrFileName;
+		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
+		CGameObject* pObject;
+		int iSize = 1;
+		fin >> iSize;
+		CRenderer::RenderType eRenderType;
+		switch (eType)
+		{
+		case Mesh::MESH_STATIC:
+			pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
+			eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
+			break;
+		case Mesh::MESH_STATIC_INST:
+			pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
+			eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
+			break;
+		}
+
+
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Map", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
+
+		std::string::size_type sz;
+
+		string Value[9];
+		float fValue[9];
+		for (int i = 0; i < iSize; ++i)
+		{
+			for (int j = 0; j < 9; ++j)
+			{
+				fin >> Value[j];
+				fValue[j] = std::stof(Value[j], &sz);
+			}
+			if (eType == (Mesh::MESH_STATIC_INST))
+			{
+				pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+				pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+				pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
+			}
+			else
+			{
+				pObject->GetTransform()->Translation(fValue[0], fValue[1], fValue[2]);
+				pObject->GetTransform()->Scaling(fValue[3], fValue[4], fValue[5]);
+				pObject->GetTransform()->Rotation(fValue[6], fValue[7], fValue[8]);
+			}
+		}
+	}
+
+	return S_OK;
+}
+
 CTestScene * CTestScene::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 {
 	CTestScene* pInstance = new CTestScene(d3dDevice, srv, srvSize);
@@ -326,7 +420,7 @@ void CTestScene::Put_Player(const float& x, const float& y, const float& z, cons
 	}
 	else // 서버는 접속순서대로 클라에 ID를 부여함 // 클라이언트는 서버에서 보내주는대로 레이어 백터에 푸시백함 (맨 처음은 무조건 클라이언트 왜? 처음오는 패킷을 내 아이디로 쓰니까)
 	{
-		pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
 		Ready_GameObject(L"Layer_Player", pObject);
 		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 		pObject->SetPosition(x, y, z);

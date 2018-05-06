@@ -22,7 +22,7 @@
     <ProjectGuid>{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>InstancingAndCulling</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectName>Slash</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -186,6 +186,7 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="Texture_Manager.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIMesh.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="Texture_Manager.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="UIMesh.h" />
