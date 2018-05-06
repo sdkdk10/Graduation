@@ -2,6 +2,12 @@
 
 #include "Mesh.h"
 
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 class DynamicMesh
 	: public Mesh
 {
@@ -17,7 +23,7 @@ public:
 	virtual ~DynamicMesh();
 
 public:
-	virtual HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
+	HRESULT Initialize(vector<pair<const string, const string>> & pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
 

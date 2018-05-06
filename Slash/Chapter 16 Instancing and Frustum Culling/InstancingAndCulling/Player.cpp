@@ -77,7 +77,7 @@ void Player::Animate(const GameTimer & gt)
 		curKeyInputTime = gt.TotalTime();
 		if (curKeyInputTime - preKeyInputTime > CS_SEND_PACKET_DELAY)
 		{
-			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection);
+			//CNetwork::GetInstance()->SendDirKeyPacket(dwDirection);
 			preKeyInputTime = gt.TotalTime();
 		}
 
@@ -125,13 +125,24 @@ void Player::Animate(const GameTimer & gt)
 		World._43 -= World._23;
 	}
 
+	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
+	{
+		
+		SetHp(GetHp() - 0.1f);
+	}
+	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
+	{
+
+		SetHp(GetHp() + 0.1f);
+	}
+
 	if (CInputDevice::GetInstance()->AnyKeyInput())
 	{
 		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
 		if (!pTestMesh->bTimerTestAttack1 &&
 			!pTestMesh->bTimerTestAttack2 &&
-			!pTestMesh->bTimerTestAttack3 &&
-			!pTestMesh->bTimerTestWalk
+			!pTestMesh->bTimerTestAttack3 /*&&
+			!pTestMesh->bTimerTestWalk*/
 			)
 		{
 			KeyInputTest = 0;
@@ -258,7 +269,7 @@ HRESULT Player::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 0;
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo_Head = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -292,7 +303,6 @@ HRESULT Player::Initialize()
 	//Element_Left.StartIndexLocation = Geo_Left->DrawArgs["mage_Left"].StartIndexLocation;
 	//Element_Left.BaseVertexLocation = Geo_Left->DrawArgs["mage_Left"].BaseVertexLocation;
 
-	BuildOOBBRenderer(m_xmOOBB);
 	//m_pBoundMesh = dynam
 
 

@@ -9,6 +9,8 @@ struct RenderItem;
 
 class GeometryMesh;
 
+constexpr      unsigned long MAXOBJECTID = 100000;
+
 typedef struct objdrawelement
 {
 	UINT IndexCount = 0;
@@ -24,6 +26,11 @@ struct CB_ObjectConstants
 class CGameObject
 	: public CBase
 {
+private:
+	float hp = 100;
+public:
+	float GetHp() { return hp; }
+	void SetHp(float _hp) { hp = _hp; }
 public:
 	bool m_bIsVisiable = true;
 	Camera * m_pCamera;
@@ -34,7 +41,6 @@ public:
 	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
 
 public:
-	void BuildOOBBRenderer(BoundingOrientedBox		m_xmOOBB);
 public:
 	BoundingOrientedBox		m_xmOOBB;
 	BoundingOrientedBox		m_xmOOBBTransformed;
@@ -119,13 +125,21 @@ protected:
 
 	BoundingBox					Bounds;
 
+	static unsigned long   m_iAllObjectIndex;
+	static CGameObject*      m_pAllObject[MAXOBJECTID];
+
+	unsigned long         m_iMyObjectID;
+
 public:
 	Mesh*				m_pMesh;
 	CTransform*			m_pTransCom;
 	wchar_t*			m_pwstrMeshName;
 public:
 	BoundingBox GetBounds() { return Bounds; }
+<<<<<<< HEAD
+=======
 	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);

@@ -5,14 +5,21 @@
 #include "Camera.h"
 #include "Transform.h"
 
+CGameObject* CGameObject::m_pAllObject[MAXOBJECTID] = { nullptr };
+unsigned long CGameObject::m_iAllObjectIndex = 0;
+
 CGameObject::CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
 	, mSrvDescriptorHeap(srv)
 	, mCbvSrvDescriptorSize(srvSize)
 {
-	//m_pTransCom = 
+	while (m_pAllObject[m_iAllObjectIndex++])
+	{
+		m_iAllObjectIndex %= MAXOBJECTID;
+	}
+	m_pAllObject[m_iAllObjectIndex] = this;
+	m_iMyObjectID = m_iAllObjectIndex;
 }
-
 
 CGameObject::~CGameObject()
 {
@@ -47,10 +54,6 @@ void CGameObject::Free()
 	Safe_Release(m_pTransCom);
 }
 
-void CGameObject::BuildOOBBRenderer(BoundingOrientedBox m_xmOOBB)
-{
-	
-}
 
 XMFLOAT3 CGameObject::GetPosition()
 {

@@ -9,7 +9,7 @@ public:
 	explicit GeometryMesh(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);
 	~GeometryMesh();
 public:
-	virtual HRESULT Initialize();
+	HRESULT Initialize();
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
 

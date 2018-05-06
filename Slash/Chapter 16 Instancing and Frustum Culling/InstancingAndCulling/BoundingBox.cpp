@@ -18,10 +18,19 @@ CBoundingBox::~CBoundingBox()
 
 HRESULT CBoundingBox::Initialize()
 {
+<<<<<<< HEAD
+	/*m_pMesh = new GeometryMesh(m_d3dDevice);
+
+	if (FAILED(m_pMesh->Initialize()))
+		return E_FAIL;*/
+
+	m_pMesh = GeometryMesh::Create(m_d3dDevice);
+=======
 
 	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 
 	/* Material Build */

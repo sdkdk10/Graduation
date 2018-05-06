@@ -85,10 +85,15 @@ HRESULT Terrain::Initialize()
 
 	if (FAILED(m_pMesh->Initialize()))
 		return E_FAIL;*/
+<<<<<<< HEAD
+
+	m_pMesh = GeometryMesh::Create(m_d3dDevice);
+=======
 	
 	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("stoneTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
@@ -108,7 +113,7 @@ HRESULT Terrain::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 2;
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

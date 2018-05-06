@@ -6,6 +6,9 @@ class CBoundingBox;
 
 class Player : public CGameObject
 {
+
+
+/////////////////////////////////////////
 	const float m_fMoveSpeed = 10.0f;
 	const float m_fRotateSpeed = 3.0f;
 	const float m_fDegree = 51.2958f;

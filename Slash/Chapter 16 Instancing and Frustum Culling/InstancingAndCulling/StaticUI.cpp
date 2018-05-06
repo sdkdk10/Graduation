@@ -1,33 +1,54 @@
-#include "stdafx.h"
 
-#include "GeometryMesh.h"
-#include "UI.h"
+#include "stdafx.h"
+#include "StaticUI.h"
+
 #include "UIMesh.h"
 #include "Define.h"
 
-
-UI::UI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
-	: CGameObject(d3dDevice, srv, srvSize)
+StaticUI::StaticUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
+	:UI(d3dDevice, srv, srvSize)
 {
+	move = _move;
+	scale = _scale;
+	size = _size;
+
+	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
 }
 
 
-
-UI::~UI()
+StaticUI::~StaticUI()
 {
 }
 
-bool UI::Update(const GameTimer & gt)
+StaticUI * StaticUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size, int diffuseSrvHeapIndex)
+{
+	StaticUI* pInstance = new StaticUI(d3dDevice, srv, srvSize, move, scale, size, diffuseSrvHeapIndex);
+
+	if (FAILED(pInstance->Initialize(move, scale, size)))
+	{
+		MSG_BOX(L"Player Created Failed");
+		Safe_Release(pInstance);
+	}
+
+
+	return pInstance;
+}
+
+bool StaticUI::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
 	return true;
 }
 
-void UI::Render(ID3D12GraphicsCommandList * cmdList)
+void StaticUI::SetUI(float size, float moveX, float moveY, float scaleX, float scaleY)
+{
+}
+
+void StaticUI::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
-	
+
 	auto objectCB = m_pFrameResource->ObjectCB->Resource();
 	auto matCB = m_pFrameResource->MaterialCB->Resource();
 
@@ -51,20 +72,15 @@ void UI::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->DrawInstanced(6, 1, 0, 0);
 }
 
-HRESULT UI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
+HRESULT StaticUI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 {
-	/*m_pMesh = new UIMesh(m_d3dDevice);
-
-	if (FAILED(m_pMesh->Initialize()))
-		return E_FAIL;*/
-
-	m_pMesh = UIMesh::Create(m_d3dDevice,move,scale,size);
+	m_pMesh = UIMesh::Create(m_d3dDevice, move, scale, size);
 
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = 2;
-	Mat->DiffuseSrvHeapIndex = 2;
+	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
@@ -83,21 +99,6 @@ HRESULT UI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 	return S_OK;
 }
 
-UI * UI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size, int diffuseSrvHeapIndex)
-{
-
-	UI* pInstance = new UI(d3dDevice, srv, srvSize);
-
-	if (FAILED(pInstance->Initialize(move,scale,size)))
-	{
-		MSG_BOX(L"Player Created Failed");
-		Safe_Release(pInstance);
-	}
-
-
-	return pInstance;
-}
-
-void UI::Free()
+void StaticUI::Free()
 {
 }

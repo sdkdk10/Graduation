@@ -128,7 +128,13 @@ HRESULT Barrel::Initialize()
 	//vector<pair<const string, const string>> path;
 	//path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 
+	// ¸ÁÇØµû
+	//if (FAILED(m_pMesh->Initialize(path)))
+	//	return E_FAIL;
 
+<<<<<<< HEAD
+	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
+=======
 	//if (FAILED(m_pMesh->Initialize(path)))
 	//	return E_FAIL;
 
@@ -139,6 +145,7 @@ HRESULT Barrel::Initialize()
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("FenceTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (tex == nullptr)
 		return E_FAIL;
+>>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Mat = new Material;
 	Mat->Name = "BarrelMat";
@@ -150,7 +157,7 @@ HRESULT Barrel::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 1;
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
