@@ -156,7 +156,6 @@ bool Player::Update(const GameTimer & gt)
 {
 
 	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
 
 	Animate(gt);
 
@@ -255,14 +254,14 @@ HRESULT Player::Initialize()
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
-	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("VillagerTex", CTexture_Manager::TEX_DEFAULT_2D);
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("VillagerTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
 	if (tex == nullptr)
 		return E_FAIL;
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
 	Mat->MatCBIndex = 0;
-	Mat->DiffuseSrvHeapIndex = tex->Num;
+	Mat->DiffuseSrvHeapIndex = tex->Num;			// 텍스쳐 힙에 저장ㄷ외나 수아아ㅇ아ㅏ 아하 지희야그럼 이거이렇게바꿔야함 
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

@@ -5,10 +5,7 @@
 #include "Camera.h"
 #include "Management.h"
 #include "Component_Manager.h"
-<<<<<<< HEAD
-=======
 #include "Texture_Manager.h"
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 Spider::Spider(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -23,7 +20,6 @@ Spider::~Spider()
 bool Spider::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -50,6 +46,7 @@ bool Spider::Update(const GameTimer & gt)
 	// Perform the box/frustum intersection test in local space.
 	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 	{
+		//cout << "보인당!" << endl;
 		m_bIsVisiable = true;
 		ObjectConstants objConstants;
 		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
@@ -74,6 +71,7 @@ bool Spider::Update(const GameTimer & gt)
 	}
 	else
 	{
+		//cout << "안보인당!" << endl;
 		m_bIsVisiable = false;
 	}
 	
@@ -137,16 +135,12 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 HRESULT Spider::Initialize()
 {
 	m_pMesh = dynamic_cast<DynamicMeshSingle*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Spider"));
-<<<<<<< HEAD
-
-=======
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SpiderTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";

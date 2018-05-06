@@ -2,12 +2,6 @@
 
 #include "Mesh.h"
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 class DynamicMesh
 	: public Mesh
 {

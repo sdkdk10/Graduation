@@ -84,18 +84,9 @@ void SkyBox::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT SkyBox::Initialize()
 {
-	//m_pMesh = new GeometryMesh(m_d3dDevice);
-
-	//if (FAILED(m_pMesh->Initialize()))
-	//	return E_FAIL;
-
-<<<<<<< HEAD
-	m_pMesh = GeometryMesh::Create(m_d3dDevice);
-=======
 	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SkyTex", CTexture_Manager::TEX_DEFAULT_CUBE);
 	if (nullptr == tex)
@@ -105,11 +96,7 @@ HRESULT SkyBox::Initialize()
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
 	Mat->MatCBIndex = 6;
-<<<<<<< HEAD
-	Mat->DiffuseSrvHeapIndex = 10;
-=======
-	Mat->DiffuseSrvHeapIndex = CTexture_Manager::GetInstance()->Find_Texture("SkyTex", CTexture_Manager::TEX_DEFAULT_CUBE)->Num;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
