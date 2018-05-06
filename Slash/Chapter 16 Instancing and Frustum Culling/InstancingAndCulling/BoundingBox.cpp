@@ -2,6 +2,7 @@
 #include "BoundingBox.h"
 #include "Define.h"
 #include "GeometryMesh.h"
+#include "Component_Manager.h"
 
 CBoundingBox::CBoundingBox(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT3& f3Pos, XMFLOAT3& f3Scale)
 	:CGameObject(d3dDevice, srv, srvSize)
@@ -17,10 +18,11 @@ CBoundingBox::~CBoundingBox()
 
 HRESULT CBoundingBox::Initialize()
 {
-	m_pMesh = new GeometryMesh(m_d3dDevice);
 
-	if (FAILED(m_pMesh->Initialize()))
+	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
+	if (nullptr == m_pMesh)
 		return E_FAIL;
+
 
 	/* Material Build */
 	Mat = new Material;

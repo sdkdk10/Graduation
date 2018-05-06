@@ -4,7 +4,8 @@
 #include "DynamicMeshSingle.h"
 #include "Camera.h"
 #include "Management.h"
-
+#include "Component_Manager.h"
+#include "Texture_Manager.h"
 
 Dragon::Dragon(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -128,20 +129,18 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Dragon::Initialize()
 {
-	m_pMesh = new DynamicMeshSingle(m_d3dDevice);
+	m_pMesh = dynamic_cast<DynamicMeshSingle*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Dragon"));
+	if (nullptr == m_pMesh)
+		return E_FAIL;
 
-
-
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));
-
-	if (FAILED(m_pMesh->Initialize(path)))
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("DragonTex", CTexture_Manager::TEX_DEFAULT_2D);
+	if (nullptr == tex)
 		return E_FAIL;
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
 	Mat->MatCBIndex = 4; 
-	Mat->DiffuseSrvHeapIndex = 4;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

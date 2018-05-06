@@ -154,6 +154,9 @@
     <Filter Include="03. Mesh\04. UIMesh">
       <UniqueIdentifier>{58d82cd2-adbd-406a-bbcc-4d746ff1af19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94. Manager\03. Texture_Manager">
+      <UniqueIdentifier>{77b87e55-4de9-4fa8-9dbc-3f5ff92369bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -279,6 +282,9 @@
     </ClCompile>
     <ClCompile Include="UIMesh.cpp">
       <Filter>03. Mesh\04. UIMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture_Manager.cpp">
+      <Filter>94. Manager\03. Texture_Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -429,6 +435,9 @@
     </ClInclude>
     <ClInclude Include="UIMesh.h">
       <Filter>03. Mesh\04. UIMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture_Manager.h">
+      <Filter>94. Manager\03. Texture_Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

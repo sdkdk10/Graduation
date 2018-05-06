@@ -2,6 +2,8 @@
 #include "GeometryMesh.h"
 #include "Terrain.h"
 #include "Define.h"
+#include "Component_Manager.h"
+#include "Texture_Manager.h"
 
 Terrain::Terrain(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -79,16 +81,25 @@ void Terrain::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Terrain::Initialize()
 {
-	m_pMesh = new GeometryMesh(m_d3dDevice);
+	/*m_pMesh = new GeometryMesh(m_d3dDevice);
 
 	if (FAILED(m_pMesh->Initialize()))
+		return E_FAIL;*/
+	
+	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
+	if (nullptr == m_pMesh)
 		return E_FAIL;
+
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("stoneTex", CTexture_Manager::TEX_DEFAULT_2D);
+	if (nullptr == tex)
+		return E_FAIL;
+
 
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = 2;
-	Mat->DiffuseSrvHeapIndex = 2;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
