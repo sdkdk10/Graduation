@@ -16,6 +16,7 @@
 #include "StaticMesh.h"
 #include "GeometryMesh.h"
 #include "DynamicMeshSingle.h"
+#include "Npc.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -919,7 +920,6 @@ void InstancingAndCullingApp::BuildPSOs()
 
 	//ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
-
 	//
 	// PSO for sky.
 	//
@@ -1123,6 +1123,11 @@ void InstancingAndCullingApp::BuildRenderItems()
 	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 	pComponent = StaticMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent);
+	
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House", pComponent);
 
 	pComponent = GeometryMesh::Create(md3dDevice);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);

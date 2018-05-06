@@ -19,6 +19,7 @@
 #include "Mesh.h"
 #include "MapObject.h"
 #include "Transform.h"
+#include "Texture_Manager.h"
 
 
 
@@ -196,6 +197,7 @@ HRESULT CTestScene::Load_Map()
 		return E_FAIL;
 	}
 	string ignore;
+	/*
 	while (!fin.eof())
 	{
 		fin >> ignore;		// > MeshType
@@ -251,6 +253,56 @@ HRESULT CTestScene::Load_Map()
 			}
 		}
 	}
+	*/
+	while (!fin.eof())
+	{
+
+		fin >> ignore;		// > Com_Mesh_¿Ã∏ß
+		wstring wstrFileName;
+		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
+
+		CGameObject* pObject;
+		CRenderer::RenderType eRenderType;
+		pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
+		eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
+		//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
+		//eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
+
+		fin >> ignore;			// > Tex_Name
+
+		Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_DEFAULT_2D);		// > ¿ŒΩ∫≈œΩÃ¿œ ∂ß πŸ≤„¡‹
+		dynamic_cast<CMapObject*>(pObject)->SetTexture(tex->Num);
+
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Map", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
+
+		std::string::size_type sz;
+
+		string Value[9];
+		float fValue[9];
+		for (int i = 0; i < 1; ++i)
+		{
+			for (int j = 0; j < 9; ++j)
+			{
+				fin >> Value[j];
+				fValue[j] = std::stof(Value[j], &sz);
+			}
+			/*if (eType == (Mesh::MESH_STATIC_INST))
+			{
+				pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+				pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+				pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
+			}*/
+			//else
+			{
+				pObject->GetTransform()->Translation(fValue[0], fValue[1], fValue[2]);
+				pObject->GetTransform()->Scaling(fValue[3], fValue[4], fValue[5]);
+				pObject->GetTransform()->Rotation(fValue[6], fValue[7], fValue[8]);
+			}
+		}
+	}
+
 
 	return S_OK;
 }
