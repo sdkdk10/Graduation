@@ -32,7 +32,11 @@ HRESULT CMapObject::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
+<<<<<<< HEAD
 	ObjCBIndex =m_iMyObjectID;
+=======
+	ObjCBIndex = m_iMyObjectID;
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 
 	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

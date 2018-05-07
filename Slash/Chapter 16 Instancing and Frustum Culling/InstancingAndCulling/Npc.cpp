@@ -87,10 +87,13 @@ HRESULT CNpc::Initialize()
 bool CNpc::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+<<<<<<< HEAD
 
 	Animate(gt);
 
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);

@@ -176,6 +176,10 @@ public:
 	BoundingBox GetBounds() { return Bounds; }
 
 	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);

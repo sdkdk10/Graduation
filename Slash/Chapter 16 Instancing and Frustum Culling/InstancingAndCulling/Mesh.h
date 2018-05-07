@@ -3,8 +3,11 @@
 #include "GameTimer.h"
 #include "Define.h"
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 class Mesh
 	: public CComponent
 {

@@ -20,10 +20,13 @@ Dragon::~Dragon()
 bool Dragon::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+<<<<<<< HEAD
 
 	Animate(gt);
 
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -146,11 +149,14 @@ HRESULT Dragon::Initialize()
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("DragonTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
+<<<<<<< HEAD
 
 	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
 	AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";

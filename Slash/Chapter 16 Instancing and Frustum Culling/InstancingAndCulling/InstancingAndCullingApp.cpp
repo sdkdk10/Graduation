@@ -16,6 +16,7 @@
 #include "StaticMesh.h"
 #include "GeometryMesh.h"
 #include "DynamicMeshSingle.h"
+#include "Npc.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -465,7 +466,11 @@ void InstancingAndCullingApp::LoadTextures()
 		MSG_BOX(L"InsecTex Ready Failed");
 
 	auto SkyTex = new Texture;
+<<<<<<< HEAD
 	SkyTex->Name = "SkyTex"; 
+=======
+	SkyTex->Name = "SkyTex";
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	SkyTex->Filename = L"../../Textures/desertcube1024.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 	mCommandList.Get(), SkyTex->Filename.c_str(),
@@ -514,7 +519,10 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(BloodTex->Name, BloodTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"BloodTex Ready Failed");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	auto HeartTex = new Texture;
 	HeartTex->Name = "HeartTex";
 	HeartTex->Filename = L"../../Textures/PlayerStateUI.dds";
@@ -543,7 +551,11 @@ void InstancingAndCullingApp::LoadTextures()
 		MageUITex->Resource, MageUITex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
+<<<<<<< HEAD
 		MSG_BOX(L"MageUITex Ready Failed"); 
+=======
+		MSG_BOX(L"MageUITex Ready Failed");
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
@@ -768,9 +780,20 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = MageTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = MageTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(MageTex.Get(), &srvDesc_Default, hDescriptor_Default);
+<<<<<<< HEAD
 	*/
 	
 	/*
+=======
+<<<<<<< HEAD
+	
+
+=======
+	*/
+	
+	/*
+>>>>>>> 36463d4331f12df8bde943c65182b628ad14fae0
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	// next descriptor 6 BloodTex (HPBar를 위한 텍스쳐)
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
@@ -798,6 +821,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = MageUITex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = MageUITex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(MageUITex.Get(), &srvDesc_Default, hDescriptor_Default);
+	*/
 
 	*/
 
@@ -935,9 +959,14 @@ void InstancingAndCullingApp::BuildPSOs()
 		reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
 		mShaders["UIPS"]->GetBufferSize()
 	};
+<<<<<<< HEAD
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
+=======
+
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 
 
 	//
@@ -1117,6 +1146,11 @@ void InstancingAndCullingApp::BuildRenderItems()
 	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
 	pComponent = StaticMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent);
+	
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House", pComponent);
 
 	pComponent = GeometryMesh::Create(md3dDevice);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);

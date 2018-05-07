@@ -20,7 +20,10 @@ CInstancingObject::~CInstancingObject()
 
 HRESULT CInstancingObject::Initialize()
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
 	if (nullptr == m_pMesh)
 		return E_FAIL;

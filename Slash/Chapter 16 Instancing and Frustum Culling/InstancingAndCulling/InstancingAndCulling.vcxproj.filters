@@ -154,6 +154,7 @@
     <Filter Include="03. Mesh\04. UIMesh">
       <UniqueIdentifier>{58d82cd2-adbd-406a-bbcc-4d746ff1af19}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
     <Filter Include="94. Manager\03. Texture_Manager">
       <UniqueIdentifier>{77b87e55-4de9-4fa8-9dbc-3f5ff92369bc}</UniqueIdentifier>
     </Filter>
@@ -162,6 +163,13 @@
     </Filter>
     <Filter Include="02. GameObject\07. UI\02. StaticUI">
       <UniqueIdentifier>{492a1ba9-1702-4255-8c1e-4dc12cb34648}</UniqueIdentifier>
+=======
+    <Filter Include="03. Mesh\00. DynamicMesh\01. StaticMesh">
+      <UniqueIdentifier>{a61a4be6-ff8f-48f3-90b7-c9e4373f82e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. Manager\03. Texture_Manager">
+      <UniqueIdentifier>{8c149239-6877-4e6b-ba6c-bcceda5d39ea}</UniqueIdentifier>
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -289,14 +297,24 @@
     <ClCompile Include="UIMesh.cpp">
       <Filter>03. Mesh\04. UIMesh</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Texture_Manager.cpp">
       <Filter>94. Manager\03. Texture_Manager</Filter>
     </ClCompile>
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
     <ClCompile Include="HPBar.cpp">
       <Filter>02. GameObject\07. UI\01. HPBar</Filter>
     </ClCompile>
     <ClCompile Include="StaticUI.cpp">
+<<<<<<< HEAD
       <Filter>02. GameObject\07. UI\02. StaticUI</Filter>
+=======
+      <Filter>02. GameObject\07. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture_Manager.cpp">
+      <Filter>94. Manager\03. Texture_Manager</Filter>
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -448,14 +466,24 @@
     <ClInclude Include="UIMesh.h">
       <Filter>03. Mesh\04. UIMesh</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Texture_Manager.h">
       <Filter>94. Manager\03. Texture_Manager</Filter>
     </ClInclude>
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
     <ClInclude Include="HPBar.h">
       <Filter>02. GameObject\07. UI\01. HPBar</Filter>
     </ClInclude>
     <ClInclude Include="StaticUI.h">
+<<<<<<< HEAD
       <Filter>02. GameObject\07. UI\02. StaticUI</Filter>
+=======
+      <Filter>02. GameObject\07. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture_Manager.h">
+      <Filter>94. Manager\03. Texture_Manager</Filter>
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

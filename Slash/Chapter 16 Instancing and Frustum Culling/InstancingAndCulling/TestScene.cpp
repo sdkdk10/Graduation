@@ -22,7 +22,11 @@
 #include "MapObject.h"
 #include "Texture_Manager.h"
 #include "Transform.h"
+<<<<<<< HEAD
 
+=======
+#include "Texture_Manager.h"
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
@@ -42,9 +46,13 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
+<<<<<<< HEAD
 	// 서버 실행시 주석시작
 
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+=======
+	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버 실행시 주석시작
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -55,8 +63,11 @@ HRESULT CTestScene::Initialize()
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
 	// 주석종료
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	pObject->SetPosition(0,0,0);
@@ -102,11 +113,19 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);*/
 
+<<<<<<< HEAD
 	/*pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Dragon", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 */
+=======
+	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//Ready_GameObject(L"Layer_Dragon", pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -124,9 +143,62 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Instance", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
+<<<<<<< HEAD
 	UISetting();
 
 	
+=======
+	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
+
+	move.x = -0.3f;
+	move.y = 7.3f;
+
+	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
+	scale.x = 1.2f;
+	scale.y = 0.125f;
+	float size = 0.25f;
+
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize,move,scale,size, tex->Num);
+	pObject->SetCamera(Get_MainCam());
+	Ready_GameObject(L"Layer_HPBar", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+
+	move.x = -0.82f;
+	move.y = 0.75f;
+
+	scale.x = 1.0f;
+	scale.y = 1.0f;
+
+	size = 0.125f;
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject->SetCamera(Get_MainCam());
+	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+
+	move.x = -0.5f;
+	move.y = 1.45f;
+
+	scale.x = 1.0f;
+	scale.y = 0.5f;
+
+	size = 0.5f;
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale,size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject->SetCamera(Get_MainCam());
+	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+	
+	
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	if (FAILED(Load_Map()))
 		return E_FAIL;
 
@@ -137,10 +209,16 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
+<<<<<<< HEAD
 	CollisionProcess();
 	UpdateOOBB();
 	UpdateUI();
 
+=======
+	//CollisionProcess();
+	UpdateOOBB();
+	UpdateUI();
+>>>>>>> 4dac4ec56cadf5ef87d42169e83ea1d1d355dfc3
 	return true;
 }
 
@@ -282,6 +360,7 @@ HRESULT CTestScene::Load_Map()
 		return E_FAIL;
 	}
 	string ignore;
+	/*
 	while (!fin.eof())
 	{
 		fin >> ignore;		// > MeshType
@@ -337,6 +416,56 @@ HRESULT CTestScene::Load_Map()
 			}
 		}
 	}
+	*/
+	while (!fin.eof())
+	{
+
+		fin >> ignore;		// > Com_Mesh_이름
+		wstring wstrFileName;
+		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
+
+		CGameObject* pObject;
+		CRenderer::RenderType eRenderType;
+		pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
+		eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
+		//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
+		//eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
+
+		fin >> ignore;			// > Tex_Name
+
+		Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_DEFAULT_2D);		// > 인스턴싱일 때 바꿔줌
+		dynamic_cast<CMapObject*>(pObject)->SetTexture(tex->Num);
+
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Map", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
+
+		std::string::size_type sz;
+
+		string Value[9];
+		float fValue[9];
+		for (int i = 0; i < 1; ++i)
+		{
+			for (int j = 0; j < 9; ++j)
+			{
+				fin >> Value[j];
+				fValue[j] = std::stof(Value[j], &sz);
+			}
+			/*if (eType == (Mesh::MESH_STATIC_INST))
+			{
+				pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+				pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+				pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
+			}*/
+			//else
+			{
+				pObject->GetTransform()->Translation(fValue[0], fValue[1], fValue[2]);
+				pObject->GetTransform()->Scaling(fValue[3], fValue[4], fValue[5]);
+				pObject->GetTransform()->Rotation(fValue[6], fValue[7], fValue[8]);
+			}
+		}
+	}
+
 
 	return S_OK;
 }
