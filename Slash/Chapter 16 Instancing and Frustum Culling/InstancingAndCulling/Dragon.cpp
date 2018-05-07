@@ -20,7 +20,6 @@ Dragon::~Dragon()
 bool Dragon::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);

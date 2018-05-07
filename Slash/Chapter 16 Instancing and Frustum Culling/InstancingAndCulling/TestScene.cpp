@@ -20,6 +20,7 @@
 #include "StaticUI.h"
 #include "Mesh.h"
 #include "MapObject.h"
+#include "Texture_Manager.h"
 #include "Transform.h"
 #include "Texture_Manager.h"
 
@@ -41,8 +42,6 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
-	// 서버 실행시 주석시작
-
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버 실행시 주석시작
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
@@ -54,7 +53,6 @@ HRESULT CTestScene::Initialize()
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
 	// 주석종료
-
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	pObject->SetPosition(0,0,0);
@@ -105,7 +103,7 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Dragon", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-
+	
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Barrel", pObject);
@@ -122,8 +120,7 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Instance", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
-	/*
-	XMFLOAT2 move= XMFLOAT2(-0.3f, 7.3f);
+	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 
 	move.x = -0.3f;
 	move.y = 7.3f;
@@ -133,8 +130,9 @@ HRESULT CTestScene::Initialize()
 	scale.y = 0.125f;
 	float size = 0.25f;
 
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
 
-	pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize,move,scale,size,6 /*BloodTexSRVIndex* /);
+	pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize,move,scale,size, tex->Num);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_HPBar", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
@@ -147,7 +145,9 @@ HRESULT CTestScene::Initialize()
 
 	size = 0.125f;
 
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, 8);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	pObject->SetCamera(Get_MainCam());
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
@@ -161,14 +161,15 @@ HRESULT CTestScene::Initialize()
 
 	size = 0.5f;
 
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale,size,7);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale,size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	pObject->SetCamera(Get_MainCam());
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-	*/
 	
-
+	
 	if (FAILED(Load_Map()))
 		return E_FAIL;
 
@@ -179,9 +180,9 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
-//	CollisionProcess();
-	//UpdateOOBB();
-	//UpdateUI();
+	//CollisionProcess();
+	UpdateOOBB();
+	UpdateUI();
 	return true;
 }
 
@@ -189,7 +190,7 @@ void CTestScene::UpdateOOBB()
 {
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
-	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
+	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
 	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
 	auto * m_pSpider2 = CManagement::GetInstance()->Find_Object(L"Layer_Spider",1);
 	//auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
@@ -233,7 +234,8 @@ void CTestScene::CollisionProcess()
 
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
-	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Instance");
+
+	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
 	//auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
 
 	vector<CGameObject *> m_pSpider;
@@ -249,9 +251,11 @@ void CTestScene::CollisionProcess()
 
 
 	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+
+
 	for (int i = 0; i < instanceData.size(); ++i)
 	{
-		XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+		XMMATRIX world = XMLoadFloat4x4(&(instanceData[i].World));
 
 		XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
 
@@ -268,14 +272,16 @@ void CTestScene::CollisionProcess()
 		}
 
 	}
-	if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
-	{
-		//cout << " Barrel 충돌 " << endl;
-	}
-	else
-	{
-		//cout << " Barrel 충돌 아님" << endl;
-	}
+
+
+	//if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
+	//{
+	//	//cout << " Barrel 충돌 " << endl;
+	//}
+	//else
+	//{
+	//	//cout << " Barrel 충돌 아님" << endl;
+	//}
 
 	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
 	for (int i = 0; i < 2; ++i)

@@ -3,8 +3,6 @@
 #include "GameTimer.h"
 #include "Define.h"
 
-using namespace std;
-
 class Mesh
 	: public CComponent
 {
@@ -90,9 +88,4 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12Device>		m_d3dDevice;
 };
 
-typedef struct animInfo
-{
-	vector<Mesh::Character>			AnimationModel;			// 애니메이션 프레임 마다의 정점들
-	int								iAnimationFrameSize;		// 한 애니메이션 전체 프레임
-}AnimInfo;
 

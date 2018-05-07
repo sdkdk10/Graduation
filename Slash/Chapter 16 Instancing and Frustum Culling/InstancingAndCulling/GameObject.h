@@ -35,7 +35,7 @@ public:
 	bool m_bIsVisiable = true;
 	Camera * m_pCamera;
 	BoundingFrustum				mCamFrustum;
-	bool						mFrustumCullingEnabled = false;
+	bool						mFrustumCullingEnabled = true;
 
 	void					SetCamera(Camera* pCam) { m_pCamera = pCam; }
 	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
@@ -136,6 +136,7 @@ public:
 	wchar_t*			m_pwstrMeshName;
 public:
 	BoundingBox GetBounds() { return Bounds; }
+
 	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
 
 public:

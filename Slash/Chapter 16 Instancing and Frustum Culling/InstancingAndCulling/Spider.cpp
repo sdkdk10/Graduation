@@ -20,7 +20,6 @@ Spider::~Spider()
 bool Spider::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -47,6 +46,7 @@ bool Spider::Update(const GameTimer & gt)
 	// Perform the box/frustum intersection test in local space.
 	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 	{
+		//cout << "보인당!" << endl;
 		m_bIsVisiable = true;
 		ObjectConstants objConstants;
 		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
@@ -71,6 +71,7 @@ bool Spider::Update(const GameTimer & gt)
 	}
 	else
 	{
+		//cout << "안보인당!" << endl;
 		m_bIsVisiable = false;
 	}
 	

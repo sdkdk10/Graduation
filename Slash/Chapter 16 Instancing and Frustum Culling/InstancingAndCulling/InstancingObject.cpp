@@ -198,6 +198,7 @@ bool CInstancingObject::Update(const GameTimer & gt)
 	for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 	{
 		//XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+		vecInstances[i].World = m_vecTransCom[i]->GetWorld();
 		m_vecTransCom[i]->Update_Component(gt);
 		XMMATRIX world = XMLoadFloat4x4(&m_vecTransCom[i]->GetWorld());
 		XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
