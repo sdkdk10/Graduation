@@ -119,25 +119,6 @@ void Barrel::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Barrel::Initialize()
 {
-	//m_pMesh = new StaticMesh(m_d3dDevice);
-
-	///*if (FAILED(m_pMesh->Initialize(L"Idle", "Models/StaticMesh/staticMesh.ASE")))
-	//	return E_FAIL;*/
-
-
-	//vector<pair<const string, const string>> path;
-	//path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
-
-	// ¸ÁÇØµû
-	//if (FAILED(m_pMesh->Initialize(path)))
-	//	return E_FAIL;
-
-<<<<<<< HEAD
-	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
-=======
-	//if (FAILED(m_pMesh->Initialize(path)))
-	//	return E_FAIL;
-
 	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Barrel"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
@@ -145,7 +126,6 @@ HRESULT Barrel::Initialize()
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("FenceTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (tex == nullptr)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Mat = new Material;
 	Mat->Name = "BarrelMat";

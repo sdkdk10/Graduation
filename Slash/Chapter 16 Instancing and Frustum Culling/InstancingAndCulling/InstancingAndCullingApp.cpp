@@ -13,11 +13,8 @@
 #include "TestScene.h"
 #include "Network.h"
 #include "DynamicMesh.h"
-<<<<<<< HEAD
-=======
 #include "StaticMesh.h"
 #include "GeometryMesh.h"
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 #include "DynamicMeshSingle.h"
 #include "Npc.h"
 
@@ -473,17 +470,17 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), InsecTex->Filename.c_str(),
 		InsecTex->Resource, InsecTex->UploadHeap));
 
-<<<<<<< HEAD
-	auto SkyTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(InsecTex->Name, InsecTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"InsecTex Ready Failed");
+
+	auto SkyTex = new Texture;
 	SkyTex->Name = "SkyTex";
 	SkyTex->Filename = L"../../Textures/desertcube1024.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 	mCommandList.Get(), SkyTex->Filename.c_str(),
 		SkyTex->Resource, SkyTex->UploadHeap));
-=======
-	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(InsecTex->Name, InsecTex, CTexture_Manager::TEX_DEFAULT_2D)))
-		MSG_BOX(L"InsecTex Ready Failed");
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(SkyTex->Name, SkyTex, CTexture_Manager::TEX_DEFAULT_CUBE)))
+		MSG_BOX(L"SkyTex Ready Failed");
 
 	auto FenceTex = new Texture;
 	FenceTex->Name = "FenceTex";
@@ -512,51 +509,49 @@ void InstancingAndCullingApp::LoadTextures()
 		mCommandList.Get(), MageTex->Filename.c_str(),
 		MageTex->Resource, MageTex->UploadHeap));
 
-<<<<<<< HEAD
-	auto BloodTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageTex->Name, MageTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"MageTex Ready Failed");
+
+	auto BloodTex = new Texture;
 	BloodTex->Name = "BloodTex";
 	BloodTex->Filename = L"../../Textures/blood.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), BloodTex->Filename.c_str(),
 		BloodTex->Resource, BloodTex->UploadHeap));
 
-	auto HeartTex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(BloodTex->Name, BloodTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"BloodTex Ready Failed");
+
+	auto HeartTex = new Texture;
 	HeartTex->Name = "HeartTex";
 	HeartTex->Filename = L"../../Textures/PlayerStateUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), HeartTex->Filename.c_str(),
 		HeartTex->Resource, HeartTex->UploadHeap));
 
-	auto WarriorUITex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(HeartTex->Name, HeartTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"HeartTex Ready Failed");
+
+	auto WarriorUITex = new Texture;
 	WarriorUITex->Name = "WarriorUITex";
 	WarriorUITex->Filename = L"../../Textures/warriorUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), WarriorUITex->Filename.c_str(),
 		WarriorUITex->Resource, WarriorUITex->UploadHeap));
 
-	auto MageUITex = std::make_unique<Texture>();
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(WarriorUITex->Name, WarriorUITex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"WarriorUITex Ready Failed");
+
+	auto MageUITex = new Texture;
 	MageUITex->Name = "MageUITex";
 	MageUITex->Filename = L"../../Textures/warriorUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), MageUITex->Filename.c_str(),
 		MageUITex->Resource, MageUITex->UploadHeap));
-=======
-	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageTex->Name, MageTex, CTexture_Manager::TEX_DEFAULT_2D)))
-		MSG_BOX(L"MageTex Ready Failed");
 
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"MageUITex Ready Failed");
 
-	// > Default Heap Cube Texture Load
-	auto SkyTex = new Texture;
-	SkyTex->Name = "SkyTex";
-	SkyTex->Filename = L"../../Textures/grasscube1024.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), SkyTex->Filename.c_str(),
-		SkyTex->Resource, SkyTex->UploadHeap));
-
-	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(SkyTex->Name, SkyTex, CTexture_Manager::TEX_DEFAULT_CUBE)))
-		MSG_BOX(L"SkyTex Ready Failed");
-
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
@@ -758,7 +753,6 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 =======
 	*/
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 	////////////////////////
 
 	//Default Player
@@ -827,8 +821,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = MageTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = MageTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(MageTex.Get(), &srvDesc_Default, hDescriptor_Default);
-	*/
-
+	
 
 	// next descriptor 6 BloodTex (HPBar를 위한 텍스쳐)
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
@@ -857,6 +850,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.Format = MageUITex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = MageUITex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(MageUITex.Get(), &srvDesc_Default, hDescriptor_Default);
+	*/
 
 	// next descriptor 10 SkyBox
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);

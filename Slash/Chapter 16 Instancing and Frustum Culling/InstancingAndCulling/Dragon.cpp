@@ -129,19 +129,6 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Dragon::Initialize()
 {
-<<<<<<< HEAD
-	//m_pMesh = new DynamicMeshSingle(m_d3dDevice);
-
-
-
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));
-
-	/*if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;*/
-
-	m_pMesh = DynamicMeshSingle::Create(m_d3dDevice, path);
-=======
 	m_pMesh = dynamic_cast<DynamicMeshSingle*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Dragon"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
@@ -149,7 +136,6 @@ HRESULT Dragon::Initialize()
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("DragonTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";

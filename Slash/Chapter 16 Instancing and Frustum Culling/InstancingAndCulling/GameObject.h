@@ -136,10 +136,8 @@ public:
 	wchar_t*			m_pwstrMeshName;
 public:
 	BoundingBox GetBounds() { return Bounds; }
-<<<<<<< HEAD
-=======
 	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);

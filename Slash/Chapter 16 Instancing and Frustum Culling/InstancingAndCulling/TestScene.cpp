@@ -16,17 +16,12 @@
 #include "Npc.h"
 #include "Network.h"
 #include "UI.h"
-<<<<<<< HEAD
 #include "HPBar.h"
 #include "StaticUI.h"
-=======
 #include "Mesh.h"
 #include "MapObject.h"
 #include "Transform.h"
 #include "Texture_Manager.h"
-
-
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
@@ -46,13 +41,9 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
-<<<<<<< HEAD
 	// 서버 실행시 주석시작
 
-	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-=======
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버 실행시 주석시작
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -60,14 +51,9 @@ HRESULT CTestScene::Initialize()
 	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_NPC", pObject);
-<<<<<<< HEAD
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
 	// 주석종료
-
-=======
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject); // 주석종료
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -136,6 +122,7 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Instance", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
+	/*
 	XMFLOAT2 move= XMFLOAT2(-0.3f, 7.3f);
 
 	move.x = -0.3f;
@@ -147,12 +134,11 @@ HRESULT CTestScene::Initialize()
 	float size = 0.25f;
 
 
-	pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize,move,scale,size,6 /*BloodTexSRVIndex*/);
+	pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize,move,scale,size,6 /*BloodTexSRVIndex* /);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_HPBar", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
-<<<<<<< HEAD
 	move.x = -0.82f;
 	move.y = 0.75f;
 
@@ -180,12 +166,11 @@ HRESULT CTestScene::Initialize()
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-
+	*/
 	
-=======
+
 	if (FAILED(Load_Map()))
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	return S_OK;
 }
@@ -194,15 +179,9 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
-<<<<<<< HEAD
-	CollisionProcess();
-	UpdateOOBB();
-	UpdateUI();
-
-=======
-	//CollisionProcess();
+//	CollisionProcess();
 	//UpdateOOBB();
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+	//UpdateUI();
 	return true;
 }
 

@@ -20,22 +20,9 @@ CInstancingObject::~CInstancingObject()
 
 HRESULT CInstancingObject::Initialize()
 {
-	/*m_pMesh = new StaticMesh(m_d3dDevice);
-
-
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;*/
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
-
-<<<<<<< HEAD
-	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
-=======
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;*/
-
 	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+	if (nullptr == m_pMesh)
+		return E_FAIL;
 
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
