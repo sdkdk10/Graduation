@@ -41,6 +41,11 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 namespace Vector3
 {
+	inline float BetweenVectorLength(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
+	{
+
+		return 0.1f;
+	}
 	inline bool IsZero(XMFLOAT3& xmf3Vector)
 	{
 		if (::IsZero(xmf3Vector.x) && ::IsZero(xmf3Vector.y) && ::IsZero(xmf3Vector.z)) return(true);

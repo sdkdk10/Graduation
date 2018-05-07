@@ -81,19 +81,10 @@ void Terrain::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Terrain::Initialize()
 {
-	/*m_pMesh = new GeometryMesh(m_d3dDevice);
-
-	if (FAILED(m_pMesh->Initialize()))
-		return E_FAIL;*/
-<<<<<<< HEAD
-
-	m_pMesh = GeometryMesh::Create(m_d3dDevice);
-=======
 	
 	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("stoneTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)

@@ -8,7 +8,6 @@ class CTransform;
 struct RenderItem;
 
 class GeometryMesh;
-
 constexpr      unsigned long MAXOBJECTID = 100000;
 
 typedef struct objdrawelement
@@ -23,9 +22,49 @@ struct CB_ObjectConstants
 	DirectX::XMFLOAT4X4 World = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 TexTransform = MathHelper::Identity4x4();
 };
+
+class AnimateStateMachine
+{
+public:
+	bool bTimerIdle = false;
+	bool bTimerWalk = false;
+	bool bTimerAttack1 = false;
+	bool bTimerAttack2 = false;
+	bool bTimerAttack3 = false;
+private:
+
+private:
+	float			m_fAnimationKeyFrameIndex = 0.f;		// 애니메이션 인덱스
+	float			m_fAnimationKeyFrameIndex_Walk = 0.f;		// 애니메이션 인덱스
+
+	float			m_fAnimationKeyFrameIndex_Attack1 = 0.f;		// 애니메이션 인덱스
+	float			m_fAnimationKeyFrameIndex_Attack2 = 0.f;		// 애니메이션 인덱스
+	float			m_fAnimationKeyFrameIndex_Attack3 = 0.f;		// 애니메이션 인덱스
+public:
+	vector<int> * vecAnimFrame;
+
+public: //애니메이션 상태
+	const int IdleState = 0;
+	const int WalkState = 1;
+	const int Attack1State = 2;
+	const int Attack2State = 3;
+	const int Attack3State = 4;
+	const int DamageState = 5;
+public:
+	int m_iAnimState = 0; // 현재 애니메이션 상태
+	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지
+public:
+	void AnimationStateUpdate(const GameTimer & gt);
+	void SetTimerTrueFalse();
+};
+
 class CGameObject
 	: public CBase
 {
+public:
+	void SetObjectAnimState(int _animState ) { AnimStateMachine.m_iAnimState = _animState; }
+protected:
+	AnimateStateMachine AnimStateMachine;
 private:
 	float hp = 100;
 public:
@@ -35,7 +74,7 @@ public:
 	bool m_bIsVisiable = true;
 	Camera * m_pCamera;
 	BoundingFrustum				mCamFrustum;
-	bool						mFrustumCullingEnabled = false;
+	bool						mFrustumCullingEnabled = true;
 
 	void					SetCamera(Camera* pCam) { m_pCamera = pCam; }
 	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
@@ -66,7 +105,6 @@ public:
 
 	virtual void Animate(const GameTimer & gt);
 
-	virtual void Set_AnimState(int iState) {}
 	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -136,10 +174,8 @@ public:
 	wchar_t*			m_pwstrMeshName;
 public:
 	BoundingBox GetBounds() { return Bounds; }
-<<<<<<< HEAD
-=======
+
 	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);

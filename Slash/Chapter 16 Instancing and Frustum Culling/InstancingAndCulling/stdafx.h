@@ -61,7 +61,6 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxguid.lib")
 
 extern Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
-extern int KeyInputTest;
 
 
 

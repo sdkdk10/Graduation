@@ -20,7 +20,10 @@ Dragon::~Dragon()
 bool Dragon::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
+
+	Animate(gt);
+
+
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -89,6 +92,9 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable)
 	{
+		AnimStateMachine.SetTimerTrueFalse();
+
+
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
@@ -117,10 +123,14 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 		auto pMesh = dynamic_cast<DynamicMeshSingle*>(m_pMesh);
 
 
-		int iTest = (int)pMesh->m_fTest;
+		//int iTest = (int)pMesh->m_fTest;
+		int iTest = AnimStateMachine.m_iCurAnimFrame;
+		int AnimaState = AnimStateMachine.m_iAnimState;
+
+
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
-			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[0] /*+ pMesh->IndexAnimoffset[0]*/,
-			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[0]/*+ pMesh->VertexAnimoffset[0]*/, 0);
+			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
+			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
 
 
 	}
@@ -129,19 +139,6 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Dragon::Initialize()
 {
-<<<<<<< HEAD
-	//m_pMesh = new DynamicMeshSingle(m_d3dDevice);
-
-
-
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));
-
-	/*if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;*/
-
-	m_pMesh = DynamicMeshSingle::Create(m_d3dDevice, path);
-=======
 	m_pMesh = dynamic_cast<DynamicMeshSingle*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Dragon"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
@@ -149,7 +146,11 @@ HRESULT Dragon::Initialize()
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("DragonTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+
+	AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
+
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
@@ -186,6 +187,12 @@ HRESULT Dragon::Initialize()
 
 
 	return S_OK;
+}
+
+void Dragon::Animate(const GameTimer & gt)
+{
+	AnimStateMachine.AnimationStateUpdate(gt);
+
 }
 
 Dragon * Dragon::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)

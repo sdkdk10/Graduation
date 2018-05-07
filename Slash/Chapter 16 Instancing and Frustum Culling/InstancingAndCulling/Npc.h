@@ -15,11 +15,8 @@ public:
 	virtual void OnPrepareRender();
 	virtual void Animate(const GameTimer & gt);
 
-	virtual void Set_AnimState(int iState) { m_iCurAnimState = iState; }
 
 private:
-	int iTest = 0;
-	int m_iCurAnimState = 1;
 
 	vector<pair<const string, const string>>			m_vecMeshPath;
 	MeshGeometry* Geo_Body = nullptr;
