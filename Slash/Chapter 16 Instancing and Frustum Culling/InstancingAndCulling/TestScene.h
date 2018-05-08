@@ -39,6 +39,7 @@ public:
 
 	void Put_Player(const float& x, const float& y, const float& z, const int& id);
 
+	void UISetting();
 private:
 	virtual void Free();
 private:

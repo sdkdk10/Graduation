@@ -20,6 +20,8 @@ Spider::~Spider()
 bool Spider::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+
+	Animate(gt);
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -93,6 +95,8 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable)
 	{
+		AnimStateMachine.SetTimerTrueFalse();
+
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
@@ -121,10 +125,13 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 		auto pMesh = dynamic_cast<DynamicMeshSingle*>(m_pMesh);
 
 
-		int iTest = (int)pMesh->m_fTest;
+		//int iTest = (int)pMesh->m_fTest;
+
+		int iTest = AnimStateMachine.m_iCurAnimFrame;
+		int AnimaState = AnimStateMachine.m_iAnimState;
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
-			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[0] /*+ pMesh->IndexAnimoffset[0]*/,
-			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[0]/*+ pMesh->VertexAnimoffset[0]*/, 0);
+			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
+			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
 
 	
 	}
@@ -138,10 +145,15 @@ HRESULT Spider::Initialize()
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
+
+
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SpiderTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
 
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+
+	AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
 	Mat->MatCBIndex = 3;
@@ -170,6 +182,11 @@ HRESULT Spider::Initialize()
 
 
 	return S_OK;
+}
+
+void Spider::Animate(const GameTimer & gt)
+{
+	AnimStateMachine.AnimationStateUpdate(gt);
 }
 
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)

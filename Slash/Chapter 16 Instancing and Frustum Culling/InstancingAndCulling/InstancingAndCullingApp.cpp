@@ -20,7 +20,6 @@
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
-int KeyInputTest = 0;
 
 // Lightweight structure stores parameters to draw a shape.  This will
 // vary from app-to-app.
@@ -323,14 +322,7 @@ void InstancingAndCullingApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
 
-	if (GetAsyncKeyState('3') & 0x8000)
-		KeyInputTest= 0;
 
-	if (GetAsyncKeyState('4') & 0x8000)
-		KeyInputTest = 1;
-
-	if (GetAsyncKeyState('5') & 0x8000)
-		KeyInputTest = 2;
 
 
 	//mCamera.UpdateViewMatrix();
@@ -475,7 +467,7 @@ void InstancingAndCullingApp::LoadTextures()
 		MSG_BOX(L"InsecTex Ready Failed");
 
 	auto SkyTex = new Texture;
-	SkyTex->Name = "SkyTex";
+	SkyTex->Name = "SkyTex"; 
 	SkyTex->Filename = L"../../Textures/desertcube1024.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 	mCommandList.Get(), SkyTex->Filename.c_str(),
@@ -552,7 +544,7 @@ void InstancingAndCullingApp::LoadTextures()
 		MageUITex->Resource, MageUITex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
-		MSG_BOX(L"MageUITex Ready Failed");
+		MSG_BOX(L"MageUITex Ready Failed"); 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	/*auto Tex = new Texture;

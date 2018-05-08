@@ -22,7 +22,6 @@
 #include "MapObject.h"
 #include "Texture_Manager.h"
 #include "Transform.h"
-#include "Texture_Manager.h"
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
@@ -102,7 +101,6 @@ HRESULT CTestScene::Initialize()
 	//pObject->SetCamera(Get_MainCam());
 	//Ready_GameObject(L"Layer_Dragon", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
 	
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -120,56 +118,8 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Instance", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
-	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
+	UISetting();
 
-	move.x = -0.3f;
-	move.y = 7.3f;
-
-	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
-	scale.x = 1.2f;
-	scale.y = 0.125f;
-	float size = 0.25f;
-
-	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
-
-	pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize,move,scale,size, tex->Num);
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_HPBar", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-
-	move.x = -0.82f;
-	move.y = 0.75f;
-
-	scale.x = 1.0f;
-	scale.y = 1.0f;
-
-	size = 0.125f;
-
-	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
-
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
-	pObject->SetCamera(Get_MainCam());
-	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-
-	move.x = -0.5f;
-	move.y = 1.45f;
-
-	scale.x = 1.0f;
-	scale.y = 0.5f;
-
-	size = 0.5f;
-
-	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
-
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale,size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
-	pObject->SetCamera(Get_MainCam());
-	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-	
-	
 	if (FAILED(Load_Map()))
 		return E_FAIL;
 
@@ -180,21 +130,10 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
-	auto obj = CManagement::GetInstance()->Find_Object(L"Layer_Map");
-	static UCHAR pKeysBuffer[256];
-	bool bProcessedByScene = false;
-	if (GetKeyboardState(pKeysBuffer))
-	{
-		if (pKeysBuffer[0x50] & 0xF0) //p
-		{
-			dynamic_cast<CInstancingObject*>(obj)->GetTransform()->Translate(0.2f, 0.2f, 0.2f);
-		}
-		if (pKeysBuffer[0x4E] & 0xF0) //N키
-		{
-			dynamic_cast<CInstancingObject*>(obj)->GetTransform()->Translate(-0.2f, -0.2f, -0.2f);
-		}
+	CollisionProcess();
+	UpdateOOBB();
+	UpdateUI();
 
-	}
 	//CollisionProcess();
 	UpdateOOBB();
 	UpdateUI();
@@ -301,14 +240,19 @@ void CTestScene::CollisionProcess()
 	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
 	for (int i = 0; i < 2; ++i)
 	{
+
 		if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider[i]->m_xmOOBB))
 		{
-			//cout << "거미 충돌 " << endl;
-
+			//cout << i << "거미 충돌 " << endl;
+			
+			m_pSpider[i]->SetObjectAnimState(1);
 		}
 		else
 		{
-			//cout << "거미 충돌 아님" << endl;
+			//cout << i << "거미 충돌 아님" << endl;
+
+			m_pSpider[i]->SetObjectAnimState(0);
+
 		}
 	}
 
@@ -475,6 +419,58 @@ void CTestScene::Put_Player(const float& x, const float& y, const float& z, cons
 		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 		pObject->SetPosition(x, y, z);
 	}
+}
+
+void CTestScene::UISetting()
+{
+	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
+
+	move.x = -0.3f;
+	move.y = 7.3f;
+
+	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
+	scale.x = 1.2f;
+	scale.y = 0.125f;
+	float size = 0.25f;
+
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	CGameObject* pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	pObject->SetCamera(Get_MainCam());
+	Ready_GameObject(L"Layer_HPBar", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+
+	move.x = -0.82f;
+	move.y = 0.75f;
+
+	scale.x = 1.0f;
+	scale.y = 1.0f;
+
+	size = 0.125f;
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject->SetCamera(Get_MainCam());
+	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+
+	move.x = -0.5f;
+	move.y = 1.45f;
+
+	scale.x = 1.0f;
+	scale.y = 0.5f;
+
+	size = 0.5f;
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject->SetCamera(Get_MainCam());
+	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 }
 
 void CTestScene::Free()

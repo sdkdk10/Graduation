@@ -22,6 +22,9 @@ void CNpc::OnPrepareRender()
 
 void CNpc::Animate(const GameTimer & gt)
 {
+	AnimStateMachine.AnimationStateUpdate(gt);
+
+
 }
 
 HRESULT CNpc::Initialize()
@@ -34,6 +37,10 @@ HRESULT CNpc::Initialize()
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("MageTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (tex == nullptr)
 		return E_FAIL;
+
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
+	AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
@@ -80,10 +87,12 @@ HRESULT CNpc::Initialize()
 bool CNpc::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+
+	Animate(gt);
+
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-	Animate(gt);
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -162,8 +171,8 @@ void CNpc::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable)
 	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk = true;
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
+		AnimStateMachine.SetTimerTrueFalse();
+
 
 		Render_Head(cmdList);
 		Render_Body(cmdList);
@@ -198,7 +207,8 @@ void CNpc::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][1];
 
-
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int m_iCurAnimState = AnimStateMachine.m_iAnimState;
 
 	//cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1, Element_Head.StartIndexLocation, Element_Head.BaseVertexLocation , 0);
 	//	dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0].
@@ -237,6 +247,9 @@ void CNpc::Render_Body(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][1];
 
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int m_iCurAnimState = AnimStateMachine.m_iAnimState;
+
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Body.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[1][m_iCurAnimState/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		Element_Body.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[1][m_iCurAnimState/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
@@ -273,6 +286,8 @@ void CNpc::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][1];
 
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int m_iCurAnimState = AnimStateMachine.m_iAnimState;
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Right.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[2][m_iCurAnimState/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],

@@ -71,7 +71,6 @@ public:
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
 	virtual HRESULT			Initialize();
 	virtual void			Free();
-	virtual void Set_AnimState(int iState) { KeyInputTest = iState; }
 
 public:
 	void					Render_Body(ID3D12GraphicsCommandList* cmdList);

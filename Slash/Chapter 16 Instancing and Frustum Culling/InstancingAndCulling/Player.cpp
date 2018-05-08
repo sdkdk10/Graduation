@@ -12,6 +12,7 @@ Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12Desc
 {
 	preKeyInputTime = 0;
 	curKeyInputTime = 0;
+
 }
 
 Player::~Player()
@@ -26,7 +27,7 @@ Player::~Player()
 
 void Player::Animate(const GameTimer & gt)
 {
-
+	AnimStateMachine.AnimationStateUpdate(gt);
 	/*cout << endl << endl;
 
 	cout << World._11 << "\t" << World._12 << "\t" << World._13 << endl;
@@ -47,25 +48,32 @@ void Player::Animate(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
-		KeyInputTest = 1;
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+		//KeyInputTest = 1;
 		dwDirection |= DIR_FORWARD;
 
 	}
 	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
 	{
-		KeyInputTest = 1;
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+
+		//KeyInputTest = 1;
 		dwDirection |= DIR_BACKWARD;
 
 	}
 	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
 	{
-		KeyInputTest = 1;
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+
+		//KeyInputTest = 1;
 		dwDirection |= DIR_RIGHT;
 
 	}
 	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
 	{
-		KeyInputTest = 1;
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+
+		//KeyInputTest = 1;
 		dwDirection |= DIR_LEFT;
 	}
 
@@ -87,19 +95,24 @@ void Player::Animate(const GameTimer & gt)
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
-		if (KeyInputTest != 2)
+		if (AnimStateMachine.m_iAnimState != AnimStateMachine.Attack1State)
 		{
-			KeyInputTest = 2;
+			AnimStateMachine.m_iAnimState = AnimStateMachine.Attack1State;
+
+			//KeyInputTest = 2;
 		}
 		else
 		{
-			KeyInputTest = 4;//3;
+			AnimStateMachine.m_iAnimState = AnimStateMachine.Attack3State;
+
+
+			//KeyInputTest = 4;//3;
 			bAttackMotionTest = true;
 		}
 
 		if (bAttackMotionTest == false)
 		{
-			if (KeyInputTest == 3)
+			if (AnimStateMachine.m_iAnimState == AnimStateMachine.Attack2State)
 			{
 
 			}
@@ -110,12 +123,10 @@ void Player::Animate(const GameTimer & gt)
 	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
-		KeyInputTest = 3;
 	}
 	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
-		KeyInputTest = 4;
 	}
 
 	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
@@ -138,14 +149,16 @@ void Player::Animate(const GameTimer & gt)
 
 	if (CInputDevice::GetInstance()->AnyKeyInput())
 	{
-		DynamicMesh * pTestMesh = dynamic_cast<DynamicMesh*>(m_pMesh);
-		if (!pTestMesh->bTimerTestAttack1 &&
-			!pTestMesh->bTimerTestAttack2 &&
-			!pTestMesh->bTimerTestAttack3 /*&&
+		
+		if (!AnimStateMachine.bTimerAttack1 &&
+			!AnimStateMachine.bTimerAttack2 &&
+			!AnimStateMachine.bTimerAttack3 /*&&
 			!pTestMesh->bTimerTestWalk*/
 			)
 		{
-			KeyInputTest = 0;
+			AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
+
+		//	KeyInputTest = 0;
 
 		}
 	}
@@ -158,6 +171,7 @@ bool Player::Update(const GameTimer & gt)
 	CGameObject::Update(gt);
 
 	Animate(gt);
+
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -205,42 +219,8 @@ bool Player::Update(const GameTimer & gt)
 
 void Player::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	//m_pBoundMesh->Render(cmdList);
+	AnimStateMachine.SetTimerTrueFalse();
 
-	if (KeyInputTest == 0)
-	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestIdle = true;
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex;
-
-	}
-	if (KeyInputTest == 1)
-	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestWalk = true;
-
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Walk;
-
-	}
-	if (KeyInputTest == 2)
-	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestAttack1 = true;
-
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Attack1;
-
-	}
-	if (KeyInputTest == 3)
-	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestAttack2 = true;
-
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Attack2;
-
-	}
-	if (KeyInputTest == 4)
-	{
-		dynamic_cast<DynamicMesh*>(m_pMesh)->bTimerTestAttack3 = true;
-
-		iTest = (int)dynamic_cast<DynamicMesh*>(m_pMesh)->m_fAnimationKeyFrameIndex_Attack3;
-
-	}
 	Render_Head(cmdList);
 	Render_Body(cmdList);
 	Render_Right(cmdList);
@@ -253,6 +233,8 @@ HRESULT Player::Initialize()
 
 	if (nullptr == m_pMesh)
 		return E_FAIL;
+	
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("VillagerTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
 	if (tex == nullptr)
@@ -342,7 +324,8 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][1];
 
-
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int KeyInputTest = AnimStateMachine.m_iAnimState;
 
 	//cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1, Element_Head.StartIndexLocation, Element_Head.BaseVertexLocation , 0);
 	//	dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0].
@@ -380,6 +363,8 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][1];
 
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int KeyInputTest = AnimStateMachine.m_iAnimState;
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Body.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		Element_Body.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
@@ -414,6 +399,8 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][1];
 
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int KeyInputTest = AnimStateMachine.m_iAnimState;
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Right.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
