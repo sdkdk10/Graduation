@@ -23,7 +23,10 @@ bool Dragon::Update(const GameTimer & gt)
 
 	Animate(gt);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -124,8 +127,13 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 
 		//int iTest = (int)pMesh->m_fTest;
+<<<<<<< HEAD
 		int iTest = AnimStateMachine.GetCurAnimFrame();
 		int AnimaState = AnimStateMachine.GetAnimState();
+=======
+		int iTest = AnimStateMachine.m_iCurAnimFrame;
+		int AnimaState = AnimStateMachine.m_iAnimState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
@@ -149,7 +157,12 @@ HRESULT Dragon::Initialize()
 
 	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
+<<<<<<< HEAD
 	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
+=======
+	AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
+
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 
 	Mat = new Material;

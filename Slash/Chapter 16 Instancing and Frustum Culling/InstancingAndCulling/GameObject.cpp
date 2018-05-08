@@ -13,12 +13,14 @@ CGameObject::CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<
 	, mSrvDescriptorHeap(srv)
 	, mCbvSrvDescriptorSize(srvSize)
 {
-	while (m_pAllObject[m_iAllObjectIndex++])
+	while (m_pAllObject[m_iAllObjectIndex])
 	{
 		m_iAllObjectIndex %= MAXOBJECTID;
+		++m_iAllObjectIndex;
 	}
 	m_pAllObject[m_iAllObjectIndex] = this;
 	m_iMyObjectID = m_iAllObjectIndex;
+	++m_iAllObjectIndex;
 }
 
 CGameObject::~CGameObject()

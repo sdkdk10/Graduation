@@ -27,7 +27,11 @@ Player::~Player()
 
 void Player::Animate(const GameTimer & gt)
 {
+<<<<<<< HEAD
 	AnimStateMachine.AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
+=======
+	AnimStateMachine.AnimationStateUpdate(gt);
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	/*cout << endl << endl;
 
 	cout << World._11 << "\t" << World._12 << "\t" << World._13 << endl;
@@ -48,14 +52,22 @@ void Player::Animate(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
 	{
+<<<<<<< HEAD
 		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
+=======
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 		//KeyInputTest = 1;
 		dwDirection |= DIR_FORWARD;
 
 	}
 	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
 	{
+<<<<<<< HEAD
 		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
+=======
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 		//KeyInputTest = 1;
 		dwDirection |= DIR_BACKWARD;
@@ -63,7 +75,11 @@ void Player::Animate(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
 	{
+<<<<<<< HEAD
 		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
+=======
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 		//KeyInputTest = 1;
 		dwDirection |= DIR_RIGHT;
@@ -71,7 +87,11 @@ void Player::Animate(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
 	{
+<<<<<<< HEAD
 		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
+=======
+		AnimStateMachine.m_iAnimState = AnimStateMachine.WalkState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 		//KeyInputTest = 1;
 		dwDirection |= DIR_LEFT;
@@ -95,15 +115,25 @@ void Player::Animate(const GameTimer & gt)
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
+<<<<<<< HEAD
 		if (AnimStateMachine.GetAnimState() != AnimStateMachine.Attack1State)
 		{
 			AnimStateMachine.SetAnimState(AnimStateMachine.Attack1State);
+=======
+		if (AnimStateMachine.m_iAnimState != AnimStateMachine.Attack1State)
+		{
+			AnimStateMachine.m_iAnimState = AnimStateMachine.Attack1State;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 			//KeyInputTest = 2;
 		}
 		else
 		{
+<<<<<<< HEAD
 			AnimStateMachine.SetAnimState(AnimStateMachine.Attack3State);
+=======
+			AnimStateMachine.m_iAnimState = AnimStateMachine.Attack3State;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 
 			//KeyInputTest = 4;//3;
@@ -112,7 +142,11 @@ void Player::Animate(const GameTimer & gt)
 
 		if (bAttackMotionTest == false)
 		{
+<<<<<<< HEAD
 			if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack2State)
+=======
+			if (AnimStateMachine.m_iAnimState == AnimStateMachine.Attack2State)
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 			{
 
 			}
@@ -156,8 +190,12 @@ void Player::Animate(const GameTimer & gt)
 			!pTestMesh->bTimerTestWalk*/
 			)
 		{
+<<<<<<< HEAD
 			
 			AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
+=======
+			AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 		//	KeyInputTest = 0;
 
@@ -220,7 +258,11 @@ bool Player::Update(const GameTimer & gt)
 
 void Player::Render(ID3D12GraphicsCommandList * cmdList)
 {
+<<<<<<< HEAD
 	AnimStateMachine.SetTimerTrueFalse(); //어떤 애니메이션을 동작 시켜주는 지 
+=======
+	AnimStateMachine.SetTimerTrueFalse();
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 	Render_Head(cmdList);
 	Render_Body(cmdList);
@@ -325,8 +367,13 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][1];
 
+<<<<<<< HEAD
 	int iTest = AnimStateMachine.GetCurAnimFrame();
 	int KeyInputTest = AnimStateMachine.GetAnimState();
+=======
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int KeyInputTest = AnimStateMachine.m_iAnimState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 	//cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1, Element_Head.StartIndexLocation, Element_Head.BaseVertexLocation , 0);
 	//	dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0].
@@ -364,8 +411,13 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][1];
 
+<<<<<<< HEAD
 	int iTest = AnimStateMachine.GetCurAnimFrame();
 	int KeyInputTest = AnimStateMachine.GetAnimState();
+=======
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int KeyInputTest = AnimStateMachine.m_iAnimState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Body.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		Element_Body.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
@@ -400,8 +452,13 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][1];
 
+<<<<<<< HEAD
 	int iTest = AnimStateMachine.GetCurAnimFrame();
 	int KeyInputTest = AnimStateMachine.GetAnimState();
+=======
+	int iTest = AnimStateMachine.m_iCurAnimFrame;
+	int KeyInputTest = AnimStateMachine.m_iAnimState;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Right.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[2][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],

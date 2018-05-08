@@ -159,9 +159,12 @@
     </Filter>
     <Filter Include="02. GameObject\07. UI\02. StaticUI">
       <UniqueIdentifier>{492a1ba9-1702-4255-8c1e-4dc12cb34648}</UniqueIdentifier>
+<<<<<<< HEAD
     </Filter>
     <Filter Include="94. Manager\04. Collision_Manager">
       <UniqueIdentifier>{2ec8fa73-3df1-4dbb-8397-34a360427e61}</UniqueIdentifier>
+=======
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
     </Filter>
   </ItemGroup>
   <ItemGroup>

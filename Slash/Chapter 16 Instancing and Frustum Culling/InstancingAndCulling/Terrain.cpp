@@ -81,7 +81,10 @@ void Terrain::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Terrain::Initialize()
 {
+<<<<<<< HEAD
 	
+=======
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;

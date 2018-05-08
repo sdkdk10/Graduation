@@ -3,8 +3,11 @@
 #include "GameTimer.h"
 #include "Define.h"
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 class Mesh
 	: public CComponent
 {
@@ -88,6 +91,7 @@ public:
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D12Device>		m_d3dDevice;
+	string				m_strTexName;
 };
 
 

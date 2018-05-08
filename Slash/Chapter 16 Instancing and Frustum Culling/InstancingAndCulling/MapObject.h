@@ -15,6 +15,9 @@ public:
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 
 public:
+	void SetTexture(int idx) { Mat->DiffuseSrvHeapIndex = idx; }
+
+public:
 	static CMapObject* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName);
 
 private:

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "StaticMesh.h"
-
+#include "Texture_Manager.h"
 
 StaticMesh::StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice) : Mesh(d3dDevice)
 {
@@ -58,14 +58,17 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 					size_t iLength = wstrFileName.length();
 					size_t iDotPos = wstrFileName.rfind(L".");											// > .tga에서 .위치 찾기
 					wstrFileName.erase(iDotPos, iLength);												// > TextureName만 남기기
-					wstring wstrTexPath = L"../../Textures/" + wstrFileName + L".dds";					// > 경로 지정 L"../../Textures/TextureName.dds"
-					auto bricksTex = std::make_unique<Texture>();
+					wstring wstrTexPath = L"../../../Textures/" + wstrFileName + L".dds";					// > 경로 지정 L"../../Textures/TextureName.dds"
+					auto Tex = new Texture;
 					string texName;
-					bricksTex->Name = texName.assign(wstrFileName.begin(), wstrFileName.end());
-					bricksTex->Filename = wstrTexPath;
-					/*ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(m_d3dDevice.Get(),
-					mCommandList.Get(), bricksTex->Filename.c_str(),
-					bricksTex->Resource, bricksTex->UploadHeap));*/
+					Tex->Name = texName.assign(wstrFileName.begin(), wstrFileName.end());
+					Tex->Filename = wstrTexPath;
+					ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(m_d3dDevice.Get(),
+						mCommandList.Get(), Tex->Filename.c_str(),
+						Tex->Resource, Tex->UploadHeap));
+
+					m_strTexName = texName;
+					CTexture_Manager::GetInstance()->Ready_Texture(m_strTexName, Tex, CTexture_Manager::TEX_INST_2D);
 				}
 			}
 		}

@@ -1,0 +1,6 @@
+Com_Mesh_Barrel	House1Tex	-15	0	15	0.2	0.2	0.2	-90	0	0
+Com_Mesh_House2	House2Tex	10	0	20	0.2	0.2	0.2	-90	180	0
+Com_Mesh_House3	House3Tex	-10	0	-20	0.2	0.2	0.2	-90	0	0
+Com_Mesh_Scream	House4Tex	25	0	-6	0.2	0.2	0.2	-90	-90	0
+Com_Mesh_House1	crateTex	10	0.6	-15	0.05	0.05	0.05	-90	0	0
+Com_Mesh_Barrel	iceTex	11.6	0.6	-15	0.05	0.05	0.05	-50	43	0

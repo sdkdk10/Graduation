@@ -32,7 +32,11 @@ HRESULT CMapObject::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
+<<<<<<< HEAD
 	ObjCBIndex =m_iMyObjectID;
+=======
+	ObjCBIndex = m_iMyObjectID;
+>>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -60,7 +64,7 @@ bool CMapObject::Update(const GameTimer & gt)
 
 	//auto currObjectCB2 = m_pFrameResource->InstanceBuffer.get();
 
-	XMMATRIX world = XMLoadFloat4x4(&World);
+	XMMATRIX world = XMLoadFloat4x4(&m_pTransCom->GetWorld());
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
 	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
