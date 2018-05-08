@@ -119,7 +119,7 @@ void Barrel::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Barrel::Initialize()
 {
-	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Barrel"));
+	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"staticMesh"));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 

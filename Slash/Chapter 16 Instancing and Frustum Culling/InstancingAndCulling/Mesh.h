@@ -86,6 +86,7 @@ public:
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D12Device>		m_d3dDevice;
+	string				m_strTexName;
 };
 
 

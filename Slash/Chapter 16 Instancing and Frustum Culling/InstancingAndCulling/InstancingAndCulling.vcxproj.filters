@@ -151,11 +151,11 @@
     <Filter Include="03. Mesh\04. UIMesh">
       <UniqueIdentifier>{58d82cd2-adbd-406a-bbcc-4d746ff1af19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Mesh\00. DynamicMesh\01. StaticMesh">
-      <UniqueIdentifier>{a61a4be6-ff8f-48f3-90b7-c9e4373f82e7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="94. Manager\03. Texture_Manager">
       <UniqueIdentifier>{8c149239-6877-4e6b-ba6c-bcceda5d39ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Mesh\01. StaticMesh">
+      <UniqueIdentifier>{a61a4be6-ff8f-48f3-90b7-c9e4373f82e7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -193,7 +193,7 @@
       <Filter>94. Manager\01. InputDevice</Filter>
     </ClCompile>
     <ClCompile Include="StaticMesh.cpp">
-      <Filter>03. Mesh\00. DynamicMesh\01. StaticMesh</Filter>
+      <Filter>03. Mesh\01. StaticMesh</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>03. Mesh</Filter>
@@ -337,7 +337,7 @@
       <Filter>98. Header</Filter>
     </ClInclude>
     <ClInclude Include="StaticMesh.h">
-      <Filter>03. Mesh\00. DynamicMesh\01. StaticMesh</Filter>
+      <Filter>03. Mesh\01. StaticMesh</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>03. Mesh</Filter>

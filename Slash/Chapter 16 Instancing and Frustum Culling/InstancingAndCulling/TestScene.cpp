@@ -180,6 +180,21 @@ bool CTestScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
+	auto obj = CManagement::GetInstance()->Find_Object(L"Layer_Map");
+	static UCHAR pKeysBuffer[256];
+	bool bProcessedByScene = false;
+	if (GetKeyboardState(pKeysBuffer))
+	{
+		if (pKeysBuffer[0x50] & 0xF0) //p
+		{
+			dynamic_cast<CInstancingObject*>(obj)->GetTransform()->Translate(0.2f, 0.2f, 0.2f);
+		}
+		if (pKeysBuffer[0x4E] & 0xF0) //N≈∞
+		{
+			dynamic_cast<CInstancingObject*>(obj)->GetTransform()->Translate(-0.2f, -0.2f, -0.2f);
+		}
+
+	}
 	//CollisionProcess();
 	UpdateOOBB();
 	UpdateUI();
@@ -385,44 +400,42 @@ HRESULT CTestScene::Load_Map()
 
 		CGameObject* pObject;
 		CRenderer::RenderType eRenderType;
-		pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
-		eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
-		//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
-		//eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
 
-		fin >> ignore;			// > Tex_Name
+		int iSize = 1;
+		fin >> iSize;			// > Instancing Size
 
-		Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_DEFAULT_2D);		// > ¿ŒΩ∫≈œΩÃ¿œ ∂ß πŸ≤„¡‹
-		dynamic_cast<CMapObject*>(pObject)->SetTexture(tex->Num);
+		//pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
+		//eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
+		pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
+		eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
+
+
+
 
 		pObject->SetCamera(Get_MainCam());
-		Ready_GameObject(L"Layer_Map", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
 
 		std::string::size_type sz;
 
 		string Value[9];
 		float fValue[9];
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < iSize; ++i)
 		{
+			fin >> ignore;			// > Tex_Name
+			Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_INST_2D);		// > ¿ŒΩ∫≈œΩÃ¿œ ∂ß πŸ≤„¡‹
+			//dynamic_cast<CInstancingObject*>(pObject)->SetTexture(i, tex->Num);
+
 			for (int j = 0; j < 9; ++j)
 			{
 				fin >> Value[j];
 				fValue[j] = std::stof(Value[j], &sz);
 			}
-			/*if (eType == (Mesh::MESH_STATIC_INST))
-			{
-				pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
-				pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
-				pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
-			}*/
-			//else
-			{
-				pObject->GetTransform()->Translation(fValue[0], fValue[1], fValue[2]);
-				pObject->GetTransform()->Scaling(fValue[3], fValue[4], fValue[5]);
-				pObject->GetTransform()->Rotation(fValue[6], fValue[7], fValue[8]);
-			}
+
+			pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+			pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+			pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
 		}
+		Ready_GameObject(L"Layer_Map", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
 	}
 
 

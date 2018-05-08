@@ -16,6 +16,7 @@ public:
 	virtual int Update(const GameTimer& gt);
 	virtual void Draw();
 
+
 public:
 	static StaticMesh* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>> & pFilePath);
 

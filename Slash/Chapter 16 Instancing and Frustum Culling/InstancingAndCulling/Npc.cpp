@@ -45,7 +45,7 @@ HRESULT CNpc::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 20.f));
 	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = 5;
+	ObjCBIndex = m_iMyObjectID;
 
 	Geo_Head = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

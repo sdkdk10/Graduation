@@ -35,7 +35,7 @@ public:
 	bool m_bIsVisiable = true;
 	Camera * m_pCamera;
 	BoundingFrustum				mCamFrustum;
-	bool						mFrustumCullingEnabled = true;
+	bool						mFrustumCullingEnabled = false;
 
 	void					SetCamera(Camera* pCam) { m_pCamera = pCam; }
 	void					SetCamFrustum(BoundingFrustum frustum) { mCamFrustum = frustum; }
@@ -125,7 +125,7 @@ protected:
 
 	BoundingBox					Bounds;
 
-	static unsigned long   m_iAllObjectIndex;
+	static unsigned long	m_iAllObjectIndex;
 	static CGameObject*      m_pAllObject[MAXOBJECTID];
 
 	unsigned long         m_iMyObjectID;

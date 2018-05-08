@@ -118,6 +118,7 @@ bool InstancingAndCullingApp::Initialize()
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
 
 	LoadTextures();
+	LoadMeshes();
 	BuildRootSignature();
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
@@ -553,6 +554,61 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"MageUITex Ready Failed");
 
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	/*auto Tex = new Texture;
+	Tex->Name = "House1Tex";
+	Tex->Filename = L"../../Textures/House_1.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"House1Tex Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "House2Tex";
+	Tex->Filename = L"../../Textures/House_2.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"House2Tex Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "House3Tex";
+	Tex->Filename = L"../../Textures/House_3.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"House3Tex Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "House4Tex";
+	Tex->Filename = L"../../Textures/House_4.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"House4Tex Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "ScreamTex";
+	Tex->Filename = L"../../Textures/Screaming_statue_diffuse.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"ScreamTex Ready Failed");*/
+	////////////////////////////////////////////////////////////////////////////
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -571,6 +627,71 @@ void InstancingAndCullingApp::LoadTextures()
 	mMaterials_Instancing[WarriorUITex->Name] = std::move(WarriorUITex);
 	mMaterials_Instancing[MageUITex->Name] = std::move(MageUITex);
 	
+}
+
+void InstancingAndCullingApp::LoadMeshes()
+{
+
+	vector<pair<const string, const string>> path;
+	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
+
+	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/Mage/Mage_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Models/Mage/Mage_Walk.ASE"));
+	path.push_back(make_pair("Back", "Models/Mage/Mage_Attack1.ASE"));
+	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell1.ASE"));
+	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell2.ASE"));
+
+	pComponent = DynamicMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/Spider/Spider_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Models/Spider/Spider_Walk.ASE"));
+
+	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
+	/*
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent);
+	
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House", pComponent);
+	*/
+	pComponent = GeometryMesh::Create(md3dDevice);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);
+
+	// > Map Object ASE Load
+	fstream in("../../Data/ModelList.txt");
+	if (in.is_open() == false)
+	{
+		MSG_BOX(L"ModelList.txt 읽기 실패함 망함ㅠㅠㅠㅠㅠㅠㅠ");
+	}
+
+	string meshName;
+	string meshPath;
+	while (!(in.eof()))
+	{
+		in >> meshName;
+		in >> meshPath;
+		path.clear();
+		path.push_back(make_pair("Idle", meshPath));
+		pComponent = StaticMesh::Create(md3dDevice, path);
+		wstring wstr;
+		wstr.assign(meshName.begin(), meshName.end());
+		CComponent_Manager::GetInstance()->Ready_Component(const_cast<wchar_t*>(wstr.c_str()), pComponent);
+	}
 }
 
 void InstancingAndCullingApp::BuildRootSignature()
@@ -641,16 +762,19 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	//
 	ComPtr<ID3D12DescriptorHeap> Heap;
 
+	auto mapDefault2D = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_2D);
+	auto mapInst2D = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_INST_2D);
+	auto mapDefaultCube = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_CUBE);
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = 11;
+	srvHeapDesc2.NumDescriptors = mapDefault2D.size() + mapDefaultCube.size();
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {}; //Instancing Texture
-	srvHeapDesc.NumDescriptors = 6;
+	srvHeapDesc.NumDescriptors = mapInst2D.size();
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_INSTANCING])));
@@ -689,8 +813,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Instancing.Texture2D.ResourceMinLODClamp = 0.0f;
 	srvDesc_Instancing.Texture2D.MostDetailedMip = 0;
 
-	auto iter = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_INST_2D).begin();
-	auto iter_end = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_INST_2D).end();
+	auto iter = mapInst2D.begin();
+	auto iter_end = mapInst2D.end();
 	int idx = 0;
 
 	srvDesc_Instancing.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
@@ -717,8 +841,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc_Default.Texture2D.MostDetailedMip = 0;
 
-	iter = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_2D).begin();
-	iter_end = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_2D).end();
+	iter = mapDefault2D.begin();
+	iter_end = mapDefault2D.end();
 	idx = 0;
 
 	srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
@@ -737,82 +861,6 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 		iter->second->Num = idx++;
 	}
 
-	/*
-	srvDesc_Default.Texture2D.MipLevels = InsecTex->GetDesc().MipLevels;
-	srvDesc_Default.Format = InsecTex->GetDesc().Format;
-	md3dDevice->CreateShaderResourceView(InsecTex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 1 Barrel
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = FenceTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = FenceTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(FenceTex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 2 Terrain
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = stoneTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc_Default, hDescriptor_Default);
-	
-	// next descriptor 3 Spdier
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = SpiderTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = SpiderTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(SpiderTex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 4 Dragon
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = DragonTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = DragonTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(DragonTex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 5 Mage
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = MageTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = MageTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(MageTex.Get(), &srvDesc_Default, hDescriptor_Default);
-<<<<<<< HEAD
-	
-
-=======
-	*/
-	
-	/*
->>>>>>> 36463d4331f12df8bde943c65182b628ad14fae0
-	// next descriptor 6 BloodTex (HPBar를 위한 텍스쳐)
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = BloodTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = BloodTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(BloodTex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 7 HeartTex
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = HeartTex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = HeartTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(HeartTex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 8 WarriorUITex
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = WarriorUITex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = WarriorUITex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(WarriorUITex.Get(), &srvDesc_Default, hDescriptor_Default);
-
-	// next descriptor 9 MageUITex
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc_Default.Format = MageUITex->GetDesc().Format;
-	srvDesc_Default.Texture2D.MipLevels = MageUITex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(MageUITex.Get(), &srvDesc_Default, hDescriptor_Default);
-	*/
-
 	// next descriptor 10 SkyBox
 	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
@@ -820,8 +868,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvDesc_Default.TextureCube.MostDetailedMip = 0;
 	srvDesc_Default.TextureCube.ResourceMinLODClamp = 0.0f;
 
-	iter = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_CUBE).begin();
-	iter_end = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_CUBE).end();
+	iter = mapDefaultCube.begin();
+	iter_end = mapDefaultCube.end();
 	//idx = 0;
 
 	for (iter; iter != iter_end; ++iter)
@@ -1061,7 +1109,7 @@ void InstancingAndCullingApp::BuildMaterials()
 	grass0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	grass0->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	grass0->Roughness = 0.2f;
-	
+
 	///////////////////////////////////////////////////////////////////// Default.hlsl
 	auto skullMat = std::make_unique<Material>();
 	skullMat->Name = "skullMat";
@@ -1095,48 +1143,8 @@ void InstancingAndCullingApp::BuildMaterials()
 
 void InstancingAndCullingApp::BuildRenderItems()
 {
-	
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
 
-	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/Mage/Mage_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Mage/Mage_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Attack1.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell1.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell2.ASE"));
-
-	pComponent = DynamicMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/Spider/Spider_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Spider/Spider_Walk.ASE"));
-
-	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
-
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent);
-	
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House", pComponent);
-
-	pComponent = GeometryMesh::Create(md3dDevice);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);
-
+		
 
 	//path.clear();
 	//path.push_back(make_pair("Idle", "Models/Dragon/Dragon_FlyIdle.ASE"));

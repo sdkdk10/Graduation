@@ -60,7 +60,7 @@ bool CMapObject::Update(const GameTimer & gt)
 
 	//auto currObjectCB2 = m_pFrameResource->InstanceBuffer.get();
 
-	XMMATRIX world = XMLoadFloat4x4(&World);
+	XMMATRIX world = XMLoadFloat4x4(&m_pTransCom->GetWorld());
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
 	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
