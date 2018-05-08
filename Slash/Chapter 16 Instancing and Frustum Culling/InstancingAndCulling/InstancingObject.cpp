@@ -34,10 +34,7 @@ CInstancingObject::~CInstancingObject()
 
 HRESULT CInstancingObject::Initialize()
 {
-<<<<<<< HEAD
 
-=======
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
@@ -171,23 +168,16 @@ HRESULT CInstancingObject::Initialize()
 
 bool CInstancingObject::Update(const GameTimer & gt)
 {
-<<<<<<< HEAD
-	
-=======
+
 
 	
 	CGameObject::Update(gt);
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
-<<<<<<< HEAD
-	const auto& instanceData = vecInstances;
-=======
 	auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
 	auto& instanceData = vecInstances;
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 	int visibleInstanceCount = 0;
 
@@ -233,8 +223,8 @@ bool CInstancingObject::Update(const GameTimer & gt)
 	}
 
 	InstanceCount = visibleInstanceCount;
-	cout << m_pwstrMeshName << " : " << endl;
-	cout << InstanceCount << endl;
+	//cout << m_pwstrMeshName << " : " << endl;
+	//cout << InstanceCount << endl;
 
 	//cout << InstanceCount << endl;
 

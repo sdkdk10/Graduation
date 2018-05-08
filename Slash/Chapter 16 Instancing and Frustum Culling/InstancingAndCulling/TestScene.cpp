@@ -23,10 +23,6 @@
 #include "Texture_Manager.h"
 #include "Transform.h"
 
-<<<<<<< HEAD
-
-=======
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: m_d3dDevice(d3dDevice)
 	, mSrvDescriptorHeap(srv)
@@ -45,13 +41,9 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
-<<<<<<< HEAD
 	// 서버 실행시 주석시작
 
-	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-=======
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버 실행시 주석시작
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -62,7 +54,6 @@ HRESULT CTestScene::Initialize()
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
 	// 주석종료
-<<<<<<< HEAD
 
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -73,7 +64,6 @@ HRESULT CTestScene::Initialize()
 //	Ready_GameObject(L"Layer_Spider", pObject);
 //	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 //	
-=======
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	pObject->SetPosition(0,0,0);
@@ -82,7 +72,6 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	pObject->SetPosition(0, 0, 10);
@@ -119,18 +108,11 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);*/
 
-<<<<<<< HEAD
-	/*pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_Dragon", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-*/
-=======
+
 	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	//pObject->SetCamera(Get_MainCam());
 	//Ready_GameObject(L"Layer_Dragon", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	
 	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -150,10 +132,7 @@ HRESULT CTestScene::Initialize()
 
 	UISetting();
 
-<<<<<<< HEAD
 	
-=======
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	if (FAILED(Load_Map()))
 		return E_FAIL;
 
@@ -168,12 +147,9 @@ bool CTestScene::Update(const GameTimer & gt)
 	UpdateOOBB();
 	UpdateUI();
 
-<<<<<<< HEAD
-=======
 	//CollisionProcess();
 	UpdateOOBB();
 	UpdateUI();
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	return true;
 }
 
@@ -260,7 +236,7 @@ void CTestScene::CollisionProcess()
 		if (mLocalPlayerBounds.Intersects(m_pInstance->GetBounds()) != DirectX::DISJOINT)
 		{
 
-			cout << i << "번째 인스턴싱 오브젝트랑 충돌" << endl;
+			//cout << i << "번째 인스턴싱 오브젝트랑 충돌" << endl;
 		}
 
 	}
@@ -276,7 +252,6 @@ void CTestScene::CollisionProcess()
 	//}
 
 	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
-<<<<<<< HEAD
 	//for (int i = 0; i < 2; ++i)
 	//{
 
@@ -294,7 +269,6 @@ void CTestScene::CollisionProcess()
 
 	//	}
 	//}
-=======
 	for (int i = 0; i < 2; ++i)
 	{
 
@@ -312,7 +286,6 @@ void CTestScene::CollisionProcess()
 
 		}
 	}
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 
 	//if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))

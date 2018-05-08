@@ -32,11 +32,7 @@ HRESULT CMapObject::Initialize()
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f));
 	TexTransform = MathHelper::Identity4x4();
-<<<<<<< HEAD
 	ObjCBIndex =m_iMyObjectID;
-=======
-	ObjCBIndex = m_iMyObjectID;
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 	Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -80,7 +76,7 @@ bool CMapObject::Update(const GameTimer & gt)
 	// Perform the box/frustum intersection test in local space.
 	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 	{
-		cout << "보인당!" << endl;
+		//cout << "보인당!" << endl;
 		m_bIsVisiable = true;
 		ObjectConstants objConstants;
 		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
@@ -91,7 +87,7 @@ bool CMapObject::Update(const GameTimer & gt)
 	}
 	else
 	{
-		cout << "안보인당!" << endl;
+		//cout << "안보인당!" << endl;
 		m_bIsVisiable = false;
 		m_bIsVisiable = true;
 		ObjectConstants objConstants;

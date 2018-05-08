@@ -41,7 +41,6 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 namespace Vector3
 {
-<<<<<<< HEAD
 	inline float BetweenVectorLength(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2) //두 벡터간 거리를 리턴해줌
 	{
 		XMFLOAT3 xmf3SubVector;
@@ -55,13 +54,7 @@ namespace Vector3
 		fDistance = sqrt(xmf3SubVector.x + xmf3SubVector.y + xmf3SubVector.z);
 
 		return fDistance;
-		
-=======
-	inline float BetweenVectorLength(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
-	{
 
-		return 0.1f;
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	}
 	inline bool IsZero(XMFLOAT3& xmf3Vector)
 	{

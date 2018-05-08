@@ -6,10 +6,7 @@
 #include "Management.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
-<<<<<<< HEAD
 #include "Player.h"
-=======
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 
 Spider::Spider(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -24,15 +21,15 @@ Spider::~Spider()
 
 bool Spider::Update(const GameTimer & gt)
 {
-<<<<<<< HEAD
 
+	if (!m_pPlayer)
+		m_pPlayer = dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 
-
-=======
 	CGameObject::Update(gt);
 
 	Animate(gt);
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
+
+	
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -61,12 +58,8 @@ bool Spider::Update(const GameTimer & gt)
 		//cout << "º¸ÀÎ´ç!" << endl;
 		m_bIsVisiable = true;
 
-		if (!m_pPlayer)
-			m_pPlayer = dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player"));
+	
 
-		CGameObject::Update(gt);
-
-		Animate(gt);
 		auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
 		ObjectConstants objConstants;
@@ -146,13 +139,9 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 
 		//int iTest = (int)pMesh->m_fTest;
 
-<<<<<<< HEAD
 		int iTest = AnimStateMachine.GetCurAnimFrame();
 		int AnimaState = AnimStateMachine.GetAnimState();
-=======
-		int iTest = AnimStateMachine.m_iCurAnimFrame;
-		int AnimaState = AnimStateMachine.m_iAnimState;
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
+
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
 			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
 			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
@@ -177,11 +166,8 @@ HRESULT Spider::Initialize()
 
 	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-<<<<<<< HEAD
 	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
-=======
-	AnimStateMachine.m_iAnimState = AnimStateMachine.IdleState;
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
+
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
 	Mat->MatCBIndex = 3;
@@ -214,7 +200,6 @@ HRESULT Spider::Initialize()
 
 void Spider::Animate(const GameTimer & gt)
 {
-<<<<<<< HEAD
 	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
 	XMFLOAT3 Shaft = XMFLOAT3(1, 0, 0);
 
@@ -304,9 +289,6 @@ void Spider::Animate(const GameTimer & gt)
 	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
 
-=======
-	AnimStateMachine.AnimationStateUpdate(gt);
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 }
 
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)

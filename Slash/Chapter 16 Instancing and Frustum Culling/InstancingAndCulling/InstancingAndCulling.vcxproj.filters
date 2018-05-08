@@ -118,6 +118,9 @@
     <Filter Include="92. Component\02. Transform">
       <UniqueIdentifier>{f14e79b3-9534-4343-a9bd-2826e2379697}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92. Component\03.Collision_Manager">
+      <UniqueIdentifier>{b1fdd553-a3ce-47d5-95eb-62be6a69815d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="95. Frame\00. Manager">
       <UniqueIdentifier>{8b411420-5475-4af1-b366-052fe534e14b}</UniqueIdentifier>
     </Filter>
@@ -159,12 +162,6 @@
     </Filter>
     <Filter Include="02. GameObject\07. UI\02. StaticUI">
       <UniqueIdentifier>{492a1ba9-1702-4255-8c1e-4dc12cb34648}</UniqueIdentifier>
-<<<<<<< HEAD
-    </Filter>
-    <Filter Include="94. Manager\04. Collision_Manager">
-      <UniqueIdentifier>{2ec8fa73-3df1-4dbb-8397-34a360427e61}</UniqueIdentifier>
-=======
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -246,6 +243,9 @@
     </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
       <Filter>02. GameObject\99. BoundingBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision_Manager.cpp">
+      <Filter>92. Component\03.Collision_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\GameTimer.cpp">
       <Filter>96. GameTimer\01. Timer</Filter>
@@ -402,6 +402,9 @@
     </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>02. GameObject\99. BoundingBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision_Manager.h">
+      <Filter>92. Component\03.Collision_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\GameTimer.h">
       <Filter>96. GameTimer\01. Timer</Filter>

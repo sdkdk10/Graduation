@@ -50,38 +50,26 @@ public: //애니메이션 상태
 	const int Attack2State = 3;
 	const int Attack3State = 4;
 	const int DamageState = 5;
-<<<<<<< HEAD
 private:
-=======
-public:
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 	int m_iAnimState = 0; // 현재 애니메이션 상태
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지
 public:
 	void AnimationStateUpdate(const GameTimer & gt);
 	void SetTimerTrueFalse();
-<<<<<<< HEAD
 	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
 	int GetCurAnimFrame() { return m_iCurAnimFrame;  }
-=======
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 };
 
 class CGameObject
 	: public CBase
 {
-<<<<<<< HEAD
 protected:
 	XMFLOAT3 m_MovingRefletVector = XMFLOAT3(0, 0, 0); // 슬라이딩 벡터를 위한 반사벡터
 	//XMFLOAT4					m_pxmf4WallPlanes[4]; 
 
 public:
 	void SetObjectAnimState(int _animState) { AnimStateMachine.SetAnimState(_animState); }
-=======
-public:
-	void SetObjectAnimState(int _animState ) { AnimStateMachine.m_iAnimState = _animState; }
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 protected:
 	AnimateStateMachine AnimStateMachine;
 private:
@@ -195,10 +183,7 @@ public:
 	BoundingBox GetBounds() { return Bounds; }
 
 	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
-<<<<<<< HEAD
-=======
 
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
 public:
 	virtual bool			Update(const GameTimer & gt);
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);

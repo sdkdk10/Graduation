@@ -95,11 +95,7 @@ HRESULT SkyBox::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
-<<<<<<< HEAD
-	Mat->MatCBIndex = 6;
-=======
-	Mat->MatCBIndex = 0;
->>>>>>> a549a07b1fbd6cc03621ef7e65224284684e3fd7
+	Mat->MatCBIndex = 6; //0;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
