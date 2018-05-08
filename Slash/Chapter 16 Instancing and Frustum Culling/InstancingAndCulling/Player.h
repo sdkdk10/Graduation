@@ -11,7 +11,7 @@ class Player : public CGameObject
 /////////////////////////////////////////
 	const float m_fMoveSpeed = 10.0f;
 	const float m_fRotateSpeed = 3.0f;
-	const float m_fDegree = 51.2958f;
+	const float m_fDegree = 57.3248f;
 	const float m_fScale = 0.05f;
 	float RotationAngle = 0.0f;
 
@@ -71,7 +71,6 @@ public:
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
 	virtual HRESULT			Initialize();
 	virtual void			Free();
-	virtual void Set_AnimState(int iState) { KeyInputTest = iState; }
 
 public:
 	void					Render_Body(ID3D12GraphicsCommandList* cmdList);

@@ -20,22 +20,10 @@ CInstancingObject::~CInstancingObject()
 
 HRESULT CInstancingObject::Initialize()
 {
-	/*m_pMesh = new StaticMesh(m_d3dDevice);
-
-
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;*/
-	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
-
-<<<<<<< HEAD
-	m_pMesh = StaticMesh::Create(m_d3dDevice, path);
-=======
-	if (FAILED(m_pMesh->Initialize(path)))
-		return E_FAIL;*/
 
 	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+	if (nullptr == m_pMesh)
+		return E_FAIL;
 
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
@@ -127,50 +115,6 @@ HRESULT CInstancingObject::Initialize()
 	Element_Bounds.IndexCount = Geo_Bounds->DrawArgs["BarrelBounds"].IndexCount;
 	Element_Bounds.StartIndexLocation = Geo_Bounds->DrawArgs["BarrelBounds"].StartIndexLocation;
 	Element_Bounds.BaseVertexLocation = Geo_Bounds->DrawArgs["BarrelBounds"].BaseVertexLocation;
-//	m_GeoBounds = 
-
-	// Generate instance data.
-	//const int n = 5;
-	//vecInstances.resize(n*n*n);
-	//vecInstances.resize(m_iSize *m_iSize *m_iSize);
-	//m_vecTransCom.resize(m_iSize *m_iSize *m_iSize);
-
-	//float width = 200.0f;
-	//float height = 200.0f;
-	//float depth = 200.0f;
-
-	//float x = -0.5f*width;
-	//float y = -0.5f*height;
-	//float z = -0.5f*depth;
-	//float dx = width / (m_iSize - 1);
-	//float dy = height / (m_iSize - 1);
-	//float dz = depth / (m_iSize - 1);
-	//for (int k = 0; k < m_iSize; ++k)
-	//{
-	//	for (int i = 0; i < m_iSize; ++i)
-	//	{
-	//		for (int j = 0; j < m_iSize; ++j)
-	//		{
-	//			int index = k * m_iSize*m_iSize + i *m_iSize + j;
-	//			// Position instanced along a 3D grid.
-	//			vecInstances[index].World = XMFLOAT4X4(
-	//				1.0f, 0.0f, 0.0f, 0.0f,
-	//				0.0f, 1.0f, 0.0f, 0.0f,
-	//				0.0f, 0.0f, 1.0f, 0.0f,
-	//				x + j * dx, y + i * dy, z + k * dz, 1.0f);
-
-	//			CTransform* pCom = CTransform::Create(this);
-	//			pCom->GetPosition() = XMFLOAT3(x + j * dx, y + i * dy, z + k * dz);
-	//			pCom->GetScale() = XMFLOAT3(1.f, 1.f, 1.f);
-	//			//m_vecTransCom.push_back(pCom);
-	//			m_vecTransCom[index] = pCom;
-	//			
-	//			XMStoreFloat4x4(&vecInstances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-	//			//vecInstances[index].MaterialIndex = index % (mMaterials.size() - 1);
-	//			vecInstances[index].MaterialIndex = index % 6;
-	//		}
-	//	}
-	//}
 
 	vecInstances.resize(m_iSize);
 	m_vecTransCom.resize(m_iSize);
@@ -196,21 +140,20 @@ HRESULT CInstancingObject::Initialize()
 
 bool CInstancingObject::Update(const GameTimer & gt)
 {
-	CGameObject::Update(gt);
+	
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
-	auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
 	const auto& instanceData = vecInstances;
 
 	int visibleInstanceCount = 0;
 
-	auto Player = CManagement::GetInstance()->Find_Object(L"Layer_Player", 0);
 
 	for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 	{
 		//XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+		vecInstances[i].World = m_vecTransCom[i]->GetWorld();
 		m_vecTransCom[i]->Update_Component(gt);
 		XMMATRIX world = XMLoadFloat4x4(&m_vecTransCom[i]->GetWorld());
 		XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
@@ -228,6 +171,11 @@ bool CInstancingObject::Update(const GameTimer & gt)
 		// Perform the box/frustum intersection test in local space.
 		if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 		{
+			CGameObject::Update(gt);
+			collisionTagTest = i;
+			Animate(gt, m_vecTransCom[i]);
+			auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
+
 			InstanceData data;
 			XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
 			XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
@@ -293,6 +241,77 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 
 	
 
+}
+
+void CInstancingObject::Animate(const GameTimer & gt)
+{
+
+
+}
+
+void CInstancingObject::Animate(const GameTimer & gt, CTransform * transform)
+{
+	auto m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player", 0);
+
+	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
+	XMFLOAT3 Shaft = XMFLOAT3(1, 0, 0);
+
+	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, transform->GetPosition());   // 객체에서 플레이어로 가는 벡터
+
+	dirVector = Vector3::Normalize(dirVector);
+
+	float dotproduct = Vector3::DotProduct(Shaft, dirVector);
+	float ShafttLength = Vector3::Length(Shaft);
+	float dirVectorLength = Vector3::Length(dirVector);
+
+	float cosCeta = (dotproduct / ShafttLength * dirVectorLength);
+
+	float ceta = acos(cosCeta);
+
+	if (playerPos.z < transform->GetPosition().z)
+		ceta = 360.f - ceta * 57.3248f;// +180.0f;
+	else
+		ceta = ceta * 57.3248f;
+
+	//cout << ceta << endl;
+	//cout << ceta << endl;
+	float a = Vector3::Length(dirVector);
+	XMFLOAT3 Normal = XMFLOAT3(a * cos(ceta), 0, a * sin(ceta));
+	Normal = Vector3::Normalize(Normal);
+
+
+
+	XMMATRIX world = XMLoadFloat4x4(&(transform->GetWorld()));
+	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+	BoundingOrientedBox mLocalPlayerBounds;
+	m_pPlayer->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+	if (mLocalPlayerBounds.Intersects(GetBounds()) != DirectX::DISJOINT)
+	{
+		/*cout << collisionTagTest << "번째 배럴";
+		if (0.0f < ceta && ceta < 45.0f)
+		{
+			cout << "오른쪽과 충돌 " << endl;
+		}
+		if (45.0f < ceta && ceta < 135.0f)
+		{
+			cout << "윗쪽과 충돌 " << endl;
+		}
+		if (135.0f < ceta && ceta < 225.0f)
+		{
+			cout << "왼쪽과 충돌 " << endl;
+		}
+		if (225.0f < ceta && ceta < 360.0f)
+		{
+			cout << "아랫쪽과 충돌 " << endl;
+		}*/
+	}
+	else
+	{
+
+		//cout << "충돌안함" << endl;
+	}
 }
 
 CInstancingObject * CInstancingObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* pMesh, int iSize)

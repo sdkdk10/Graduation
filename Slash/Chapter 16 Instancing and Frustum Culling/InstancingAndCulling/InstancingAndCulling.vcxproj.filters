@@ -52,6 +52,9 @@
     <Filter Include="03. Mesh\00. DynamicMesh">
       <UniqueIdentifier>{4586375e-61e5-405b-bc11-18bc268a150d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Mesh\01. StaticMesh">
+      <UniqueIdentifier>{a61a4be6-ff8f-48f3-90b7-c9e4373f82e7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="00. App\00. MainApp">
       <UniqueIdentifier>{fd3cce1d-2bd6-4887-b8a9-c70584591786}</UniqueIdentifier>
     </Filter>
@@ -115,9 +118,6 @@
     <Filter Include="92. Component\02. Transform">
       <UniqueIdentifier>{f14e79b3-9534-4343-a9bd-2826e2379697}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92. Component\03.Collision_Manager">
-      <UniqueIdentifier>{b1fdd553-a3ce-47d5-95eb-62be6a69815d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="95. Frame\00. Manager">
       <UniqueIdentifier>{8b411420-5475-4af1-b366-052fe534e14b}</UniqueIdentifier>
     </Filter>
@@ -151,13 +151,17 @@
     <Filter Include="03. Mesh\04. UIMesh">
       <UniqueIdentifier>{58d82cd2-adbd-406a-bbcc-4d746ff1af19}</UniqueIdentifier>
     </Filter>
-<<<<<<< HEAD
-    <Filter Include="03. Mesh\00. DynamicMesh\01. StaticMesh">
-      <UniqueIdentifier>{a61a4be6-ff8f-48f3-90b7-c9e4373f82e7}</UniqueIdentifier>
-=======
     <Filter Include="94. Manager\03. Texture_Manager">
       <UniqueIdentifier>{77b87e55-4de9-4fa8-9dbc-3f5ff92369bc}</UniqueIdentifier>
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+    </Filter>
+    <Filter Include="02. GameObject\07. UI\01. HPBar">
+      <UniqueIdentifier>{54ee374b-bd00-4878-ba96-06ecc527eede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\07. UI\02. StaticUI">
+      <UniqueIdentifier>{492a1ba9-1702-4255-8c1e-4dc12cb34648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. Manager\04. Collision_Manager">
+      <UniqueIdentifier>{2ec8fa73-3df1-4dbb-8397-34a360427e61}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -195,7 +199,7 @@
       <Filter>94. Manager\01. InputDevice</Filter>
     </ClCompile>
     <ClCompile Include="StaticMesh.cpp">
-      <Filter>03. Mesh\00. DynamicMesh\01. StaticMesh</Filter>
+      <Filter>03. Mesh\01. StaticMesh</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>03. Mesh</Filter>
@@ -240,9 +244,6 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>02. GameObject\99. BoundingBox</Filter>
     </ClCompile>
-    <ClCompile Include="Collision_Manager.cpp">
-      <Filter>92. Component\03.Collision_Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Common\GameTimer.cpp">
       <Filter>96. GameTimer\01. Timer</Filter>
     </ClCompile>
@@ -285,16 +286,14 @@
     <ClCompile Include="UIMesh.cpp">
       <Filter>03. Mesh\04. UIMesh</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="HPBar.cpp">
-      <Filter>02. GameObject\07. UI</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticUI.cpp">
-      <Filter>02. GameObject\07. UI</Filter>
-=======
     <ClCompile Include="Texture_Manager.cpp">
       <Filter>94. Manager\03. Texture_Manager</Filter>
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+    </ClCompile>
+    <ClCompile Include="HPBar.cpp">
+      <Filter>02. GameObject\07. UI\01. HPBar</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticUI.cpp">
+      <Filter>02. GameObject\07. UI\02. StaticUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -341,7 +340,7 @@
       <Filter>98. Header</Filter>
     </ClInclude>
     <ClInclude Include="StaticMesh.h">
-      <Filter>03. Mesh\00. DynamicMesh\01. StaticMesh</Filter>
+      <Filter>03. Mesh\01. StaticMesh</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>03. Mesh</Filter>
@@ -401,9 +400,6 @@
     <ClInclude Include="BoundingBox.h">
       <Filter>02. GameObject\99. BoundingBox</Filter>
     </ClInclude>
-    <ClInclude Include="Collision_Manager.h">
-      <Filter>92. Component\03.Collision_Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Common\GameTimer.h">
       <Filter>96. GameTimer\01. Timer</Filter>
     </ClInclude>
@@ -446,16 +442,14 @@
     <ClInclude Include="UIMesh.h">
       <Filter>03. Mesh\04. UIMesh</Filter>
     </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="HPBar.h">
-      <Filter>02. GameObject\07. UI</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticUI.h">
-      <Filter>02. GameObject\07. UI</Filter>
-=======
     <ClInclude Include="Texture_Manager.h">
       <Filter>94. Manager\03. Texture_Manager</Filter>
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+    </ClInclude>
+    <ClInclude Include="HPBar.h">
+      <Filter>02. GameObject\07. UI\01. HPBar</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticUI.h">
+      <Filter>02. GameObject\07. UI\02. StaticUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

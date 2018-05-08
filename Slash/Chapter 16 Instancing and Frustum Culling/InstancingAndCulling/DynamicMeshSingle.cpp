@@ -294,20 +294,7 @@ HRESULT DynamicMeshSingle::Initialize(vector<pair<const string, const string>>& 
 	return S_OK;
 }
 
-int DynamicMeshSingle::Update(const GameTimer & gt)
-{
-	//cout << m_fTest << endl;
-	m_fTest += gt.DeltaTime() * 10;
-	if (m_fTest > vecAnimFrame[0])
-	{
-		m_fTest = 0;
-	}
-	return 0;
-}
 
-void DynamicMeshSingle::Draw()
-{
-}
 
 void DynamicMeshSingle::Free()
 {

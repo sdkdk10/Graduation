@@ -5,14 +5,13 @@
 #include "Camera.h"
 #include "Management.h"
 #include "Component_Manager.h"
-<<<<<<< HEAD
-=======
 #include "Texture_Manager.h"
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
+#include "Player.h"
 
 Spider::Spider(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
+
 }
 
 
@@ -22,12 +21,12 @@ Spider::~Spider()
 
 bool Spider::Update(const GameTimer & gt)
 {
-	CGameObject::Update(gt);
-	m_pMesh->Update(gt);
+
+
+
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
 
 	
@@ -50,7 +49,17 @@ bool Spider::Update(const GameTimer & gt)
 	// Perform the box/frustum intersection test in local space.
 	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 	{
+		//cout << "보인당!" << endl;
 		m_bIsVisiable = true;
+
+		if (!m_pPlayer)
+			m_pPlayer = dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player"));
+
+		CGameObject::Update(gt);
+
+		Animate(gt);
+		auto currObjectCB = m_pFrameResource->ObjectCB.get();
+
 		ObjectConstants objConstants;
 		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
 		XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
@@ -74,6 +83,7 @@ bool Spider::Update(const GameTimer & gt)
 	}
 	else
 	{
+		//cout << "안보인당!" << endl;
 		m_bIsVisiable = false;
 	}
 	
@@ -95,6 +105,8 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable)
 	{
+		AnimStateMachine.SetTimerTrueFalse();
+
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
@@ -123,10 +135,13 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 		auto pMesh = dynamic_cast<DynamicMeshSingle*>(m_pMesh);
 
 
-		int iTest = (int)pMesh->m_fTest;
+		//int iTest = (int)pMesh->m_fTest;
+
+		int iTest = AnimStateMachine.GetCurAnimFrame();
+		int AnimaState = AnimStateMachine.GetAnimState();
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
-			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[0] /*+ pMesh->IndexAnimoffset[0]*/,
-			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[0]/*+ pMesh->VertexAnimoffset[0]*/, 0);
+			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
+			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
 
 	
 	}
@@ -137,17 +152,18 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 HRESULT Spider::Initialize()
 {
 	m_pMesh = dynamic_cast<DynamicMeshSingle*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Spider"));
-<<<<<<< HEAD
-
-=======
 	if (nullptr == m_pMesh)
 		return E_FAIL;
+
+
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SpiderTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
->>>>>>> eacd478379e7c2e406a16898510f70c1a3aa6d0d
 
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+
+	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
 	Mat->MatCBIndex = 3;
@@ -167,7 +183,7 @@ HRESULT Spider::Initialize()
 	BaseVertexLocation = Geo->DrawArgs["SingleMesh"].BaseVertexLocation;
 	Bounds = Geo->DrawArgs["SingleMesh"].Bounds;
 
-
+	
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x *m_fScale, Bounds.Center.y * m_fScale, Bounds.Center.z *m_fScale), XMFLOAT3(Bounds.Extents.x * m_fScale, Bounds.Extents.y * m_fScale, Bounds.Extents.z * m_fScale), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -176,6 +192,99 @@ HRESULT Spider::Initialize()
 
 
 	return S_OK;
+}
+
+void Spider::Animate(const GameTimer & gt)
+{
+	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
+	XMFLOAT3 Shaft = XMFLOAT3(1, 0, 0);
+
+	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, GetPosition());   // 객체에서 플레이어로 가는 벡터
+
+	dirVector = Vector3::Normalize(dirVector);
+	
+	float dotproduct = Vector3::DotProduct(Shaft, dirVector);
+	float ShafttLength = Vector3::Length(Shaft);
+	float dirVectorLength = Vector3::Length(dirVector);
+
+	float cosCeta = (dotproduct / ShafttLength * dirVectorLength);
+
+	float ceta = acos(cosCeta);
+
+	if (playerPos.z < GetPosition().z)
+		ceta = 360.f - ceta *51.2958f;// +180.0f;
+	else
+		ceta = ceta * 51.2958f;
+
+	//cout << ceta << endl;
+	float a = Vector3::Length(dirVector);
+	XMFLOAT3 Normal = XMFLOAT3(a * cos(ceta), 0, a * sin(ceta));
+	Normal = Vector3::Normalize(Normal);
+
+	//cout << Normal.x << "\t" << Normal.y << "\t" << Normal.z << endl;
+	/*m_pxmf4WallPlanes[0] = XMFLOAT4(-1.0f, 0.0f, 0.0f, GetPosition().x + Bounds.Extents.x);
+	m_pxmf4WallPlanes[1] = XMFLOAT4(1.0f, 0.0f, 0.0f, GetPosition().x + Bounds.Extents.x);
+	m_pxmf4WallPlanes[2] = XMFLOAT4(0.0f, 0.0f, -1.0f, GetPosition().z + Bounds.Extents.z);
+	m_pxmf4WallPlanes[3] = XMFLOAT4(0.0f, 0.0f, 1.0f, GetPosition().z + Bounds.Extents.z);
+
+	int nPlaneIndex = -1;
+	for (int j = 0; j < 4; j++)
+	{
+		PlaneIntersectionType intersectType = m_pPlayer->m_xmOOBB.Intersects(XMLoadFloat4(&m_pxmf4WallPlanes[j]));
+		if (intersectType == INTERSECTING)
+		{
+			nPlaneIndex = j;
+			break;
+		}
+	}
+	if (nPlaneIndex != -1)
+	{
+		
+	}
+	cout << nPlaneIndex << endl;*/
+
+	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) < 5.0f)
+	{
+		//cout << " 커몬 " << endl;
+	}
+	//cout << m_pPlayer->GetPosition().x << "\t" << m_pPlayer->GetPosition().y << "\t" << m_pPlayer->GetPosition().z << endl;
+	AnimStateMachine.AnimationStateUpdate(gt);
+
+	
+	if (m_pPlayer->m_xmOOBB.Intersects(m_xmOOBB))
+	{
+		//cout << i << "거미 충돌 " << endl;
+		
+	/*	if (0.0f < ceta && ceta < 45.0f)
+		{
+			cout << "오른쪽과 충돌 " << endl;
+		}
+		if (45.0f < ceta && ceta < 135.0f)
+		{
+			cout << "윗쪽과 충돌 " << endl;
+		}
+		if (135.0f < ceta && ceta < 225.0f)
+		{
+			cout << "왼쪽과 충돌 " << endl;
+		}
+		if (225.0f < ceta && ceta < 360.0f)
+		{
+			cout << "아랫쪽과 충돌 " << endl;
+		}*/
+		SetObjectAnimState(2);
+	}
+	else
+	{
+		//cout << i << "거미 충돌 아님" << endl;
+
+		SetObjectAnimState(0);
+
+	}
+
+	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
+	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
+
+
 }
 
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
