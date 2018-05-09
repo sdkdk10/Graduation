@@ -1,33 +1,33 @@
 #include "stdafx.h"
-#include "Npc.h"
+#include "Skeleton.h"
 #include "Component_Manager.h"
 #include "DynamicMesh.h"
 #include "Camera.h"
 #include "Management.h"
 #include "Texture_Manager.h"
 
-CNpc::CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName)
+CSkeleton::CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
 	m_pwstrMeshName = meshName;
 }
 
-CNpc::~CNpc()
+CSkeleton::~CSkeleton()
 {
 }
 
-void CNpc::OnPrepareRender()
+void CSkeleton::OnPrepareRender()
 {
 }
 
-void CNpc::Animate(const GameTimer & gt)
+void CSkeleton::Animate(const GameTimer & gt)
 {
 	AnimStateMachine.AnimationStateUpdate(gt);
 
 
 }
 
-HRESULT CNpc::Initialize()
+HRESULT CSkeleton::Initialize()
 {
 	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
 
@@ -84,7 +84,7 @@ HRESULT CNpc::Initialize()
 	return S_OK;
 }
 
-bool CNpc::Update(const GameTimer & gt)
+bool CSkeleton::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
 
@@ -168,9 +168,9 @@ bool CNpc::Update(const GameTimer & gt)
 	return true;
 }
 
-void CNpc::Render(ID3D12GraphicsCommandList * cmdList)
+void CSkeleton::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	if (m_bIsVisiable)
+	if (m_bIsVisiable && m_bIsConnected)
 	{
 		AnimStateMachine.SetTimerTrueFalse();
 
@@ -181,7 +181,7 @@ void CNpc::Render(ID3D12GraphicsCommandList * cmdList)
 	}
 	
 }
-void CNpc::Render_Head(ID3D12GraphicsCommandList * cmdList)
+void CSkeleton::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -219,7 +219,7 @@ void CNpc::Render_Head(ID3D12GraphicsCommandList * cmdList)
 		0);
 }
 
-void CNpc::Render_Body(ID3D12GraphicsCommandList * cmdList)
+void CSkeleton::Render_Body(ID3D12GraphicsCommandList * cmdList)
 {
 
 
@@ -260,7 +260,7 @@ void CNpc::Render_Body(ID3D12GraphicsCommandList * cmdList)
 }
 
 
-void CNpc::Render_Right(ID3D12GraphicsCommandList * cmdList)
+void CSkeleton::Render_Right(ID3D12GraphicsCommandList * cmdList)
 {
 
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
@@ -298,13 +298,13 @@ void CNpc::Render_Right(ID3D12GraphicsCommandList * cmdList)
 		0);
 }
 
-CNpc * CNpc::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)
+CSkeleton * CSkeleton::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)
 {
-	CNpc* pInstance = new CNpc(d3dDevice, srv, srvSize, meshName);
+	CSkeleton* pInstance = new CSkeleton(d3dDevice, srv, srvSize, meshName);
 	
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX(L"CNpc Created Failed");
+		MSG_BOX(L"CSkeleton Created Failed");
 		Safe_Release(pInstance);
 
 	}
@@ -312,7 +312,7 @@ CNpc * CNpc::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D1
 	return pInstance;
 }
 
-void CNpc::Free()
+void CSkeleton::Free()
 {
 	CGameObject::Free();
 }

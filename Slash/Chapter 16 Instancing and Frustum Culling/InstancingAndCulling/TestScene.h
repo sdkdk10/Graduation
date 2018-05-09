@@ -37,8 +37,6 @@ private:
 public:
 	static CTestScene* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
 
-	void Put_Player(const float& x, const float& y, const float& z, const int& id);
-
 	void UISetting();
 private:
 	virtual void Free();

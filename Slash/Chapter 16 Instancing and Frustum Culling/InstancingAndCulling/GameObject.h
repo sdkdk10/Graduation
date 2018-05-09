@@ -79,6 +79,7 @@ public:
 	void SetHp(float _hp) { hp = _hp; }
 public:
 	bool m_bIsVisiable = true;
+	bool m_bIsConnected = false;
 	Camera * m_pCamera;
 	BoundingFrustum				mCamFrustum;
 	bool						mFrustumCullingEnabled = true;

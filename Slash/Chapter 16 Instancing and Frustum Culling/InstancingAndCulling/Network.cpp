@@ -25,7 +25,7 @@ void CNetwork::InitSock(HWND MainWnd)
 	ZeroMemory(&ServerAddr, sizeof(SOCKADDR_IN));
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(MY_SERVER_PORT);
-	ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.126");
+	ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.95");
 
 	int Result = WSAConnect(mysocket, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
 
@@ -92,27 +92,46 @@ void CNetwork::ProcessPacket(char * ptr)
 {
 	switch (ptr[1])
 	{
-	case SC_PUT_PLAYER:
-	{
-		sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
-		static bool first_time = true;
-		int id = my_packet->id;
-		if (first_time) {
-			first_time = false;
-			myid = my_packet->id;
+		case SC_PUT_PLAYER:
+		{
+			sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
+			static bool first_time = true;
+			int id = my_packet->id;
+			if (first_time) {
+				first_time = false;
+				myid = my_packet->id;
+			}
+			if (myid == id)
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
+			}
+			else
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = true;
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
+			}
+			break;
 		}
-		serverid_to_objectvindex(id);
-		dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene())->Put_Player(my_packet->x, my_packet->y, my_packet->z, id);
-		break;
-	}
-	case SC_POS:
-	{
-		sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
-		int id = my_packet->id;
-		serverid_to_objectvindex(id);
-		CManagement::GetInstance()->Find_Object(L"Layer_Player", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-		break;
-	}
+		case SC_POS:
+		{
+			sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
+			int id = my_packet->id;
+			if (myid == id)
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
+			else
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
+			break;
+		}
+		case SC_REMOVE_PLAYER:
+		{
+			sc_packet_remove_player *my_packet = reinterpret_cast<sc_packet_remove_player *>(ptr);
+			int id = my_packet->id;
+			if (myid == id)
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
+			else
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
+			break;
+		}
 	}
 
 	//switch (ptr[1])
@@ -204,12 +223,4 @@ void CNetwork::ProcessPacket(char * ptr)
 
 void CNetwork::Free()
 {
-}
-
-void CNetwork::serverid_to_objectvindex(int& id)
-{
-	if (id == myid)
-		id = MYPLAYERID;
-	else if (id < myid)
-		id++;
 }

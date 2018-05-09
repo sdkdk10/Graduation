@@ -139,9 +139,6 @@
     <Filter Include="02. GameObject\00. AnimObject\00. Player">
       <UniqueIdentifier>{8546b538-d59b-48ed-9a3a-c087c17aa4fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\00. AnimObject\01. Npc">
-      <UniqueIdentifier>{a499b562-412a-4c8c-bf87-a08141577fb6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="91. Network">
       <UniqueIdentifier>{81a480a6-f5a1-4790-8b12-5d6a16da6014}</UniqueIdentifier>
     </Filter>
@@ -162,6 +159,9 @@
     </Filter>
     <Filter Include="02. GameObject\07. UI\02. StaticUI">
       <UniqueIdentifier>{492a1ba9-1702-4255-8c1e-4dc12cb34648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\00. AnimObject\01. Skeleton">
+      <UniqueIdentifier>{a499b562-412a-4c8c-bf87-a08141577fb6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -244,9 +244,6 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>02. GameObject\99. BoundingBox</Filter>
     </ClCompile>
-    <ClCompile Include="Collision_Manager.cpp">
-      <Filter>92. Component\03.Collision_Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Common\GameTimer.cpp">
       <Filter>96. GameTimer\01. Timer</Filter>
     </ClCompile>
@@ -271,9 +268,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>02. GameObject\00. AnimObject\00. Player</Filter>
     </ClCompile>
-    <ClCompile Include="Npc.cpp">
-      <Filter>02. GameObject\00. AnimObject\01. Npc</Filter>
-    </ClCompile>
     <ClCompile Include="Network.cpp">
       <Filter>91. Network</Filter>
     </ClCompile>
@@ -297,6 +291,9 @@
     </ClCompile>
     <ClCompile Include="StaticUI.cpp">
       <Filter>02. GameObject\07. UI\02. StaticUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>02. GameObject\00. AnimObject\01. Skeleton</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -403,9 +400,6 @@
     <ClInclude Include="BoundingBox.h">
       <Filter>02. GameObject\99. BoundingBox</Filter>
     </ClInclude>
-    <ClInclude Include="Collision_Manager.h">
-      <Filter>92. Component\03.Collision_Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Common\GameTimer.h">
       <Filter>96. GameTimer\01. Timer</Filter>
     </ClInclude>
@@ -430,9 +424,6 @@
     <ClInclude Include="Player.h">
       <Filter>02. GameObject\00. AnimObject\00. Player</Filter>
     </ClInclude>
-    <ClInclude Include="Npc.h">
-      <Filter>02. GameObject\00. AnimObject\01. Npc</Filter>
-    </ClInclude>
     <ClInclude Include="Network.h">
       <Filter>91. Network</Filter>
     </ClInclude>
@@ -456,6 +447,9 @@
     </ClInclude>
     <ClInclude Include="StaticUI.h">
       <Filter>02. GameObject\07. UI\02. StaticUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>02. GameObject\00. AnimObject\01. Skeleton</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

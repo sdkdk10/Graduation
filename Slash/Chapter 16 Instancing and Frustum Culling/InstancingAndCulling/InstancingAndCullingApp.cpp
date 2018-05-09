@@ -16,7 +16,7 @@
 #include "StaticMesh.h"
 #include "GeometryMesh.h"
 #include "DynamicMeshSingle.h"
-#include "Npc.h"
+#include "Skeleton.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;

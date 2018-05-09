@@ -3,13 +3,13 @@
 #include "GameObject.h"
 #include "Define.h"
 
-class CNpc
+class CSkeleton
 	: public CGameObject
 {
 private:
-	explicit CNpc(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
+	explicit CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
 public:
-	virtual ~CNpc();
+	virtual ~CSkeleton();
 
 public:
 	virtual void OnPrepareRender();
@@ -40,7 +40,7 @@ public:
 	void					Render_Right(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	static CNpc* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
+	static CSkeleton* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
 
 private:
 	virtual void Free();
