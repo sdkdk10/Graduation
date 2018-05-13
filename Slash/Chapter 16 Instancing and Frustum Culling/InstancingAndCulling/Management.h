@@ -33,6 +33,7 @@ public:
 	DirectX::BoundingFrustum* Get_CamFrustum() { return m_pCurScene->Get_CamFrustum(); }
 
 	auto&			Get_MapLayer() { return m_pCurScene->Get_MapLayer(); }
+	CLayer*			Get_Layer(wchar_t* pLayerTag);
 	CGameObject*	Find_Object(wchar_t* LayerTag, unsigned int iIdx = 0);
 
 private:

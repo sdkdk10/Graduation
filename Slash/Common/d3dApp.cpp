@@ -375,12 +375,12 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         else if((int)wParam == VK_F2)
             Set4xMsaaState(!m4xMsaaState);
 		return 0;
-	//case WM_KEYDOWN:
-	//	if (wParam == VK_OEM_6)
-	//	{
-	//		m_eCurFrameState = Frame_State((m_eCurFrameState + 1) % FPS_END);
-	//	}
-	//	return 0;
+	case WM_KEYDOWN:
+		if (wParam == VK_OEM_6)
+		{
+			m_eCurFrameState = Frame_State((m_eCurFrameState + 1) % FPS_END);
+		}
+		return 0;
 	case WM_SOCKET:
 	{
 		if (WSAGETSELECTERROR(lParam)) {

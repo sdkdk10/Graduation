@@ -6,27 +6,16 @@ class CBoundingBox;
 
 class Player : public CGameObject
 {
-
+public:
 
 /////////////////////////////////////////
-	const float m_fMoveSpeed = 10.0f;
-	const float m_fRotateSpeed = 3.0f;
-	const float m_fDegree = 57.3248f;
-	const float m_fScale = 0.05f;
-	float RotationAngle = 0.0f;
 
-	float RotationDeltaRIGHT = 0.0f;
-	float RotationDeltaLEFT = 0.0f;
-
-	float RotationDeltaFORWARD = 0.0f;
-	float RotationDeltaBACKWARD = 0.0f;
 
 ///////////////////////////////////////////
 	bool bAttackMotionTest = false;
 
 
 //////////////////////////////////////////////
-
 
 	virtual void SetPosition(float x, float y, float z);
 	virtual void SetPosition(XMFLOAT3 xmf3Position);
@@ -40,8 +29,8 @@ class Player : public CGameObject
 
 	virtual void Animate(const GameTimer & gt);
 
-	void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
-	void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity);
+	virtual void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
+	virtual void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt);
 //////////////////////////////////////////////
 public:
 	int iTest = 0;

@@ -12,6 +12,16 @@ CScene::~CScene()
 {
 }
 
+CLayer* CScene::Get_Layer(wchar_t * pLayerTag)
+{
+	// TODO: 여기에 반환 구문을 삽입합니다.
+	auto finder = m_mapLayer.find(pLayerTag);
+	if (finder == m_mapLayer.end())
+		return nullptr;
+
+	return finder->second;
+}
+
 CGameObject * CScene::Find_Object(wchar_t* LayerTag, unsigned int iIdx)
 {
 	CLayer* pLayer = Find_Layer(LayerTag);

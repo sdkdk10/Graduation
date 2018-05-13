@@ -41,6 +41,39 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 namespace Vector3
 {
+	inline bool IsEqual(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
+	{
+		if (::IsZero(xmf3Vector1.x - xmf3Vector2.x) && ::IsZero(xmf3Vector1.y - xmf3Vector2.y) && ::IsZero(xmf3Vector1.z - xmf3Vector2.z))
+			return(true);
+		return(false);
+
+
+	}
+
+	inline XMFLOAT3 Multiply(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2) //두 벡터간 거리를 리턴해줌
+	{
+		XMFLOAT3 xmf3Result;
+	
+		xmf3Result.x = xmf3Vector1.x * xmf3Vector1.x;
+		xmf3Result.y = xmf3Vector1.y * xmf3Vector1.y;
+		xmf3Result.z = xmf3Vector1.z * xmf3Vector1.z;
+
+		return xmf3Result;
+
+	}
+
+	inline XMFLOAT3 MultiplyScalr(XMFLOAT3& xmf3Vector1, float scalar) //두 벡터간 거리를 리턴해줌
+	{
+		XMFLOAT3 xmf3Result;
+
+		xmf3Result.x = xmf3Vector1.x * scalar;
+		xmf3Result.y = xmf3Vector1.y * scalar;
+		xmf3Result.z = xmf3Vector1.z * scalar;
+
+		return xmf3Result;
+
+	}
+
 	inline float BetweenVectorLength(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2) //두 벡터간 거리를 리턴해줌
 	{
 		XMFLOAT3 xmf3SubVector;

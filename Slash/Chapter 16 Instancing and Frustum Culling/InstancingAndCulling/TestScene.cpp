@@ -66,16 +66,17 @@ HRESULT CTestScene::Initialize()
 //	
 	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(0,0,0);
+	pObject->SetPosition(20,0,0);
 //	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z +	pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
-	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(0, 0, 10);
-//	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z + pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+//	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+//	pObject->SetCamera(Get_MainCam());
+//	pObject->SetPosition(-15, 0, 0);
+////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z + pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+//
 
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -92,7 +93,7 @@ HRESULT CTestScene::Initialize()
 
 				pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 				pObject->SetCamera(Get_MainCam());
-				pObject->SetPosition(i * 50, j * 50, k * 50);
+				pObject->SetPosition(i * 20, j * 20, k * 20);
 
 				Ready_GameObject(L"Layer_Spider", pObject);
 				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -100,6 +101,25 @@ HRESULT CTestScene::Initialize()
 		}
 		
 	}*/
+
+	//for (int i = 0; i < 50; ++i)
+	//{
+
+	//	for (int k = 0; k < 50; ++k)
+	//	{
+	//		pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//		pObject->SetCamera(Get_MainCam());
+	//		pObject->SetPosition(i * 15 /*+ 100*/, 0, k * 15 /*+ 100*/);
+	//		
+
+	//		Ready_GameObject(L"Layer_Spider", pObject);
+	//		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
+	//		
+	//	}
+
+
+	//}
 
 
 	/*pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -124,6 +144,22 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
+	for (int i = 0; i < 20; ++i)
+	{
+		
+			for (int k = 0; k < 20; ++k)
+			{
+				pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+				pObject->SetCamera(Get_MainCam());
+				pObject->SetPosition(i * 50 -500, 0, k * 50 - 500);
+
+				Ready_GameObject(L"Layer_Terrain", pObject);
+				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+			}
+		
+
+	}
+
 	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	//pObject->SetCamera(Get_MainCam());
 	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
@@ -141,30 +177,79 @@ HRESULT CTestScene::Initialize()
 
 bool CTestScene::Update(const GameTimer & gt)
 {
+	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
+	m_pPlayer->m_pCollider = NULL;
+	for (int i = 0; i < spiderList.size(); ++i)
+	{
+		spiderList[i]->m_pCollider = NULL;
+	}
 	CScene::Update(gt);
 
 	CollisionProcess();
 	UpdateOOBB();
 	UpdateUI();
 
+	m_pPlayer->m_pCollider;
+
+
+
 	//CollisionProcess();
-	UpdateOOBB();
-	UpdateUI();
+	if (m_pPlayer->m_pCollider == NULL)
+	{
+		m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
+		//cout << "충돌안함" << endl;
+	}
+	else
+	{
+		m_pPlayer->m_pCollider->SaveSlidingVector(m_pPlayer,m_pPlayer->m_pCollider);
+	}
+
+
+	for (int i = 0; i < spiderList.size(); ++i)
+	{
+		if (spiderList[i]->m_pCollider == NULL)
+		{
+			spiderList[i]->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
+		}
+		else
+		{
+			spiderList[i]->m_pCollider->SaveSlidingVector(spiderList[i], spiderList[i]->m_pCollider);
+
+		}
+	}
 	return true;
 }
 
 void CTestScene::UpdateOOBB()
 {
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
+
+	/*cout << " ------------------------------" << endl;
+	cout << "플레이어" << m_pPlayer->m_xmOOBB.Orientation.x << "\t" << m_pPlayer->m_xmOOBB.Orientation.y << "\t" << m_pPlayer->m_xmOOBB.Orientation.z << "\t" << m_pPlayer->m_xmOOBB.Orientation.w << endl;
+	cout << "거미" << m_pSpider->m_xmOOBB.Orientation.x << "\t" << m_pSpider->m_xmOOBB.Orientation.y << "\t" << m_pSpider->m_xmOOBB.Orientation.z << "\t" << m_pSpider->m_xmOOBB.Orientation.w << endl;
+	cout << " ------------------------------" << endl;*/
+	//cout << "거미" << m_pSpider->m_xmOOBB.Orientation.x << "\t" << m_pSpider->m_xmOOBB.Orientation.y << "\t" << m_pSpider->m_xmOOBB.Orientation.z << "\t" << m_pSpider->m_xmOOBB.Orientation.w << endl;
+
+	//float ceta = acos(m_pSpider->m_xmOOBB.Orientation.w) * 2.0f;
+
+
+	//cout << "거미" << "\t" << asin(m_pSpider->m_xmOOBB.Orientation.x) / sin(ceta/2) << "\t" << m_pSpider->m_xmOOBB.Orientation.y / sin(ceta / 2) << "\t" << m_pSpider->m_xmOOBB.Orientation.z / sin(ceta / 2) << "\t" << ceta * 57.3248f << endl;
+
+
+	//Find_Object 한번만 하도록 바꿀것
+	/*auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
 	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
-	auto * m_pSpider2 = CManagement::GetInstance()->Find_Object(L"Layer_Spider",1);
+	auto * m_pSpider2 = CManagement::GetInstance()->Find_Object(L"Layer_Spider",1);*/
 	//auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
 
 	//플레이어 없는 관계로 주석
-	m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&(m_pPlayer->GetWorld())));
-	XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
+	//m_pPlayer->m_xmOOBBTransformed.Transform(m_pPlayer->m_xmOOBB, XMLoadFloat4x4(&(m_pPlayer->GetWorld())));
+	//XMStoreFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pPlayer->m_xmOOBBTransformed.Orientation)));
 
 
 	//cout << m_pSpider->m_xmOOBB.Center.x << "\t" << m_pSpider->m_xmOOBB.Center.y << "\t" <<  m_pSpider->m_xmOOBB.Center.z << endl;
@@ -191,6 +276,9 @@ void CTestScene::UpdateUI()
 
 	m_pHPBar->SetHp(m_pPlayer->GetHp());
 
+
+	//cout << m_pPlayer->m_MovingRefletVector.x << "\t" << m_pPlayer->m_MovingRefletVector.y << "\t" << m_pPlayer->m_MovingRefletVector.z << endl;
+
 }
 void CTestScene::Render(ID3D12GraphicsCommandList * cmdList)
 {
@@ -198,60 +286,78 @@ void CTestScene::Render(ID3D12GraphicsCommandList * cmdList)
 
 void CTestScene::CollisionProcess()
 {
+	
 
-	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
-	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
+	//auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	//auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 
-	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
-	//auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
+	//auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
+	////auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
 
-	vector<CGameObject *> m_pSpider;
-	for (int i = 0; i < 2; ++i)
-	{
-		m_pSpider.push_back(CManagement::GetInstance()->Find_Object(L"Layer_Spider", i));
-	}
-
-	//auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
-
-
-	auto instanceData = dynamic_cast<CInstancingObject*>(m_pInstance)->GetvecInstances();
-
-
-	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
-
-
-	for (int i = 0; i < instanceData.size(); ++i)
-	{
-		XMMATRIX world = XMLoadFloat4x4(&(instanceData[i].World));
-
-		XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
-
-		// View space to the object's local space.
-
-		BoundingOrientedBox mLocalPlayerBounds;	
-		// Transform the camera frustum from view space to the object's local space.
-		m_pPlayer->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
-
-		// Perform the box/frustum intersection test in local space.
-		if (mLocalPlayerBounds.Intersects(m_pInstance->GetBounds()) != DirectX::DISJOINT)
-		{
-
-			//cout << i << "번째 인스턴싱 오브젝트랑 충돌" << endl;
-		}
-
-	}
-
-
-	//if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
+	//vector<CGameObject *> m_pSpider;
+	//for (int i = 0; i < 2; ++i)
 	//{
-	//	//cout << " Barrel 충돌 " << endl;
-	//}
-	//else
-	//{
-	//	//cout << " Barrel 충돌 아님" << endl;
+	//	m_pSpider.push_back(CManagement::GetInstance()->Find_Object(L"Layer_Spider", i));
 	//}
 
-	//cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
+	////auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
+
+
+	//auto instanceData = dynamic_cast<CInstancingObject*>(m_pInstance)->GetvecInstances();
+
+
+	//auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+
+
+	//for (int i = 0; i < instanceData.size(); ++i)
+	//{
+	//	XMMATRIX world = XMLoadFloat4x4(&(instanceData[i].World));
+
+	//	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+	//	// View space to the object's local space.
+
+	//	BoundingOrientedBox mLocalPlayerBounds;	
+	//	// Transform the camera frustum from view space to the object's local space.
+	//	m_pPlayer->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+	//	// Perform the box/frustum intersection test in local space.
+	//	if (mLocalPlayerBounds.Intersects(m_pInstance->GetBounds()) != DirectX::DISJOINT)
+	//	{
+
+	//		//cout << i << "번째 인스턴싱 오브젝트랑 충돌" << endl;
+	//	}
+
+	//}
+
+
+	////if (m_pPlayer->m_xmOOBB.Intersects(m_pBarrel->m_xmOOBB))
+	////{
+	////	//cout << " Barrel 충돌 " << endl;
+	////}
+	////else
+	////{
+	////	//cout << " Barrel 충돌 아님" << endl;
+	////}
+
+	////cout << m_pSpider->m_xmOOBB.Extents.x << "\t" << m_pSpider->m_xmOOBB.Extents.y <<"\t"<< m_pSpider->m_xmOOBB.Extents.z << endl;
+	////for (int i = 0; i < 2; ++i)
+	////{
+
+	////	if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider[i]->m_xmOOBB))
+	////	{
+	////		//cout << i << "거미 충돌 " << endl;
+	////		
+	////		m_pSpider[i]->SetObjectAnimState(2);
+	////	}
+	////	else
+	////	{
+	////		//cout << i << "거미 충돌 아님" << endl;
+
+	////		m_pSpider[i]->SetObjectAnimState(0);
+
+	////	}
+	////}
 	//for (int i = 0; i < 2; ++i)
 	//{
 
@@ -259,7 +365,7 @@ void CTestScene::CollisionProcess()
 	//	{
 	//		//cout << i << "거미 충돌 " << endl;
 	//		
-	//		m_pSpider[i]->SetObjectAnimState(2);
+	//		m_pSpider[i]->SetObjectAnimState(1);
 	//	}
 	//	else
 	//	{
@@ -269,33 +375,16 @@ void CTestScene::CollisionProcess()
 
 	//	}
 	//}
-	for (int i = 0; i < 2; ++i)
-	{
-
-		if (m_pPlayer->m_xmOOBB.Intersects(m_pSpider[i]->m_xmOOBB))
-		{
-			//cout << i << "거미 충돌 " << endl;
-			
-			m_pSpider[i]->SetObjectAnimState(1);
-		}
-		else
-		{
-			//cout << i << "거미 충돌 아님" << endl;
-
-			m_pSpider[i]->SetObjectAnimState(0);
-
-		}
-	}
 
 
-	//if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
-	//{
-	//	//cout << "드래곤 충돌 " << endl;
-	//}
-	//else
-	//{
-	//	//cout << "드래곤 충돌 아님" << endl;
-	//}
+	////if (m_pPlayer->m_xmOOBB.Intersects(m_pDragon->m_xmOOBB))
+	////{
+	////	//cout << "드래곤 충돌 " << endl;
+	////}
+	////else
+	////{
+	////	//cout << "드래곤 충돌 아님" << endl;
+	////}
 
 
 }
@@ -405,9 +494,9 @@ HRESULT CTestScene::Load_Map()
 				fValue[j] = std::stof(Value[j], &sz);
 			}
 
-			pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
-			pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
-			pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
+			dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+			dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+			dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
 		}
 		Ready_GameObject(L"Layer_Map", pObject);
 		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);

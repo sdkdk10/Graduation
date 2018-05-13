@@ -27,6 +27,12 @@ Player::~Player()
 
 void Player::Animate(const GameTimer & gt)
 {
+	if (GetHp() < 0)
+	{
+		SetObjectAnimState(AnimStateMachine.DeadState);
+		AnimStateMachine.AnimationStateUpdate(gt);
+		return;
+	}
 	AnimStateMachine.AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
 	/*cout << endl << endl;
 
@@ -81,7 +87,7 @@ void Player::Animate(const GameTimer & gt)
 	if (dwDirection != 0)
 	{
 		//CNetwork::GetInstance()->SendPacket(dwDirection);
-		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true);
+		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true,gt);
 		curKeyInputTime = gt.TotalTime();
 		if (curKeyInputTime - preKeyInputTime > CS_SEND_PACKET_DELAY)
 		{
@@ -132,20 +138,23 @@ void Player::Animate(const GameTimer & gt)
 
 	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
 	{
-		World._41 -= World._21; //모델의 LookVector가 반대로 되있음
-		World._42 -= World._22;
-		World._43 -= World._23;
+		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
+		XMVECTOR q = XMLoadFloat4(&Test);
 	}
 
 	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
 	{
 		
-		SetHp(GetHp() - 0.1f);
+		SetHp(GetHp() - 1.0f);
+
+		//cout << GetHp() << endl;
 	}
 	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
 	{
 
-		SetHp(GetHp() + 0.1f);
+		SetHp(GetHp() + 1.0f);
+		//cout << GetHp() << endl;
+
 	}
 
 	if (CInputDevice::GetInstance()->AnyKeyInput())
@@ -164,6 +173,9 @@ void Player::Animate(const GameTimer & gt)
 
 		}
 	}
+
+	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
+	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
 }
 
@@ -279,7 +291,7 @@ HRESULT Player::Initialize()
 
 
 
-	SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	//Geo_Left = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[3].get();
 	//PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -299,6 +311,9 @@ void Player::Free()
 }
 void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {
+	XMFLOAT3 look = XMFLOAT3(-World._21, -World._22, -World._23);
+
+	Vector3::Normalize(look);
 
 
 
@@ -521,218 +536,257 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 }
 
-void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
 {
 	
 
-	if (dwDirection)
-	{
-		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fDistance);
-		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fDistance);
-		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fDistance);
-
-
-
-		Move(xmf3Shift, bUpdateVelocity);
-
-
-		if (dwDirection & DIR_FORWARD)
+	
+		if (dwDirection)
 		{
+			XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+			if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fDistance);
+			if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fDistance);
+			if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fDistance);
+			if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fDistance);
 
-			xmf3Shift = Vector3::Normalize(xmf3Shift);
-			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+			//	xmf3Shift = Vector3::Normalize(xmf3Shift);
+			//xmf3Shift += m_MovingRefletVector;
+			//xmf3Shift = Vector3::Normalize(xmf3Shift);
 
-			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-			if (crossVector.y > 0)
+			// S = xmf3Shift
+			// n = m_MovingRfelctVector
+			// P = xmf3Shift
+
+			// S = P - n(P·n)
+
+			/*cout << " ---------------------" << endl;
+			cout << "Shift : " << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+			cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
+			cout << " ---------------------" << endl;*/
+
+			static UCHAR pKeysBuffer[256];
+			if (GetKeyboardState(pKeysBuffer))
 			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//	cout << ceta << endl;
-				if (ceta > 0.1f)
+				if (pKeysBuffer[0x50] & 0xF0) //p키
 				{
-					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
-
+					m_MovingRefletVector.x = 0;
+					m_MovingRefletVector.y = 0;
+					m_MovingRefletVector.z = 0;
 				}
 			}
-			else
+
+			float cosCeta = Vector3::DotProduct(m_MovingRefletVector, xmf3Shift);
+			if (cosCeta < 0)
+				//if(!Vector3::IsEqual(Vector3::Normalize(m_MovingRefletVector), Vector3::Normalize(xmf3Shift)))
+				xmf3Shift = Vector3::Subtract(xmf3Shift, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(xmf3Shift, m_MovingRefletVector)));
+
+			//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+			//cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
+
+		
+
+			Move(xmf3Shift, bUpdateVelocity);
+
+
+			if (dwDirection & DIR_FORWARD)
 			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
 
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+				xmf3Shift = Vector3::Normalize(xmf3Shift);
+				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
 
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//	cout << ceta << endl;
-				if (ceta > 0.1f)
+				//cout << playerLook.x << "\t" << playerLook.y << "\t" << playerLook.z << endl;
+				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+				if (crossVector.y > 0)
 				{
-					Rotate(0.0f, m_fRotateSpeed, 0.0f);
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
 
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+					//cout << ceta << endl;
+					//	cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
 				}
+				else
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+						//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+
+
 			}
+			else if (dwDirection & DIR_BACKWARD)
+			{
+
+
+				xmf3Shift = Vector3::Normalize(xmf3Shift);
+				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+				if (crossVector.y > 0)
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+						//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+				else
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+						//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+
+			}
+			else if (dwDirection & DIR_RIGHT)
+			{
+
+				/*xmf3Shift = Vector3::Normalize(xmf3Shift);
+
+				cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;*/
+
+				xmf3Shift = Vector3::Normalize(xmf3Shift);
+				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+				if (crossVector.y > 0)
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+						//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+				else
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+						//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, m_fRotateSpeed *gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+
+			}
+			else if (dwDirection & DIR_LEFT)
+			{
+				xmf3Shift = Vector3::Normalize(xmf3Shift);
+				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
+
+				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
+				if (crossVector.y > 0)
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+					//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+				else
+				{
+					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
+					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
+					float xmf3PlayerLooklength = Vector3::Length(playerLook);
+
+					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
+
+					float ceta = acos(cosCeta); // 현재 각도
+
+					ceta = ceta * m_fDegree;
+
+					//cout << ceta << endl;
+					if (ceta > 0.1f)
+					{
+						Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
+
+					}
+				}
+
+			}
+
 
 
 		}
-		else if (dwDirection & DIR_BACKWARD)
-		{
 
-
-			xmf3Shift = Vector3::Normalize(xmf3Shift);
-			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-			if (crossVector.y > 0)
-			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//	cout << ceta << endl;
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
-
-				}
-			}
-			else
-			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//	cout << ceta << endl;
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, m_fRotateSpeed, 0.0f);
-
-				}
-			}
-
-		}
-		else if (dwDirection & DIR_RIGHT)
-		{
-
-			/*xmf3Shift = Vector3::Normalize(xmf3Shift);
-
-			cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;*/
-
-			xmf3Shift = Vector3::Normalize(xmf3Shift);
-			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-			if (crossVector.y > 0)
-			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//	cout << ceta << endl;
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
-
-				}
-			}
-			else
-			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//	cout << ceta << endl;
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, m_fRotateSpeed, 0.0f);
-
-				}
-			}
-
-		}
-		else if (dwDirection & DIR_LEFT)
-		{
-			xmf3Shift = Vector3::Normalize(xmf3Shift);
-			XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-			XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-			if (crossVector.y > 0)
-			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//cout << ceta << endl;
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, -m_fRotateSpeed, 0.0f);
-
-				}
-			}
-			else
-			{
-				float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-				float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-				float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-				float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-				float ceta = acos(cosCeta); // 현재 각도
-
-				ceta = ceta * m_fDegree;
-
-				//cout << ceta << endl;
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, m_fRotateSpeed, 0.0f);
-
-				}
-			}
-
-		}
-
-
-
-	}
+	
 }

@@ -18,6 +18,7 @@ public:
 	HRESULT			Set_CamFrustum(BoundingFrustum* pFrustum) { m_pCamFrustum = pFrustum; return S_OK; }
 	BoundingFrustum*	Get_CamFrustum() { return m_pCamFrustum; }
 	auto&			Get_MapLayer() { return m_mapLayer; }
+	CLayer*			Get_Layer(wchar_t* pLayerTag);
 	CGameObject*	Find_Object(wchar_t* LayerTag, unsigned int iIdx = 0);
 
 

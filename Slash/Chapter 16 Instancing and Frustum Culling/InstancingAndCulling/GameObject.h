@@ -26,11 +26,15 @@ struct CB_ObjectConstants
 class AnimateStateMachine
 {
 public:
+	bool m_bIsLife = true;
+
+public:
 	bool bTimerIdle = false;
 	bool bTimerWalk = false;
 	bool bTimerAttack1 = false;
 	bool bTimerAttack2 = false;
 	bool bTimerAttack3 = false;
+	bool bTimerDead = false;
 private:
 
 private:
@@ -40,6 +44,9 @@ private:
 	float			m_fAnimationKeyFrameIndex_Attack1 = 0.f;		// 애니메이션 인덱스
 	float			m_fAnimationKeyFrameIndex_Attack2 = 0.f;		// 애니메이션 인덱스
 	float			m_fAnimationKeyFrameIndex_Attack3 = 0.f;		// 애니메이션 인덱스
+
+	float			m_fAnimationKeyFrameIndex_Dead = 0.f;		// 애니메이션 인덱스
+
 public:
 	vector<int> * vecAnimFrame;
 
@@ -49,7 +56,7 @@ public: //애니메이션 상태
 	const int Attack1State = 2;
 	const int Attack2State = 3;
 	const int Attack3State = 4;
-	const int DamageState = 5;
+	const int DeadState = 5;
 private:
 	int m_iAnimState = 0; // 현재 애니메이션 상태
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지
@@ -65,13 +72,24 @@ class CGameObject
 	: public CBase
 {
 protected:
+	bool m_bLODState = false;
+public:
+public:
+	CGameObject * m_pCollider = NULL;
+public:
 	XMFLOAT3 m_MovingRefletVector = XMFLOAT3(0, 0, 0); // 슬라이딩 벡터를 위한 반사벡터
 	//XMFLOAT4					m_pxmf4WallPlanes[4]; 
-
+public:
+	AnimateStateMachine * GetAnimateMachine() { return &AnimStateMachine; }
 public:
 	void SetObjectAnimState(int _animState) { AnimStateMachine.SetAnimState(_animState); }
 protected:
 	AnimateStateMachine AnimStateMachine;
+public:
+	int planeCollision = 0;
+public:
+	bool m_bIsCollide = false;
+
 private:
 	float hp = 100;
 public:
@@ -94,6 +112,18 @@ public:
 	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation) { m_xmOOBBTransformed = m_xmOOBB = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation); }
 
 ////////////////////////////////////////////////////////
+protected:
+	float m_fMoveSpeed = 8.0f;
+	float m_fRotateSpeed = 12.0f;
+	float m_fDegree = 57.3248f;
+	float m_fScale = 0.05f;
+	float RotationAngle = 0.0f;
+
+	float RotationDeltaRIGHT = 0.0f;
+	float RotationDeltaLEFT = 0.0f;
+
+	float RotationDeltaFORWARD = 0.0f;
+	float RotationDeltaBACKWARD = 0.0f;
 public:
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();
@@ -109,6 +139,8 @@ public:
 
 	virtual void Rotate(float fPitch = 10.0f, float fYaw = 10.0f, float fRoll = 10.0f);
 	virtual void Rotate(XMFLOAT3 *pxmf3Axis, float fAngle);
+	virtual void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
+	virtual void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity);
 
 	virtual void Animate(const GameTimer & gt); //애니메이션 상태 설정, 객체 이동, 회전 여기서 하면 됨
 
@@ -181,8 +213,8 @@ public:
 	wchar_t*			m_pwstrMeshName;
 public:
 	BoundingBox GetBounds() { return Bounds; }
-
-	virtual CTransform* GetTransform(int idx = 0) { return m_pTransCom; }
+	virtual void		SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
+	virtual CTransform* GetTransform() { return m_pTransCom; }
 
 public:
 	virtual bool			Update(const GameTimer & gt);

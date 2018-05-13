@@ -28,6 +28,11 @@ CGameObject::~CGameObject()
 }
 
 
+void CGameObject::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
+{
+
+}
+
 bool CGameObject::Update(const GameTimer & gt)
 {
 	m_pFrameResource = CManagement::GetInstance()->GetCurFrameResource();
@@ -125,6 +130,31 @@ void CGameObject::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
 	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
+void CGameObject::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
+{
+	XMFLOAT3 CurPos = XMFLOAT3(World._41, World._42, World._43);
+
+	m_xmf3Position = Vector3::Add(CurPos, xmf3Shift);
+
+	XMFLOAT3 xmf3shiftTest = xmf3Shift;
+
+	//XMFLOAT3 test = Vector3::Subtract(CurPos, xmf3shiftTest);
+
+	//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+
+
+
+	World._41 = m_xmf3Position.x;
+	World._42 = m_xmf3Position.y;
+	World._43 = m_xmf3Position.z;
+}
+
+void CGameObject::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+{
+
+	
+}
+
 void CGameObject::Animate(const GameTimer & gt)
 {
 	// Animate
@@ -164,7 +194,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerAttack1 == true)
 	{
 
-		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 30;
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[2])
 		{
@@ -201,6 +231,22 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 		{
 			bTimerAttack3 = false;
 			m_fAnimationKeyFrameIndex_Attack3 = 0;
+		}
+
+	}
+
+	if (bTimerDead == true)
+	{
+		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
+		if(m_bIsLife == true)
+			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (m_fAnimationKeyFrameIndex_Dead  + 1> (*vecAnimFrame)[5])
+		{
+			m_bIsLife = false;
+			bTimerDead = false;
+			//m_fAnimationKeyFrameIndex_Dead = 0;
 		}
 
 	}
@@ -243,5 +289,11 @@ void AnimateStateMachine::SetTimerTrueFalse()
 	{
 		bTimerAttack3 = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+	}
+
+	if (m_iAnimState == DeadState)
+	{
+		bTimerDead  =  true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
 }

@@ -147,7 +147,7 @@ HRESULT Barrel::Initialize()
 	Bounds = Geo->DrawArgs["Barrel"].Bounds;
 	
 
-	SetOOBB(XMFLOAT3(Bounds.Center.x * 0.1f , Bounds.Center.y * 0.1f , Bounds.Center.z * 0.1f ), XMFLOAT3(Bounds.Extents.x * 0.1f , Bounds.Extents.y * 0.1f , Bounds.Extents.z * 0.1f ), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.1f , Bounds.Center.y * 0.1f , Bounds.Center.z * 0.1f ), XMFLOAT3(Bounds.Extents.x * 0.1f , Bounds.Extents.y * 0.1f , Bounds.Extents.z * 0.1f ), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	return S_OK;
 }

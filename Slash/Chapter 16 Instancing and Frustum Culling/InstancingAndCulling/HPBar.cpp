@@ -34,81 +34,12 @@ HPBar * HPBar::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3
 
 bool HPBar::Update(const GameTimer & gt)
 {
-	/*
-	//using uint16 = std::uint16_t;
-	//using uint32 = std::uint32_t;
-
-	//uint32 m = 2;
-	//uint32 n = 2;
-	//float width = 0.5f;
-	//float depth = 0.5f;
-	//uint32 vertexCount = m * n;
-	//uint32 faceCount = (m - 1)*(n - 1) * 2;
-
-	////
-	//// Create the vertices.
-	////
-
-	//float halfWidth = 0.5f*width;
-	//float halfDepth = 0.5f*depth;
-
-	//float dx = width / (n - 1);
-	//float dz = depth / (m - 1);
-
-	//float du = 1.0f / (n - 1);
-	//float dv = 1.0f / (m - 1);
-
-	//meshData.Vertices.resize(vertexCount);
-	//for (uint32 i = 0; i < m; ++i)
-	//{
-	//	float z = halfDepth - i * dz;
-	//	for (uint32 j = 0; j < n; ++j)
-	//	{
-	//		float x = -halfWidth + j * dx;
-
-	//		meshData.Vertices[i*n + j].Position = XMFLOAT3(x, 0.0f, z);
-	//		meshData.Vertices[i*n + j].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	//		meshData.Vertices[i*n + j].TangentU = XMFLOAT3(1.0f, 0.0f, 0.0f);
-
-	//		// Stretch texture over grid.
-	//		meshData.Vertices[i*n + j].TexC.x = j * du;
-	//		meshData.Vertices[i*n + j].TexC.y = i * dv;
-	//	}
-	//}
-
-	////
-	//// Create the indices.
-	////
-
-	//meshData.Indices32.resize(faceCount * 3); // 3 indices per face
-
-	//										  // Iterate over each quad and compute indices.
-	//uint32 k = 0;
-	//for (uint32 i = 0; i < m - 1; ++i)
-	//{
-	//	for (uint32 j = 0; j < n - 1; ++j)
-	//	{
-	//		meshData.Indices32[k] = i * n + j;
-	//		meshData.Indices32[k + 1] = i * n + j + 1;
-	//		meshData.Indices32[k + 2] = (i + 1)*n + j;
-
-	//		meshData.Indices32[k + 3] = (i + 1)*n + j;
-	//		meshData.Indices32[k + 4] = i * n + j + 1;
-	//		meshData.Indices32[k + 5] = (i + 1)*n + j + 1;
-
-	//		k += 6; // next quad
-	//	}
-	//}
-	///
-
-	*/
 
 	CGameObject::Update(gt);
 
 	auto currVB = m_pFrameResource->VB.get();
 
 	//scale.x -= 0.0001f;
-
 	Vertex v;
 	
 	//»ï°¢Çü 1 - 0 1 2
@@ -119,7 +50,7 @@ bool HPBar::Update(const GameTimer & gt)
 
 	currVB->CopyData(0, v);
 
-	v.Pos = XMFLOAT3((size + move.x)* (GetHp()/(float)100), (-size + move.y) * scale.y, 0.0f); //1
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * GetHp()/100.0f, (-size + move.y) * scale.y, 0.0f); //1
 	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (GetHp() / (float)100), 1.0f);
 
 	currVB->CopyData(1, v);
@@ -135,15 +66,16 @@ bool HPBar::Update(const GameTimer & gt)
 
 	currVB->CopyData(3, v);
 
-	v.Pos = XMFLOAT3((size + move.x)* (GetHp() / (float)100), (size + move.y) * scale.y, 0.0f); //4
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * GetHp() / 100.0f, (size + move.y) * scale.y, 0.0f); //4
 	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (GetHp() / (float)100) + 0.05, 0.0f);
+
 
 	currVB->CopyData(4, v);
 
-	v.Pos = XMFLOAT3((size + move.x)* (GetHp() / (float)100), (-size + move.y) * scale.y, 0.0f); //5
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * GetHp() / 100.0f, (-size + move.y) * scale.y, 0.0f); //5
 	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (GetHp() / (float)100), 1.0f);
 
-
+	
 	currVB->CopyData(5, v);
 
 	

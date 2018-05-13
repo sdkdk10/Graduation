@@ -17,6 +17,7 @@ public:
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
 	virtual HRESULT			Initialize();
 	virtual void			Animate(const GameTimer & gt);
+	virtual void		SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
 
 private:
 	Player *				m_pPlayer = nullptr;

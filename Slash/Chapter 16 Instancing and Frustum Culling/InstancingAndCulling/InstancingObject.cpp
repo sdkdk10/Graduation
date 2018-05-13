@@ -6,9 +6,12 @@
 #include "Management.h"
 #include "Transform.h"
 #include "Component_Manager.h"
+#include "Layer.h"
+
 
 CInstancingObject* CInstancingObject::m_pAllInstObject[MAXINSTOBJECTID] = { nullptr };
 unsigned long CInstancingObject::m_iAllInstObjectIndex = 0;
+
 
 CInstancingObject::CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -30,6 +33,373 @@ CInstancingObject::CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDev
 
 CInstancingObject::~CInstancingObject()
 {
+}
+
+void CInstancingObject::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
+{
+	// 슬라이딩 벡터는 일단 보류....
+	{
+		////float ceta = acos(pCollobj->m_xmOOBB.Orientation.w) * 2.0f;
+
+
+		////XMFLOAT4 Qurtenion = XMFLOAT4(asin(pCollobj->m_xmOOBB.Orientation.x) / sin(ceta / 2), pCollobj->m_xmOOBB.Orientation.y / sin(ceta / 2), pCollobj->m_xmOOBB.Orientation.z / sin(ceta / 2), ceta);
+		////cout << "\t" << asin(pCollobj->m_xmOOBB.Orientation.x) / sin(ceta/2) << "\t" << pCollobj->m_xmOOBB.Orientation.y / sin(ceta / 2) << "\t" << pCollobj->m_xmOOBB.Orientation.z / sin(ceta / 2) << "\t" << ceta * 57.3248f << endl;
+
+
+		////cout << pCollobj->m_xmOOBB.Orientation.x << "\t" << m_xmOOBB.Orientation.y << "\t" << m_xmOOBB.Orientation.z << "\t" << m_xmOOBB.Orientation.w << endl;
+
+		//////////
+		////BoundingOrientedBox OOBBTest;
+		////OOBBTest = pCollobj->m_xmOOBB;
+		////OOBBTest.Transform(OOBBTest, XMLoadFloat4x4(&(pCollobj->GetTransform()->GetWorld())));
+
+		////float ceta = acos(OOBBTest.Orientation.w) * 2.0f;
+
+		////cout << "-----------------------------" << endl;
+		////cout << "Player Center : " << pobj->m_xmOOBB.Center.x << "\t" << pobj->m_xmOOBB.Center.y << "\t" << pobj->m_xmOOBB.Center.z << endl;
+		////cout << "OOBBTest Center : " << OOBBTest.Center.x << "\t" << OOBBTest.Center.y << "\t" << OOBBTest.Center.z << endl;
+		////cout << "OOBBTest Extents : " << OOBBTest.Extents.x << "\t" << OOBBTest.Extents.y << "\t" << OOBBTest.Extents.z << endl;
+		////cout << "OOBBTest Qurternion : " << asin(OOBBTest.Orientation.x) / sin(ceta/2.0f) << "\t" << asin(OOBBTest.Orientation.y) / sin(ceta/2.0f) << "\t" << asin(OOBBTest.Orientation.z) / sin(ceta/2.0f) << "\t" << ceta *  57.3248f << endl;
+		////cout << "-----------------------------" << endl;
+
+		//////////
+		//XMMATRIX world = XMLoadFloat4x4(&(pCollobj->GetTransform()->GetWorld()));
+
+
+		//XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+		//// View space to the object's local space.
+
+		//// Transform the camera frustum from view space to the object's local space.
+
+		//BoundingOrientedBox mLocalPlayerBounds;
+		//// Transform the camera frustum from view space to the object's local space.
+		//pobj->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+		//BoundingBox WorldBounds = GetBounds();
+		//// Transform the camera frustum from view space to the object's local space.
+		//WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&(pCollobj->GetTransform()->GetWorld())));
+
+		////XMFLOAT3 pCollObjPos2= pCollobj->m_pTransCom->m_f3Position;
+		//XMFLOAT3 pCollObjPos = pCollobj->GetTransform()->GetPosition();
+
+
+		//float MinX = pCollObjPos.x - WorldBounds.Extents.x;
+		//float MaxX = pCollObjPos.x + WorldBounds.Extents.x;
+
+		//float MinZ = pCollObjPos.z - WorldBounds.Extents.z;
+		//float MaxZ = pCollObjPos.z + WorldBounds.Extents.z;
+
+		////cout << mLocalPlayerBounds.Orientation.x << "\t" << mLocalPlayerBounds.Orientation.y << "\t" << mLocalPlayerBounds.Orientation.z << "\t" << mLocalPlayerBounds.Orientation.w << endl;
+		//if (mLocalPlayerBounds.Contains(GetBounds()))
+		//{
+		//	//cout << "인스턴싱 충돌 " << endl;
+		//
+		//	//else // 안으로 파들어져 왔을 경우
+		//	//{
+		//		/*cout << "-----------------------------------" << endl;
+		//		cout << "Player Pos : " << pobj->GetPosition().x << "\t" << pobj->GetPosition().y << "\t" << pobj->GetPosition().z << endl;
+		//		cout << "Instancing Object Pos : " << pCollObjPos.x << "\t" << pCollObjPos.y << "\t" << pCollObjPos.z << endl;
+		//		cout << "Instancing Extents : " << WorldBounds.Extents.x << "\t" << WorldBounds.Extents.y << "\t" << WorldBounds.Extents.z << endl;
+		//		cout << "-----------------------------------" << endl;*/
+
+		//		//m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+		//		//cout << "-------------------------" << endl;
+
+
+
+		//	//cout << "거미" << "\t" << asin(m_pSpider->m_xmOOBB.Orientation.x) / sin(ceta / 2) << "\t" << m_pSpider->m_xmOOBB.Orientation.y / sin(ceta / 2) << "\t" << m_pSpider->m_xmOOBB.Orientation.z / sin(ceta / 2) << "\t" << ceta * 57.3248f << endl;
+
+
+		//		//cout << "인스턴싱 안으로 파들어와짐" << endl;
+		//		//cout << planeCollision << endl;
+
+		//		//cout << "-------------------------" << endl;
+		//			switch (planeCollision)
+		//			{
+		//			case 0:
+		//				break;
+		//			case 1:
+		//				//cout << "오른쪽면 충돌" << endl;
+		//				pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+		//				break;
+		//			case 2:
+		//				//cout << "왼쪽면 충돌" << endl;
+
+		//				pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+		//				break;
+		//			case 3:
+		//				//cout << "아래쪽면 충돌" << endl;
+
+		//				pobj->m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+
+		//				break;
+		//			case 4:
+		//				//cout << "위쪽면 충돌" << endl;
+
+		//				pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+
+		//				break;
+		//			}
+
+
+		//	
+
+		//	//}
+
+		//	//cout << i << "번째 인스턴싱 오브젝트랑 충돌" << endl;
+		//}
+
+	}
+
+	////////
+	XMMATRIX world = XMLoadFloat4x4(&(pCollobj->GetTransform()->GetWorld()));
+
+
+	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+	// View space to the object's local space.
+
+	// Transform the camera frustum from view space to the object's local space.
+
+	BoundingOrientedBox mLocalPlayerBounds;
+	// Transform the camera frustum from view space to the object's local space.
+	pobj->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+	BoundingBox WorldBounds = GetBounds();
+	// Transform the camera frustum from view space to the object's local space.
+	WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&(pCollobj->GetTransform()->GetWorld())));
+
+
+	//XMFLOAT3 pCollObjPos2= pCollobj->m_pTransCom->m_f3Position;
+	XMFLOAT3 Center = pCollobj->GetTransform()->GetPosition();
+	XMFLOAT3 Player = pobj->GetPosition();
+	XMFLOAT3 look = XMFLOAT3(pCollobj->GetTransform()->GetWorld()._21, pCollobj->GetTransform()->GetWorld()._22, pCollobj->GetTransform()->GetWorld()._23);
+	XMFLOAT3 dirVector = Vector3::Subtract(Player, Center);   // 충돌 객체에서 플레이어로 가는 벡터
+
+	float tanceta = dirVector.z / dirVector.x;
+	float ceta = atan(tanceta) * 57.3248f;
+
+	float extenttanceta = WorldBounds.Extents.z / WorldBounds.Extents.x;
+
+
+	float extentceta = atan(extenttanceta) * 57.3248f;
+
+
+	look = Vector3::Normalize(look);
+	dirVector = Vector3::Normalize(dirVector);
+	//cout << "Coll obj Look" << "\t" << look.x << "\t" << look.y << "\t" << look.z << endl;
+	//cout << "dirVector : " << "\t" << dirVector.x << "\t" << dirVector.y << "\t" << dirVector.z << endl;
+	//cout << "Ceta : " << ceta << endl;
+	//cout << "ExtentCeta : " << extentceta << endl;
+
+	if (Player.x > Center.x && 0 < ceta && ceta< extentceta) // 1
+	{
+		//cout << " 오른쪽 충돌" << endl;
+		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+
+
+	}
+	if (Player.z > Center.z && extentceta <ceta && ceta < 90) // 2
+	{
+		//cout << "윗쪽 충돌" << endl;
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+	}
+	if (Player.z > Center.z && -90 < ceta && ceta < -extentceta) // 3
+	{
+		//cout << "윗쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+
+	}
+	if (Player.x < Center.x && -extentceta < ceta && ceta < 0)// 4
+	{
+		//cout << "왼쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+	}
+	if (Player.x < Center.x && 0 < ceta && ceta < extentceta) // 5
+	{
+		//cout << "왼쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+	}
+	if (Player.z < Center.z && extentceta < ceta && ceta < 90) // 6
+	{
+		//cout << "아래쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0,-1);
+
+	}
+	if (Player.z < Center.z && -90 < ceta && ceta < -extentceta) // 7
+	{
+		//cout << "아래쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+
+	}
+	if (Player.x > Center.x && -extentceta < ceta && ceta < 0) // 8
+	{
+		//cout << "오른쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+
+	}
+
+	//cout << "ExtentCeta1 : " << extentceta1 << endl;
+	//cout << "ExtentCeta2: " << extentceta2 << endl;
+	//cout << "ExtentCeta3 : " << extentceta3 << endl;
+
+	//if (ceta < extentceta)
+	//{
+	//	cout << "오른쪽 면 충돌" << endl;
+	//}
+	//if( extentceta < ceta < )
+	/*float MinX = pCollObjPos.x - WorldBounds.Extents.x;
+	float MaxX = pCollObjPos.x + WorldBounds.Extents.x;
+
+	float MinZ = pCollObjPos.z - WorldBounds.Extents.z;
+	float MaxZ = pCollObjPos.z + WorldBounds.Extents.z;*/
+
+	//pobj->m_MovingRefletVector = XMFLOAT3(look.x, look.y, look.z);
+
+	//if (pobj->GetPosition().x >  MaxX && pobj->GetPosition().z >  MinZ &&  pobj->GetPosition().z <  MaxZ)
+	//{
+	//	//cout << " 오른쪽 면  충돌" << endl;
+	//	planeCollision = 1;
+	//}
+
+	//if (pobj->GetPosition().x <  MinX && pobj->GetPosition().z >  MinZ &&  pobj->GetPosition().z <  MaxZ)
+	//{
+	//	//cout << " 왼쪽 면  충돌" << endl;
+
+	//	planeCollision = 2;
+	//}
+
+	//if (pobj->GetPosition().z <  MinZ && pobj->GetPosition().x >  MinX &&  pobj->GetPosition().x <  MaxX)
+	//{
+	//	//cout << "아랫면 충돌" << endl;
+	//	planeCollision = 3;
+	//}
+
+	//if (pobj->GetPosition().z >  MaxZ && pobj->GetPosition().x >  MinX &&  pobj->GetPosition().x <  MaxX)
+	//{
+	//	//cout << "윗면 충돌" << endl;
+
+	//	planeCollision = 4;
+	//}
+	//else
+	//{
+	//	/*cout << "Player Pos : " << pobj->GetPosition().x << "\t" << pobj->GetPosition().y << "\t" << pobj->GetPosition().z << endl;
+	//	cout << "Min X  : " << MinX << "\t" << "Max X : " << MaxX << endl;
+	//	cout << "Min Z  : " << MinZ << "\t" << "Max Z : " << MaxZ << endl;*/
+
+	//	//cout << " 일단 인스턴싱 충돌" << endl;
+	//	//cout << pobj->m_MovingRefletVector.x << "\t" << pobj->m_MovingRefletVector.y << "\t" << pobj->m_MovingRefletVector.z << endl;
+	//	switch (planeCollision)
+	//	{
+	//	case 0:
+	//		break;
+	//	case 1:
+	//		//cout << "오른쪽면 충돌" << endl;
+	//		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+	//		break;
+	//	case 2:
+	//		//cout << "왼쪽면 충돌" << endl;
+
+	//		pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+	//		break;
+	//	case 3:
+	//		//cout << "아래쪽면 충돌" << endl;
+
+	//		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+
+	//		break;
+	//	case 4:
+	//		//cout << "위쪽면 충돌" << endl;
+
+	//		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+
+	//		break;
+	//	}
+	//}
+	
+	//cout << mLocalPlayerBounds.Orientation.x << "\t" << mLocalPlayerBounds.Orientation.y << "\t" << mLocalPlayerBounds.Orientation.z << "\t" << mLocalPlayerBounds.Orientation.w << endl;
+	{
+		//if (mLocalPlayerBounds.Contains(GetBounds()))
+		//{
+		//	//cout << "인스턴싱 충돌 " << endl;
+
+		//	//else // 안으로 파들어져 왔을 경우
+		//	//{
+		//	/*cout << "-----------------------------------" << endl;
+		//	cout << "Player Pos : " << pobj->GetPosition().x << "\t" << pobj->GetPosition().y << "\t" << pobj->GetPosition().z << endl;
+		//	cout << "Instancing Object Pos : " << pCollObjPos.x << "\t" << pCollObjPos.y << "\t" << pCollObjPos.z << endl;
+		//	cout << "Instancing Extents : " << WorldBounds.Extents.x << "\t" << WorldBounds.Extents.y << "\t" << WorldBounds.Extents.z << endl;
+		//	cout << "-----------------------------------" << endl;*/
+
+		//	//m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+		//	//cout << "-------------------------" << endl;
+
+
+
+		//	//cout << "거미" << "\t" << asin(m_pSpider->m_xmOOBB.Orientation.x) / sin(ceta / 2) << "\t" << m_pSpider->m_xmOOBB.Orientation.y / sin(ceta / 2) << "\t" << m_pSpider->m_xmOOBB.Orientation.z / sin(ceta / 2) << "\t" << ceta * 57.3248f << endl;
+
+
+		//	//cout << "인스턴싱 안으로 파들어와짐" << endl;
+		//	//cout << planeCollision << endl;
+
+		//	//cout << "-------------------------" << endl;
+		//	//switch (planeCollision)
+		//	//{
+		//	//case 0:
+		//	//	break;
+		//	//case 1:
+		//	//	//cout << "오른쪽면 충돌" << endl;
+		//	//	pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+		//	//	break;
+		//	//case 2:
+		//	//	//cout << "왼쪽면 충돌" << endl;
+
+		//	//	pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+		//	//	break;
+		//	//case 3:
+		//	//	//cout << "아래쪽면 충돌" << endl;
+
+		//	//	pobj->m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+
+		//	//	break;
+		//	//case 4:
+		//	//	//cout << "위쪽면 충돌" << endl;
+
+		//	//	pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+
+		//	//	break;
+		//	//}
+
+
+
+
+		//	//}
+
+		//	//cout << i << "번째 인스턴싱 오브젝트랑 충돌" << endl;
+		//}
+	}
+	
+
+
+	XMFLOAT3 moveVec = Vector3::Normalize(Vector3::Subtract(pCollobj->GetPosition(), pobj->GetPosition()));
+	//moveVec.x = moveVec.x / 1.25f;
+	//moveVec.y = moveVec.z / 1.25f;
+	//moveVec.z = moveVec.y / 1.25f;
+
+	//pobj->Move(moveVec, true);
+
 }
 
 HRESULT CInstancingObject::Initialize()
@@ -172,6 +542,7 @@ bool CInstancingObject::Update(const GameTimer & gt)
 
 	
 	CGameObject::Update(gt);
+
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -183,8 +554,13 @@ bool CInstancingObject::Update(const GameTimer & gt)
 
 
 	int iTest = m_iMyInstObject;
+
+	
+
 	for (UINT i = 0; i < (UINT)m_iSize; ++i)
 	{
+	
+		Animate(gt, m_vecTransCom[i]);
 		//XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
 		vecInstances[i].World = m_vecTransCom[i]->GetWorld();
 		m_vecTransCom[i]->Update_Component(gt);
@@ -203,13 +579,13 @@ bool CInstancingObject::Update(const GameTimer & gt)
 		mCamFrustum = *CManagement::GetInstance()->Get_CurScene()->Get_CamFrustum();
 		mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
 
+
 		// Perform the box/frustum intersection test in local space.
 		if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 		{
-			CGameObject::Update(gt);
-			collisionTagTest = i;
-			Animate(gt, m_vecTransCom[i]);
+			//cout << " 보인당" << endl;
 			auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
+
 
 			InstanceData data;
 			XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
@@ -220,9 +596,16 @@ bool CInstancingObject::Update(const GameTimer & gt)
 			currInstanceBuffer->CopyData(iTest++, data);
 			visibleInstanceCount++;
 		}
+		else
+		{
+			//cout << " 안보인당 " << endl;
+		}
 	}
 
+	//InstanceCount = visibleInstanceCount;
+
 	InstanceCount = visibleInstanceCount;
+	
 	//cout << m_pwstrMeshName << " : " << endl;
 	//cout << InstanceCount << endl;
 
@@ -276,7 +659,7 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 	D3D12_GPU_VIRTUAL_ADDRESS Address = instanceBuffer->GetGPUVirtualAddress() + m_iMyInstObject * sizeof(InstanceData);
 	mCommandList->SetGraphicsRootShaderResourceView(0, Address);
 	
-	InstanceCount = vecInstances.size();
+	//InstanceCount = vecInstances.size();
 	cmdList->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndexLocation, BaseVertexLocation, 0);
 
 	
@@ -291,67 +674,50 @@ void CInstancingObject::Animate(const GameTimer & gt)
 
 void CInstancingObject::Animate(const GameTimer & gt, CTransform * transform)
 {
-	auto m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player", 0);
+	
 
-	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
-	XMFLOAT3 Shaft = XMFLOAT3(1, 0, 0);
-
-	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, transform->GetPosition());   // 객체에서 플레이어로 가는 벡터
-
-	dirVector = Vector3::Normalize(dirVector);
-
-	float dotproduct = Vector3::DotProduct(Shaft, dirVector);
-	float ShafttLength = Vector3::Length(Shaft);
-	float dirVectorLength = Vector3::Length(dirVector);
-
-	float cosCeta = (dotproduct / ShafttLength * dirVectorLength);
-
-	float ceta = acos(cosCeta);
-
-	if (playerPos.z < transform->GetPosition().z)
-		ceta = 360.f - ceta * 57.3248f;// +180.0f;
-	else
-		ceta = ceta * 57.3248f;
-
-	//cout << ceta << endl;
-	//cout << ceta << endl;
-	float a = Vector3::Length(dirVector);
-	XMFLOAT3 Normal = XMFLOAT3(a * cos(ceta), 0, a * sin(ceta));
-	Normal = Vector3::Normalize(Normal);
+	
+	auto m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player", 0); //이거 한번만 하게 바꿀껏
 
 
+	m_pCamera = CManagement::GetInstance()->Get_MainCam();
+	XMMATRIX view = m_pCamera->GetView();
+	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
-	XMMATRIX world = XMLoadFloat4x4(&(transform->GetWorld()));
+	XMMATRIX world = XMLoadFloat4x4(&transform->GetWorld());
+
+
 	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
 
+	// View space to the object's local space.
+
+	// Transform the camera frustum from view space to the object's local space.
+
 	BoundingOrientedBox mLocalPlayerBounds;
+	// Transform the camera frustum from view space to the object's local space.
 	m_pPlayer->m_xmOOBB.Transform(mLocalPlayerBounds, invWorld);
 
-	if (mLocalPlayerBounds.Intersects(GetBounds()) != DirectX::DISJOINT)
-	{
-		/*cout << collisionTagTest << "번째 배럴";
-		if (0.0f < ceta && ceta < 45.0f)
-		{
-			cout << "오른쪽과 충돌 " << endl;
-		}
-		if (45.0f < ceta && ceta < 135.0f)
-		{
-			cout << "윗쪽과 충돌 " << endl;
-		}
-		if (135.0f < ceta && ceta < 225.0f)
-		{
-			cout << "왼쪽과 충돌 " << endl;
-		}
-		if (225.0f < ceta && ceta < 360.0f)
-		{
-			cout << "아랫쪽과 충돌 " << endl;
-		}*/
-	}
-	else
+	BoundingBox WorldBounds = GetBounds();
+	// Transform the camera frustum from view space to the object's local space.
+	WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&(transform->GetWorld())));
+
+
+
+	
+	if (mLocalPlayerBounds.Contains(GetBounds()) != DirectX::DISJOINT)
 	{
 
-		//cout << "충돌안함" << endl;
+
+		m_pPlayer->m_pCollider = this;
+		m_pPlayer->m_pCollider->m_pTransCom = transform;
+
+
 	}
+
+	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(transform->GetWorld())));
+	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
+
+
 }
 
 CInstancingObject * CInstancingObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* pMesh, int iSize)
@@ -382,7 +748,7 @@ void CInstancingObject::RenderBounds(ID3D12GraphicsCommandList * cmdList)
 
 
 
-
+	
 	cmdList->DrawIndexedInstanced(Element_Bounds.IndexCount, InstanceCount, Element_Bounds.StartIndexLocation, Element_Bounds.BaseVertexLocation, 0);
 
 

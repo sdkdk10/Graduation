@@ -183,7 +183,7 @@ HRESULT Dragon::Initialize()
 	//SetOOBB(XMFLOAT3(World._41, World._42, World._43), XMFLOAT3(100, 100, 100), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 
-	SetOOBB(XMFLOAT3(Bounds.Center.x, Bounds.Center.y , Bounds.Center.z), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	//SetOOBB(XMFLOAT3(Bounds.Center.x, Bounds.Center.y , Bounds.Center.z), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x, Bounds.Center.y, Bounds.Center.z), XMFLOAT3(100, 100, 100), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 

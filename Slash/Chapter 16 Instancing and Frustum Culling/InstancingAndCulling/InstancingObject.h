@@ -9,8 +9,7 @@ constexpr      unsigned long MAXINSTOBJECTID = 100000;
 class CInstancingObject
 	: public CGameObject
 {
-	int collisionTagTest = 0;
-	bool a = false;
+	static bool m_bFinalCollisionCheck;
 	typedef struct objdrawelement
 	{
 		UINT IndexCount = 0;
@@ -19,10 +18,12 @@ class CInstancingObject
 	}DrawElement;
 
 private:
-
+	vector<bool> instancingCollisionState;
+	int collision_i = 0;
 public:
 	explicit CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize);
 	virtual ~CInstancingObject();
+	virtual void		SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
 
 public:
 	void SetTexture(int matIdx, int idx) { mMaterials[matIdx]->DiffuseSrvHeapIndex = idx; }
@@ -35,7 +36,7 @@ public:
 	void Animate(const GameTimer & gt, CTransform * transform);
 public:
 	std::vector<InstanceData> GetvecInstances() { return vecInstances; }
-	virtual CTransform* GetTransform(int idx = 0) { if (idx > m_iSize) return nullptr; return m_vecTransCom[idx]; }
+	CTransform* GetTransform(int idx) { if (idx > m_iSize) return nullptr; return m_vecTransCom[idx]; }
 private:
 	UINT						InstanceCount;
 	std::vector<InstanceData>	vecInstances;
@@ -49,6 +50,7 @@ private:
 	int							m_iSize;
 
 	vector<CTransform*>			m_vecTransCom;
+	string						m_strMesh;
 
 	static unsigned long		m_iAllInstObjectIndex;
 	static CInstancingObject*	m_pAllInstObject[MAXINSTOBJECTID];

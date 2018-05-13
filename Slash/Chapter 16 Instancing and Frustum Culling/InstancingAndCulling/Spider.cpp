@@ -7,11 +7,15 @@
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
 #include "Player.h"
+#include "Layer.h"
+
 
 Spider::Spider(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
+	m_fMoveSpeed = 2.0f;
 
+	m_fRotateSpeed = 4.0f;
 }
 
 
@@ -21,13 +25,15 @@ Spider::~Spider()
 
 bool Spider::Update(const GameTimer & gt)
 {
+	
+
 
 	if (!m_pPlayer)
 		m_pPlayer = dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 
 	CGameObject::Update(gt);
 
-	Animate(gt);
+
 
 	
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
@@ -57,8 +63,7 @@ bool Spider::Update(const GameTimer & gt)
 	{
 		//cout << "보인당!" << endl;
 		m_bIsVisiable = true;
-
-	
+		Animate(gt);
 
 		auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -138,13 +143,25 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 
 
 		//int iTest = (int)pMesh->m_fTest;
-
+		
 		int iTest = AnimStateMachine.GetCurAnimFrame();
 		int AnimaState = AnimStateMachine.GetAnimState();
 
-		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
-			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
-			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
+		
+		if (m_bLODState == true)
+		{
+			cmdList->DrawIndexedInstanced(1200, 1,
+				0 /*+ pMesh->IndexAnimoffset[0]*/,
+				0/*+ pMesh->VertexAnimoffset[0]*/, 0);
+		}
+		else
+		{
+			cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
+				pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
+				pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
+
+		}
+	
 
 	
 	}
@@ -191,8 +208,8 @@ HRESULT Spider::Initialize()
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x *m_fScale, Bounds.Center.y * m_fScale, Bounds.Center.z *m_fScale), XMFLOAT3(Bounds.Extents.x * m_fScale, Bounds.Extents.y * m_fScale, Bounds.Extents.z * m_fScale), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	SetOOBB(XMFLOAT3(Bounds.Center.x , Bounds.Center.y , Bounds.Center.z ), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-
+	//SetOOBB(XMFLOAT3(Bounds.Center.x , Bounds.Center.y , Bounds.Center.z ), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	
 
 
 	return S_OK;
@@ -200,13 +217,40 @@ HRESULT Spider::Initialize()
 
 void Spider::Animate(const GameTimer & gt)
 {
+	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 200.0f)
+	{
+		m_bLODState = true;
+
+
+		return;
+	}
+	m_bLODState = false;
+
+	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 100.0f)
+	{
+		m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
+		XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
+
+		return;
+	}
+	if (GetHp() < 0)
+	{
+		SetObjectAnimState(AnimStateMachine.DeadState);
+		AnimStateMachine.AnimationStateUpdate(gt);
+		return;
+	}
+
 	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
-	XMFLOAT3 Shaft = XMFLOAT3(1, 0, 0);
+	XMFLOAT3 Shaft = GetLook();
+
+//	cout << Shaft.x << "\t" << Shaft.y << "\t" << Shaft.z << endl;
 
 	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, GetPosition());   // 객체에서 플레이어로 가는 벡터
 
 	dirVector = Vector3::Normalize(dirVector);
 	
+	XMFLOAT3 crossVector = Vector3::CrossProduct(Shaft, dirVector, true);
+
 	float dotproduct = Vector3::DotProduct(Shaft, dirVector);
 	float ShafttLength = Vector3::Length(Shaft);
 	float dirVectorLength = Vector3::Length(dirVector);
@@ -216,78 +260,232 @@ void Spider::Animate(const GameTimer & gt)
 	float ceta = acos(cosCeta);
 
 	if (playerPos.z < GetPosition().z)
-		ceta = 360.f - ceta *51.2958f;// +180.0f;
+		ceta = 360.f - ceta * 57.3248f;// +180.0f;
 	else
-		ceta = ceta * 51.2958f;
+		ceta = ceta * 57.3248f;
 
 	//cout << ceta << endl;
 	float a = Vector3::Length(dirVector);
 	XMFLOAT3 Normal = XMFLOAT3(a * cos(ceta), 0, a * sin(ceta));
 	Normal = Vector3::Normalize(Normal);
 
-	//cout << Normal.x << "\t" << Normal.y << "\t" << Normal.z << endl;
-	/*m_pxmf4WallPlanes[0] = XMFLOAT4(-1.0f, 0.0f, 0.0f, GetPosition().x + Bounds.Extents.x);
-	m_pxmf4WallPlanes[1] = XMFLOAT4(1.0f, 0.0f, 0.0f, GetPosition().x + Bounds.Extents.x);
-	m_pxmf4WallPlanes[2] = XMFLOAT4(0.0f, 0.0f, -1.0f, GetPosition().z + Bounds.Extents.z);
-	m_pxmf4WallPlanes[3] = XMFLOAT4(0.0f, 0.0f, 1.0f, GetPosition().z + Bounds.Extents.z);
+	////다른애들 찾기
+	//auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	//if (pLayer != nullptr)
+	//{
+	//	auto objList = pLayer->Get_ObjectList();
+	//	size_t iSize = objList.size();
+	//	for (size_t i = 0; i < iSize; ++i)
+	//	{
+	//		if (objList[i] == this)
+	//			continue;
 
-	int nPlaneIndex = -1;
-	for (int j = 0; j < 4; j++)
+	//	}
+	//}
+
+
+
+	if (m_pPlayer->m_xmOOBB.Contains(this->m_xmOOBB))
 	{
-		PlaneIntersectionType intersectType = m_pPlayer->m_xmOOBB.Intersects(XMLoadFloat4(&m_pxmf4WallPlanes[j]));
-		if (intersectType == INTERSECTING)
+		//cout << "거미랑 충돌" << endl;
+
+
+	}
+
+	auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	if (pLayer != nullptr)
+	{
+		auto objList = pLayer->Get_ObjectList();
+		size_t iSize = objList.size();
+		for (size_t i = 0; i < iSize; ++i)
 		{
-			nPlaneIndex = j;
-			break;
-		}
-	}
-	if (nPlaneIndex != -1)
-	{
-		
-	}
-	cout << nPlaneIndex << endl;*/
 
-	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) < 5.0f)
-	{
-		//cout << " 커몬 " << endl;
-	}
-	//cout << m_pPlayer->GetPosition().x << "\t" << m_pPlayer->GetPosition().y << "\t" << m_pPlayer->GetPosition().z << endl;
-	AnimStateMachine.AnimationStateUpdate(gt);
+		/*	float MinX = objList[i]->m_xmOOBB.Center.x - m_xmOOBB.Extents.x;
+			float MaxX = objList[i]->m_xmOOBB.Center.x + m_xmOOBB.Extents.x;
+
+			float MinZ = objList[i]->m_xmOOBB.Center.z - m_xmOOBB.Extents.z;
+			float MaxZ = objList[i]->m_xmOOBB.Center.z + m_xmOOBB.Extents.z;*/
 
 	
-	if (m_pPlayer->m_xmOOBB.Intersects(m_xmOOBB))
+
+			if (objList[i] == this)
+				continue;
+
+			if (objList[i]->m_xmOOBB.Contains(m_xmOOBB))
+			{
+				objList[i]->m_pCollider = this;
+				this->m_pCollider = objList[i];
+
+
+			}
+
+		}
+	}
+
+
+	
+
+	AnimStateMachine.AnimationStateUpdate(gt);
+
+	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) < 15.0f)
 	{
-		//cout << i << "거미 충돌 " << endl;
-		
-	/*	if (0.0f < ceta && ceta < 45.0f)
+
+		if (m_pPlayer->m_xmOOBB.Contains(m_xmOOBB)) //충돌할 정도로 가까워 졌으면
 		{
-			cout << "오른쪽과 충돌 " << endl;
+			if (m_pPlayer->GetAnimateMachine()->GetAnimState() == m_pPlayer->GetAnimateMachine()->Attack1State)
+			{
+				if(m_pPlayer->GetAnimateMachine()->GetCurAnimFrame() == 8)
+					SetHp(-100);
+			}
+			//cout << "거미 충돌 " << endl;
+
+			m_pPlayer->m_pCollider = this;
+			//SetObjectAnimState(AnimStateMachine.Attack1State);
+			SetObjectAnimState(AnimStateMachine.Attack1State);
+
+			//cout << m_pPlayer->GetHp() - 1.0f << endl;
+			if(AnimStateMachine.GetCurAnimFrame() == 13)
+			m_pPlayer->SetHp(m_pPlayer->GetHp() - 1.0f);
+
 		}
-		if (45.0f < ceta && ceta < 135.0f)
+		else //충돌은 안했지만 플레이어한테 이동
 		{
-			cout << "윗쪽과 충돌 " << endl;
+
+			if (crossVector.y > 0)
+			{
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 10.0f, 0.0f);
+
+				}
+				//cout << "시계로" << endl;
+
+			}
+			if (crossVector.y < 0)
+			{
+				if (ceta > 0.1f)
+				{
+					Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime()*10.0f, 0.0f);
+
+
+				}
+				//cout << "반시계로" << endl;
+
+			}
+			XMFLOAT3 moveingVector = XMFLOAT3(dirVector.x * gt.DeltaTime() *m_fMoveSpeed, dirVector.y * gt.DeltaTime() *m_fMoveSpeed, dirVector.z * gt.DeltaTime() *m_fMoveSpeed);
+
+			moveingVector = Vector3::Subtract(moveingVector, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(moveingVector, m_MovingRefletVector)));
+
+
+			Move(XMFLOAT3(moveingVector.x, moveingVector.y, moveingVector.z), true);
+
+			//cout << "이동하자" << endl;
+			SetObjectAnimState(AnimStateMachine.WalkState);
+			
 		}
-		if (135.0f < ceta && ceta < 225.0f)
-		{
-			cout << "왼쪽과 충돌 " << endl;
-		}
-		if (225.0f < ceta && ceta < 360.0f)
-		{
-			cout << "아랫쪽과 충돌 " << endl;
-		}*/
-		SetObjectAnimState(2);
+
 	}
 	else
 	{
-		//cout << i << "거미 충돌 아님" << endl;
+		/*m_bIsCollide = false;
 
-		SetObjectAnimState(0);
+		if (coll == false)
+		{
+			m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
+
+		}*/
+		SetObjectAnimState(AnimStateMachine.IdleState);
+
 
 	}
+	
 
+	//cout << coll << endl;
 	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
 	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
+
+}
+
+void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
+{
+	
+
+	//XMFLOAT3 pCollObjPos2= pCollobj->m_pTransCom->m_f3Position;
+	XMFLOAT3 Center = pCollobj->GetPosition();
+	XMFLOAT3 Player = pobj->GetPosition();
+	XMFLOAT3 dirVector = Vector3::Subtract(Player, Center);   // 충돌 객체에서 플레이어로 가는 벡터
+
+	float tanceta = dirVector.z / dirVector.x;
+	float ceta = atan(tanceta) * 57.3248f;
+
+	float extenttanceta = pCollobj->m_xmOOBB.Extents.z / pCollobj->m_xmOOBB.Extents.x;
+
+
+	float extentceta = atan(extenttanceta) * 57.3248f;
+
+
+	dirVector = Vector3::Normalize(dirVector);
+	//cout << "Coll obj Look" << "\t" << look.x << "\t" << look.y << "\t" << look.z << endl;
+	//cout << "dirVector : " << "\t" << dirVector.x << "\t" << dirVector.y << "\t" << dirVector.z << endl;
+	//cout << "Ceta : " << ceta << endl;
+	//cout << "ExtentCeta : " << extentceta << endl;
+
+	if (Player.x > Center.x && 0 < ceta && ceta< extentceta) // 1
+	{
+		//cout << " 오른쪽 충돌" << endl;
+		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+
+
+	}
+	if (Player.z > Center.z && extentceta <ceta && ceta < 90) // 2
+	{
+		//cout << "윗쪽 충돌" << endl;
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+	}
+	if (Player.z > Center.z && -90 < ceta && ceta < -extentceta) // 3
+	{
+		//cout << "윗쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, 1);
+
+	}
+	if (Player.x < Center.x && -extentceta < ceta && ceta < 0)// 4
+	{
+		//cout << "왼쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+	}
+	if (Player.x < Center.x && 0 < ceta && ceta < extentceta) // 5
+	{
+		//cout << "왼쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+
+	}
+	if (Player.z < Center.z && extentceta < ceta && ceta < 90) // 6
+	{
+		//cout << "아래쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+
+	}
+	if (Player.z < Center.z && -90 < ceta && ceta < -extentceta) // 7
+	{
+		//cout << "아래쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(0, 0, -1);
+
+	}
+	if (Player.x > Center.x && -extentceta < ceta && ceta < 0) // 8
+	{
+		//cout << "오른쪽 충돌" << endl;
+		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
+		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
+
+	}
+	
 
 }
 

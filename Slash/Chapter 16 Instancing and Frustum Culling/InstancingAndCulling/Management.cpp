@@ -15,6 +15,12 @@ CManagement::~CManagement()
 {
 }
 
+CLayer* CManagement::Get_Layer(wchar_t* pLayerTag)
+{
+	// TODO: 여기에 반환 구문을 삽입합니다.
+	return m_pCurScene->Get_Layer(pLayerTag);
+}
+
 CGameObject * CManagement::Find_Object(wchar_t * LayerTag, unsigned int iIdx)
 {
 	return m_pCurScene->Find_Object(LayerTag, iIdx);

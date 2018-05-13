@@ -72,6 +72,8 @@ private:
 public:
 	virtual CComponent*		Clone();
 	static CTransform*		Create(CGameObject* pObj);
+public:
+	CGameObject * GetObjectInTransfrom() { return m_pObject; }
 
 private:
 	virtual void Free();

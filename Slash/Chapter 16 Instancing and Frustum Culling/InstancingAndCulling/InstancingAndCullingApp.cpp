@@ -579,6 +579,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
 	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
+	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Death.ASE"));
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
@@ -597,6 +598,9 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Idle", "Models/Spider/Spider_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Models/Spider/Spider_Walk.ASE"));
 	path.push_back(make_pair("Walk", "Models/Spider/Spider_Attack1.ASE"));
+	path.push_back(make_pair("Walk", "Models/Spider/Spider_Attack2.ASE"));
+	path.push_back(make_pair("Walk", "Models/Spider/Spider_Attack3.ASE"));
+	path.push_back(make_pair("Walk", "Models/Spider/Spider_Dead.ASE"));
 
 	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
