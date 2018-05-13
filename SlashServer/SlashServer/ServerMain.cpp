@@ -85,7 +85,7 @@ void SendPacket(int cl, void *packet)
 			error_display("Error in SendPacket:", err_no);
 	}
 
-	printf("SendPacket to Client [ %d ] Type [ %d ] Size [ %d ]\n", cl, (int)p[1], (int)p[0]);
+	//printf("SendPacket to Client [ %d ] Type [ %d ] Size [ %d ]\n", cl, (int)p[1], (int)p[0]);
 }
 
 void DisconnectPlayer(int cl)
@@ -176,7 +176,7 @@ void WorkerThread()
 		BOOL is_success = GetQueuedCompletionStatus(g_iocp,
 			&data_size, &key, &p_over, INFINITE);
 
-		printf("GQCS from client [ %d ] with size [ %d ]\n", key, data_size);
+		//printf("GQCS from client [ %d ] with size [ %d ]\n", key, data_size);
 
 		// 에러 처리
 		if (0 == is_success) {
@@ -294,13 +294,14 @@ void AcceptThread()
 			if (true == g_clients[i].in_use)
 				SendPacket(i, &p);
 		}
-		// 나에게 접속중인 다른 플레이어 정보를 전송
+		// 접속중인 다른 플레이어 정보를 전송
 		for (int i = 0; i < MAX_USER; ++i) {
 			if (true == g_clients[i].in_use)
 				if (i != new_key) {
 					p.id = i;
 					p.x = g_clients[i].x;
 					p.y = g_clients[i].y;
+					p.z = g_clients[i].z;
 					SendPacket(new_key, &p);
 				}
 		}

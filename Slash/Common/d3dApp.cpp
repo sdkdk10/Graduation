@@ -390,7 +390,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
-			//CNetwork::GetInstance()->ReadPacket((SOCKET)wParam);
+			CNetwork::GetInstance()->ReadPacket((SOCKET)wParam);
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);

@@ -13,7 +13,7 @@
 #include "Terrain.h"
 //#include "Collision_Manager.h"
 #include "Dragon.h"
-#include "Npc.h"
+#include "Skeleton.h"
 #include "Network.h"
 #include "UI.h"
 #include "HPBar.h"
@@ -41,19 +41,20 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
-	// 서버 실행시 주석시작
-
-	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize); // 서버 실행시 주석시작
+	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_NPC", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	for(int i = 0; i < MAX_USER; ++i)
+	{
+		pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Skeleton", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	}
 	
-	// 주석종료
+	
 
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -516,29 +517,6 @@ CTestScene * CTestScene::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, 
 		Safe_Release(pInstance);
 	}
 	return pInstance;
-}
-
-
-void CTestScene::Put_Player(const float& x, const float& y, const float& z, const int& id)
-{
-	CGameObject* pObject = nullptr;
-
-	if (MYPLAYERID == id)
-	{
-		pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-		pObject->SetCamera(Get_MainCam());
-		Ready_GameObject(L"Layer_Player", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-		pObject->SetPosition(x, y, z);
-		m_pMainCam->Set_Object(pObject);
-	}
-	else // 서버는 접속순서대로 클라에 ID를 부여함 // 클라이언트는 서버에서 보내주는대로 레이어 백터에 푸시백함 (맨 처음은 무조건 클라이언트 왜? 처음오는 패킷을 내 아이디로 쓰니까)
-	{
-		pObject = CNpc::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
-		Ready_GameObject(L"Layer_Player", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-		pObject->SetPosition(x, y, z);
-	}
 }
 
 void CTestScene::UISetting()

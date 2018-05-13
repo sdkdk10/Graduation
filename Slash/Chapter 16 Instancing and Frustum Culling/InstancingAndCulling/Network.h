@@ -42,6 +42,5 @@ public:
 	int		myid;
 private:
 	virtual void Free();
-	void serverid_to_objectvindex(int& id);
 	CGameObject* pObj;
 };

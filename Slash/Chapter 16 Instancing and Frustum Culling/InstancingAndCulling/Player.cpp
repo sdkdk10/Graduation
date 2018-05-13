@@ -86,16 +86,18 @@ void Player::Animate(const GameTimer & gt)
 
 	if (dwDirection != 0)
 	{
+<<<<<<< HEAD
 		//CNetwork::GetInstance()->SendPacket(dwDirection);
 		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true,gt);
+=======
+		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true);
+>>>>>>> 19910d8b36dff0c4f636b1386d298baa41d391af
 		curKeyInputTime = gt.TotalTime();
 		if (curKeyInputTime - preKeyInputTime > CS_SEND_PACKET_DELAY)
 		{
-			//CNetwork::GetInstance()->SendDirKeyPacket(dwDirection);
+			//CNetwork::GetInstance()->SendDirKeyPacket(dwDirection); // 서버 시작시 주석 해제 && 상태머신 주석 
 			preKeyInputTime = gt.TotalTime();
 		}
-
-		//Move(dwDirection, 15.0f * gt.DeltaTime(), true);
 	}
 
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
@@ -235,12 +237,10 @@ void Player::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	AnimStateMachine.SetTimerTrueFalse(); //어떤 애니메이션을 동작 시켜주는 지 
 
-
 	Render_Head(cmdList);
 	Render_Body(cmdList);
 	Render_Right(cmdList);
 	//Render_Left(cmdList);
-
 }
 HRESULT Player::Initialize()
 {
