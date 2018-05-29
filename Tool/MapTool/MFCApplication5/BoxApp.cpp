@@ -13,6 +13,7 @@
 #include "MapObject.h"
 #include "Transform.h"
 #include "Terrain.h"
+#include "GeometryMesh.h"
 
 const int gNumFrameResources = 3;
 int KeyInputTest = 0;
@@ -381,6 +382,10 @@ void InstancingAndCullingApp::LoadMesh()
 		pComponent = StaticMesh::Create(md3dDevice, path);
 		CComponent_Manager::GetInstance()->Ready_Component(const_cast<wchar_t*>((*iter).wstrFileName.c_str()), pComponent, CComponent_Manager::COM_MESH);
 	}
+
+	pComponent = GeometryMesh::Create(md3dDevice);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Geometry", pComponent, CComponent_Manager::COM_MESH);
+
 /*
 	path.clear();
 	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));

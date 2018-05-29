@@ -9,7 +9,7 @@ class CScene
 	: public CBase
 {
 protected:
-	explicit CScene();
+	explicit CScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
 	virtual ~CScene();
 
 public:
@@ -28,6 +28,9 @@ protected:
 	unordered_map<wchar_t*, CLayer*>		m_mapLayer;
 	Camera*									m_pMainCam;		// 현재 씬의 메인 카메라
 	BoundingFrustum*						m_pCamFrustum;
+
+	vector<ComPtr<ID3D12DescriptorHeap>> mSrvDescriptorHeap;
+	UINT mCbvSrvDescriptorSize = 0;
 
 
 

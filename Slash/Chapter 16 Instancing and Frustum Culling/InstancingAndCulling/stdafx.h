@@ -9,6 +9,7 @@
 #define WIN32_LEAN_AND_MEAN             // 거의 사용되지 않는 내용은 Windows 헤더에서 제외합니다.
 #define DIRECTINPUT_VERSION 0x0800
 // Windows 헤더 파일:
+#include <stdio.h>
 #include <windows.h>
 #include <algorithm>
 // C의 런타임 헤더 파일입니다.
@@ -59,17 +60,22 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "user32.lib")
 
 extern Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
-
-
+static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+#include "fmod.h"
+#include "fmod.hpp"
+#include "fmod_dsp.h"
+#include "fmod_errors.h" 
 #include "d3dUtil.h"
 #include "FrameResource.h"
 #include "MathHelper.h"
 #include "UploadBuffer.h"
 #include "GeometryGenerator.h"
 
+#pragma comment(lib, "fmodex64_vc.lib")
 
 
 

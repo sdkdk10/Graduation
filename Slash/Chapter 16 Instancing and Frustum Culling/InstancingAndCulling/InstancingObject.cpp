@@ -6,11 +6,12 @@
 #include "Management.h"
 #include "Transform.h"
 #include "Component_Manager.h"
+#include "Texture_Manager.h"
 #include "Layer.h"
-
 
 CInstancingObject* CInstancingObject::m_pAllInstObject[MAXINSTOBJECTID] = { nullptr };
 unsigned long CInstancingObject::m_iAllInstObjectIndex = 0;
+vector<std::unique_ptr<Material>>			CInstancingObject::mMaterials;
 
 
 CInstancingObject::CInstancingObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize)
@@ -408,11 +409,19 @@ HRESULT CInstancingObject::Initialize()
 	m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
 	if (nullptr == m_pMesh)
 		return E_FAIL;
+	
+	string TexName = m_pMesh->Get_TexName();
 
+	auto tex = CTexture_Manager::GetInstance()->Find_Texture(TexName, CTexture_Manager::TEX_INST_2D);
+	if (nullptr == tex)
+		return E_FAIL;
+
+
+	/*
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
 	bricks0->MatCBIndex = 0;
-	bricks0->DiffuseSrvHeapIndex = 0;
+	bricks0->DiffuseSrvHeapIndex = tex->Num;
 	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	bricks0->FresnelR0 = XMFLOAT3(0.02f, 0.02f, 0.02f);
 	bricks0->Roughness = 0.1f;
@@ -478,7 +487,7 @@ HRESULT CInstancingObject::Initialize()
 	skullMat->Roughness = 0.5f;
 
 	mMaterials.push_back(std::move(skullMat));
-
+	*/
 	//mMaterials["bricks0"] = std::move(bricks0);
 	//mMaterials["stone0"] = std::move(stone0);
 	//mMaterials["tile0"] = std::move(tile0);
@@ -486,7 +495,7 @@ HRESULT CInstancingObject::Initialize()
 	//mMaterials["ice0"] = std::move(ice0);
 	//mMaterials["grass0"] = std::move(grass0);
 	//mMaterials["skullMat"] = std::move(skullMat);
-
+	
 	//Mat = new Material;
 	//Mat->Name = "instanceMat";
 	//Mat->MatCBIndex = 0;
@@ -494,7 +503,7 @@ HRESULT CInstancingObject::Initialize()
 	//Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	//Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	//Mat->Roughness = 0.5f;
-
+	
 	World = MathHelper::Identity4x4();
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = 0;
@@ -528,9 +537,23 @@ HRESULT CInstancingObject::Initialize()
 		CTransform* pCom = CTransform::Create(this);
 		pCom->GetPosition().x = i * 10.f;
 		m_vecTransCom[i] = pCom;
-		XMStoreFloat4x4(&vecInstances[i].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+		//XMStoreFloat4x4(&vecInstances[i].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+		vecInstances[i].TexTransform = TexTransform;
 		//vecInstances[index].MaterialIndex = index % (mMaterials.size() - 1);
-		vecInstances[i].MaterialIndex = i;
+		//m_iMyInstObject;
+
+		auto material = std::make_unique<Material>();
+		material->Name = "material";
+		material->MatCBIndex = m_iMyInstObject + i;
+		material->DiffuseSrvHeapIndex = tex->Num;
+		material->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		material->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+		material->Roughness = 0.5f;
+
+		mMaterials.push_back(std::move(material));
+
+
+		vecInstances[i].MaterialIndex = m_iMyInstObject + i;
 	}
 
 	return S_OK;
@@ -615,11 +638,11 @@ bool CInstancingObject::Update(const GameTimer & gt)
 	/* Material */
 	auto currMaterialBuffer = m_pFrameResource->MaterialBuffer.get();
 
-	for (auto& e : mMaterials)
+
+	for (int i = 0; i < m_iSize; ++i)
 	{
-		// Only update the cbuffer data if the constants have changed.  If the cbuffer
-		// data changes, it needs to be updated for each FrameResource.
-		Material* mat = e.get();
+		Material* mat = mMaterials[m_iMyInstObject + i].get();
+
 		if (mat->NumFramesDirty > 0)
 		{
 			XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
@@ -638,6 +661,29 @@ bool CInstancingObject::Update(const GameTimer & gt)
 		}
 	}
 
+	//for (auto& e : mMaterials)
+	//{
+	//	// Only update the cbuffer data if the constants have changed.  If the cbuffer
+	//	// data changes, it needs to be updated for each FrameResource.
+	//	Material* mat = e.get();
+	//	if (mat->NumFramesDirty > 0)
+	//	{
+	//		XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
+
+	//		MaterialData matData;
+	//		matData.DiffuseAlbedo = mat->DiffuseAlbedo;
+	//		matData.FresnelR0 = mat->FresnelR0;
+	//		matData.Roughness = mat->Roughness;
+	//		XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
+	//		matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;
+
+	//		currMaterialBuffer->CopyData(mat->MatCBIndex, matData);
+
+	//		// Next FrameResource need to be updated too.
+	//		mat->NumFramesDirty--;
+	//	}
+	//}
+
 	return true;
 }
 
@@ -646,7 +692,7 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 
 	//RenderBounds(cmdList);
 	
-	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	cmdList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	//UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
 	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
@@ -657,7 +703,7 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 
 	auto instanceBuffer = m_pFrameResource->InstanceBuffer->Resource();
 	D3D12_GPU_VIRTUAL_ADDRESS Address = instanceBuffer->GetGPUVirtualAddress() + m_iMyInstObject * sizeof(InstanceData);
-	mCommandList->SetGraphicsRootShaderResourceView(0, Address);
+	cmdList->SetGraphicsRootShaderResourceView(0, Address);
 	
 	//InstanceCount = vecInstances.size();
 	cmdList->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndexLocation, BaseVertexLocation, 0);

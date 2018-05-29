@@ -26,7 +26,7 @@ public:
 	virtual void		SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
 
 public:
-	void SetTexture(int matIdx, int idx) { mMaterials[matIdx]->DiffuseSrvHeapIndex = idx; }
+	void SetTexture(int matIdx, int idx) { mMaterials[m_iMyInstObject + matIdx]->DiffuseSrvHeapIndex = idx; }
 
 public:
 	virtual HRESULT			Initialize();
@@ -43,7 +43,7 @@ private:
 
 
 	//std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
-	vector<std::unique_ptr<Material>>			mMaterials;
+	static vector<std::unique_ptr<Material>>			mMaterials;
 
 	MeshGeometry*				m_GeoBounds;
 

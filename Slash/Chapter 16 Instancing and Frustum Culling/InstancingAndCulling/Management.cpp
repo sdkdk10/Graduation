@@ -60,8 +60,16 @@ HRESULT CManagement::Change_Scene(CScene* pScene)
 	return S_OK;
 }
 
+HRESULT CManagement::Set_Sound(CSound * pSound)
+{
+	if (pSound == nullptr)
+		return E_FAIL;
+	m_pSound = pSound;
+}
+
 void CManagement::Free()
 {
 	Safe_Release(m_pCurScene);
 	Safe_Release(m_pRenderer);
+	Safe_Release(m_pSound);
 }

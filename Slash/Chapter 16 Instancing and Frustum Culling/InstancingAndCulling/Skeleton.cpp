@@ -24,6 +24,8 @@ void CSkeleton::Animate(const GameTimer & gt)
 {
 	AnimStateMachine.AnimationStateUpdate(gt);
 
+	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
+	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
 }
 
@@ -298,6 +300,12 @@ void CSkeleton::Render_Right(ID3D12GraphicsCommandList * cmdList)
 		0);
 }
 
+void CSkeleton::Rotate(float fPitch, float fYaw, float fRoll)
+{
+	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fRoll), XMConvertToRadians(fYaw));
+	World = Matrix4x4::Multiply(mtxRotate, World);
+}
+
 CSkeleton * CSkeleton::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)
 {
 	CSkeleton* pInstance = new CSkeleton(d3dDevice, srv, srvSize, meshName);
@@ -310,6 +318,25 @@ CSkeleton * CSkeleton::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, Co
 	}
 
 	return pInstance;
+}
+
+void CSkeleton::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
+{
+
+	XMFLOAT3 CurPos = XMFLOAT3(World._41, World._42, World._43);
+
+	m_xmf3Position = Vector3::Add(CurPos, xmf3Shift);
+
+	XMFLOAT3 xmf3shiftTest = xmf3Shift;
+
+	//XMFLOAT3 test = Vector3::Subtract(CurPos, xmf3shiftTest);
+
+	//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+
+	World._41 = m_xmf3Position.x;
+	World._42 = m_xmf3Position.y;
+	World._43 = m_xmf3Position.z;
+
 }
 
 void CSkeleton::Free()

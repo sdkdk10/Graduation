@@ -48,6 +48,13 @@ float4 PS(VertexOut pin) : SV_Target
 	// Dynamically look up the texture in the array.
     diffuseAlbedo *= gDiffuseMap_Instancing[diffuseTexIndex].Sample(gsamLinearWrap, pin.TexC);
 	
+
+#ifdef ALPHA_TEST
+	clip(diffuseAlbedo.a - 0.1f);
+	float4 alphaColor = diffuseAlbedo;
+	return alphaColor;
+#endif
+
     // Interpolating normal can unnormalize it, so renormalize it.
     pin.NormalW = normalize(pin.NormalW);
 

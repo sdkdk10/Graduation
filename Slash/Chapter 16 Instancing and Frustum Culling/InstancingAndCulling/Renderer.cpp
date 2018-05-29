@@ -40,6 +40,8 @@ void CRenderer::Render(ID3D12GraphicsCommandList* cmdList)
 	Render_ForWard(cmdList);
 
 	Render_Priority(cmdList);
+
+	Render_Alpha(cmdList);
 	
 	Render_UI(cmdList);
 
@@ -48,7 +50,7 @@ void CRenderer::Render(ID3D12GraphicsCommandList* cmdList)
 
 	Render_Instancing(cmdList);
 
-
+	Render_AlphaInstancing(cmdList);
 
 	//Clear_Renderer();
 }
@@ -66,12 +68,29 @@ void CRenderer::Render_ForWard(ID3D12GraphicsCommandList* cmdList)
 	mCommandList->SetPipelineState(mPSOs["Opaque"].Get());
 	for (auto& elem : m_vecObject[RENDER_NONALPHA_FORWARD])
 		elem->Render(cmdList);
-} 
+}
+
+void CRenderer::Render_Alpha(ID3D12GraphicsCommandList * cmdList)
+{
+	mCommandList->SetPipelineState(mPSOs["alphaBelnd"].Get());
+	for (auto & elem : m_vecObject[RENDER_ALPHA_DEFAULT])
+	{
+		elem->Render(cmdList);
+		//mCommandList->ClearState(mPSOs["treeSprites"].Get());
+	}
+}
 
 void CRenderer::Render_Instancing(ID3D12GraphicsCommandList* cmdList)
 {
 	mCommandList->SetPipelineState(mPSOs["InstancingOpaque"].Get());
 	for (auto& elem : m_vecObject[RENDER_NONALPHA_INSTANCING])
+		elem->Render(cmdList);
+}
+
+void CRenderer::Render_AlphaInstancing(ID3D12GraphicsCommandList * cmdList)
+{
+	mCommandList->SetPipelineState(mPSOs["alphaTested_Inst"].Get());
+	for (auto& elem : m_vecObject[RENDER_ALPHA_INST])
 		elem->Render(cmdList);
 }
 

@@ -17,43 +17,55 @@ CObjectManager::~CObjectManager()
 
 void CObjectManager::Clear_Object()
 {
-	size_t iSize = m_vecObject.size();
+	for (int j = 0; j < OBJ_END; ++j)
+	{
+		size_t iSize = m_vecObject[j].size();
 
-	for (size_t i = 0; i < iSize; ++i)
-		Safe_Release(m_vecObject[i]);
-	m_vecObject.clear();
+		for (size_t i = 0; i < iSize; ++i)
+			Safe_Release(m_vecObject[j][i]);
+		m_vecObject[j].clear();
+	}
 
 	m_pRenderer->Clear_Renderer();
 }
 
-CGameObject * CObjectManager::Find_Object(unsigned int iIdx)
+CGameObject * CObjectManager::Find_Object(unsigned int iIdx, OBJTYPE eType)
 {
-	if(iIdx > m_vecObject.size() - 1)
+	if(iIdx > m_vecObject[eType].size() - 1)
 		return nullptr;
 
-	return m_vecObject[iIdx];
+	return m_vecObject[eType][iIdx];
 }
 
-void CObjectManager::Delete_Object(unsigned int iIdx)
+void CObjectManager::Delete_Object(unsigned int iIdx, OBJTYPE eType)
 {
-	size_t iSize = m_vecObject.size();
+	size_t iSize = m_vecObject[eType].size();
 
 	for (size_t i = 0; i < iSize; ++i)
 	{
-		if (m_vecObject[i]->GetMyID() == iIdx)
+		if (m_vecObject[eType][i]->GetMyID() == iIdx)
 		{
-			Erase_Vector_Element(m_vecObject, i);
+			Erase_Vector_Element(m_vecObject[eType], i);
 			return;
 		}
 	}
 }
 
-HRESULT CObjectManager::Add_Object(CGameObject * pObj)
+void CObjectManager::Delete_All_Object(OBJTYPE eType)
+{
+	size_t iSize = m_vecObject[eType].size();
+
+	for (size_t i = 0; i < iSize; ++i)
+		Safe_Release(m_vecObject[eType][i]);
+	m_vecObject[eType].clear();
+}
+
+HRESULT CObjectManager::Add_Object(CGameObject * pObj, OBJTYPE eType)
 {
 	if (pObj == nullptr)
 		return E_FAIL;
 
-	m_vecObject.push_back(pObj);
+	m_vecObject[eType].push_back(pObj);
 
 	return S_OK;
 }
@@ -68,10 +80,13 @@ HRESULT CObjectManager::Init_ObjMgr(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevi
 int CObjectManager::Update_ObjMgr(const GameTimer & gt, const FrameResource* pCurRsc)
 {
 	mCurrFrameResource = const_cast<FrameResource*>(pCurRsc);
-	size_t iSize = m_vecObject.size();
+	for (int j = 0; j < OBJ_END; ++j)
+	{
+		size_t iSize = m_vecObject[j].size();
 
-	for (size_t i = 0; i < iSize; ++i)
-		m_vecObject[i]->Update(gt);
+		for (size_t i = 0; i < iSize; ++i)
+			m_vecObject[j][i]->Update(gt);
+	}
 	return 0;
 }
 
@@ -82,9 +97,12 @@ void CObjectManager::Render_ObjMgr(ID3D12GraphicsCommandList* cmdList)
 
 void CObjectManager::Free()
 {
-	size_t iSize = m_vecObject.size();
-	for (size_t i = 0; i < iSize; ++i)
-		Safe_Release(m_vecObject[i]);
+	for (int j = 0; j < OBJ_END; ++j)
+	{
+		size_t iSize = m_vecObject[j].size();
+		for (size_t i = 0; i < iSize; ++i)
+			Safe_Release(m_vecObject[j][i]);
+		m_vecObject[j].clear();
+	}
 
-	m_vecObject.clear();
 }

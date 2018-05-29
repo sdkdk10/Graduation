@@ -62,4 +62,11 @@ public:
 	afx_msg void OnNMThemeChangedScrollbarPosx(NMHDR *pNMHDR, LRESULT *pResult);
 	CScrollBar m_PosXVSBar;
 	afx_msg void OnBnClickedButtonDelete();
+	CButton m_RadioDir[3];
+	int m_iInstCnt;
+	float m_fInstInterval;
+	afx_msg void OnBnClickedButtonInstMake();
+	afx_msg void OnBnClickedButtonInstPreview();
+	CButton m_OneMinusButton;
+	CButton m_IsAlphaCheckButton;
 };

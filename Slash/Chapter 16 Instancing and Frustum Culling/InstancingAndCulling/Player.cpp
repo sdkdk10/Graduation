@@ -6,12 +6,13 @@
 #include "Network.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
+#include "Management.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
 {
-	preKeyInputTime = 0;
-	curKeyInputTime = 0;
+	m_preKeyInputTime = 0;
+	m_curKeyInputTime = 0;
 
 }
 
@@ -27,6 +28,22 @@ Player::~Player()
 
 void Player::Animate(const GameTimer & gt)
 {
+	if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack1State)
+	{
+		if (GetAnimateMachine()->GetCurAnimFrame() == 0)
+		{
+			if (m_bAttackMotionForSound == true)
+			{
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+				m_bAttackMotionForSound = false;
+			}
+		}
+		if (GetAnimateMachine()->GetCurAnimFrame() != 0)
+		{
+			m_bAttackMotionForSound = true;
+		}
+
+	}
 	if (GetHp() < 0)
 	{
 		SetObjectAnimState(AnimStateMachine.DeadState);
@@ -34,101 +51,72 @@ void Player::Animate(const GameTimer & gt)
 		return;
 	}
 	AnimStateMachine.AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
-	/*cout << endl << endl;
 
-	cout << World._11 << "\t" << World._12 << "\t" << World._13 << endl;
-	cout << World._21 << "\t" << World._22 << "\t" << World._23 << endl;
-	cout << World._31 << "\t" << World._32 << "\t" << World._33 << endl;
-	cout << World._41 << "\t" << World._42 << "\t" << World._43 << endl;*/
-
-	//cout << World._41 << "\t" << World._42 << "\t" << World._43 << endl;
 	DWORD dwDirection = 0;
+	static bool IsPlayerMoved = false;
 
-	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS)
+	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_FORWARD;
+	else if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_FORWARD;
+
+	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_BACKWARD;
+	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_BACKWARD;
+
+	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_LEFT;
+	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_LEFT;
+
+	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_RIGHT;
+	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_RIGHT;
+
+	//m_curKeyInputTime = gt.TotalTime();
+	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
 	{
-		World._42 += 0.1f;
-	}
-	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS)
-	{
-		World._42 -= 0.1f;
-	}
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS)
-	{
-		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
-		//KeyInputTest = 1;
-		dwDirection |= DIR_FORWARD;
-
-	}
-	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS)
-	{
-		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
-
-		//KeyInputTest = 1;
-		dwDirection |= DIR_BACKWARD;
-
-	}
-	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
-	{
-		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
-
-		//KeyInputTest = 1;
-		dwDirection |= DIR_RIGHT;
-
-	}
-	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
-	{
-		AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
-
-		//KeyInputTest = 1;
-		dwDirection |= DIR_LEFT;
-	}
-
-
-	if (dwDirection != 0)
-	{
-<<<<<<< HEAD
-		//CNetwork::GetInstance()->SendPacket(dwDirection);
-		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true,gt);
-=======
-		Move(dwDirection, m_fMoveSpeed * gt.DeltaTime(), true);
->>>>>>> 19910d8b36dff0c4f636b1386d298baa41d391af
-		curKeyInputTime = gt.TotalTime();
-		if (curKeyInputTime - preKeyInputTime > CS_SEND_PACKET_DELAY)
+		if (0 == dwDirection)
 		{
-			//CNetwork::GetInstance()->SendDirKeyPacket(dwDirection); // 서버 시작시 주석 해제 && 상태머신 주석 
-			preKeyInputTime = gt.TotalTime();
-		}
-	}
-
-	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-		if (AnimStateMachine.GetAnimState() != AnimStateMachine.Attack1State)
-		{
-			AnimStateMachine.SetAnimState(AnimStateMachine.Attack1State);
-
-
-			//KeyInputTest = 2;
+			if (IsPlayerMoved)
+			{
+				CNetwork::GetInstance()->SendStopPacket();
+				IsPlayerMoved = false;
+			}
 		}
 		else
 		{
-			AnimStateMachine.SetAnimState(AnimStateMachine.Attack3State);
 
-
-			//KeyInputTest = 4;//3;
-			bAttackMotionTest = true;
+			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection, World);
+			IsPlayerMoved = true;
 		}
-
-		if (bAttackMotionTest == false)
-		{
-			if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack2State)
-			{
-
-			}
-		}
-
-
+		//m_preKeyInputTime = gt.TotalTime();
 	}
+
+	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+		CNetwork::GetInstance()->SendAttackPacket();
+	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	//{
+	//	//KeyInputTest = 2;
+	//	if (AnimStateMachine.GetAnimState() != AnimStateMachine.Attack1State)
+	//	{
+	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack1State);
+	//		
+	//		//KeyInputTest = 2;
+	//	}
+	//	else
+	//	{
+	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack3State);
+
+
+	//		//KeyInputTest = 4;//3;
+	//		bAttackMotionTest = true;
+	//	}
+
+	//	if (bAttackMotionTest == false)
+	//	{
+	//		if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack2State)
+	//		{
+
+	//		}
+	//	}
+
+
+	//}
 	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
@@ -159,23 +147,24 @@ void Player::Animate(const GameTimer & gt)
 
 	}
 
-	if (CInputDevice::GetInstance()->AnyKeyInput())
-	{
-		
-		if (!AnimStateMachine.bTimerAttack1 &&
-			!AnimStateMachine.bTimerAttack2 &&
-			!AnimStateMachine.bTimerAttack3 /*&&
-			!pTestMesh->bTimerTestWalk*/
-			)
-		{
-			
-			AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
+	//if (CInputDevice::GetInstance()->AnyKeyInput())
+	//{
+	//	
+	//	if (!AnimStateMachine.bTimerAttack1 &&
+	//		!AnimStateMachine.bTimerAttack2 &&
+	//		!AnimStateMachine.bTimerAttack3 /*&&
+	//		!pTestMesh->bTimerTestWalk*/
+	//		)
+	//	{
+	//		
+	//		AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
 
-		//	KeyInputTest = 0;
+	//	//	KeyInputTest = 0;
 
-		}
-	}
+	//	}
+	//}
 
+	// 받을 때 갱신해야함 // 월드 행렬로..? // 서버작업 // 회전 받을때랑 // 위치 받을때 // 아도가 그냥 대충 하자고함
 	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
 	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
@@ -188,6 +177,34 @@ bool Player::Update(const GameTimer & gt)
 
 	Animate(gt);
 
+	if (!IsSoundIn)
+	{
+		float X = World._41;
+		float Z = World._43;
+		if (X > 120.f && X < 160.f)
+		{
+			if (Z > 45.f && Z < 90.f)
+			{
+				IsSoundIn = true;
+				//
+			}
+		}
+	}
+
+	else
+	{
+		if(!IsSoundChange)
+		{
+			CManagement::GetInstance()->GetSound()->Set_BGM_Volume(-1.f * gt.DeltaTime() * 5.f);
+			float fVolume = CManagement::GetInstance()->GetSound()->Get_BGM_Volume();
+			if (fVolume < 0.2)
+			{
+				CManagement::GetInstance()->GetSound()->PlayBGM(L"Sound", L"Combat", 1.f);
+				//CManagement::GetInstance()->GetSound()->Set_BGM_Volume(-1.f * gt.DeltaTime() * 30.f);
+				IsSoundChange = true;
+			}
+		}
+	}
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -536,257 +553,48 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 }
 
-void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
-{
-	
-
-	
-		if (dwDirection)
-		{
-			XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-			if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fDistance);
-			if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fDistance);
-			if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fDistance);
-			if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fDistance);
-
-			//	xmf3Shift = Vector3::Normalize(xmf3Shift);
-			//xmf3Shift += m_MovingRefletVector;
-			//xmf3Shift = Vector3::Normalize(xmf3Shift);
-
-			// S = xmf3Shift
-			// n = m_MovingRfelctVector
-			// P = xmf3Shift
-
-			// S = P - n(P·n)
-
-			/*cout << " ---------------------" << endl;
-			cout << "Shift : " << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
-			cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
-			cout << " ---------------------" << endl;*/
-
-			static UCHAR pKeysBuffer[256];
-			if (GetKeyboardState(pKeysBuffer))
-			{
-				if (pKeysBuffer[0x50] & 0xF0) //p키
-				{
-					m_MovingRefletVector.x = 0;
-					m_MovingRefletVector.y = 0;
-					m_MovingRefletVector.z = 0;
-				}
-			}
-
-			float cosCeta = Vector3::DotProduct(m_MovingRefletVector, xmf3Shift);
-			if (cosCeta < 0)
-				//if(!Vector3::IsEqual(Vector3::Normalize(m_MovingRefletVector), Vector3::Normalize(xmf3Shift)))
-				xmf3Shift = Vector3::Subtract(xmf3Shift, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(xmf3Shift, m_MovingRefletVector)));
-
-			//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
-			//cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
-
-		
-
-			Move(xmf3Shift, bUpdateVelocity);
-
-
-			if (dwDirection & DIR_FORWARD)
-			{
-
-				xmf3Shift = Vector3::Normalize(xmf3Shift);
-				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-				//cout << playerLook.x << "\t" << playerLook.y << "\t" << playerLook.z << endl;
-				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-				if (crossVector.y > 0)
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-					//cout << ceta << endl;
-					//	cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-				else
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-						//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-
-
-			}
-			else if (dwDirection & DIR_BACKWARD)
-			{
-
-
-				xmf3Shift = Vector3::Normalize(xmf3Shift);
-				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-				if (crossVector.y > 0)
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-						//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-				else
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-						//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-
-			}
-			else if (dwDirection & DIR_RIGHT)
-			{
-
-				/*xmf3Shift = Vector3::Normalize(xmf3Shift);
-
-				cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;*/
-
-				xmf3Shift = Vector3::Normalize(xmf3Shift);
-				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-				if (crossVector.y > 0)
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-						//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-				else
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-						//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, m_fRotateSpeed *gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-
-			}
-			else if (dwDirection & DIR_LEFT)
-			{
-				xmf3Shift = Vector3::Normalize(xmf3Shift);
-				XMFLOAT3 playerLook = Vector3::Normalize(XMFLOAT3(-World._21, -World._22, -World._23));
-
-				XMFLOAT3 crossVector = Vector3::CrossProduct(xmf3Shift, playerLook, true);
-				if (crossVector.y > 0)
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-					//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-				else
-				{
-					float dotproduct = Vector3::DotProduct(xmf3Shift, playerLook);
-					float xmf3ShiftLength = Vector3::Length(xmf3Shift);
-					float xmf3PlayerLooklength = Vector3::Length(playerLook);
-
-					float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
-
-					float ceta = acos(cosCeta); // 현재 각도
-
-					ceta = ceta * m_fDegree;
-
-					//cout << ceta << endl;
-					if (ceta > 0.1f)
-					{
-						Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 50, 0.0f);
-
-					}
-				}
-
-			}
-
-
-
-		}
-
-	
-}
+//void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
+//{
+//	
+//
+//	
+//		if (dwDirection)
+//		{
+//			XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+//			if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fDistance);
+//			if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fDistance);
+//			if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fDistance);
+//			if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fDistance);
+//
+//			//	xmf3Shift = Vector3::Normalize(xmf3Shift);
+//			//xmf3Shift += m_MovingRefletVector;
+//			//xmf3Shift = Vector3::Normalize(xmf3Shift);
+//
+//			// S = xmf3Shift
+//			// n = m_MovingRfelctVector
+//			// P = xmf3Shift
+//
+//			// S = P - n(P·n)
+//
+//			/*cout << " ---------------------" << endl;
+//			cout << "Shift : " << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+//			cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
+//			cout << " ---------------------" << endl;*/
+//
+//			float cosCeta = Vector3::DotProduct(m_MovingRefletVector, xmf3Shift);
+//			if (cosCeta < 0)
+//				//if(!Vector3::IsEqual(Vector3::Normalize(m_MovingRefletVector), Vector3::Normalize(xmf3Shift)))
+//				xmf3Shift = Vector3::Subtract(xmf3Shift, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(xmf3Shift, m_MovingRefletVector)));
+//
+//			//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
+//			//cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
+//
+//		
+//
+//			Move(xmf3Shift, bUpdateVelocity);
+//
+//
+//		}
+//
+//	
+//}

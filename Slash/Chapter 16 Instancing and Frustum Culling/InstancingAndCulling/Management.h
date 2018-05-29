@@ -5,6 +5,7 @@
 #include "GameTimer.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "Sound.h"
 
 class CRenderer;
 
@@ -24,9 +25,10 @@ public:
 	UINT&							GetCbvSrvDescriptorSize() { return mCbvSrvDescriptorSize; }
 	FrameResource*					GetCurFrameResource() { return mCurrFrameResource; }
 	CRenderer*						GetRenderer() { return m_pRenderer; }
+	CSound*							GetSound() { return m_pSound; }
+	CScene*							Get_CurScene() { return m_pCurScene; }
 
 public:
-	CScene*			Get_CurScene() { return m_pCurScene; }
 	Camera*			Get_MainCam() { return m_pCurScene->Get_MainCam(); }
 	HRESULT			Set_MainCam(Camera* pCam) { return m_pCurScene->Set_MainCam(pCam); }
 	HRESULT			Set_CamFrustum(DirectX::BoundingFrustum* pFrustum) { return m_pCurScene->Set_CamFrustum(pFrustum); }
@@ -39,6 +41,7 @@ public:
 private:
 	CScene*				m_pCurScene;
 	CRenderer*			m_pRenderer;
+	CSound*				m_pSound;
 
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;
@@ -52,6 +55,7 @@ public:
 
 public:
 	HRESULT		Change_Scene(CScene* pScene);
+	HRESULT		Set_Sound(CSound* pSound);
 
 private:
 	virtual void Free();

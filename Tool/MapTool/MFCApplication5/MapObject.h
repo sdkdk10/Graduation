@@ -19,10 +19,11 @@ public:
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	void SetMesh(wchar_t* meshName);
-	void SetTexture(Texture* tex);
-	void SetTexture(string texName);
-	void SetTexture(int idx) { Mat->DiffuseSrvHeapIndex = idx; }
+	void	SetMesh(wchar_t* meshName);
+	void	SetTexture(Texture* tex);
+	void	SetTexture(string texName);
+	void	SetTexture(int idx) { Mat->DiffuseSrvHeapIndex = idx; }
+	bool&	IsAlpha() { return m_IsAlpha; }
 public:
 	static CMapObject* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName);
 
@@ -30,7 +31,7 @@ public:
 //	wchar_t*				m_wstrMeshName;
 private:
 	string					m_strTexName;
-
+	bool					m_IsAlpha;
 public:
 	virtual void Free();
 };

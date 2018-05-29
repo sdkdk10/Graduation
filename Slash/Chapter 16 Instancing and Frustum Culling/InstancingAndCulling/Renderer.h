@@ -8,7 +8,7 @@ class CGameObject;
 class CRenderer : public CComponent
 {
 public:
-	enum RenderType { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONALPHA_FORWARD, RENDER_NONALPHA_INSTANCING, RENDER_NONALPHA_DEFFERD, RENDER_ALPHA, RENDER_UI, RENDER_FADE, RENDER_END};
+	enum RenderType { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONALPHA_FORWARD, RENDER_NONALPHA_INSTANCING, RENDER_NONALPHA_DEFFERD, RENDER_ALPHA_INST, RENDER_ALPHA_DEFAULT, RENDER_UI, RENDER_FADE, RENDER_END};
 
 private:
 	explicit CRenderer(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv);
@@ -26,7 +26,9 @@ public:
 	void				Render(ID3D12GraphicsCommandList* cmdList);
 	void				Render_Priority(ID3D12GraphicsCommandList* cmdList);
 	void				Render_ForWard(ID3D12GraphicsCommandList* cmdList);
+	void				Render_Alpha(ID3D12GraphicsCommandList* cmdList);
 	void				Render_Instancing(ID3D12GraphicsCommandList* cmdList);
+	void				Render_AlphaInstancing(ID3D12GraphicsCommandList* cmdList);
 	void				Render_UI(ID3D12GraphicsCommandList* cmdList);
 
 	//void Render_Alpha(ID3D12GraphicsCommandList* cmdList);

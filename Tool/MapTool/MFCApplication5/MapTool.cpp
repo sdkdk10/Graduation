@@ -15,6 +15,7 @@
 #include "MapObject.h"
 #include "Transform.h"
 #include "Mesh.h"
+#include "Terrain.h"
 
 // CMapTool 대화 상자입니다.
 
@@ -31,6 +32,8 @@ CMapTool::CMapTool(CWnd* pParent /*=NULL*/)
 	, m_fRotX(0)
 	, m_fRotY(0)
 	, m_fRotZ(0)
+	, m_iInstCnt(0)
+	, m_fInstInterval(0)
 {
 
 }
@@ -55,6 +58,13 @@ void CMapTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_ROTZ, m_fRotZ);
 	DDX_Control(pDX, IDC_LIST_TEXTURE, m_TextureListBox);
 	DDX_Control(pDX, IDC_SCROLLBAR_POSX, m_PosXVSBar);
+	DDX_Control(pDX, IDC_RADIO_DIRX, m_RadioDir[0]);
+	DDX_Control(pDX, IDC_RADIO_DIRY, m_RadioDir[1]);
+	DDX_Control(pDX, IDC_RADIO_DIRZ, m_RadioDir[2]);
+	DDX_Text(pDX, IDC_EDIT_INST_COUNT, m_iInstCnt);
+	DDX_Text(pDX, IDC_EDIT_INST_INTERVAL, m_fInstInterval);
+	DDX_Control(pDX, IDC_CHECK_ONEMINUS, m_OneMinusButton);
+	DDX_Control(pDX, IDC_CHECK_ALPHA, m_IsAlphaCheckButton);
 }
 
 
@@ -68,6 +78,8 @@ BEGIN_MESSAGE_MAP(CMapTool, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_LOAD, &CMapTool::OnBnClickedButtonLoad)
 	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR_POSX, &CMapTool::OnNMThemeChangedScrollbarPosx)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CMapTool::OnBnClickedButtonDelete)
+	ON_BN_CLICKED(IDC_BUTTON_INST_MAKE, &CMapTool::OnBnClickedButtonInstMake)
+	ON_BN_CLICKED(IDC_BUTTON_INST_PREVIEW, &CMapTool::OnBnClickedButtonInstPreview)
 END_MESSAGE_MAP()
 
 
@@ -80,7 +92,7 @@ BOOL CMapTool::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
-	RECT Rect = { 0, 0, 1000, 800 };
+	RECT Rect = { 0, 0, 1300, 800 };
 	AdjustWindowRect(&Rect, WS_OVERLAPPEDWINDOW, FALSE);
 	int width = Rect.right - Rect.left;
 	int height = Rect.bottom - Rect.top;
@@ -112,6 +124,8 @@ BOOL CMapTool::OnInitDialog()
 	{
 		m_TextureListBox.AddString(tex_iter->first.c_str());
 	}
+
+	m_RadioDir[0].SetCheck(true);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -156,6 +170,11 @@ void CMapTool::OnBnClickedButtonAdd()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData();
 
+	if (m_pCurObject == nullptr)
+		return;
+
+	dynamic_cast<CMapObject*>(m_pCurObject)->IsAlpha() = m_IsAlphaCheckButton;
+
 	m_vecObject.push_back(m_pCurObject);
 
 	const string str = m_pCurObject->GetMeshName();
@@ -177,6 +196,7 @@ void CMapTool::OnBnClickedButtonApply()
 	UpdateData();
 
 	int iSel = m_ObjectListBox.GetCurSel();
+	
 	m_vecObject[iSel]->GetTransform()->Translation(m_fPosX, m_fPosY, m_fPosZ);
 	m_vecObject[iSel]->GetTransform()->Scaling(m_fScaleX, m_fScaleY, m_fScaleZ);
 	m_vecObject[iSel]->GetTransform()->Rotation(m_fRotX, m_fRotY, m_fRotZ);
@@ -261,6 +281,7 @@ void CMapTool::OnBnClickedButtonSave()
 
 		for (size_t i = 0; i < objSize; ++i)
 		{
+			out << dynamic_cast<CMapObject*>((obj_iter->second)[i])->IsAlpha() << '\t';
 			out << dynamic_cast<CMapObject*>((obj_iter->second)[i])->Get_TexName() << '\t';
 			out << (obj_iter->second)[i]->GetTransform()->GetPosition().x << '\t' << (obj_iter->second)[i]->GetTransform()->GetPosition().y << '\t' << (obj_iter->second)[i]->GetTransform()->GetPosition().z << '\t';
 			out << (obj_iter->second)[i]->GetTransform()->GetScale().x << '\t' << (obj_iter->second)[i]->GetTransform()->GetScale().y << '\t' << (obj_iter->second)[i]->GetTransform()->GetScale().z << '\t';
@@ -299,33 +320,41 @@ void CMapTool::OnBnClickedButtonLoad()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData();
+
+
 	size_t iSize = m_vecObject.size();
 	for (size_t i = 0; i < iSize; ++i)
 		Safe_Release(m_vecObject[i]);
 	m_vecObject.clear();
 	CObjectManager::GetInstance()->Clear_Object();
 
+
+
+
+
 	ifstream in("MapObject.txt");
 	if (in.is_open() == false)
 		return;
 
 	string str;
-
+	string meshName;
+	string ignore;
 	while (!in.eof())
 	{
-		in >> str;		// MeshName
+		in >> meshName;		// MeshName
 
-		size_t needed = ::mbstowcs(NULL, &str[0], str.length());
+		size_t needed = ::mbstowcs(NULL, &meshName[0], meshName.length());
 		std::wstring output;
 		output.resize(needed);
 
 		// real call
-		::mbstowcs(&output[0], &str[0], str.length());
+		::mbstowcs(&output[0], &meshName[0], meshName.length());
 		int iCnt = 0;
 		in >> iCnt;
-
+		
 		for (int i = 0; i < iCnt; ++i)
 		{
+			in >> ignore;
 			CGameObject* pObject = CMapObject::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize(), const_cast<wchar_t*>(output.c_str()));
 			in >> str;			// TexName
 			dynamic_cast<CMapObject*>(pObject)->SetTexture(str);
@@ -344,6 +373,8 @@ void CMapTool::OnBnClickedButtonLoad()
 			string str = pObject->GetMeshName();
 			CString strModel(str.c_str());
 			m_ObjectListBox.AddString(strModel);
+
+			m_mapObject[meshName].push_back(pObject);
 		}
 		//CGameObject* pObject = CMapObject::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize(), const_cast<wchar_t*>(output.c_str()));
 
@@ -365,6 +396,39 @@ void CMapTool::OnBnClickedButtonLoad()
 		//CString strModel(str.c_str());
 		//m_ObjectListBox.AddString(strModel);
 
+	}
+
+	CGameObject* pObject1 = Terrain::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize());
+	CObjectManager::GetInstance()->Add_Object(pObject1);
+	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject1);
+
+	pObject1 = Terrain::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize());
+	CObjectManager::GetInstance()->Add_Object(pObject1);
+	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject1);
+	pObject1->SetPosition(50, 0, 0);
+
+	pObject1 = Terrain::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize());
+	CObjectManager::GetInstance()->Add_Object(pObject1);
+	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject1);
+	pObject1->SetPosition(50, 0, -50);
+
+	pObject1 = Terrain::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize());
+	CObjectManager::GetInstance()->Add_Object(pObject1);
+	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject1);
+	pObject1->SetPosition(0, 0, -50);
+
+	float fStartX = 0;
+	float fStartZ = -50;
+	float fSize = 50;
+	for (int i = 0; i < 10; ++i)
+	{
+		for (int j = 0; j < 10; ++j)
+		{
+			pObject1 = Terrain::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize());
+			CObjectManager::GetInstance()->Add_Object(pObject1);
+			CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject1);
+			pObject1->SetPosition(fStartX + (fSize * i), 0, fStartZ + (fSize * j));
+		} 
 	}
 
 	UpdateData(FALSE);
@@ -411,6 +475,101 @@ void CMapTool::OnBnClickedButtonDelete()
 	CObjectManager::GetInstance()->Delete_Object(ObjectID);
 
 	m_ObjectListBox.DeleteString(iSel);
+
+	UpdateData(FALSE);
+}
+
+
+void CMapTool::OnBnClickedButtonInstMake()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+
+	vector<CGameObject*> vecObj = CObjectManager::GetInstance()->Get_Objects(CObjectManager::OBJ_PREVIEW);
+	size_t iSize = vecObj.size();
+
+	if (iSize == 0)
+		return;
+
+	const string str = vecObj[0]->GetMeshName();
+	CString strModel(str.c_str());
+
+	for (int i = 0; i < iSize; ++i)
+	{
+		m_vecObject.push_back(vecObj[i]);
+		m_ObjectListBox.AddString(strModel);
+		m_mapObject[str].push_back(vecObj[i]);
+		CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, vecObj[i]);
+		CObjectManager::GetInstance()->Add_Object(vecObj[i]);
+		vecObj[i]->AddRef();
+	}
+
+	CObjectManager::GetInstance()->Delete_All_Object(CObjectManager::OBJ_PREVIEW);
+
+	UpdateData(FALSE);
+}
+
+
+void CMapTool::OnBnClickedButtonInstPreview()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+	CObjectManager::GetInstance()->Delete_All_Object(CObjectManager::OBJ_PREVIEW);
+
+	int iSel = m_ObjectListBox.GetCurSel();
+	unsigned long ObjectID = m_vecObject[iSel]->GetMyID();
+	string strMeshName = m_vecObject[iSel]->GetMeshName();
+
+	XMFLOAT3 xf3Pos = m_vecObject[iSel]->GetTransform()->GetPosition();
+	XMFLOAT3 xf3Scale = m_vecObject[iSel]->GetTransform()->GetScale();
+	XMFLOAT3 xf3Rot = m_vecObject[iSel]->GetTransform()->GetRotation();
+
+
+	XMFLOAT3 xf3Dir = XMFLOAT3(0.f, 0.f, 0.f);
+	int iDir = -1;
+	for (int i = 0; i < 3; ++i)
+	{
+		if (m_RadioDir[i].GetCheck())
+			iDir = i;
+	}
+
+	switch (iDir)
+	{
+	case 0:
+		xf3Dir = XMFLOAT3(1.f, 0.f, 0.f);
+		break;
+	case 1:
+		xf3Dir = XMFLOAT3(0.f, 1.f, 0.f);
+		break;
+	case 2:
+		xf3Dir = XMFLOAT3(0.f, 0.f, 1.f);
+		break;
+	}
+
+	if (m_OneMinusButton.GetCheck() == true)
+	{
+		xf3Dir.x *= -1.f;
+		xf3Dir.y *= -1.f;
+		xf3Dir.z *= -1.f;
+	}
+
+
+	size_t needed = ::mbstowcs(NULL, &strMeshName[0], strMeshName.length());
+	std::wstring output;
+	output.resize(needed);
+
+	// real call
+	::mbstowcs(&output[0], &strMeshName[0], strMeshName.length());
+
+	for (int i = 0; i < m_iInstCnt; ++i)
+	{
+		CGameObject* pObject1 = CMapObject::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize(), const_cast<wchar_t*>(output.c_str()));
+		CObjectManager::GetInstance()->Add_Object(pObject1, CObjectManager::OBJ_PREVIEW);
+		CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PREVIEW, pObject1);
+		pObject1->GetTransform()->Translation(xf3Pos.x + (xf3Dir.x * m_fInstInterval * (i + 1)), xf3Pos.y + (xf3Dir.y * m_fInstInterval * (i + 1)), xf3Pos.z + (xf3Dir.z * m_fInstInterval * (i + 1)));
+		pObject1->GetTransform()->Scaling(xf3Scale);
+		pObject1->GetTransform()->Rotation(xf3Rot);
+	}
 
 	UpdateData(FALSE);
 }

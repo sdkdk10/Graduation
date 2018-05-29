@@ -6,6 +6,8 @@ class CBoundingBox;
 
 class Player : public CGameObject
 {
+private:
+	bool m_bAttackMotionForSound = true;
 public:
 
 /////////////////////////////////////////
@@ -14,7 +16,8 @@ public:
 ///////////////////////////////////////////
 	bool bAttackMotionTest = false;
 
-
+	bool IsSoundChange = false;
+	bool IsSoundIn = false;
 //////////////////////////////////////////////
 
 	virtual void SetPosition(float x, float y, float z);
@@ -30,7 +33,7 @@ public:
 	virtual void Animate(const GameTimer & gt);
 
 	virtual void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
-	virtual void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt);
+	//virtual void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt);
 //////////////////////////////////////////////
 public:
 	int iTest = 0;
@@ -70,8 +73,24 @@ public:
 public:
 	static Player* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 
+public:
+	void SetCurState(int state) {
+		m_CurState = state;
+	}
+	void SetPreState(int state) {
+		m_PreState = state;
+	}
+	int GetCurState() {
+		return m_CurState;
+	}
+	int GetPreState() {
+		return m_PreState;
+	}
 private:
-	float preKeyInputTime;
-	float curKeyInputTime;
+	float m_preKeyInputTime;
+	float m_curKeyInputTime;
+private:
+	int m_CurState;
+	int m_PreState;
 };
 

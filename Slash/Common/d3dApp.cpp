@@ -89,6 +89,8 @@ int D3DApp::Run()
 	CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default")->Reset();
 	//CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS").Reset();
 
+	m_eCurFrameState = FPS_60;
+
 	while(msg.message != WM_QUIT)
 	{
 
@@ -373,7 +375,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
         }
         else if((int)wParam == VK_F2)
-            Set4xMsaaState(!m4xMsaaState);
+            //Set4xMsaaState(!m4xMsaaState); 이거하면 터짐
 		return 0;
 	case WM_KEYDOWN:
 		if (wParam == VK_OEM_6)

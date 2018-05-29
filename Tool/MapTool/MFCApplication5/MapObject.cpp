@@ -146,7 +146,10 @@ bool CMapObject::Update(const GameTimer & gt)
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
 
-
+	string a = "aaa";
+	//if (m_IsAlpha)
+	//	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA, this);
+	//else
 	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }

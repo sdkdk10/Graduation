@@ -25,11 +25,6 @@ public:
 	void UpdateUI();
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 	virtual void	CollisionProcess();
-private:
-	Microsoft::WRL::ComPtr<ID3D12Device>		m_d3dDevice;
-
-	vector<ComPtr<ID3D12DescriptorHeap>> mSrvDescriptorHeap;
-	UINT mCbvSrvDescriptorSize = 0;
 	
 private:
 	HRESULT Load_Map();

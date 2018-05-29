@@ -8,7 +8,7 @@ class CTexture_Manager
 {
 	DECLARE_SINGLETON(CTexture_Manager)
 public:
-	enum TEXTYPE {TEX_DEFAULT_2D, TEX_DEFAULT_CUBE, TEX_INST_2D, TEX_END};
+	enum TEXTYPE {TEX_DEFAULT_2D, TEX_DEFAULT_CUBE, TEX_DEFAULT_BILLBOARD, TEX_INST_2D, TEX_END};
 
 private:
 	explicit CTexture_Manager();

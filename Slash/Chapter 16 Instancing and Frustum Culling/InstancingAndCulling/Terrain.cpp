@@ -135,23 +135,23 @@ HRESULT Terrain::Initialize()
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
-	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("stoneTex", CTexture_Manager::TEX_DEFAULT_2D);
+	/*Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("stoneTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
-		return E_FAIL;
+		return E_FAIL;*/
 
 
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = 2;
-	Mat->DiffuseSrvHeapIndex = tex->Num;
-	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->DiffuseSrvHeapIndex = 0;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
 	/* CB(World,TextureTranform...) Build */
 
-	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));// *XMMatrixRotationY(20.f));
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 

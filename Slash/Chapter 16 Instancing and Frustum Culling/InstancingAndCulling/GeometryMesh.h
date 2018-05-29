@@ -7,11 +7,11 @@ class GeometryMesh :
 {
 public:
 	explicit GeometryMesh(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);
-	~GeometryMesh();
-public:
-	HRESULT Initialize();
-	virtual int Update(const GameTimer& gt);
-	virtual void Draw();
+		~GeometryMesh();
+	public:
+		HRESULT Initialize();
+		virtual int Update(const GameTimer& gt);
+		virtual void Draw();
 
 public:
 	static GeometryMesh* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice);

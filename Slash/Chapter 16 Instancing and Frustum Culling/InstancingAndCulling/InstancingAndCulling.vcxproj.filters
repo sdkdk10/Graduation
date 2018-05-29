@@ -163,6 +163,21 @@
     <Filter Include="02. GameObject\00. AnimObject\01. Skeleton">
       <UniqueIdentifier>{a499b562-412a-4c8c-bf87-a08141577fb6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92. Component\03. Sound">
+      <UniqueIdentifier>{d981a55f-e0e0-45bd-a4ea-c6e08308c2b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Mesh\05. BillboardMesh">
+      <UniqueIdentifier>{00786757-6296-433b-b8f6-6652b07791ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\01. EffectScene">
+      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\08. Skill">
+      <UniqueIdentifier>{dd92fb56-72aa-4706-b3cc-104a9242b096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\08. Skill\00. Skill_Billboard">
+      <UniqueIdentifier>{c8a8db26-5d2f-4501-bff1-a994a10eb0dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -294,6 +309,21 @@
     </ClCompile>
     <ClCompile Include="Skeleton.cpp">
       <Filter>02. GameObject\00. AnimObject\01. Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>92. Component\03. Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="BillboardMesh.cpp">
+      <Filter>03. Mesh\05. BillboardMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectScene.cpp">
+      <Filter>01. Scene\01. EffectScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill.cpp">
+      <Filter>02. GameObject\08. Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill_Billboard.cpp">
+      <Filter>02. GameObject\08. Skill\00. Skill_Billboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,6 +480,21 @@
     </ClInclude>
     <ClInclude Include="Skeleton.h">
       <Filter>02. GameObject\00. AnimObject\01. Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>92. Component\03. Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="BillboardMesh.h">
+      <Filter>03. Mesh\05. BillboardMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectScene.h">
+      <Filter>01. Scene\01. EffectScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.h">
+      <Filter>02. GameObject\08. Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill_Billboard.h">
+      <Filter>02. GameObject\08. Skill\00. Skill_Billboard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

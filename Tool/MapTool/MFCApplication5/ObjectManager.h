@@ -12,6 +12,9 @@ class CObjectManager
 {
 	DECLARE_SINGLETON(CObjectManager)
 
+public:
+	enum OBJTYPE{OBJ_DEFAULT, OBJ_PREVIEW, OBJ_END};
+
 private:
 	explicit CObjectManager();
 	virtual ~CObjectManager();
@@ -21,15 +24,18 @@ public:
 	UINT&										GetCbvSrvDescriptorSize() { return m_pRenderer->GetCbvSrvDescriptorSize(); }
 	FrameResource*								GetCurFrameResource() { return mCurrFrameResource; }
 	Microsoft::WRL::ComPtr<ID3D12Device>		GetDevice() { return m_d3dDevice; }
-	CRenderer*						GetRenderer() { return m_pRenderer; }
+	CRenderer*									GetRenderer() { return m_pRenderer; }
+
+	vector<CGameObject*>						Get_Objects(OBJTYPE eType) { return m_vecObject[eType]; }
 
 	void			Clear_Object();
 
 
-	CGameObject*	Find_Object(unsigned int iIdx);
-	void			Delete_Object(unsigned int iIdx);
+	CGameObject*	Find_Object(unsigned int iIdx, OBJTYPE eType = OBJ_DEFAULT);
+	void			Delete_Object(unsigned int iIdx, OBJTYPE eType = OBJ_DEFAULT);
+	void			Delete_All_Object(OBJTYPE eType = OBJ_DEFAULT);
 
-	HRESULT			Add_Object(CGameObject* pObj);
+	HRESULT			Add_Object(CGameObject* pObj, OBJTYPE eType = OBJ_DEFAULT);
 
 public:
 	HRESULT		Init_ObjMgr(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, CRenderer* pRenderer);
@@ -39,7 +45,7 @@ public:
 	
 private:
 	CRenderer*						m_pRenderer;
-	vector<CGameObject*>			m_vecObject;
+	vector<CGameObject*>			m_vecObject[OBJ_END];
 
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;

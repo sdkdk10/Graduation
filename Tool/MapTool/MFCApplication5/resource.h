@@ -60,6 +60,17 @@
 #define IDC_SCROLLBAR_ROTY              1026
 #define IDC_SCROLLBAR_POSZ3             1027
 #define IDC_SCROLLBAR_ROT3              1027
+#define IDC_CHECK_INST                  1028
+#define IDC_EDIT_INST_COUNT             1029
+#define IDC_RADIO_DIRX                  1030
+#define IDC_RADIO_DIRY                  1031
+#define IDC_RADIO_DIRZ                  1032
+#define IDC_EDIT_INST_INTERVAL          1033
+#define IDC_BUTTON_INST_MAKE            1034
+#define IDC_BUTTON_INST_PREVIEW         1036
+#define IDC_CHECK_ONEMINUS              1037
+#define IDC_CHECK1                      1038
+#define IDC_CHECK_ALPHA                 1038
 
 // Next default values for new objects
 // 
@@ -67,7 +78,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1039
 #define _APS_NEXT_SYMED_VALUE           313
 #endif
 #endif

@@ -103,6 +103,9 @@
     <Filter Include="96. Component\99. Manager\00. Texture_Manager">
       <UniqueIdentifier>{706bda7f-2a77-4353-a456-04993094a412}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. GameObject\02. SkyBox">
+      <UniqueIdentifier>{9581357e-1afa-4c3c-8b67-9ded6c2362fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -228,6 +231,9 @@
     <ClInclude Include="Texture_Manager.h">
       <Filter>96. Component\99. Manager\00. Texture_Manager</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>01. GameObject\02. SkyBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -325,6 +331,9 @@
     </ClCompile>
     <ClCompile Include="Texture_Manager.cpp">
       <Filter>96. Component\99. Manager\00. Texture_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>01. GameObject\02. SkyBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

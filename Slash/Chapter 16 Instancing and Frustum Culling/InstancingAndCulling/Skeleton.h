@@ -39,8 +39,29 @@ public:
 	void					Render_Head(ID3D12GraphicsCommandList* cmdList);
 	void					Render_Right(ID3D12GraphicsCommandList* cmdList);
 
+	virtual void Rotate(float fPitch, float fYaw, float fRoll);
+
 public:
 	static CSkeleton* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
+
+	void Move(const XMFLOAT3 & xmf3Shift, bool bVelocity);
+
+public:
+	void SetCurState(int state) {
+		m_CurState = state;
+	}
+	void SetPreState(int state) {
+		m_PreState = state;
+	}
+	int GetCurState() {
+		return m_CurState;
+	}
+	int GetPreState() {
+		return m_PreState;
+	}
+private:
+	int m_CurState;
+	int m_PreState;
 
 private:
 	virtual void Free();

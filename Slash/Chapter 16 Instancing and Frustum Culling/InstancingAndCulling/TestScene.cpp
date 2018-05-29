@@ -24,9 +24,7 @@
 #include "Transform.h"
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
-	: m_d3dDevice(d3dDevice)
-	, mSrvDescriptorHeap(srv)
-	, mCbvSrvDescriptorSize(srvSize)
+	: CScene(d3dDevice, srv, srvSize)
 {
 
 }
@@ -37,6 +35,8 @@ CTestScene::~CTestScene()
 
 HRESULT CTestScene::Initialize()
 {
+	CManagement::GetInstance()->GetSound()->PlayBGM(L"Sound", L"village");
+
 	CGameObject* pObject = SkyBox::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	Ready_GameObject(L"Layer_SkyBox", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
@@ -65,22 +65,22 @@ HRESULT CTestScene::Initialize()
 //	Ready_GameObject(L"Layer_Spider", pObject);
 //	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 //	
-	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(20,0,0);
-//	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z +	pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	
-	Ready_GameObject(L"Layer_Spider", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-	
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 //	pObject->SetCamera(Get_MainCam());
-//	pObject->SetPosition(-15, 0, 0);
-////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z + pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+//	pObject->SetPosition(20,0,0);
+////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z +	pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+//	
+//	Ready_GameObject(L"Layer_Spider", pObject);
+//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+//	
+////	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+////	pObject->SetCamera(Get_MainCam());
+////	pObject->SetPosition(-15, 0, 0);
+//////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z + pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+////
 //
-
-	Ready_GameObject(L"Layer_Spider", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+//	Ready_GameObject(L"Layer_Spider", pObject);
+//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 	
 	/*for (int i = 0; i < 20; ++i)
@@ -103,24 +103,24 @@ HRESULT CTestScene::Initialize()
 		
 	}*/
 
-	//for (int i = 0; i < 50; ++i)
-	//{
+	for (int i = 0; i < 2; ++i)
+	{
 
-	//	for (int k = 0; k < 50; ++k)
-	//	{
-	//		pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//		pObject->SetCamera(Get_MainCam());
-	//		pObject->SetPosition(i * 15 /*+ 100*/, 0, k * 15 /*+ 100*/);
-	//		
+		for (int k = 0; k < 2; ++k)
+		{
+			pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+			pObject->SetCamera(Get_MainCam());
+			pObject->SetPosition(i * 20 /*+ 100*/ -1000, 0, k * 20  + 200/*+ 100*/);
+			
 
-	//		Ready_GameObject(L"Layer_Spider", pObject);
-	//		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+			Ready_GameObject(L"Layer_Spider", pObject);
+			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	//		
-	//	}
+			
+		}
 
 
-	//}
+	}
 
 
 	/*pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -135,24 +135,24 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Dragon", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
-	pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_Barrel", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	//pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//Ready_GameObject(L"Layer_Barrel", pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 	pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 30; ++i)
 	{
 		
-			for (int k = 0; k < 20; ++k)
+			for (int k = 0; k < 30; ++k)
 			{
 				pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 				pObject->SetCamera(Get_MainCam());
-				pObject->SetPosition(i * 50 -500, 0, k * 50 - 500);
+				pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
 
 				Ready_GameObject(L"Layer_Terrain", pObject);
 				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
@@ -392,7 +392,7 @@ void CTestScene::CollisionProcess()
 
 HRESULT CTestScene::Load_Map()
 {
-	ifstream fin("../../Data/MapData.txt");
+	ifstream fin("Assets/Data/MapData.txt");
 	if (!fin)
 	{
 		MSG_BOX(L"MapData ∏¯¿–¿Ω ∏¡«ÿµ˚∏Æ ∏¡«ÿµ˚~~~~");
@@ -473,6 +473,7 @@ HRESULT CTestScene::Load_Map()
 		//eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
 		pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
 		eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
+		//eRenderType = CRenderer::RenderType::RENDER_ALPHA_INST;
 
 
 
@@ -485,6 +486,12 @@ HRESULT CTestScene::Load_Map()
 		float fValue[9];
 		for (int i = 0; i < iSize; ++i)
 		{
+			int Alpha;
+			fin >> Alpha;
+			if(Alpha)
+				eRenderType = CRenderer::RenderType::RENDER_ALPHA_INST;
+			else
+				eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
 			fin >> ignore;			// > Tex_Name
 			Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_INST_2D);		// > ¿ŒΩ∫≈œΩÃ¿œ ∂ß πŸ≤„¡‹
 			//dynamic_cast<CInstancingObject*>(pObject)->SetTexture(i, tex->Num);

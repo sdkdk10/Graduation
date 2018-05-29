@@ -3,6 +3,8 @@
 #include "Terrain.h"
 #include "ObjectManager.h"
 #include "Renderer.h"
+#include "GeometryMesh.h"
+#include "Component_Manager.h"
 #include "Define.h"
 
 Terrain::Terrain(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
@@ -83,16 +85,15 @@ void Terrain::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT Terrain::Initialize()
 {
-	m_pMesh = new GeometryMesh(m_d3dDevice);
-
-	if (FAILED(m_pMesh->Initialize()))
+	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Geometry"));
+	if (m_pMesh == nullptr)
 		return E_FAIL;
 
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = 2;
-	Mat->DiffuseSrvHeapIndex = 2;
+	Mat->DiffuseSrvHeapIndex = 3;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;

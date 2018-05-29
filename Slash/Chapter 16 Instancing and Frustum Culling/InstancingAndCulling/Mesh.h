@@ -76,6 +76,9 @@ public:
 	virtual ~Mesh();
 
 public:
+	string			Get_TexName() { return m_strTexName; }
+
+public:
 	//virtual HRESULT Initialize(const string& pFilePath);
 	virtual int Update(const GameTimer& gt);
 	virtual void Render();

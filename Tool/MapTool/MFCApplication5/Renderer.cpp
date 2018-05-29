@@ -95,6 +95,17 @@ void CRenderer::Clear_Renderer()
 	}
 }
 
+void CRenderer::Delete_Renderer(RenderType eType)
+{
+	size_t iSize = m_vecObject[eType].size();
+
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		Safe_Release(m_vecObject[eType][i]);
+	}
+	m_vecObject[eType].clear();
+}
+
 CComponent * CRenderer::Clone(void)
 {
 	AddRef();

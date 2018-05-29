@@ -54,7 +54,9 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 				if (ignore == "*BITMAP")
 				{
 					wstring wstrFileName;
+					wstring wstrRealFileName;
 					fin >> ignore;
+					wstrRealFileName.assign(ignore.begin(), ignore.end());
 					auto b = ignore.begin();
 					auto e = ignore.end();
 					fs::path t_Path = wstrFileName.assign(++b, --e);									// > " 빼고 경로 넣음

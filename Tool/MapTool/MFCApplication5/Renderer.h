@@ -8,7 +8,7 @@ class CGameObject;
 class CRenderer : public CComponent
 {
 public:
-	enum RenderType { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONALPHA_FORWARD, RENDER_NONALPHA_INSTANCING, RENDER_NONALPHA_DEFFERD, RENDER_ALPHA, RENDER_UI, RENDER_FADE, RENDER_END};
+	enum RenderType { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONALPHA_FORWARD, RENDER_NONALPHA_INSTANCING, RENDER_NONALPHA_DEFFERD, RENDER_ALPHA, RENDER_UI, RENDER_FADE, RENDER_PREVIEW, RENDER_END};
 
 private:
 	explicit CRenderer(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
@@ -38,6 +38,7 @@ public:
 
 public:
 	void Clear_Renderer();
+	void Delete_Renderer(RenderType eType);
 
 private:
 	vector<CGameObject*>				m_vecObject[RENDER_END];

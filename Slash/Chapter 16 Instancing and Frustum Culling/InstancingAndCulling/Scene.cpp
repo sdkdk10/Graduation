@@ -3,8 +3,11 @@
 #include "Layer.h"
 #include "Define.h"
 
-CScene::CScene()
-	: m_pMainCam(nullptr)
+CScene::CScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
+	: m_d3dDevice(d3dDevice)
+	, mSrvDescriptorHeap(srv)
+	, mCbvSrvDescriptorSize(srvSize)
+	, m_pMainCam(nullptr)
 {
 }
 

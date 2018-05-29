@@ -11,11 +11,14 @@
 #include "Texture_Manager.h"
 #include "Renderer.h"
 #include "TestScene.h"
+#include "EffectScene.h"
 #include "Network.h"
 #include "DynamicMesh.h"
 #include "StaticMesh.h"
 #include "GeometryMesh.h"
 #include "DynamicMeshSingle.h"
+#include "BillboardMesh.h"
+#include "Sound.h"
 #include "Skeleton.h"
 
 const int gNumFrameResources = 3;
@@ -118,6 +121,15 @@ bool InstancingAndCullingApp::Initialize()
 
 	LoadTextures();
 	LoadMeshes();
+	CComponent* pCom = nullptr;
+	//pCom = GeometryMesh::Create(md3dDevice);
+	//CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pCom);
+
+	pCom = CBillboardMesh::Create(md3dDevice);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Billboard", pCom);
+
+	
+
 	BuildRootSignature();
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
@@ -128,11 +140,15 @@ bool InstancingAndCullingApp::Initialize()
 
 
 	CRenderer* pRenderer = CRenderer::Create(md3dDevice, mSrvDescriptorHeap);
+	CSound* pSound = CSound::Create();
+	pSound->SoundFileLoadFromPath(L"Assets/Sound");
+
 
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
 	CManagement::GetInstance()->Init_Management(pRenderer);
+	CManagement::GetInstance()->Set_Sound(pSound);
 
-	//CNetwork::GetInstance()->InitSock(mhMainWnd);
+	CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	BuildPSOs();
 	BuildMaterials();
@@ -374,7 +390,7 @@ void InstancingAndCullingApp::LoadTextures()
 	// > Instancing Heap 2D Texture Load
 	auto bricksTex = new Texture;
 	bricksTex->Name = "bricksTex";
-	bricksTex->Filename = L"../../Textures/bricks.dds";
+	bricksTex->Filename = L"Assets/Textures/bricks.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), bricksTex->Filename.c_str(),
 		bricksTex->Resource, bricksTex->UploadHeap));
@@ -386,7 +402,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto stoneTex = new Texture;
 	stoneTex->Name = "stoneTex";
-	stoneTex->Filename = L"../../Textures/stone.dds";
+	stoneTex->Filename = L"Assets/Textures/stone.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), stoneTex->Filename.c_str(),
 		stoneTex->Resource, stoneTex->UploadHeap));
@@ -398,7 +414,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto tileTex = new Texture;
 	tileTex->Name = "tileTex";
-	tileTex->Filename = L"../../Textures/tile.dds";
+	tileTex->Filename = L"Assets/Textures/tile.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), tileTex->Filename.c_str(),
 		tileTex->Resource, tileTex->UploadHeap));
@@ -408,7 +424,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto crateTex = new Texture;
 	crateTex->Name = "crateTex";
-	crateTex->Filename = L"../../Textures/WoodCrate01.dds";
+	crateTex->Filename = L"Assets/Textures/WoodCrate01.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), crateTex->Filename.c_str(),
 		crateTex->Resource, crateTex->UploadHeap));
@@ -418,7 +434,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto iceTex = new Texture;
 	iceTex->Name = "iceTex";
-	iceTex->Filename = L"../../Textures/ice.dds";
+	iceTex->Filename = L"Assets/Textures/ice.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), iceTex->Filename.c_str(),
 		iceTex->Resource, iceTex->UploadHeap));
@@ -428,7 +444,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto grassTex = new Texture;
 	grassTex->Name = "grassTex";
-	grassTex->Filename = L"../../Textures/grass.dds";
+	grassTex->Filename = L"Assets/Textures/grass.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), grassTex->Filename.c_str(),
 		grassTex->Resource, grassTex->UploadHeap));
@@ -441,7 +457,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto SpiderTex = new Texture;
 	SpiderTex->Name = "SpiderTex";
-	SpiderTex->Filename = L"../../Textures/spider.dds";
+	SpiderTex->Filename = L"Assets/Textures/spider.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), SpiderTex->Filename.c_str(),
 		SpiderTex->Resource, SpiderTex->UploadHeap));
@@ -451,14 +467,14 @@ void InstancingAndCullingApp::LoadTextures()
 
 	/*auto defaultTex = std::make_unique<Texture>();
 	defaultTex->Name = "defaultTex";
-	defaultTex->Filename = L"../../Textures/white1x1.dds";
+	defaultTex->Filename = L"Assets/Textures/white1x1.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), defaultTex->Filename.c_str(),
 		defaultTex->Resource, defaultTex->UploadHeap));*/
 
 	auto InsecTex = new Texture;
 	InsecTex->Name = "VillagerTex";
-	InsecTex->Filename = L"../../Textures/villager02_diff.dds";
+	InsecTex->Filename = L"Assets/Textures/villager02_diff.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), InsecTex->Filename.c_str(),
 		InsecTex->Resource, InsecTex->UploadHeap));
@@ -468,7 +484,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto SkyTex = new Texture;
 	SkyTex->Name = "SkyTex"; 
-	SkyTex->Filename = L"../../Textures/desertcube1024.dds";
+	SkyTex->Filename = L"Assets/Textures/desertcube1024.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 	mCommandList.Get(), SkyTex->Filename.c_str(),
 		SkyTex->Resource, SkyTex->UploadHeap));
@@ -478,7 +494,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto FenceTex = new Texture;
 	FenceTex->Name = "FenceTex";
-	FenceTex->Filename = L"../../Textures/WireFence.dds";
+	FenceTex->Filename = L"Assets/Textures/WireFence.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), FenceTex->Filename.c_str(),
 		FenceTex->Resource, FenceTex->UploadHeap));
@@ -488,7 +504,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto DragonTex = new Texture;
 	DragonTex->Name = "DragonTex";
-	DragonTex->Filename = L"../../Textures/DragonTex.dds";
+	DragonTex->Filename = L"Assets/Textures/DragonTex.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), DragonTex->Filename.c_str(),
 		DragonTex->Resource, DragonTex->UploadHeap));
@@ -498,7 +514,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto MageTex = new Texture;
 	MageTex->Name = "MageTex";
-	MageTex->Filename = L"../../Textures/MageTex.dds";
+	MageTex->Filename = L"Assets/Textures/MageTex.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), MageTex->Filename.c_str(),
 		MageTex->Resource, MageTex->UploadHeap));
@@ -508,7 +524,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto BloodTex = new Texture;
 	BloodTex->Name = "BloodTex";
-	BloodTex->Filename = L"../../Textures/blood.dds";
+	BloodTex->Filename = L"Assets/Textures/blood.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), BloodTex->Filename.c_str(),
 		BloodTex->Resource, BloodTex->UploadHeap));
@@ -519,7 +535,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto HeartTex = new Texture;
 	HeartTex->Name = "HeartTex";
-	HeartTex->Filename = L"../../Textures/PlayerStateUI.dds";
+	HeartTex->Filename = L"Assets/Textures/PlayerStateUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), HeartTex->Filename.c_str(),
 		HeartTex->Resource, HeartTex->UploadHeap));
@@ -529,7 +545,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto WarriorUITex = new Texture;
 	WarriorUITex->Name = "WarriorUITex";
-	WarriorUITex->Filename = L"../../Textures/warriorUI.dds";
+	WarriorUITex->Filename = L"Assets/Textures/warriorUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), WarriorUITex->Filename.c_str(),
 		WarriorUITex->Resource, WarriorUITex->UploadHeap));
@@ -539,7 +555,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto MageUITex = new Texture;
 	MageUITex->Name = "MageUITex";
-	MageUITex->Filename = L"../../Textures/warriorUI.dds";
+	MageUITex->Filename = L"Assets/Textures/warriorUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), MageUITex->Filename.c_str(),
 		MageUITex->Resource, MageUITex->UploadHeap));
@@ -547,7 +563,25 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"MageUITex Ready Failed"); 
 
+	auto Tex = new Texture;
+	Tex->Name = "Aura0";
+	Tex->Filename = L"Assets/Textures/Aura0.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
 
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"MageUITex Ready Failed");
+
+	auto treeArrayTex = new Texture;
+	treeArrayTex->Name = "treeArrayTex";
+	treeArrayTex->Filename = L"Assets/Textures/treeArray2.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), treeArrayTex->Filename.c_str(),
+		treeArrayTex->Resource, treeArrayTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(treeArrayTex->Name, treeArrayTex, CTexture_Manager::TEX_DEFAULT_BILLBOARD)))
+		MSG_BOX(L"MageUITex Ready Failed");
 
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
@@ -574,44 +608,44 @@ void InstancingAndCullingApp::LoadMeshes()
 {
 
 	vector<pair<const string, const string>> path;
-	path.push_back(make_pair("Idle", "Models/Warrior/Warrior_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Warrior/Warrior_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack1.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack2.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Attack3.ASE"));
-	path.push_back(make_pair("Back", "Models/Warrior/Warrior_Death.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Warrior/Warrior_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Warrior/Warrior_Walk.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack1.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack2.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack3.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
 
 	path.clear();
-	path.push_back(make_pair("Idle", "Models/Mage/Mage_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Mage/Mage_Walk.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Attack1.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell1.ASE"));
-	path.push_back(make_pair("Back", "Models/Mage/Mage_Spell2.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Mage/Mage_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Mage/Mage_Walk.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Attack1.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell1.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell2.ASE"));
 
 	pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);
 
 	path.clear();
-	path.push_back(make_pair("Idle", "Models/Spider/Spider_Idle.ASE"));
-	path.push_back(make_pair("Walk", "Models/Spider/Spider_Walk.ASE"));
-	path.push_back(make_pair("Walk", "Models/Spider/Spider_Attack1.ASE"));
-	path.push_back(make_pair("Walk", "Models/Spider/Spider_Attack2.ASE"));
-	path.push_back(make_pair("Walk", "Models/Spider/Spider_Attack3.ASE"));
-	path.push_back(make_pair("Walk", "Models/Spider/Spider_Dead.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Spider/Spider_Idle.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Walk.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Attack1.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Attack2.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Attack3.ASE"));
+	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Dead.ASE"));
 
 	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
 	/*
 	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/StaticMesh/staticMesh.ASE"));
 	pComponent = StaticMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent);
 	
 	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/StaticMesh/House1.ASE"));
 	pComponent = StaticMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House", pComponent);
 	*/
@@ -619,7 +653,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);
 
 	// > Map Object ASE Load
-	fstream in("../../Data/ModelList.txt");
+	fstream in("Assets/Data/ModelList.txt");
 	if (in.is_open() == false)
 	{
 		MSG_BOX(L"ModelList.txt 읽기 실패함 망함ㅠㅠㅠㅠㅠㅠㅠ");
@@ -649,7 +683,7 @@ void InstancingAndCullingApp::BuildRootSignature()
 
 
 	CD3DX12_DESCRIPTOR_RANGE texTable; //인스턴싱 텍스쳐
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 2 ,0 );
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 64, 2 ,0 );
 
 	CD3DX12_DESCRIPTOR_RANGE texTable0; //스카이박스
 	texTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 1);
@@ -657,8 +691,11 @@ void InstancingAndCullingApp::BuildRootSignature()
 	CD3DX12_DESCRIPTOR_RANGE texTable1; //디폴트 텍스쳐
 	texTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 2, 1);
 
+	CD3DX12_DESCRIPTOR_RANGE texTable2; //빌보드 텍스쳐
+	texTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, 1);
+
 	// Root parameter can be a table, root descriptor or root constants.
-	CD3DX12_ROOT_PARAMETER slotRootParameter[8];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[9];
 
 	// Perfomance TIP: Order from most frequent to least frequent.
 	slotRootParameter[0].InitAsShaderResourceView(0, 0);
@@ -674,11 +711,12 @@ void InstancingAndCullingApp::BuildRootSignature()
 	//////////////////////////////////////////////////////
 	slotRootParameter[6].InitAsDescriptorTable(1, &texTable0, D3D12_SHADER_VISIBILITY_PIXEL);
 	slotRootParameter[7].InitAsDescriptorTable(1, &texTable1, D3D12_SHADER_VISIBILITY_PIXEL);
+	slotRootParameter[8].InitAsDescriptorTable(1, &texTable2, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	auto staticSamplers = GetStaticSamplers();
 
 	// A root signature is an array of root parameters.
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(8, slotRootParameter,
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(9, slotRootParameter,
 		(UINT)staticSamplers.size(), staticSamplers.data(),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
@@ -711,9 +749,10 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto mapDefault2D = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_2D);
 	auto mapInst2D = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_INST_2D);
 	auto mapDefaultCube = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_CUBE);
+	auto mapDefaultBill = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_BILLBOARD);
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = mapDefault2D.size() + mapDefaultCube.size();
+	srvHeapDesc2.NumDescriptors = mapDefault2D.size() + mapDefaultCube.size() + mapDefaultBill.size();
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -781,16 +820,23 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	//Default Player
+
+	// > For. Default 2D Texture
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc_Default = {};
-	srvDesc_Default.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc_Default.Texture2D.ResourceMinLODClamp = 0.0f;
-	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc_Default.Texture2D.MostDetailedMip = 0;
 
 	iter = mapDefault2D.begin();
 	iter_end = mapDefault2D.end();
 	idx = 0;
 
+	//auto desc = treeArrayTex->GetDesc();
+
+
+	srvDesc_Default.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc_Default.Texture2D.ResourceMinLODClamp = 0.0f;
+
+
+	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc_Default.Texture2D.MostDetailedMip = 0;
 	srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
 	srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
@@ -809,7 +855,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	// next descriptor 10 SkyBox
-	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+	// > For. Default Cube Texture
 
 	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 	srvDesc_Default.TextureCube.MostDetailedMip = 0;
@@ -821,6 +868,8 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 	for (iter; iter != iter_end; ++iter)
 	{
+		hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
 		srvDesc_Default.TextureCube.MipLevels = iter->second->Resource->GetDesc().MipLevels;
 		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
 		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
@@ -833,8 +882,22 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	//md3dDevice->CreateShaderResourceView(SkyTex.Get(), &srvDesc_Default, hDescriptor_Default);
 
 
-	
-	
+	// > For. Billboard Texture
+	iter = mapDefaultBill.begin();
+	iter_end = mapDefaultBill.end();
+	for (iter; iter != iter_end; ++iter)
+	{
+		hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+		srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
+		srvDesc_Default.Texture2DArray.MostDetailedMip = 0;
+		srvDesc_Default.Texture2DArray.MipLevels = -1;
+		srvDesc_Default.Texture2DArray.FirstArraySlice = 0;
+		srvDesc_Default.Texture2DArray.ArraySize = iter->second->Resource->GetDesc().DepthOrArraySize;
+		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+		iter->second->Num = idx++;
+	}
 }
 
 void InstancingAndCullingApp::BuildShadersAndInputLayout()
@@ -864,12 +927,25 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
 
+	mShaders["AlphaTestPS_Inst"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", alphaTestDefines, "PS", "ps_5_1");
+
+	mShaders["treeSpriteVS"] = d3dUtil::CompileShader(L"Shaders\\TreeSprite.hlsl", nullptr, "VS", "vs_5_1");
+	mShaders["treeSpriteGS"] = d3dUtil::CompileShader(L"Shaders\\TreeSprite.hlsl", nullptr, "GS", "gs_5_1");
+	mShaders["treeSpritePS"] = d3dUtil::CompileShader(L"Shaders\\TreeSprite.hlsl", alphaTestDefines, "PS", "ps_5_1");
+
+	mShaders["AlphaBelndPS"] = d3dUtil::CompileShader(L"Shaders\\Effect.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
 	mInputLayout =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	};
+
+	mBillboardLayout =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 }
 
@@ -978,9 +1054,56 @@ void InstancingAndCullingApp::BuildPSOs()
 	// PSO for transparent objects
 	//
 
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC transparentPsoDesc = opaquePsoDesc;
+	//D3D12_GRAPHICS_PIPELINE_STATE_DESC transparentPsoDesc = opaquePsoDesc;
 
+	//D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
+	//transparencyBlendDesc.BlendEnable = true;
+	//transparencyBlendDesc.LogicOpEnable = false;
+	//transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	//transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	//transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+	//transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+	//transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	//transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	//transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+	//transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	//transparentPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
+	//ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&transparentPsoDesc, IID_PPV_ARGS(&mPSOs["transparent"])));
+
+
+	//
+	// PSO for alpha tested objects
+	//
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC alphaTestedPsoDesc = opaquePsoDesc;
+	alphaTestedPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["InstancingVS"]->GetBufferPointer()),
+		mShaders["InstancingVS"]->GetBufferSize()
+	};
+
+	alphaTestedPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["AlphaTestPS_Inst"]->GetBufferPointer()),
+		mShaders["AlphaTestPS_Inst"]->GetBufferSize()
+	};
+	alphaTestedPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaTestedPsoDesc, IID_PPV_ARGS(&mPSOs["alphaTested_Inst"])));
+
+	//
+	// PSO for Alpha Blending objects
+	//
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC alphaBlendPsoDesc = opaquePsoDesc;
+	alphaBlendPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["AlphaBelndPS"]->GetBufferPointer()),
+		mShaders["AlphaBelndPS"]->GetBufferSize()
+	};
+
+	alphaBlendPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
+	
 	transparencyBlendDesc.BlendEnable = true;
 	transparencyBlendDesc.LogicOpEnable = false;
 	transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
@@ -992,9 +1115,36 @@ void InstancingAndCullingApp::BuildPSOs()
 	transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
 	transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	transparentPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&transparentPsoDesc, IID_PPV_ARGS(&mPSOs["transparent"])));
+	alphaBlendPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
 
+
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaBlendPsoDesc, IID_PPV_ARGS(&mPSOs["alphaBelnd"])));
+
+
+	//
+	// PSO for tree sprites
+	//
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC BillboardPsoDesc = opaquePsoDesc;
+	BillboardPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["treeSpriteVS"]->GetBufferPointer()),
+		mShaders["treeSpriteVS"]->GetBufferSize()
+	};
+	BillboardPsoDesc.GS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["treeSpriteGS"]->GetBufferPointer()),
+		mShaders["treeSpriteGS"]->GetBufferSize()
+	};
+	BillboardPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["treeSpritePS"]->GetBufferPointer()),
+		mShaders["treeSpritePS"]->GetBufferSize()
+	};
+	BillboardPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+	BillboardPsoDesc.InputLayout = { mBillboardLayout.data(), (UINT)mBillboardLayout.size() };
+	BillboardPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&BillboardPsoDesc, IID_PPV_ARGS(&mPSOs["treeSprites"])));
 
 }
 

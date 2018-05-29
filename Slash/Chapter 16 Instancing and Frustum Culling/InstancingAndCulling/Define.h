@@ -2,6 +2,7 @@
 #include "Macro.h"
 #include "Function.h"
 #include "Functor.h"
+#include "Struct.h"
 
 enum HEAP_TYPE
 {

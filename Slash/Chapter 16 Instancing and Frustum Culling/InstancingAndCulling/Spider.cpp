@@ -25,7 +25,7 @@ Spider::~Spider()
 
 bool Spider::Update(const GameTimer & gt)
 {
-	
+
 
 
 	if (!m_pPlayer)
@@ -35,13 +35,13 @@ bool Spider::Update(const GameTimer & gt)
 
 
 
-	
+
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
 
-	
+
 	//auto currObjectCB2 = m_pFrameResource->InstanceBuffer.get();
 
 	XMMATRIX world = XMLoadFloat4x4(&World);
@@ -93,18 +93,18 @@ bool Spider::Update(const GameTimer & gt)
 		//cout << "안보인당!" << endl;
 		m_bIsVisiable = false;
 	}
-	
+
 
 	/*cout << "World : " << World._41 << "\t" << World._42 << "\t" << World._43 << endl;
 	cout << "Bounds Center: " << Bounds.Center.x << "\t" << Bounds.Center.y << "\t" << Bounds.Center.z << endl;*/
- 
+
 
 	//////////////////////////////////////////////////
 
 
 	// Next FrameResource need to be updated too.
 	//NumFramesDirty--;
-	
+
 	return true;
 }
 
@@ -143,11 +143,11 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 
 
 		//int iTest = (int)pMesh->m_fTest;
-		
+
 		int iTest = AnimStateMachine.GetCurAnimFrame();
 		int AnimaState = AnimStateMachine.GetAnimState();
 
-		
+
 		if (m_bLODState == true)
 		{
 			cmdList->DrawIndexedInstanced(1200, 1,
@@ -161,11 +161,11 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 				pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);
 
 		}
-	
 
-	
+
+
 	}
-	
+
 
 }
 
@@ -204,12 +204,12 @@ HRESULT Spider::Initialize()
 	BaseVertexLocation = Geo->DrawArgs["SingleMesh"].BaseVertexLocation;
 	Bounds = Geo->DrawArgs["SingleMesh"].Bounds;
 
-	
+
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x *m_fScale, Bounds.Center.y * m_fScale, Bounds.Center.z *m_fScale), XMFLOAT3(Bounds.Extents.x * m_fScale, Bounds.Extents.y * m_fScale, Bounds.Extents.z * m_fScale), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x , Bounds.Center.y , Bounds.Center.z ), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	
+
 
 
 	return S_OK;
@@ -217,7 +217,7 @@ HRESULT Spider::Initialize()
 
 void Spider::Animate(const GameTimer & gt)
 {
-	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 200.0f)
+	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 500.0f)
 	{
 		m_bLODState = true;
 
@@ -243,12 +243,12 @@ void Spider::Animate(const GameTimer & gt)
 	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
 	XMFLOAT3 Shaft = GetLook();
 
-//	cout << Shaft.x << "\t" << Shaft.y << "\t" << Shaft.z << endl;
+	//	cout << Shaft.x << "\t" << Shaft.y << "\t" << Shaft.z << endl;
 
 	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, GetPosition());   // 객체에서 플레이어로 가는 벡터
 
 	dirVector = Vector3::Normalize(dirVector);
-	
+
 	XMFLOAT3 crossVector = Vector3::CrossProduct(Shaft, dirVector, true);
 
 	float dotproduct = Vector3::DotProduct(Shaft, dirVector);
@@ -300,13 +300,13 @@ void Spider::Animate(const GameTimer & gt)
 		for (size_t i = 0; i < iSize; ++i)
 		{
 
-		/*	float MinX = objList[i]->m_xmOOBB.Center.x - m_xmOOBB.Extents.x;
+			/*	float MinX = objList[i]->m_xmOOBB.Center.x - m_xmOOBB.Extents.x;
 			float MaxX = objList[i]->m_xmOOBB.Center.x + m_xmOOBB.Extents.x;
 
 			float MinZ = objList[i]->m_xmOOBB.Center.z - m_xmOOBB.Extents.z;
 			float MaxZ = objList[i]->m_xmOOBB.Center.z + m_xmOOBB.Extents.z;*/
 
-	
+
 
 			if (objList[i] == this)
 				continue;
@@ -323,7 +323,7 @@ void Spider::Animate(const GameTimer & gt)
 	}
 
 
-	
+
 
 	AnimStateMachine.AnimationStateUpdate(gt);
 
@@ -334,8 +334,12 @@ void Spider::Animate(const GameTimer & gt)
 		{
 			if (m_pPlayer->GetAnimateMachine()->GetAnimState() == m_pPlayer->GetAnimateMachine()->Attack1State)
 			{
-				if(m_pPlayer->GetAnimateMachine()->GetCurAnimFrame() == 8)
+				if (m_pPlayer->GetAnimateMachine()->GetCurAnimFrame() == 8)
+				{
 					SetHp(-100);
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Hit");
+				}
+
 			}
 			//cout << "거미 충돌 " << endl;
 
@@ -344,8 +348,8 @@ void Spider::Animate(const GameTimer & gt)
 			SetObjectAnimState(AnimStateMachine.Attack1State);
 
 			//cout << m_pPlayer->GetHp() - 1.0f << endl;
-			if(AnimStateMachine.GetCurAnimFrame() == 13)
-			m_pPlayer->SetHp(m_pPlayer->GetHp() - 1.0f);
+			if (AnimStateMachine.GetCurAnimFrame() == 13)
+				m_pPlayer->SetHp(m_pPlayer->GetHp() - 1.0f);
 
 		}
 		else //충돌은 안했지만 플레이어한테 이동
@@ -381,7 +385,7 @@ void Spider::Animate(const GameTimer & gt)
 
 			//cout << "이동하자" << endl;
 			SetObjectAnimState(AnimStateMachine.WalkState);
-			
+
 		}
 
 	}
@@ -391,14 +395,14 @@ void Spider::Animate(const GameTimer & gt)
 
 		if (coll == false)
 		{
-			m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
+		m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
 
 		}*/
 		SetObjectAnimState(AnimStateMachine.IdleState);
 
 
 	}
-	
+
 
 	//cout << coll << endl;
 	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
@@ -409,7 +413,7 @@ void Spider::Animate(const GameTimer & gt)
 
 void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 {
-	
+
 
 	//XMFLOAT3 pCollObjPos2= pCollobj->m_pTransCom->m_f3Position;
 	XMFLOAT3 Center = pCollobj->GetPosition();
@@ -485,7 +489,7 @@ void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
 
 	}
-	
+
 
 }
 

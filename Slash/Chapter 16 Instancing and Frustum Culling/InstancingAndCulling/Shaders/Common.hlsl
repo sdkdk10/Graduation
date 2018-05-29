@@ -54,6 +54,7 @@ StructuredBuffer<MaterialData> gMaterialData_Default : register(t0, space1); //µ
 TextureCube gCubeMap : register(t1, space1);
 
 Texture2D gDiffuseMap_Default[3] : register(t2, space1);
+Texture2DArray gTreeMapArray : register(t5, space1);
 
 //cbuffer cbMaterial : register(b1, space1)
 //{
@@ -70,7 +71,7 @@ Texture2D gDiffuseMap_Default[3] : register(t2, space1);
 //Instancing - space 0
 StructuredBuffer<InstanceData> gInstanceData : register(t0);
 StructuredBuffer<MaterialData> gMaterialData_Instance : register(t1);
-Texture2D gDiffuseMap_Instancing[6] : register(t2);
+Texture2D gDiffuseMap_Instancing[64] : register(t2);
 
 
 SamplerState gsamPointWrap        : register(s0);
