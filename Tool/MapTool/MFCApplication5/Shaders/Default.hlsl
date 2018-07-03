@@ -37,7 +37,6 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-
 	MaterialData matData = gMaterialData_Default[0];
 	float4 diffuseAlbedo = matData.DiffuseAlbedo;
 	float3 fresnelR0 = matData.FresnelR0;
@@ -77,7 +76,6 @@ float4 PS(VertexOut pin) : SV_Target
 	
 	// Common convention to take alpha from diffuse albedo.
 	litColor.a = diffuseAlbedo.a;
-
 	//litColor = ceil(litColor * 5) / 5.0f;
 	return litColor;
 }

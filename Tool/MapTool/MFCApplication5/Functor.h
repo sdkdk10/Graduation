@@ -85,6 +85,17 @@ namespace Vector3
 		return(xmf3Result);
 	}
 
+	inline XMFLOAT3 Divide(XMFLOAT3& xmf3Vector1, float& fDiv)
+	{
+		XMFLOAT3 xmf3Result;
+		if (fDiv <= 0.f)
+			return XMFLOAT3(0.f, 0.f, 0.f);
+		xmf3Result.x = xmf3Vector1.x / fDiv;
+		xmf3Result.y = xmf3Vector1.y / fDiv;
+		xmf3Result.z = xmf3Vector1.z / fDiv;
+		return(xmf3Result);
+	}
+
 	inline float DotProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
 	{
 		XMFLOAT3 xmf3Result;
@@ -167,6 +178,23 @@ namespace Vector4
 	{
 		XMFLOAT4 xmf4Result;
 		XMStoreFloat4(&xmf4Result, fScalar * XMLoadFloat4(&xmf4Vector));
+		return(xmf4Result);
+	}
+
+	inline XMFLOAT4 Subtract(XMFLOAT4& xmf4Vector1, XMFLOAT4& xmf4Vector2)
+	{
+		XMFLOAT4 xmf4Result;
+		XMStoreFloat4(&xmf4Result, XMLoadFloat4(&xmf4Vector1) - XMLoadFloat4(&xmf4Vector2));
+		return(xmf4Result);
+	}
+
+	inline XMFLOAT4 Divide(XMFLOAT4& xmf4Vector1, float& fDiv)
+	{
+		XMFLOAT4 xmf4Result;
+		xmf4Result.x = xmf4Vector1.x / fDiv;
+		xmf4Result.y = xmf4Vector1.y / fDiv;
+		xmf4Result.z = xmf4Vector1.z / fDiv;
+		xmf4Result.w = xmf4Vector1.w / fDiv;
 		return(xmf4Result);
 	}
 }

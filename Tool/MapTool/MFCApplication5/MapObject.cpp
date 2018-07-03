@@ -51,7 +51,7 @@ HRESULT CMapObject::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "BarrelMat";
-	Mat->MatCBIndex = 5;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = Tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -135,6 +135,11 @@ bool CMapObject::Update(const GameTimer & gt)
 	auto currMaterialCB = m_pFrameResource->MaterialCB.get();
 
 	XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
+
+	if (m_IsClicked)
+		Mat->DiffuseAlbedo = XMFLOAT4(1.f, 0.f, 0.f, 0.7f);
+	else
+		Mat->DiffuseAlbedo = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
 	MaterialConstants matConstants;
 	matConstants.DiffuseAlbedo = Mat->DiffuseAlbedo;
@@ -229,6 +234,17 @@ void CMapObject::SetTexture(string texName)
 	
 	SetTexture(CTexture_Manager::GetInstance()->Find_Texture(wstr, HEAP_DEFAULT));
 
+}
+
+void CMapObject::SetClicked(bool isCheck)
+{
+	if (m_IsClicked == isCheck)
+		return;
+	m_IsClicked = isCheck;
+	/*if (isCheck)
+		Mat->DiffuseAlbedo = XMFLOAT4(1.f, 0.f, 0.f, 0.7f);
+	else
+		Mat->DiffuseAlbedo = XMFLOAT4(1.f, 1.f, 1.f, 1.f);*/
 }
 
 CMapObject * CMapObject::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)

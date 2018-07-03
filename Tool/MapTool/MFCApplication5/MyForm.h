@@ -1,8 +1,10 @@
 #pragma once
 
 
-#include "MapTool.h"
+
 #include "afxwin.h"
+#include "MapTool.h"
+#include "EffectTool.h"
 
 // CMyForm Æû ºäÀÔ´Ï´Ù.
 
@@ -26,10 +28,17 @@ public:
 #endif
 
 public:
-	inline CMapTool* Get_Dialog() { return &m_MapTool; }
+	enum TOOLTYPE {TOOL_MAP, TOOL_EFFECT};
+
+public:
+	//CMapTool* Get_Dialog();
+	CView_0* Get_View();// { if (m_eCurTool == TOOL_MAP) m_MapTool->Get_View(); }
+	//inline CDialog* Get_Dialog() { return &m_CurTool; }
 
 private:
 	CMapTool			m_MapTool;
+	CEffectTool			m_EffectTool;
+	TOOLTYPE			m_eCurTool;
 	
 
 	void FindPath(const std::wstring& wstrPath	, const std::wstring& wstrExt);
@@ -43,6 +52,9 @@ public:
 	CListBox m_LoadObjectListBox;
 	afx_msg void OnLbnSelchangeList1();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnBnClickedButtonEffectTool();
+	CListBox m_LoadTextureListBox;
+	afx_msg void OnLbnSelchangeListLoadTex();
 };
 
 

@@ -2,10 +2,11 @@
 
 #include "Base.h"
 #include "Define.h"
-
 #include "Renderer.h"
+
 class CGameObject;
 class GameTimer;
+class Camera;
 
 class CObjectManager
 	: public CBase
@@ -28,8 +29,10 @@ public:
 
 	vector<CGameObject*>						Get_Objects(OBJTYPE eType) { return m_vecObject[eType]; }
 
-	void			Clear_Object();
+	Camera*										Get_MainCam() { return m_pMainCam; }
 
+	void			Set_MainCam(Camera* pCamera) { if (pCamera == nullptr) return; m_pMainCam = pCamera; }
+	void			Clear_Object();
 
 	CGameObject*	Find_Object(unsigned int iIdx, OBJTYPE eType = OBJ_DEFAULT);
 	void			Delete_Object(unsigned int iIdx, OBJTYPE eType = OBJ_DEFAULT);
@@ -46,12 +49,14 @@ public:
 private:
 	CRenderer*						m_pRenderer;
 	vector<CGameObject*>			m_vecObject[OBJ_END];
+	Camera*							m_pMainCam = nullptr;
 
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;
 
 	FrameResource* mCurrFrameResource = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Device>			m_d3dDevice;
+
 private:
 	virtual void Free();
 };

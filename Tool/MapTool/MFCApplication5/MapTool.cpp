@@ -16,6 +16,7 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include "Terrain.h"
+#include "Skill_Billboard.h"
 
 // CMapTool 대화 상자입니다.
 
@@ -126,6 +127,11 @@ BOOL CMapTool::OnInitDialog()
 	}
 
 	m_RadioDir[0].SetCheck(true);
+	
+	CGameObject* pObject = Terrain::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize());
+	CObjectManager::GetInstance()->Add_Object(pObject);
+	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -183,6 +189,7 @@ void CMapTool::OnBnClickedButtonAdd()
 	m_ModelListBox.GetText(iSel, strModel);
 	m_ObjectListBox.AddString(strModel);
 	m_mapObject[str].push_back(m_pCurObject);
+	//m_pPrevObject = m_pCurObject;
 	m_pCurObject = nullptr;
 	m_IsReplace = true;
 
@@ -211,6 +218,19 @@ void CMapTool::OnLbnSelchangeListObjects()
 	UpdateData();
 
 	int iSel = m_ObjectListBox.GetCurSel();
+
+	/*if (m_pPrevObject)
+	{
+		m_pPrevObject->SetClicked(false);
+		m_pPrevObject = nullptr;
+	}*/
+	size_t iSize = m_vecObject.size();
+
+	for (size_t i = 0; i < iSize; ++i)
+		m_vecObject[i]->SetClicked(false);
+
+	m_vecObject[iSel]->SetClicked(true);
+	m_pPrevObject = m_vecObject[iSel];
 
 	m_fPosX = m_vecObject[iSel]->GetTransform()->GetPosition().x;
 	m_fPosY = m_vecObject[iSel]->GetTransform()->GetPosition().y;
@@ -305,9 +325,9 @@ void CMapTool::OnBnClickedButtonSave()
 	{
 		string str;
 		str.assign(iter->first.begin(), iter->first.end());
+		string path = "Assets/Models/StaticMesh/" + str + ".ASE";
 
-
-		out << str << '\t' << dynamic_cast<Mesh*>(iter->second)->GetMeshPath();
+		out << str << '\t' << path;
 		out << endl;
 	}
 

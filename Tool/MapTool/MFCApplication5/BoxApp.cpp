@@ -14,6 +14,7 @@
 #include "Transform.h"
 #include "Terrain.h"
 #include "GeometryMesh.h"
+#include "Skill_Billboard.h"
 
 const int gNumFrameResources = 3;
 int KeyInputTest = 0;
@@ -101,7 +102,7 @@ bool InstancingAndCullingApp::Initialize()
 	if (!D3DApp::Initialize())
 		return false;
 
-	/*AllocConsole();
+	/*AllocConsole();f
 	freopen("CONOUT$", "wt", stdout);*/
 
 	// Reset the command list to prep for initialization commands.
@@ -111,7 +112,7 @@ bool InstancingAndCullingApp::Initialize()
 	// so we have to query this information.
 	mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
+	mCamera.SetPosition(0.0f, 0.0f, -15.0f);
 
 	LoadTextures();
 	LoadMesh();
@@ -124,6 +125,7 @@ bool InstancingAndCullingApp::Initialize()
 
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
 	CObjectManager::GetInstance()->Init_ObjMgr(md3dDevice, pRenderer);
+	CObjectManager::GetInstance()->Set_MainCam(&mCamera);
 
 	BuildPSOs();
 	BuildRenderItems();
@@ -206,7 +208,7 @@ void InstancingAndCullingApp::Draw(const GameTimer& gt)
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 	// Clear the back buffer and depth buffer.
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::Black, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	// Specify the buffers we are going to render to.
@@ -377,6 +379,7 @@ void InstancingAndCullingApp::LoadMesh()
 	{
 		str.clear();
 		path.clear();
+		// > 클라이언트 경로 -> 툴 경로
 		str.assign((*iter).wstrPath.begin(), (*iter).wstrPath.end());
 		path.push_back(make_pair("Idle", str));
 		pComponent = StaticMesh::Create(md3dDevice, path);
@@ -563,60 +566,37 @@ void InstancingAndCullingApp::LoadTextures()
 	wstr.assign(MageTex->Name.begin(), MageTex->Name.end());
 	CTexture_Manager::GetInstance()->Ready_Texture(wstr, MageTex, HEAP_DEFAULT);
 
-	//auto Tex = new Texture;
-	//Tex->Name = "House1Tex";
-	//Tex->Filename = L"Textures/House_1.dds";
-	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-	//	mCommandList.Get(), Tex->Filename.c_str(),
-	//	Tex->Resource, Tex->UploadHeap));
 
-	//wstr = L"";
-	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
+	auto Tex = new Texture;
+	Tex->Name = "Aura0";
+	Tex->Filename = L"../../../Textures/Aura0.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
 
-	//Tex = new Texture;
-	//Tex->Name = "House2Tex";
-	//Tex->Filename = L"Textures/House_2.dds";
-	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-	//	mCommandList.Get(), Tex->Filename.c_str(),
-	//	Tex->Resource, Tex->UploadHeap));
+	wstr = L"";
+	wstr.assign(Tex->Name.begin(), Tex->Name.end());
+	CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
 
-	//wstr = L"";
-	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
 
-	//Tex = new Texture;
-	//Tex->Name = "House3Tex";
-	//Tex->Filename = L"Textures/House_3.dds";
-	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-	//	mCommandList.Get(), Tex->Filename.c_str(),
-	//	Tex->Resource, Tex->UploadHeap));
+	// > Effect Texture Load
+	auto iter = m_TextureList.begin();
+	auto iter_end = m_TextureList.end();
+	string str;
 
-	//wstr = L"";
-	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
+	for (iter; iter != iter_end; ++iter)
+	{
+		str.clear();
+		str.assign((*iter).wstrFileName.begin(), (*iter).wstrFileName.end());
+		Tex = new Texture;
+		Tex->Name = str;
+		Tex->Filename = (*iter).wstrPath;
+		ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+			mCommandList.Get(), Tex->Filename.c_str(),
+			Tex->Resource, Tex->UploadHeap));
 
-	//Tex = new Texture;
-	//Tex->Name = "House4Tex";
-	//Tex->Filename = L"Textures/House_4.dds";
-	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-	//	mCommandList.Get(), Tex->Filename.c_str(),
-	//	Tex->Resource, Tex->UploadHeap));
-
-	//wstr = L"";
-	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
-
-	//Tex = new Texture;
-	//Tex->Name = "ScreamTex";
-	//Tex->Filename = L"Textures/Screaming_statue_diffuse.dds";
-	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-	//	mCommandList.Get(), Tex->Filename.c_str(),
-	//	Tex->Resource, Tex->UploadHeap));
-
-	//wstr = L"";
-	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
+		CTexture_Manager::GetInstance()->Ready_Texture((*iter).wstrFileName, Tex, HEAP_TEXTURE_EFFECT);
+	}
 
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
@@ -703,9 +683,10 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	ComPtr<ID3D12DescriptorHeap> Heap;
 
 	unordered_map<wstring, Texture*> mapTexture = CTexture_Manager::GetInstance()->Get_TextureMap(HEAP_DEFAULT);
+	unordered_map<wstring, Texture*> mapEffectTexture = CTexture_Manager::GetInstance()->Get_TextureMap(HEAP_TEXTURE_EFFECT);
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = mapTexture.size();
+	srvHeapDesc2.NumDescriptors = mapTexture.size() + mapTexture.size();
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -817,6 +798,18 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 		iter->second->Num = Idx++;
 	}
 
+	iter = mapEffectTexture.begin();
+	iter_end = mapEffectTexture.end();
+	for (iter; iter != iter_end; ++iter)
+	{
+		hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+
+		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
+		srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
+		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+		iter->second->Num = Idx++;
+	}
+
 	/*			// > Sky Box 처리 아직 안함
 	srvDesc_Default.Format = InsecTex->GetDesc().Format;
 	srvDesc_Default.Texture2D.MipLevels = InsecTex->GetDesc().MipLevels;
@@ -898,6 +891,8 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	//mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
 	//mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
 
+	mShaders["AlphaBelndVS"] = d3dUtil::CompileShader(L"Shaders\\Effect.hlsl", alphaTestDefines, "VS", "vs_5_1");
+	mShaders["AlphaBelndPS"] = d3dUtil::CompileShader(L"Shaders\\Effect.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
 	mInputLayout =
 	{
@@ -931,6 +926,7 @@ void InstancingAndCullingApp::BuildPSOs()
 		mShaders["ObjectPS"]->GetBufferSize()
 	};
 	opaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	opaquePsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	opaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	opaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	opaquePsoDesc.SampleMask = UINT_MAX;
@@ -959,6 +955,42 @@ void InstancingAndCullingApp::BuildPSOs()
 	};
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingOpaquePsoDesc, IID_PPV_ARGS(&mPSOs["InstancingOpaque"])));
+
+	//
+	// PSO for Alpha Blending objects
+	//
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC alphaBlendPsoDesc = opaquePsoDesc;
+	alphaBlendPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["AlphaBelndVS"]->GetBufferPointer()),
+		mShaders["AlphaBelndVS"]->GetBufferSize()
+	};
+	alphaBlendPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["AlphaBelndPS"]->GetBufferPointer()),
+		mShaders["AlphaBelndPS"]->GetBufferSize()
+	};
+
+	alphaBlendPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
+
+	transparencyBlendDesc.BlendEnable = true;
+	transparencyBlendDesc.LogicOpEnable = false;
+	transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+	transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+	transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+	transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	alphaBlendPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
+
+
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaBlendPsoDesc, IID_PPV_ARGS(&mPSOs["alphaBelnd"])));
+
+
 
 	//
 	// PSO for UI objects.
@@ -1020,22 +1052,22 @@ void InstancingAndCullingApp::BuildPSOs()
 	// PSO for transparent objects
 	//
 
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC transparentPsoDesc = opaquePsoDesc;
+	//D3D12_GRAPHICS_PIPELINE_STATE_DESC transparentPsoDesc = opaquePsoDesc;
 
-	D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
-	transparencyBlendDesc.BlendEnable = true;
-	transparencyBlendDesc.LogicOpEnable = false;
-	transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
-	transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
-	transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
-	transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
-	transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	//D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
+	//transparencyBlendDesc.BlendEnable = true;
+	//transparencyBlendDesc.LogicOpEnable = false;
+	//transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	//transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	//transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+	//transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+	//transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	//transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	//transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+	//transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	transparentPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&transparentPsoDesc, IID_PPV_ARGS(&mPSOs["transparent"])));
+	//transparentPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
+	//ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&transparentPsoDesc, IID_PPV_ARGS(&mPSOs["transparent"])));
 
 
 }
@@ -1045,7 +1077,7 @@ void InstancingAndCullingApp::BuildFrameResources()
 	for (int i = 0; i < gNumFrameResources; ++i)
 	{
 		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-			1, MAXOBJECTID, (UINT)mMaterials.size()));
+			1, MAXOBJECTID, MAXOBJECTID));
 	}
 }
 
@@ -1167,9 +1199,6 @@ void InstancingAndCullingApp::BuildRenderItems()
 
 
 
-	CGameObject* pObject = Terrain::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	CObjectManager::GetInstance()->Add_Object(pObject);
-	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 
 	//pObject = CMapObject::Create(md3dDevice, mSrvDescriptorHeap[0], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel");

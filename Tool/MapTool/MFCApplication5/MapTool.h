@@ -29,6 +29,7 @@ private:
 
 	bool						m_IsReplace = true;
 	CGameObject*				m_pCurObject = nullptr;
+	CGameObject*				m_pPrevObject = nullptr;
 	vector<CGameObject*>		m_vecObject;
 
 	unordered_map<string, vector<CGameObject*>>		m_mapObject;

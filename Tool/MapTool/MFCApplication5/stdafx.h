@@ -102,8 +102,10 @@ typedef struct tagFilePath
 {
 	std::wstring	wstrFileName;	//파일 이름
 	std::wstring	wstrPath;		//파일 경로
+	std::wstring	wstrPath_Client;		//파일 경로
 }FILE_PATH;
 extern list<FILE_PATH>		m_ObjectList;
+extern list<FILE_PATH>		m_TextureList;
 
 struct RenderItem
 {
