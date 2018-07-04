@@ -14,7 +14,7 @@
 #include "Texture_Manager.h"
 #include "Terrain.h"
 #include "Effect.h"
-
+#include "SkillEffect.h"
 
 // CEffectTool 대화 상자입니다.
 
@@ -34,6 +34,7 @@ CEffectTool::CEffectTool(CWnd* pParent /*=NULL*/)
 	, m_fStartTime(0.f)
 	, m_tcurFrameInfo(XMFLOAT2(0.f, 0.f), XMFLOAT2(0.f, 0.f), XMFLOAT2(1.f, 1.f), 1.f, 1, true)
 	, m_cstrEffectName(_T(""))
+	, m_cstrSkillEffectName(_T(""))
 {
 
 }
@@ -96,6 +97,9 @@ void CEffectTool::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Text(pDX, IDC_EDIT_FRAME_END_CNT, m_tcurFrameInfo.iPlayCnt);
 	DDX_Text(pDX, IDC_EDIT_EFFECT_NAME, m_cstrEffectName);
+	DDX_Control(pDX, IDC_LIST_SKILL_EFFECT, m_SkillEffectListBox);
+	DDX_Control(pDX, IDC_LIST_COMPLETE_SKILL_EFFECT, m_ComSkillEffectListBox);
+	DDX_Text(pDX, IDC_EDIT_SKILLEFFECT_NAME, m_cstrSkillEffectName);
 }
 
 
@@ -108,6 +112,11 @@ BEGIN_MESSAGE_MAP(CEffectTool, CDialog)
 	ON_BN_CLICKED(IDC_CHECK_EFFECT_FRAME, &CEffectTool::OnBnClickedCheckEffectFrame)
 	ON_BN_CLICKED(IDC_CHECK_END_FRAME, &CEffectTool::OnBnClickedCheckEndFrame)
 	ON_LBN_SELCHANGE(IDC_LIST_EFFECT, &CEffectTool::OnLbnSelchangeListEffect)
+	ON_BN_CLICKED(IDC_BUTTON_CANCLE_SELECT, &CEffectTool::OnBnClickedButtonCancleSelect)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_SKILL_EFFECT, &CEffectTool::OnBnClickedButtonAddSkillEffect)
+	ON_BN_CLICKED(IDC_BUTTON_MAKE_SKILLEFFECT, &CEffectTool::OnBnClickedButtonMakeSkilleffect)
+	ON_LBN_SELCHANGE(IDC_LIST_COMPLETE_SKILL_EFFECT, &CEffectTool::OnLbnSelchangeListCompleteSkillEffect)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CEffectTool::OnBnClickedButtonSave)
 END_MESSAGE_MAP()
 
 
@@ -198,7 +207,7 @@ void CEffectTool::OnBnClickedButtonAddEffect()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData();
 
-	int finder = m_EffectListBox.FindString(0, m_cstrEffectName);
+	int finder = m_EffectListBox.FindStringExact(0, m_cstrEffectName);
 
 	// > 추가하려는 이펙트가 이미 존재함
 	if (finder > 0)
@@ -265,19 +274,23 @@ void CEffectTool::OnBnClickedButtonPlayEffect()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData();
-	dynamic_cast<CEffect*>(m_pCurObject)->SetPlay(true);
+	if(dynamic_cast<CEffect*>(m_pCurObject))
+		dynamic_cast<CEffect*>(m_pCurObject)->SetPlay(true);
+	if (dynamic_cast<CSkillEffect*>(m_pCurObject))
+		dynamic_cast<CSkillEffect*>(m_pCurObject)->SetPlay(true);
 	UpdateData(FALSE);
 }
-
 
 void CEffectTool::OnBnClickedButtonStopEffect()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData();
-	dynamic_cast<CEffect*>(m_pCurObject)->SetPlay(false);
+	if (dynamic_cast<CEffect*>(m_pCurObject))
+		dynamic_cast<CEffect*>(m_pCurObject)->SetPlay(false);
+	if (dynamic_cast<CSkillEffect*>(m_pCurObject))
+		dynamic_cast<CSkillEffect*>(m_pCurObject)->SetPlay(false);
 	UpdateData(FALSE);
 }
-
 
 void CEffectTool::OnBnClickedCheckEffectFrame()
 {
@@ -304,7 +317,6 @@ void CEffectTool::OnBnClickedCheckEffectFrame()
 	UpdateData(FALSE);
 }
 
-
 void CEffectTool::OnBnClickedCheckEndFrame()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -321,7 +333,6 @@ void CEffectTool::OnBnClickedCheckEndFrame()
 
 	UpdateData(FALSE);
 }
-
 
 void CEffectTool::OnLbnSelchangeListEffect()
 {
@@ -349,7 +360,8 @@ void CEffectTool::OnLbnSelchangeListEffect()
 	m_SColor = info.S_Color;
 	m_EColor = info.E_Color;
 	m_fStartTime = info.StartTime;
-	m_fLifeTime = info.LifeTime;int tex = m_TexListBox.FindString(0, CString::CStringT(CA2CT(info.strTexName.c_str())));
+	m_fLifeTime = info.LifeTime;
+	int tex = m_TexListBox.FindStringExact(0, CString::CStringT(CA2CT(info.strTexName.c_str())));
 	m_TexListBox.SetCurSel(tex);
 
 //	if (m_pCurObject)
@@ -359,4 +371,131 @@ void CEffectTool::OnLbnSelchangeListEffect()
 	m_IsReplace = false;
 	
 	UpdateData(FALSE);
+}
+
+void CEffectTool::OnBnClickedButtonCancleSelect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+
+	if (m_pCurObject)
+	{
+		m_IsReplace = true;
+		m_pCurObject->Set_Enable(false);
+		m_pCurObject = nullptr;
+	}
+
+	UpdateData(FALSE);
+}
+
+void CEffectTool::OnBnClickedButtonAddSkillEffect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+
+	int iSel = m_EffectListBox.GetCurSel();
+	if (iSel > m_vecEffect.size())
+		return;
+
+	CEffect* pEffect = dynamic_cast<CEffect*>(m_vecEffect[iSel]);
+
+	CString cstr(pEffect->Get_EffectInfo().strName.c_str());
+
+	m_SkillEffectListBox.AddString(cstr);
+	m_MakeEffectList.push_back(pEffect);
+
+	UpdateData(FALSE);
+}
+
+
+void CEffectTool::OnBnClickedButtonMakeSkilleffect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+
+	m_ComSkillEffectListBox.AddString(m_cstrSkillEffectName);
+
+	CT2CA pszConvertedAnsiString(m_cstrSkillEffectName);
+	std::string name(pszConvertedAnsiString);
+
+
+	CGameObject* pObj = CSkillEffect::Create(CObjectManager::GetInstance()->GetDevice(), CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT], CObjectManager::GetInstance()->GetCbvSrvDescriptorSize(), name);
+	dynamic_cast<CSkillEffect*>(pObj)->GetEffectList() = m_MakeEffectList;
+	CObjectManager::GetInstance()->Add_Object(pObj);
+
+	m_vecEffectSkill.push_back(pObj);
+
+	m_MakeEffectList.clear();
+
+	UpdateData(FALSE);
+}
+
+void CEffectTool::OnLbnSelchangeListCompleteSkillEffect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+	
+	int iSel = m_ComSkillEffectListBox.GetCurSel();
+	if (iSel > m_vecEffectSkill.size())
+		return;
+
+	if (m_pCurObject)
+	{
+		m_pCurObject->Set_Enable(false);
+		m_pCurObject = nullptr;
+	}
+
+	m_pCurObject = m_vecEffectSkill[iSel];
+	m_pCurObject->Set_Enable(true);
+
+	UpdateData(FALSE);
+}
+
+void CEffectTool::OnBnClickedButtonSave()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	ofstream out("Effect.txt");
+	size_t iSize = m_vecEffect.size();
+
+	for (int i = 0; i < iSize; ++i)
+	{
+		EFFECT_INFO info = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_EffectInfo();
+		
+		out << info.isBillboard << '\t' << info.strName << '\t' << info.strTexName << '\t';
+		out << info.S_Pos.x << '\t' << info.S_Pos.y << '\t' << info.S_Pos.z << '\t';
+		out << info.S_Size.x << '\t' << info.S_Size.y << '\t' << info.S_Size.z << '\t';
+		out << info.S_Rot.x << '\t' << info.S_Rot.y << '\t' << info.S_Rot.z << '\t';
+		out << info.S_Color.x << '\t' << info.S_Color.y << '\t' << info.S_Color.z << '\t' << info.S_Color.w << '\t';
+		out << info.E_Pos.x << '\t' << info.E_Pos.y << '\t' << info.E_Pos.z << '\t';
+		out << info.E_Size.x << '\t' << info.E_Size.y << '\t' << info.E_Size.z << '\t';
+		out << info.E_Rot.x << '\t' << info.E_Rot.y << '\t' << info.E_Rot.z << '\t';
+		out << info.E_Color.x << '\t' << info.E_Color.y << '\t' << info.E_Color.z << '\t' << info.E_Color.w << '\t';
+		out << info.StartTime << '\t' << info.LifeTime << '\t';
+		bool isFrame = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_IsFrame();
+		cout << isFrame;
+		if (isFrame)
+		{
+			UV_FRAME_INFO frame = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_FrameInfo();
+			out << '\t' << frame.f2FrameSize.x << '\t' << frame.f2FrameSize.y << '\t';
+			out << frame.f2maxFrame.x << '\t' << frame.f2maxFrame.y << '\t';
+			out << frame.fSpeed;
+		}
+		if (i < iSize - 1)
+			out << endl;
+	}
+	out.close();
+
+	iSize = m_vecEffectSkill.size();
+	ofstream skillOut("EffectSkill.txt");
+	for (int i = 0; i < iSize; ++i)
+	{
+		list<CEffect*> list = dynamic_cast<CSkillEffect*>(m_vecEffectSkill[i])->GetEffectList();
+		skillOut << list.size() << '\t';
+		for (auto& elem : list)
+		{
+			skillOut << elem->Get_EffectInfo().strName << '\t';
+		}
+		if (i < iSize - 1)
+			skillOut << endl;
+	}
 }

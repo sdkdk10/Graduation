@@ -221,6 +221,7 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SkillEffect.h" />
     <ClInclude Include="Skill_Billboard.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="StaticMesh.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="MyForm.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SkillEffect.cpp" />
     <ClCompile Include="Skill_Billboard.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="StaticMesh.cpp" />

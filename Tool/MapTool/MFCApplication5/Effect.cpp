@@ -74,7 +74,7 @@ HRESULT CEffect::Initialize()
 bool CEffect::Update(const GameTimer & gt)
 {
 	if (m_IsEnable == false)
-		return false;
+		return true;
 
 	if (!m_IsPlay)
 		Update_Default(gt);

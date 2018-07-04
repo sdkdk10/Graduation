@@ -14,7 +14,7 @@ class CObjectManager
 	DECLARE_SINGLETON(CObjectManager)
 
 public:
-	enum OBJTYPE{OBJ_DEFAULT, OBJ_PREVIEW, OBJ_END};
+	enum OBJTYPE{OBJ_DEFAULT, OBJ_PREVIEW, OBJ_EFFECT, OBJ_END};
 
 private:
 	explicit CObjectManager();

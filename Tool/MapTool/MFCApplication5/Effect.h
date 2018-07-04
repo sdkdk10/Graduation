@@ -11,8 +11,10 @@ private:
 	virtual ~CEffect();
 
 public:
-	EFFECT_INFO& Get_EffectInfo() { return m_tInfo; }
-	UV_FRAME_INFO& Get_FrameInfo() { return m_tFrame; }
+	EFFECT_INFO&		Get_EffectInfo() { return m_tInfo; }
+	UV_FRAME_INFO&		Get_FrameInfo() { return m_tFrame; }
+
+	bool				Get_IsFrame() { return m_IsFrame; }
 
 public:
 	virtual HRESULT Initialize();

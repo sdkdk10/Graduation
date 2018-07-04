@@ -5,6 +5,7 @@
 // CEffectTool 대화 상자입니다.
 class CView_0;
 class CGameObject;
+class CEffect;
 
 class CEffectTool : public CDialog
 {
@@ -30,6 +31,9 @@ private:
 	bool						m_IsReplace = true;
 
 	vector<CGameObject*>		m_vecEffect;
+	vector<CGameObject*>		m_vecEffectSkill;
+
+	list<CEffect*>				m_MakeEffectList;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -47,6 +51,7 @@ private:
 	XMFLOAT3 m_ERot;
 	XMFLOAT4 m_SColor;
 	XMFLOAT4 m_EColor;
+
 public:
 	float m_fLifeTime;
 	float m_fStartTime;
@@ -64,4 +69,12 @@ public:
 	CButton m_ButtonFrameCnt;
 	CString m_cstrEffectName;
 	afx_msg void OnLbnSelchangeListEffect();
+	afx_msg void OnBnClickedButtonCancleSelect();
+	CListBox m_SkillEffectListBox;
+	afx_msg void OnBnClickedButtonAddSkillEffect();
+	CListBox m_ComSkillEffectListBox;
+	afx_msg void OnBnClickedButtonMakeSkilleffect();
+	CString m_cstrSkillEffectName;
+	afx_msg void OnLbnSelchangeListCompleteSkillEffect();
+	afx_msg void OnBnClickedButtonSave();
 };

@@ -118,6 +118,14 @@
 #define IDC_EDIT_EFFECT_FRAME_SPEED     1079
 #define IDC_CHECK_END_FRAME             1080
 #define IDC_EDIT_FRAME_END_CNT          1081
+#define IDC_BUTTON_CANCLE_SELECT        1082
+#define IDC_LIST_SKILL_EFFECT           1083
+#define IDC_BUTTON_ADD_SKILL_EFFECT     1084
+#define IDC_BUTTON_DEL_EFFECT           1085
+#define IDC_BUTTON_MAKE_SKILLEFFECT     1086
+#define IDC_LIST_COMPLETE_SKILL_EFFECT  1087
+#define IDC_EDIT_SKILLEFFECT_NAME       1088
+#define IDC_BUTTON1                     1089
 
 // Next default values for new objects
 // 
@@ -125,7 +133,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1082
+#define _APS_NEXT_CONTROL_VALUE         1090
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

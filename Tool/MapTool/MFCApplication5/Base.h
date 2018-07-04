@@ -13,7 +13,7 @@ protected:
 public:
 	inline unsigned long AddRef();
 	inline bool	IsEnable() { return m_IsEnable; }
-	inline void Set_Enable(bool isEnable) { m_IsEnable = isEnable; }
+	inline virtual void Set_Enable(bool isEnable) { m_IsEnable = isEnable; }
 
 public:
 	inline unsigned long Release();

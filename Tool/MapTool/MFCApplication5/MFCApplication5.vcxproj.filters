@@ -121,6 +121,9 @@
     <Filter Include="01. GameObject\04. Effect">
       <UniqueIdentifier>{65ce4715-9008-4dbc-87fd-349df28e8c85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. GameObject\03. Skill\00.SkillEffect">
+      <UniqueIdentifier>{abaf5dd8-6f80-4c53-9bcc-2d126dcdbac9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -261,6 +264,9 @@
     <ClInclude Include="Effect.h">
       <Filter>01. GameObject\04. Effect</Filter>
     </ClInclude>
+    <ClInclude Include="SkillEffect.h">
+      <Filter>01. GameObject\03. Skill\00.SkillEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -373,6 +379,9 @@
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>01. GameObject\04. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillEffect.cpp">
+      <Filter>01. GameObject\03. Skill\00.SkillEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
