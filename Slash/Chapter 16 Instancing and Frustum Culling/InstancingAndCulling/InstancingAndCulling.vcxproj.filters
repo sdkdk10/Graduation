@@ -178,6 +178,15 @@
     <Filter Include="02. GameObject\08. Skill\00. Skill_Billboard">
       <UniqueIdentifier>{c8a8db26-5d2f-4501-bff1-a994a10eb0dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94. Manager\04. Effect_Manager">
+      <UniqueIdentifier>{e18249bf-41eb-4fb5-bb68-15e146f73ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\09. Effect">
+      <UniqueIdentifier>{75946594-71ca-4ceb-b073-06c3524a06c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\09. Effect\00. SkillEffect">
+      <UniqueIdentifier>{d6f088e1-54eb-47f5-8763-482968f354dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -324,6 +333,15 @@
     </ClCompile>
     <ClCompile Include="Skill_Billboard.cpp">
       <Filter>02. GameObject\08. Skill\00. Skill_Billboard</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect_Manager.cpp">
+      <Filter>94. Manager\04. Effect_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>02. GameObject\09. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillEffect.cpp">
+      <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -495,6 +513,15 @@
     </ClInclude>
     <ClInclude Include="Skill_Billboard.h">
       <Filter>02. GameObject\08. Skill\00. Skill_Billboard</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect_Manager.h">
+      <Filter>94. Manager\04. Effect_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>02. GameObject\09. Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillEffect.h">
+      <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -36,6 +36,7 @@ private:
 
 	void LoadTextures();
 	void LoadMeshes();
+	void LoadEffects();
 	void BuildRootSignature();
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();

@@ -52,100 +52,7 @@ void Player::Animate(const GameTimer & gt)
 	}
 	AnimStateMachine.AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
 
-	DWORD dwDirection = 0;
-	static bool IsPlayerMoved = false;
-
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_FORWARD;
-	else if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_FORWARD;
-
-	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_BACKWARD;
-	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_BACKWARD;
-
-	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_LEFT;
-	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_LEFT;
-
-	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_RIGHT;
-	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_RIGHT;
-
-	//m_curKeyInputTime = gt.TotalTime();
-	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
-	{
-		if (0 == dwDirection)
-		{
-			if (IsPlayerMoved)
-			{
-				CNetwork::GetInstance()->SendStopPacket();
-				IsPlayerMoved = false;
-			}
-		}
-		else
-		{
-
-			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection, World);
-			IsPlayerMoved = true;
-		}
-		//m_preKeyInputTime = gt.TotalTime();
-	}
-
-	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-		CNetwork::GetInstance()->SendAttackPacket();
-	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-	//{
-	//	//KeyInputTest = 2;
-	//	if (AnimStateMachine.GetAnimState() != AnimStateMachine.Attack1State)
-	//	{
-	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack1State);
-	//		
-	//		//KeyInputTest = 2;
-	//	}
-	//	else
-	//	{
-	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack3State);
-
-
-	//		//KeyInputTest = 4;//3;
-	//		bAttackMotionTest = true;
-	//	}
-
-	//	if (bAttackMotionTest == false)
-	//	{
-	//		if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack2State)
-	//		{
-
-	//		}
-	//	}
-
-
-	//}
-	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-	}
-	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-	}
-
-	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
-	{
-		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
-		XMVECTOR q = XMLoadFloat4(&Test);
-	}
-
-	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
-	{
-		
-		SetHp(GetHp() - 1.0f);
-
-		//cout << GetHp() << endl;
-	}
-	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
-	{
-
-		SetHp(GetHp() + 1.0f);
-		//cout << GetHp() << endl;
-
-	}
+	KeyInput(gt);
 
 	//if (CInputDevice::GetInstance()->AnyKeyInput())
 	//{
@@ -172,7 +79,7 @@ void Player::Animate(const GameTimer & gt)
 
 bool Player::Update(const GameTimer & gt)
 {
-	
+	//return true;
 	CGameObject::Update(gt);
 
 	Animate(gt);
@@ -252,6 +159,7 @@ bool Player::Update(const GameTimer & gt)
 
 void Player::Render(ID3D12GraphicsCommandList * cmdList)
 {
+	//return;
 	AnimStateMachine.SetTimerTrueFalse(); //어떤 애니메이션을 동작 시켜주는 지 
 
 	Render_Head(cmdList);
@@ -551,6 +459,106 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 	World._42 = m_xmf3Position.y;
 	World._43 = m_xmf3Position.z;
 
+}
+
+void Player::KeyInput(const GameTimer & gt)
+{
+	if (CManagement::GetInstance()->Get_IsStop() == true)
+		return;
+	DWORD dwDirection = 0;
+	static bool IsPlayerMoved = false;
+
+	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_FORWARD;
+	else if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_FORWARD;
+
+	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_BACKWARD;
+	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_BACKWARD;
+
+	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_LEFT;
+	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_LEFT;
+
+	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_RIGHT;
+	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_RIGHT;
+
+	//m_curKeyInputTime = gt.TotalTime();
+	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
+	{
+		if (0 == dwDirection)
+		{
+			if (IsPlayerMoved)
+			{
+				CNetwork::GetInstance()->SendStopPacket();
+				IsPlayerMoved = false;
+			}
+		}
+		else
+		{
+
+			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection, World);
+			IsPlayerMoved = true;
+		}
+		//m_preKeyInputTime = gt.TotalTime();
+	}
+
+	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+		CNetwork::GetInstance()->SendAttackPacket();
+	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	//{
+	//	//KeyInputTest = 2;
+	//	if (AnimStateMachine.GetAnimState() != AnimStateMachine.Attack1State)
+	//	{
+	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack1State);
+	//		
+	//		//KeyInputTest = 2;
+	//	}
+	//	else
+	//	{
+	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack3State);
+
+
+	//		//KeyInputTest = 4;//3;
+	//		bAttackMotionTest = true;
+	//	}
+
+	//	if (bAttackMotionTest == false)
+	//	{
+	//		if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack2State)
+	//		{
+
+	//		}
+	//	}
+
+
+	//}
+	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+	{
+		//KeyInputTest = 2;
+	}
+	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
+	{
+		//KeyInputTest = 2;
+	}
+
+	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
+	{
+		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
+		XMVECTOR q = XMLoadFloat4(&Test);
+	}
+
+	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
+	{
+
+		SetHp(GetHp() - 1.0f);
+
+		//cout << GetHp() << endl;
+	}
+	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
+	{
+
+		SetHp(GetHp() + 1.0f);
+		//cout << GetHp() << endl;
+
+	}
 }
 
 //void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)

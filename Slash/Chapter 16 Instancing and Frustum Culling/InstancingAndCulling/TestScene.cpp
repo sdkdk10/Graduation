@@ -22,7 +22,8 @@
 #include "MapObject.h"
 #include "Texture_Manager.h"
 #include "Transform.h"
-
+#include "SkillEffect.h"
+#include "Effect_Manager.h"
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: CScene(d3dDevice, srv, srvSize)
 {
@@ -54,7 +55,7 @@ HRESULT CTestScene::Initialize()
 		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 	
-	
+	CEffect_Manager::GetInstance()->Play_SkillEffect("hh");
 
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);

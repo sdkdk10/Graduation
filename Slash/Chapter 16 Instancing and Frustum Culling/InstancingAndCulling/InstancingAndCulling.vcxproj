@@ -160,7 +160,9 @@
     <ClCompile Include="Dragon.cpp" />
     <ClCompile Include="DynamicMesh.cpp" />
     <ClCompile Include="DynamicMeshSingle.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectScene.cpp" />
+    <ClCompile Include="Effect_Manager.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="Frame_Manager.cpp" />
@@ -169,6 +171,7 @@
     <ClCompile Include="GeometryMesh.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Skill.cpp" />
+    <ClCompile Include="SkillEffect.cpp" />
     <ClCompile Include="Skill_Billboard.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="StaticUI.cpp" />
@@ -215,7 +218,9 @@
     <ClInclude Include="Dragon.h" />
     <ClInclude Include="DynamicMesh.h" />
     <ClInclude Include="DynamicMeshSingle.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectScene.h" />
+    <ClInclude Include="Effect_Manager.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="Frame_Manager.h" />
@@ -226,6 +231,7 @@
     <ClInclude Include="GeometryMesh.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Skill.h" />
+    <ClInclude Include="SkillEffect.h" />
     <ClInclude Include="Skill_Billboard.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="StaticUI.h" />

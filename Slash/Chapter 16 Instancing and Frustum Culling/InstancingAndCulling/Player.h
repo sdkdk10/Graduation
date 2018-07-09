@@ -34,6 +34,8 @@ public:
 
 	virtual void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
 	//virtual void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt);
+
+	void KeyInput(const GameTimer & gt);
 //////////////////////////////////////////////
 public:
 	int iTest = 0;

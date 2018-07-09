@@ -457,6 +457,8 @@ void CEffectTool::OnBnClickedButtonSave()
 	ofstream out("Effect.txt");
 	size_t iSize = m_vecEffect.size();
 
+	out << iSize << endl;
+
 	for (int i = 0; i < iSize; ++i)
 	{
 		EFFECT_INFO info = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_EffectInfo();
@@ -472,7 +474,7 @@ void CEffectTool::OnBnClickedButtonSave()
 		out << info.E_Color.x << '\t' << info.E_Color.y << '\t' << info.E_Color.z << '\t' << info.E_Color.w << '\t';
 		out << info.StartTime << '\t' << info.LifeTime << '\t';
 		bool isFrame = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_IsFrame();
-		cout << isFrame;
+		out << isFrame;
 		if (isFrame)
 		{
 			UV_FRAME_INFO frame = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_FrameInfo();
@@ -487,8 +489,12 @@ void CEffectTool::OnBnClickedButtonSave()
 
 	iSize = m_vecEffectSkill.size();
 	ofstream skillOut("EffectSkill.txt");
+
+	out << iSize << endl;
+
 	for (int i = 0; i < iSize; ++i)
 	{
+		skillOut << dynamic_cast<CSkillEffect*>(m_vecEffectSkill[i])->GetName() << '\t';
 		list<CEffect*> list = dynamic_cast<CSkillEffect*>(m_vecEffectSkill[i])->GetEffectList();
 		skillOut << list.size() << '\t';
 		for (auto& elem : list)
@@ -497,5 +503,25 @@ void CEffectTool::OnBnClickedButtonSave()
 		}
 		if (i < iSize - 1)
 			skillOut << endl;
+	}
+
+
+	auto texmap = CTexture_Manager::GetInstance()->Get_TextureMap(HEAP_TEXTURE_EFFECT);
+	ofstream texOut("EffectTexture.txt");
+
+	iSize = texmap.size();
+	texOut << iSize << endl;
+	
+	auto iter_end = texmap.end();
+	int i = 0;
+	for (auto iter = texmap.begin(); iter != iter_end; ++iter, ++i)
+	{
+		string filePath = "Assets/Textures/Effect/";
+
+		texOut << iter->second->Name << '\t';
+		texOut << filePath + iter->second->Name + ".dds";
+
+		if (i < iSize - 1)
+			texOut << endl;
 	}
 }

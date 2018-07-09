@@ -1,0 +1,12 @@
+brick	Assets/Textures/Effect/brick.dds
+light03	Assets/Textures/Effect/light03.dds
+EnergyLines_128x128(8x4)	Assets/Textures/Effect/EnergyLines_128x128(8x4).dds
+flare	Assets/Textures/Effect/flare.dds
+LevelUpCompleteDialog_ID	Assets/Textures/Effect/LevelUpCompleteDialog_ID.dds
+ItemCombinationSuccessDialog_IA	Assets/Textures/Effect/ItemCombinationSuccessDialog_IA.dds
+ItemCombinationSuccessDialog_I1	Assets/Textures/Effect/ItemCombinationSuccessDialog_I1.dds
+Light	Assets/Textures/Effect/Light.dds
+light04_2	Assets/Textures/Effect/light04_2.dds
+orb_128x171(5x6)	Assets/Textures/Effect/orb_128x171(5x6).dds
+orbpurple_73x73(7x7)	Assets/Textures/Effect/orbpurple_73x73(7x7).dds
+Ring_2	Assets/Textures/Effect/Ring_2.dds

@@ -20,6 +20,9 @@
 #include "BillboardMesh.h"
 #include "Sound.h"
 #include "Skeleton.h"
+#include "Effect.h"
+#include "SkillEffect.h"
+#include "Effect_Manager.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -152,6 +155,7 @@ bool InstancingAndCullingApp::Initialize()
 
 	BuildPSOs();
 	BuildMaterials();
+	LoadEffects();
 	BuildRenderItems();
 	BuildFrameResources();
 
@@ -583,6 +587,28 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(treeArrayTex->Name, treeArrayTex, CTexture_Manager::TEX_DEFAULT_BILLBOARD)))
 		MSG_BOX(L"MageUITex Ready Failed");
 
+	ifstream texIn("Assets/Data/EffectTexture.txt");
+	int iSize = 0;
+	texIn >> iSize;
+	for (int i = 0; i < iSize; ++i)
+	{
+		string ignore;
+		texIn >> ignore;
+		
+		auto Tex = new Texture;
+		Tex->Name = ignore;
+		texIn >> ignore;
+		wstring fileName;
+		fileName.assign(ignore.begin(), ignore.end());
+		Tex->Filename = fileName;
+		ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+			mCommandList.Get(), Tex->Filename.c_str(),
+			Tex->Resource, Tex->UploadHeap));
+
+		if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+			MSG_BOX(L"Effect Texture Ready Failed");
+	}
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -671,6 +697,77 @@ void InstancingAndCullingApp::LoadMeshes()
 		wstring wstr;
 		wstr.assign(meshName.begin(), meshName.end());
 		CComponent_Manager::GetInstance()->Ready_Component(const_cast<wchar_t*>(wstr.c_str()), pComponent);
+	}
+}
+
+void InstancingAndCullingApp::LoadEffects()
+{
+	ifstream in("Assets/Data/Effect.txt");
+	int iSize = 0;
+	in >> iSize;
+	
+	for (int i = 0; i < iSize; ++i)
+	{
+		EFFECT_INFO info;
+
+		
+		in >> info.isBillboard >> info.strName >> info.strTexName;
+		in >> info.S_Pos.x >> info.S_Pos.y >> info.S_Pos.z;
+		in >> info.S_Size.x >> info.S_Size.y >> info.S_Size.z;
+		in >> info.S_Rot.x >> info.S_Rot.y >> info.S_Rot.z;
+		in >> info.S_Color.x >> info.S_Color.y >> info.S_Color.z >> info.S_Color.w;
+		in >> info.E_Pos.x >> info.E_Pos.y >> info.E_Pos.z;
+		in >> info.E_Size.x >> info.E_Size.y >> info.E_Size.z;
+		in >> info.E_Rot.x >> info.E_Rot.y >> info.E_Rot.z;
+		in >> info.E_Color.x >> info.E_Color.y >> info.E_Color.z >> info.E_Color.w;
+		in >> info.StartTime >> info.LifeTime;
+
+
+		CEffect* effect = CEffect::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, info);
+
+		bool isFrame = false;
+		in >> isFrame;
+
+
+
+		if (isFrame)
+		{
+			UV_FRAME_INFO frameInfo;
+			in >> frameInfo.f2FrameSize.x >> frameInfo.f2FrameSize.y;
+			in >> frameInfo.f2maxFrame.x >> frameInfo.f2maxFrame.y;
+			in >> frameInfo.fSpeed;
+			effect->Get_FrameInfo() = frameInfo;
+		}
+		//effect->Get_EffectInfo() = info;
+
+		CEffect_Manager::GetInstance()->Ready_Effect(info.strName, effect);
+	}
+
+	ifstream skillIn("Assets/Data/EffectSkill.txt");
+	skillIn >> iSize;
+	for (int i = 0; i < iSize; ++i)
+	{
+		
+		string name;
+		in >> name;
+
+		CSkillEffect* skillEffect = CSkillEffect::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
+
+		int listSize = 0;
+		in >> listSize;
+
+		list<CEffect*> list;
+
+		for (int j = 0; j < listSize; ++j)
+		{
+			string name;
+			skillIn >> name;
+			CEffect* effect = CEffect_Manager::GetInstance()->Find_Effect(name);
+			if (effect)
+				list.push_back(effect);
+		}
+		skillEffect->GetEffectList() = list;
+		CEffect_Manager::GetInstance()->Ready_SkillEffect(name, skillEffect);
 	}
 }
 
