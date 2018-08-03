@@ -749,12 +749,12 @@ void InstancingAndCullingApp::LoadEffects()
 	{
 		
 		string name;
-		in >> name;
+		skillIn >> name;
 
 		CSkillEffect* skillEffect = CSkillEffect::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
 
 		int listSize = 0;
-		in >> listSize;
+		skillIn >> listSize;
 
 		list<CEffect*> list;
 
@@ -1046,8 +1046,6 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	};
 }
 
-
-
 void InstancingAndCullingApp::BuildPSOs()
 {
 	
@@ -1250,7 +1248,7 @@ void InstancingAndCullingApp::BuildFrameResources()
 	for (int i = 0; i < gNumFrameResources; ++i)
 	{
 		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-			1, MAXOBJECTID, (UINT)mMaterials.size()));
+			1, MAXOBJECTID, MAXOBJECTID));
 	}
 }
 
@@ -1341,6 +1339,7 @@ void InstancingAndCullingApp::BuildRenderItems()
 
 	CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 	CManagement::GetInstance()->Change_Scene(pScene);
+	CEffect_Manager::GetInstance()->Ready_EffectManager(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 }
 
 void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems )

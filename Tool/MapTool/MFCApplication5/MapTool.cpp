@@ -325,7 +325,7 @@ void CMapTool::OnBnClickedButtonSave()
 	{
 		string str;
 		str.assign(iter->first.begin(), iter->first.end());
-		string path = "Assets/Models/StaticMesh/" + str + ".ASE";
+		string path = "Assets/Models/StaticMesh/MapObject/" + str + ".ASE";
 
 		out << str << '\t' << path;
 		out << endl;

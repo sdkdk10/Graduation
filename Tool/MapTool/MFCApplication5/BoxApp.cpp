@@ -389,40 +389,6 @@ void InstancingAndCullingApp::LoadMesh()
 	pComponent = GeometryMesh::Create(md3dDevice);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Geometry", pComponent, CComponent_Manager::COM_MESH);
 
-/*
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent, CComponent_Manager::COM_MESH);
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House1", pComponent, CComponent_Manager::COM_MESH);
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/House2.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House2", pComponent, CComponent_Manager::COM_MESH);
-
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/House3.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House3", pComponent, CComponent_Manager::COM_MESH);
-
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/House4.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House4", pComponent, CComponent_Manager::COM_MESH);
-
-
-	path.clear();
-	path.push_back(make_pair("Idle", "Models/StaticMesh/Screaming_statue.ASE"));
-	pComponent = StaticMesh::Create(md3dDevice, path);
-	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Scream", pComponent, CComponent_Manager::COM_MESH);
-	*/
 }
 
 void InstancingAndCullingApp::LoadTextures()
@@ -567,16 +533,16 @@ void InstancingAndCullingApp::LoadTextures()
 	CTexture_Manager::GetInstance()->Ready_Texture(wstr, MageTex, HEAP_DEFAULT);
 
 
-	auto Tex = new Texture;
-	Tex->Name = "Aura0";
-	Tex->Filename = L"../../../Textures/Aura0.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), Tex->Filename.c_str(),
-		Tex->Resource, Tex->UploadHeap));
+	//auto Tex = new Texture;
+	//Tex->Name = "Aura0";
+	//Tex->Filename = L"Textures/Aura0.dds";
+	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+	//	mCommandList.Get(), Tex->Filename.c_str(),
+	//	Tex->Resource, Tex->UploadHeap));
 
-	wstr = L"";
-	wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
+	//wstr = L"";
+	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
+	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
 
 
 	// > Effect Texture Load
@@ -588,7 +554,7 @@ void InstancingAndCullingApp::LoadTextures()
 	{
 		str.clear();
 		str.assign((*iter).wstrFileName.begin(), (*iter).wstrFileName.end());
-		Tex = new Texture;
+		auto Tex = new Texture;
 		Tex->Name = str;
 		Tex->Filename = (*iter).wstrPath;
 		ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),

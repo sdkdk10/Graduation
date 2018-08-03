@@ -19,6 +19,15 @@ CEffect::CEffect(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12De
 
 }
 
+CEffect::CEffect(CEffect& other)
+	: CGameObject(other.m_d3dDevice, other.mSrvDescriptorHeap, other.mCbvSrvDescriptorSize)
+	, m_IsFrame(other.m_IsFrame)
+	, m_tInfo(other.m_tInfo)
+	, m_tFrame(other.m_tFrame)
+{
+
+}
+
 CEffect::~CEffect()
 {
 }
@@ -109,7 +118,7 @@ void CEffect::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
 	//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
 	cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
-
+	int i = 0;
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
 	cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
@@ -168,6 +177,7 @@ void CEffect::Update_Default(const GameTimer & gt)
 
 void CEffect::Update_Play(const GameTimer & gt)
 {
+	//cout << m_tInfo.strName << "  :  " << endl;
 	float deltaTime = gt.DeltaTime();
 	m_fTimeDeltaAcc += deltaTime;
 
@@ -181,7 +191,8 @@ void CEffect::Update_Play(const GameTimer & gt)
 	
 	//if(!m_IsFrame || !m_tFrame.isEndbyCnt)
 	if (m_fLifeTimeAcc > m_tInfo.LifeTime)				// > 이펙트 라이프타임이 끝나면 지움 현재는 다시 처음으로 돌림
-		SetPlay(true);
+		m_IsEnable = false;
+		//SetPlay(true);
 
 	CGameObject::Update(gt);
 
@@ -200,6 +211,8 @@ void CEffect::Update_Play(const GameTimer & gt)
 	m_pTransCom->GetRotation() += m_ChangeRot;
 
 	m_pTransCom->Update_Component(gt);
+
+	cout << m_tInfo.strName << "  :  " << m_pTransCom->GetPosition().x << ", " << m_pTransCom->GetPosition().y << ", " << m_pTransCom->GetPosition().z << endl;
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -329,6 +342,7 @@ void CEffect::SetTexture(string texName)
 void CEffect::SetPlay(bool _isPlay)
 {
 	m_IsPlay = _isPlay;
+	m_IsEnable = _isPlay;
 
 	m_fTimeDeltaAcc = 0.f;
 	m_fLifeTimeAcc = 0.f;
@@ -336,6 +350,7 @@ void CEffect::SetPlay(bool _isPlay)
 	m_pTransCom->GetPosition() = m_tInfo.S_Pos;
 	m_pTransCom->GetScale() = m_tInfo.S_Size;
 	m_pTransCom->GetRotation() = m_tInfo.S_Rot;
+	m_pTransCom->Update_Component();
 	Mat->DiffuseAlbedo = m_tInfo.S_Color;
 }
 
@@ -345,7 +360,6 @@ void CEffect::SetIsFrame(bool _isFrame)
 
 	m_tFrame.f2curFrame = XMFLOAT2(0.f, 0.f);
 	m_tFrame.fFrameAcc = 0.f;
-	
 }
 
 void CEffect::MoveFrame(const GameTimer& gt)
@@ -384,6 +398,17 @@ void CEffect::MoveFrame(const GameTimer& gt)
 CEffect * CEffect::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info)
 {
 	CEffect* pInstance = new CEffect(d3dDevice, srv, srvSize, info);
+	if (FAILED(pInstance->Initialize()))
+	{
+		MSG_BOX(L"CEffect Created Failed");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+CEffect * CEffect::Create(CEffect & other)
+{
+	CEffect* pInstance = new CEffect(other);
 	if (FAILED(pInstance->Initialize()))
 	{
 		MSG_BOX(L"CEffect Created Failed");

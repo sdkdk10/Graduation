@@ -13,6 +13,10 @@ void CComponent::Update_Component(const GameTimer & gt)
 {
 }
 
+void CComponent::Update_Component()
+{
+}
+
 void CComponent::Free(void)
 {
 }

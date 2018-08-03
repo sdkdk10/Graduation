@@ -77,4 +77,6 @@ public:
 	CString m_cstrSkillEffectName;
 	afx_msg void OnLbnSelchangeListCompleteSkillEffect();
 	afx_msg void OnBnClickedButtonSave();
+	CListBox m_ModelListBox;
+	afx_msg void OnLbnSelchangeListModel();
 };

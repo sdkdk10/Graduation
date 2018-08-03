@@ -45,8 +45,25 @@ void CTransform::Update_Component(const GameTimer & gt)
 		* XMMatrixRotationX(XMConvertToRadians(m_f3Rotation.x)) * XMMatrixRotationY(XMConvertToRadians(m_f3Rotation.y)) * XMMatrixRotationZ(XMConvertToRadians(m_f3Rotation.z))
 		*XMMatrixTranslation(m_f3Position.x, m_f3Position.y, m_f3Position.z));
 
-	//if (m_pf4x4ParentWorld != nullptr)
-	//	m_f4x4World *= *m_pf4x4ParentWorld;
+	if (m_pf4x4ParentWorld != nullptr)
+		m_f4x4World *= *m_pf4x4ParentWorld;
+}
+
+void CTransform::Update_Component()
+{
+	XMMATRIX matWorld;
+	XMVECTOR vScale, vRot, vTrans;
+	vScale = XMLoadFloat3(&m_f3Scale);
+	vRot = XMLoadFloat3(&m_f3Rotation);
+	vTrans = XMLoadFloat3(&m_f3Position);
+	vRot = XMQuaternionRotationRollPitchYaw(m_f3Rotation.x, m_f3Rotation.y, m_f3Rotation.z);
+
+	XMFLOAT3 f3Default = XMFLOAT3(1.f, 1.f, 1.f);
+	XMVECTOR vDefault = XMLoadFloat3(&f3Default);
+
+	XMStoreFloat4x4(&m_f4x4World, XMMatrixScaling(m_f3Scale.x, m_f3Scale.y, m_f3Scale.z)
+		* XMMatrixRotationX(XMConvertToRadians(m_f3Rotation.x)) * XMMatrixRotationY(XMConvertToRadians(m_f3Rotation.y)) * XMMatrixRotationZ(XMConvertToRadians(m_f3Rotation.z))
+		*XMMatrixTranslation(m_f3Position.x, m_f3Position.y, m_f3Position.z));
 }
 
 CComponent * CTransform::Clone()

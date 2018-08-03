@@ -3,6 +3,8 @@
 #include "StaticUI.h"
 
 #include "UIMesh.h"
+#include "Management.h"
+#include "Renderer.h"
 #include "Define.h"
 
 StaticUI::StaticUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
@@ -37,6 +39,8 @@ StaticUI * StaticUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 bool StaticUI::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	return true;
 }
 

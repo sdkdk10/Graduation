@@ -561,9 +561,6 @@ HRESULT CInstancingObject::Initialize()
 
 bool CInstancingObject::Update(const GameTimer & gt)
 {
-
-
-	
 	CGameObject::Update(gt);
 
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
@@ -684,6 +681,8 @@ bool CInstancingObject::Update(const GameTimer & gt)
 	//	}
 	//}
 
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(m_eMyRenderType, this);
+
 	return true;
 }
 
@@ -707,9 +706,6 @@ void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 	
 	//InstanceCount = vecInstances.size();
 	cmdList->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndexLocation, BaseVertexLocation, 0);
-
-	
-
 }
 
 void CInstancingObject::Animate(const GameTimer & gt)

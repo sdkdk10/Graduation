@@ -8,6 +8,7 @@ class CEffect
 {
 private:
 	explicit CEffect(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info);
+	explicit CEffect(CEffect& other);
 	virtual ~CEffect();
 
 public:
@@ -33,6 +34,7 @@ public:
 	void	MoveFrame(const GameTimer& gt);
 public:
 	static CEffect* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info);
+	static CEffect*	Create(CEffect& other);
 
 private:
 	EFFECT_INFO		m_tInfo;

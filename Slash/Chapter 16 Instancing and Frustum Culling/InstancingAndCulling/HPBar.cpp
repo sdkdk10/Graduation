@@ -2,6 +2,8 @@
 #include "HPBar.h"
 
 #include "UIMesh.h"
+#include "Management.h"
+#include "Renderer.h"
 #include "Define.h"
 
 HPBar::HPBar(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
@@ -80,6 +82,8 @@ bool HPBar::Update(const GameTimer & gt)
 
 	
 	Geo->VertexBufferGPU = currVB->Resource();
+
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 	return true;
 }

@@ -26,7 +26,6 @@ CGameObject * CManagement::Find_Object(wchar_t * LayerTag, unsigned int iIdx)
 	return m_pCurScene->Find_Object(LayerTag, iIdx);
 }
 
-
 void CManagement::Init_Management(CRenderer* pRenderer)
 {
 	m_pRenderer = pRenderer;
