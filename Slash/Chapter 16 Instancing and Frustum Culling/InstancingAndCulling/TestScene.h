@@ -37,7 +37,4 @@ private:
 	virtual void Free();
 private:
 	vector<pair<const string, const string>> path;
-
-
-	bool		test = false;
 };

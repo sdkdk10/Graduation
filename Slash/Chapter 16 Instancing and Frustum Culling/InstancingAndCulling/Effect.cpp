@@ -105,7 +105,7 @@ void CEffect::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
 	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
-
+	
 
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
@@ -167,11 +167,12 @@ void CEffect::Update_Default(const GameTimer & gt)
 	matConstants.FresnelR0 = Mat->FresnelR0;
 	matConstants.Roughness = Mat->Roughness;
 	XMStoreFloat4x4(&matConstants.MatTransform, XMMatrixTranspose(matTransform));
-	
+
 
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_DEFAULT, this);
 }
 
@@ -186,13 +187,13 @@ void CEffect::Update_Play(const GameTimer & gt)
 
 	m_fLifeTimeAcc += deltaTime;
 
-	if(m_IsFrame)
+	if (m_IsFrame)
 		MoveFrame(gt);
-	
+
 	//if(!m_IsFrame || !m_tFrame.isEndbyCnt)
 	if (m_fLifeTimeAcc > m_tInfo.LifeTime)				// > 이펙트 라이프타임이 끝나면 지움 현재는 다시 처음으로 돌림
 		m_IsEnable = false;
-		//SetPlay(true);
+	//SetPlay(true);
 
 	CGameObject::Update(gt);
 
@@ -211,8 +212,20 @@ void CEffect::Update_Play(const GameTimer & gt)
 	m_pTransCom->GetRotation() += m_ChangeRot;
 
 	m_pTransCom->Update_Component(gt);
-
-	cout << m_tInfo.strName << "  :  " << m_pTransCom->GetPosition().x << ", " << m_pTransCom->GetPosition().y << ", " << m_pTransCom->GetPosition().z << endl;
+	static bool first = false;
+	static int ifir = 0;
+	++ifir;
+	if (ifir > 50)
+	{
+		first = false;
+		ifir = 0;
+	}
+		
+	if (!first)
+	{
+		cout << m_tInfo.strName << "  :  " << m_pTransCom->GetWorld()._41 << ", " << m_pTransCom->GetWorld()._42 << ", " << m_pTransCom->GetWorld()._43 << endl;
+		first = true;
+	}
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -366,7 +379,7 @@ void CEffect::MoveFrame(const GameTimer& gt)
 {
 	m_tFrame.fFrameAcc += gt.DeltaTime() * m_tFrame.fSpeed;
 	//if (m_tFrame.fFrameAcc > m_tFrame.f2FrameSize.x)
-	if(m_tFrame.fFrameAcc > 1.f)
+	if (m_tFrame.fFrameAcc > 1.f)
 	{
 		m_tFrame.f2curFrame.x += 1.f;
 		m_tFrame.fFrameAcc = 0.f;
@@ -378,7 +391,7 @@ void CEffect::MoveFrame(const GameTimer& gt)
 			{
 				m_tFrame.f2curFrame.x = 0.f;
 				m_tFrame.f2curFrame.y = 0.f;
-				
+
 				if (m_tFrame.isEndbyCnt)
 				{
 					++m_tFrame.iCurCnt;

@@ -29,7 +29,7 @@ HRESULT CEffect_Manager::Ready_EffectManager(Microsoft::WRL::ComPtr<ID3D12Device
 
 HRESULT CEffect_Manager::Ready_Effect(string name, CEffect * effect)
 {
-	if (Find_Effect(name) != nullptr)	
+	if (Find_Effect(name) != nullptr)
 		return E_FAIL;
 
 	m_mapEffect.emplace(name, effect);
@@ -59,10 +59,10 @@ CSkillEffect * CEffect_Manager::Find_SkillEffect(string name)
 CEffect * CEffect_Manager::Find_Effect(string name)
 {
 	auto& iter = m_mapEffect.find(name);
-	
+
 	if (iter == m_mapEffect.end())
 		return nullptr;
-	
+
 	return iter->second;
 }
 
@@ -71,9 +71,9 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4* Parent)
 	auto effect = Find_SkillEffect(name);
 	if (effect == nullptr)
 		return E_FAIL;
-	
+
 	//CSkillEffect* play = CSkillEffect::Create(CManagement::GetInstance()->Getdev)
-	
+
 
 	//auto play = CSkillEffect::Create(*effect);
 	auto play = CSkillEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);

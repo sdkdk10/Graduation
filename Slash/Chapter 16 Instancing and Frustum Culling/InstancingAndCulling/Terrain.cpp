@@ -91,7 +91,6 @@ bool Terrain::Update(const GameTimer & gt)
 	//}
 
 
-
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	
 	return true;

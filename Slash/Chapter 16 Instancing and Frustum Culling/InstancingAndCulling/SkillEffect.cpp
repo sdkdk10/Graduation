@@ -44,14 +44,14 @@ bool CSkillEffect::Update(const GameTimer & gt)
 		}
 		return false;
 	}
-		
+
 
 	if (!m_isPlay)
 		return true;
 
 
 	bool allEnable = true;
-	
+
 	vector<bool> vecEnable(m_EffectList.size());
 
 	for (auto& elem : vecEnable)
@@ -73,11 +73,11 @@ bool CSkillEffect::Update(const GameTimer & gt)
 		++i;
 		/*else if (!elem->IsEnable() && allEnable)
 		{
-			allEnable = false;
+		allEnable = false;
 		}*/
-			                                                                                                                                                     
+
 		/*if (elem->Update(gt) == false)
-			m_EffectList.remove(elem);*/
+		m_EffectList.remove(elem);*/
 	}
 	for (auto& elem : vecEnable)
 	{
@@ -87,13 +87,13 @@ bool CSkillEffect::Update(const GameTimer & gt)
 			m_IsEnable = true;
 			break;
 		}
-			
-		else	
+
+		else
 		{
 			m_IsEnable = false;
 			allEnable = false;
 		}
-			
+
 	}
 	return m_IsEnable;
 }
@@ -102,7 +102,7 @@ void CSkillEffect::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	/*for (auto& elem : m_EffectList)
 	{
-		elem->Render(cmdList);
+	elem->Render(cmdList);
 	}*/
 }
 
@@ -139,6 +139,7 @@ void CSkillEffect::Set_ParentMatrix(XMFLOAT4X4* f4x4Parent)
 	m_pTransCom->Translation(pos);
 	m_pTransCom->Update_Component();
 	//m_pTransCom->SetParentMatrix(&mat);
+	cout << "EffectSkill : " << m_pTransCom->GetPosition().x << ", " << m_pTransCom->GetPosition().y << ", " << m_pTransCom->GetPosition().z << endl;
 
 	for (auto& elem : m_EffectList)
 	{
@@ -150,7 +151,7 @@ void CSkillEffect::Set_Parent(CGameObject* pObj)
 {
 	if (pObj == nullptr)
 		return;
-
+	//XMFLOAT4X4 world = pObj->GetTransform()
 	for (auto& elem : m_EffectList)
 	{
 		elem->GetTransform()->SetParentMatrix(&(pObj->GetTransform()->GetWorld()));

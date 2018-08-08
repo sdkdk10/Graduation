@@ -41,6 +41,7 @@ void CRenderer::Render(ID3D12GraphicsCommandList* cmdList)
 
 	Render_Priority(cmdList);
 
+	//Render_Alpha(cmdList);
 	
 
 	ID3D12DescriptorHeap* descriptorHeaps1[] = { mSrvDescriptorHeap[HEAP_INSTANCING].Get() };
@@ -49,6 +50,8 @@ void CRenderer::Render(ID3D12GraphicsCommandList* cmdList)
 	Render_Instancing(cmdList);
 
 	Render_AlphaInstancing(cmdList);
+
+	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 	Render_Alpha(cmdList);
 	Render_UI(cmdList);

@@ -3,7 +3,7 @@
 #include <WinSock2.h>
 #include <windows.h>   // include important windows stuff
 #include <windowsx.h>
-#include "Protocol.h"
+#include "../../SlashServer/SlashServer/Protocol.h"
 #pragma comment (lib, "ws2_32.lib")
 
 #define   WM_SOCKET            WM_USER + 1

@@ -78,7 +78,10 @@ HRESULT CEffect::Initialize()
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 
-	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
+	if (m_tInfo.strMeshName == "Com_Geometry")
+		Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
+	else
+		Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	IndexCount = Geo->DrawArgs[geoName].IndexCount;
 	StartIndexLocation = Geo->DrawArgs[geoName].StartIndexLocation;

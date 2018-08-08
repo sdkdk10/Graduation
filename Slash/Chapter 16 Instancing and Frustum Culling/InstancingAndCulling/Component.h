@@ -15,7 +15,6 @@ public:
 	virtual CComponent* Clone(void) = 0;
 public:
 	virtual void Update_Component(const GameTimer & gt);
-	virtual void Update_Component();
 protected:
 	virtual void Free(void);
 

@@ -705,12 +705,12 @@ void InstancingAndCullingApp::LoadEffects()
 	ifstream in("Assets/Data/Effect.txt");
 	int iSize = 0;
 	in >> iSize;
-	
+
 	for (int i = 0; i < iSize; ++i)
 	{
 		EFFECT_INFO info;
 
-		
+
 		in >> info.isBillboard >> info.strName >> info.strTexName;
 		in >> info.S_Pos.x >> info.S_Pos.y >> info.S_Pos.z;
 		in >> info.S_Size.x >> info.S_Size.y >> info.S_Size.z;
@@ -747,7 +747,7 @@ void InstancingAndCullingApp::LoadEffects()
 	skillIn >> iSize;
 	for (int i = 0; i < iSize; ++i)
 	{
-		
+
 		string name;
 		skillIn >> name;
 
@@ -1045,6 +1045,8 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 		{ "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 }
+
+
 
 void InstancingAndCullingApp::BuildPSOs()
 {

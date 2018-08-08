@@ -475,9 +475,6 @@
     <ClInclude Include="Network.h">
       <Filter>91. Network</Filter>
     </ClInclude>
-    <ClInclude Include="Protocol.h">
-      <Filter>98. Header</Filter>
-    </ClInclude>
     <ClInclude Include="MapObject.h">
       <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
     </ClInclude>
@@ -523,6 +520,9 @@
     <ClInclude Include="SkillEffect.h">
       <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\SlashServer\SlashServer\Protocol.h">
+      <Filter>98. Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsl">
@@ -546,5 +546,10 @@
     <None Include="Shaders\UI.hlsl">
       <Filter>93. Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Effect.hlsl">
+      <Filter>93. Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

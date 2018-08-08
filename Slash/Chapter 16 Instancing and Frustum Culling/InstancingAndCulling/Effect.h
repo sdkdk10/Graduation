@@ -21,7 +21,7 @@ public:
 	virtual HRESULT Initialize();
 	virtual bool	Update(const GameTimer& gt);
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
-	
+
 public:
 	void	Update_Default(const GameTimer& gt);
 	void	Update_Play(const GameTimer& gt);

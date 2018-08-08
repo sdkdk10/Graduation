@@ -652,7 +652,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	unordered_map<wstring, Texture*> mapEffectTexture = CTexture_Manager::GetInstance()->Get_TextureMap(HEAP_TEXTURE_EFFECT);
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = mapTexture.size() + mapTexture.size();
+	srvHeapDesc2.NumDescriptors = mapTexture.size() + mapEffectTexture.size();
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -773,6 +773,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
 		srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
 		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+		int i = 0;
 		iter->second->Num = Idx++;
 	}
 

@@ -36,7 +36,7 @@ CTestScene::~CTestScene()
 
 HRESULT CTestScene::Initialize()
 {
-	CManagement::GetInstance()->GetSound()->PlayBGM(L"Sound", L"village");
+	//CManagement::GetInstance()->GetSound()->PlayBGM(L"Sound", L"village");
 
 	CGameObject* pObject = SkyBox::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	Ready_GameObject(L"Layer_SkyBox", pObject);
@@ -47,15 +47,24 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Player", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	//for(int i = 0; i < MAX_USER; ++i)
-	//{
-	//	pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
-	//	pObject->SetCamera(Get_MainCam());
-	//	Ready_GameObject(L"Layer_Skeleton", pObject);
-	//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-	//}
+	for(int i = 0; i < MAX_USER; ++i)
+	{
+		pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Skeleton", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	}
 	
-	
+	for (int i = NPC_START; i < NUM_OF_NPC; ++i)
+	{
+		pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		pObject->SetCamera(Get_MainCam());
+		//pObject->SetPosition(i * 20 /*+ 100*/ -1000, 0, k * 20  + 200/*+ 100*/);
+		pObject->SetPosition(0, 0, 5 + i);
+
+		Ready_GameObject(L"Layer_Spider", pObject);
+		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	}
 
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -84,7 +93,7 @@ HRESULT CTestScene::Initialize()
 //	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 	
-	for (int i = 0; i < 20; ++i)
+	/*for (int i = 0; i < 20; ++i)
 	{
 		for (int j = 0; j < 20; ++j)
 		{
@@ -102,31 +111,7 @@ HRESULT CTestScene::Initialize()
 			}
 		}
 		
-	}
-
-
-	// > -----------------Test----------------------------------------=
-	//for (int i = 0; i < 2; ++i)
-	//{
-
-	//	for (int k = 0; k < 2; ++k)
-	//	{
-	//		pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//		pObject->SetCamera(Get_MainCam());
-	//		pObject->SetPosition(i * 20 /*+ 100*/ -1000, 0, k * 20  + 200/*+ 100*/);
-	//		
-
-	//		Ready_GameObject(L"Layer_Spider", pObject);
-	//		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
-	//		
-	//	}
-
-
-	//}
-
-	// > -----------------Test----------------------------------------=
-
+	}*/
 
 	/*pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -145,35 +130,26 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Barrel", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-
-
-	// > -----------------Test----------------------------------------=
 	pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	for (int i = 0; i < 30; ++i)
-	{
-		
-			for (int k = 0; k < 30; ++k)
-			{
-				pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-				pObject->SetCamera(Get_MainCam());
-				pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
+	//for (int i = 0; i < 30; ++i)
+	//{
+	//	
+	//		for (int k = 0; k < 30; ++k)
+	//		{
+	//			pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//			pObject->SetCamera(Get_MainCam());
+	//			pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
 
-				Ready_GameObject(L"Layer_Terrain", pObject);
-				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-			}
-		
+	//			Ready_GameObject(L"Layer_Terrain", pObject);
+	//			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	//		}
+	//	
 
-	}
-	// > -----------------Test----------------------------------------=
-
-
-
-
-
+	//}
 
 	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	//pObject->SetCamera(Get_MainCam());
@@ -181,40 +157,25 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Instance", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
-
-
-	// > -----------------Test----------------------------------------=
-
-	//UISetting();
+	UISetting();
 
 	
-	if (FAILED(Load_Map()))
-		return E_FAIL;
-	// > -----------------Test----------------------------------------=
+	//if (FAILED(Load_Map()))
+	//	return E_FAIL;
+
 	return S_OK;
 }
 
 bool CTestScene::Update(const GameTimer & gt)
 {
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
-	if (test == false)
-	{
-		//CEffect_Manager::GetInstance()->Play_SkillEffect("hh");
-		test = true;
-	}
 
-	auto pSpider = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
-	vector<CGameObject*> spiderList;
-	if (pSpider != nullptr)
+	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
+	m_pPlayer->m_pCollider = NULL;
+	for (int i = 0; i < spiderList.size(); ++i)
 	{
-		spiderList = pSpider->Get_ObjectList();// CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
-		m_pPlayer->m_pCollider = NULL;
-		for (int i = 0; i < spiderList.size(); ++i)
-		{
-			spiderList[i]->m_pCollider = NULL;
-		}
+		spiderList[i]->m_pCollider = NULL;
 	}
-
 	CScene::Update(gt);
 
 	CollisionProcess();
@@ -246,6 +207,7 @@ bool CTestScene::Update(const GameTimer & gt)
 		else
 		{
 			spiderList[i]->m_pCollider->SaveSlidingVector(spiderList[i], spiderList[i]->m_pCollider);
+
 		}
 	}
 	return true;
@@ -303,8 +265,7 @@ void CTestScene::UpdateUI()
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 	auto * m_pHPBar = CManagement::GetInstance()->Find_Object(L"Layer_HPBar");
 
-	if(m_pPlayer != nullptr && m_pHPBar != nullptr)
-		m_pHPBar->SetHp(m_pPlayer->GetHp());
+	m_pHPBar->SetHp(m_pPlayer->GetHp());
 
 
 	//cout << m_pPlayer->m_MovingRefletVector.x << "\t" << m_pPlayer->m_MovingRefletVector.y << "\t" << m_pPlayer->m_MovingRefletVector.z << endl;
