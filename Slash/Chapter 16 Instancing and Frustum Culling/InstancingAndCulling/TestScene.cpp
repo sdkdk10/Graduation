@@ -103,10 +103,10 @@ HRESULT CTestScene::Initialize()
 		
 	}*/
 
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 100; ++i)
 	{
 
-		for (int k = 0; k < 2; ++k)
+		for (int k = 0; k < 100; ++k)
 		{
 			pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 			pObject->SetCamera(Get_MainCam());

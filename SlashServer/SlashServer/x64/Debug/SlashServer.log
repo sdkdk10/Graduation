@@ -1,4 +1,0 @@
-﻿  ServerMain.cpp
-d:\졸작중간발표이후다시\slashserver\slashserver\servermain.cpp(365): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-d:\졸작중간발표이후다시\slashserver\slashserver\servermain.cpp(370): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  SlashServer.vcxproj -> D:\졸작중간발표이후다시\SlashServer\x64\Debug\SlashServer.exe
