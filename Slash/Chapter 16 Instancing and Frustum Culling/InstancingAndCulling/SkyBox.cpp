@@ -5,8 +5,6 @@
 #include "SkyBox.h"
 #include "Texture_Manager.h"
 #include "Component_Manager.h"
-#include "Management.h"
-#include "Renderer.h"
 #include "Define.h"
 
 
@@ -54,8 +52,6 @@ bool SkyBox::Update(const GameTimer & gt)
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
-
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
 	return true;
 }
 

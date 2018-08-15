@@ -5,7 +5,6 @@
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
 #include "Management.h"
-#include "Renderer.h"
 
 Terrain::Terrain(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -91,7 +90,7 @@ bool Terrain::Update(const GameTimer & gt)
 	//}
 
 
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
+
 	
 	return true;
 

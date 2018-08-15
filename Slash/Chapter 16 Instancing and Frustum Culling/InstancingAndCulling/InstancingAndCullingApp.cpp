@@ -705,12 +705,12 @@ void InstancingAndCullingApp::LoadEffects()
 	ifstream in("Assets/Data/Effect.txt");
 	int iSize = 0;
 	in >> iSize;
-
+	
 	for (int i = 0; i < iSize; ++i)
 	{
 		EFFECT_INFO info;
 
-
+		
 		in >> info.isBillboard >> info.strName >> info.strTexName;
 		in >> info.S_Pos.x >> info.S_Pos.y >> info.S_Pos.z;
 		in >> info.S_Size.x >> info.S_Size.y >> info.S_Size.z;
@@ -747,14 +747,14 @@ void InstancingAndCullingApp::LoadEffects()
 	skillIn >> iSize;
 	for (int i = 0; i < iSize; ++i)
 	{
-
+		
 		string name;
-		skillIn >> name;
+		in >> name;
 
 		CSkillEffect* skillEffect = CSkillEffect::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
 
 		int listSize = 0;
-		skillIn >> listSize;
+		in >> listSize;
 
 		list<CEffect*> list;
 
@@ -1250,7 +1250,7 @@ void InstancingAndCullingApp::BuildFrameResources()
 	for (int i = 0; i < gNumFrameResources; ++i)
 	{
 		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-			1, MAXOBJECTID, MAXOBJECTID));
+			1, MAXOBJECTID, (UINT)mMaterials.size()));
 	}
 }
 
@@ -1341,7 +1341,6 @@ void InstancingAndCullingApp::BuildRenderItems()
 
 	CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 	CManagement::GetInstance()->Change_Scene(pScene);
-	CEffect_Manager::GetInstance()->Ready_EffectManager(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 }
 
 void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems )

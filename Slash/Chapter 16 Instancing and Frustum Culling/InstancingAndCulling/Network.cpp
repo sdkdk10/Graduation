@@ -149,6 +149,8 @@ void CNetwork::ProcessPacket(char * ptr)
 			{
 				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = true;
 				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->Rotation(0.f, 0.f, my_packet->lookDegree);
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(my_packet->state);
 			}
 			else if (id < NPC_START)
 			{
@@ -225,7 +227,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		case SC_REMOVE_OBJECT:
 		{
 			sc_packet_remove_object *my_packet = reinterpret_cast<sc_packet_remove_object *>(ptr);
-			int id = my_packet->ID;
+			int id = my_packet->id;
 			if (myid == id)
 				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
 			else if (id < NPC_START)
@@ -234,6 +236,21 @@ void CNetwork::ProcessPacket(char * ptr)
 			{
 				CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
 			}
+			break;
+		}
+		case SC_HP:
+		{
+			sc_packet_hp *my_packet = reinterpret_cast<sc_packet_hp *>(ptr);
+			int id = my_packet->id;
+			unsigned short hp = my_packet->hp;
+			if (myid == id)
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(hp);
+			//else if (id < NPC_START)
+			//	CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
+			//else
+			//{
+			//	CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
+			//}
 			break;
 		}
 	}

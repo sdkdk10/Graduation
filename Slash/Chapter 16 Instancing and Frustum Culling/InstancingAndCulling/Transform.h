@@ -16,9 +16,9 @@ public:
 public:
 	HRESULT				Initialize();
 	virtual void		Update_Component(const GameTimer& gt);
-	virtual void		Update_Component();
+	void				SendMapInitData();
 
-
+	// Get / Set
 	// Get / Set
 	inline XMFLOAT4X4&			GetWorld() { return m_f4x4World; }
 
@@ -31,7 +31,6 @@ public:
 	inline XMFLOAT3&			GetLook() { XMFLOAT3 look; memcpy(&look, &m_f4x4World._31, sizeof(XMFLOAT3)); return XMFloat3Normalize(look); }
 
 	inline void					SetParentMatrix(XMFLOAT4X4* pf4x4Parent) { if (nullptr == pf4x4Parent) return; m_pf4x4ParentWorld = pf4x4Parent; }
-	XMFLOAT4X4*					GetParentMatrix() { return m_pf4x4ParentWorld; }
 
 	// ¿Ãµø
 	inline void					Translate(const XMFLOAT3& f3Trans) { m_f3Position += f3Trans; }

@@ -19,15 +19,6 @@ CEffect::CEffect(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12De
 
 }
 
-CEffect::CEffect(CEffect& other)
-	: CGameObject(other.m_d3dDevice, other.mSrvDescriptorHeap, other.mCbvSrvDescriptorSize)
-	, m_IsFrame(other.m_IsFrame)
-	, m_tInfo(other.m_tInfo)
-	, m_tFrame(other.m_tFrame)
-{
-
-}
-
 CEffect::~CEffect()
 {
 }
@@ -105,7 +96,7 @@ void CEffect::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
 	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
-	
+
 
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
@@ -118,7 +109,7 @@ void CEffect::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
 	//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
 	cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
-	int i = 0;
+
 	cmdList->SetGraphicsRootDescriptorTable(7, tex);
 
 	cmdList->DrawIndexedInstanced(IndexCount, 1, StartIndexLocation, BaseVertexLocation, 0);
@@ -167,18 +158,16 @@ void CEffect::Update_Default(const GameTimer & gt)
 	matConstants.FresnelR0 = Mat->FresnelR0;
 	matConstants.Roughness = Mat->Roughness;
 	XMStoreFloat4x4(&matConstants.MatTransform, XMMatrixTranspose(matTransform));
-
+	
 
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
-
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_DEFAULT, this);
 }
 
 void CEffect::Update_Play(const GameTimer & gt)
 {
-	//cout << m_tInfo.strName << "  :  " << endl;
 	float deltaTime = gt.DeltaTime();
 	m_fTimeDeltaAcc += deltaTime;
 
@@ -187,13 +176,12 @@ void CEffect::Update_Play(const GameTimer & gt)
 
 	m_fLifeTimeAcc += deltaTime;
 
-	if (m_IsFrame)
+	if(m_IsFrame)
 		MoveFrame(gt);
-
+	
 	//if(!m_IsFrame || !m_tFrame.isEndbyCnt)
 	if (m_fLifeTimeAcc > m_tInfo.LifeTime)				// > 이펙트 라이프타임이 끝나면 지움 현재는 다시 처음으로 돌림
-		m_IsEnable = false;
-	//SetPlay(true);
+		SetPlay(true);
 
 	CGameObject::Update(gt);
 
@@ -212,20 +200,6 @@ void CEffect::Update_Play(const GameTimer & gt)
 	m_pTransCom->GetRotation() += m_ChangeRot;
 
 	m_pTransCom->Update_Component(gt);
-	static bool first = false;
-	static int ifir = 0;
-	++ifir;
-	if (ifir > 50)
-	{
-		first = false;
-		ifir = 0;
-	}
-		
-	if (!first)
-	{
-		cout << m_tInfo.strName << "  :  " << m_pTransCom->GetWorld()._41 << ", " << m_pTransCom->GetWorld()._42 << ", " << m_pTransCom->GetWorld()._43 << endl;
-		first = true;
-	}
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -355,7 +329,6 @@ void CEffect::SetTexture(string texName)
 void CEffect::SetPlay(bool _isPlay)
 {
 	m_IsPlay = _isPlay;
-	m_IsEnable = _isPlay;
 
 	m_fTimeDeltaAcc = 0.f;
 	m_fLifeTimeAcc = 0.f;
@@ -363,7 +336,6 @@ void CEffect::SetPlay(bool _isPlay)
 	m_pTransCom->GetPosition() = m_tInfo.S_Pos;
 	m_pTransCom->GetScale() = m_tInfo.S_Size;
 	m_pTransCom->GetRotation() = m_tInfo.S_Rot;
-	m_pTransCom->Update_Component();
 	Mat->DiffuseAlbedo = m_tInfo.S_Color;
 }
 
@@ -373,13 +345,14 @@ void CEffect::SetIsFrame(bool _isFrame)
 
 	m_tFrame.f2curFrame = XMFLOAT2(0.f, 0.f);
 	m_tFrame.fFrameAcc = 0.f;
+	
 }
 
 void CEffect::MoveFrame(const GameTimer& gt)
 {
 	m_tFrame.fFrameAcc += gt.DeltaTime() * m_tFrame.fSpeed;
 	//if (m_tFrame.fFrameAcc > m_tFrame.f2FrameSize.x)
-	if (m_tFrame.fFrameAcc > 1.f)
+	if(m_tFrame.fFrameAcc > 1.f)
 	{
 		m_tFrame.f2curFrame.x += 1.f;
 		m_tFrame.fFrameAcc = 0.f;
@@ -391,7 +364,7 @@ void CEffect::MoveFrame(const GameTimer& gt)
 			{
 				m_tFrame.f2curFrame.x = 0.f;
 				m_tFrame.f2curFrame.y = 0.f;
-
+				
 				if (m_tFrame.isEndbyCnt)
 				{
 					++m_tFrame.iCurCnt;
@@ -411,17 +384,6 @@ void CEffect::MoveFrame(const GameTimer& gt)
 CEffect * CEffect::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info)
 {
 	CEffect* pInstance = new CEffect(d3dDevice, srv, srvSize, info);
-	if (FAILED(pInstance->Initialize()))
-	{
-		MSG_BOX(L"CEffect Created Failed");
-		Safe_Release(pInstance);
-	}
-	return pInstance;
-}
-
-CEffect * CEffect::Create(CEffect & other)
-{
-	CEffect* pInstance = new CEffect(other);
 	if (FAILED(pInstance->Initialize()))
 	{
 		MSG_BOX(L"CEffect Created Failed");

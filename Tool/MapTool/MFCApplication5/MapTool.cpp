@@ -290,6 +290,8 @@ void CMapTool::OnBnClickedButtonSave()
 	auto obj_iter = m_mapObject.begin();
 	auto obj_iter_end = m_mapObject.end();
 
+	out << m_ObjectListBox.GetCount() << endl;
+
 	for (; obj_iter != obj_iter_end; ++obj_iter)
 	{
 		size_t objSize = obj_iter->second.size();

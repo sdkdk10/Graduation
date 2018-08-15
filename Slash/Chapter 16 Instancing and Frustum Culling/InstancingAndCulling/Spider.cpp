@@ -4,7 +4,6 @@
 #include "DynamicMeshSingle.h"
 #include "Camera.h"
 #include "Management.h"
-#include "Renderer.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
 #include "Player.h"
@@ -105,7 +104,7 @@ bool Spider::Update(const GameTimer & gt)
 
 	// Next FrameResource need to be updated too.
 	//NumFramesDirty--;
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
+
 	return true;
 }
 
@@ -113,7 +112,7 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable && m_bIsConnected)
 	{
-		AnimStateMachine->SetTimerTrueFalse();
+		AnimStateMachine.SetTimerTrueFalse();
 
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -145,8 +144,8 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 
 		//int iTest = (int)pMesh->m_fTest;
 
-		int iTest = AnimStateMachine->GetCurAnimFrame();
-		int AnimaState = AnimStateMachine->GetAnimState();
+		int iTest = AnimStateMachine.GetCurAnimFrame();
+		int AnimaState = AnimStateMachine.GetAnimState();
 
 
 		if (m_bLODState == true)
@@ -176,15 +175,15 @@ HRESULT Spider::Initialize()
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
-	AnimStateMachine = new AnimateStateMachine;
+
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SpiderTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
 
-	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
@@ -237,8 +236,8 @@ void Spider::Animate(const GameTimer & gt)
 	//}
 	//if (GetHp() < 0)
 	//{
-	//	SetObjectAnimState(AnimStateMachine->DeadState);
-	//	AnimStateMachine->AnimationStateUpdate(gt);
+	//	SetObjectAnimState(AnimStateMachine.DeadState);
+	//	AnimStateMachine.AnimationStateUpdate(gt);
 	//	return;
 	//}
 
@@ -325,7 +324,7 @@ void Spider::Animate(const GameTimer & gt)
 
 
 
-	AnimStateMachine->AnimationStateUpdate(gt);
+	AnimStateMachine.AnimationStateUpdate(gt);
 
 	//if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) < 15.0f)
 	//{
@@ -344,11 +343,11 @@ void Spider::Animate(const GameTimer & gt)
 	//		//cout << "거미 충돌 " << endl;
 
 	//		m_pPlayer->m_pCollider = this;
-	//		//SetObjectAnimState(AnimStateMachine->Attack1State);
-	//		SetObjectAnimState(AnimStateMachine->Attack1State);
+	//		//SetObjectAnimState(AnimStateMachine.Attack1State);
+	//		SetObjectAnimState(AnimStateMachine.Attack1State);
 
 	//		//cout << m_pPlayer->GetHp() - 1.0f << endl;
-	//		if (AnimStateMachine->GetCurAnimFrame() == 13)
+	//		if (AnimStateMachine.GetCurAnimFrame() == 13)
 	//			m_pPlayer->SetHp(m_pPlayer->GetHp() - 1.0f);
 
 	//	}
@@ -384,7 +383,7 @@ void Spider::Animate(const GameTimer & gt)
 	//		Move(XMFLOAT3(moveingVector.x, moveingVector.y, moveingVector.z), true);
 
 	//		//cout << "이동하자" << endl;
-	//		SetObjectAnimState(AnimStateMachine->WalkState);
+	//		SetObjectAnimState(AnimStateMachine.WalkState);
 
 	//	}
 
@@ -398,7 +397,7 @@ void Spider::Animate(const GameTimer & gt)
 	//	m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
 
 	//	}*/
-	//	SetObjectAnimState(AnimStateMachine->IdleState);
+	//	SetObjectAnimState(AnimStateMachine.IdleState);
 
 
 	//}

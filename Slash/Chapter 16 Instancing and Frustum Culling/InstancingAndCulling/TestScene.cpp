@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "TestScene.h"
-#include "Define.h"
 #include "GameObject.h"
 #include "Player.h"
+#include "Define.h"
 #include "Barrel.h"
 #include "SkyBox.h"
 #include "InstancingObject.h"
@@ -24,10 +24,10 @@
 #include "Transform.h"
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
+
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: CScene(d3dDevice, srv, srvSize)
 {
-
 }
 
 CTestScene::~CTestScene()
@@ -65,6 +65,8 @@ HRESULT CTestScene::Initialize()
 		Ready_GameObject(L"Layer_Spider", pObject);
 		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
+
+	CEffect_Manager::GetInstance()->Play_SkillEffect("hh");
 
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -135,21 +137,21 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	//for (int i = 0; i < 30; ++i)
-	//{
-	//	
-	//		for (int k = 0; k < 30; ++k)
-	//		{
-	//			pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//			pObject->SetCamera(Get_MainCam());
-	//			pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
+	for (int i = 0; i < 30; ++i)
+	{
+		
+			for (int k = 0; k < 30; ++k)
+			{
+				pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+				pObject->SetCamera(Get_MainCam());
+				pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
 
-	//			Ready_GameObject(L"Layer_Terrain", pObject);
-	//			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-	//		}
-	//	
+				Ready_GameObject(L"Layer_Terrain", pObject);
+				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+			}
+		
 
-	//}
+	}
 
 	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	//pObject->SetCamera(Get_MainCam());
@@ -160,8 +162,8 @@ HRESULT CTestScene::Initialize()
 	UISetting();
 
 	
-	//if (FAILED(Load_Map()))
-	//	return E_FAIL;
+	if (FAILED(Load_Map()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -172,6 +174,7 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
 	m_pPlayer->m_pCollider = NULL;
+
 	for (int i = 0; i < spiderList.size(); ++i)
 	{
 		spiderList[i]->m_pCollider = NULL;
@@ -184,8 +187,6 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	m_pPlayer->m_pCollider;
 
-
-
 	//CollisionProcess();
 	if (m_pPlayer->m_pCollider == NULL)
 	{
@@ -195,6 +196,7 @@ bool CTestScene::Update(const GameTimer & gt)
 	else
 	{
 		m_pPlayer->m_pCollider->SaveSlidingVector(m_pPlayer,m_pPlayer->m_pCollider);
+		
 	}
 
 
@@ -392,64 +394,66 @@ HRESULT CTestScene::Load_Map()
 	/*
 	while (!fin.eof())
 	{
-		fin >> ignore;		// > MeshType
+	fin >> ignore;      // > MeshType
 
-		Mesh::MESHTYPE eType = Mesh::MESHTYPE(std::stoi(ignore));
+	Mesh::MESHTYPE eType = Mesh::MESHTYPE(std::stoi(ignore));
 
-		fin >> ignore;		// > Com_Mesh_¿Ã∏ß
-		wstring wstrFileName;
-		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
-		CGameObject* pObject;
-		int iSize = 1;
-		fin >> iSize;
-		CRenderer::RenderType eRenderType;
-		switch (eType)
-		{
-		case Mesh::MESH_STATIC:
-			pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
-			eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
-			break;
-		case Mesh::MESH_STATIC_INST:
-			pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
-			eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
-			break;
-		}
+	fin >> ignore;      // > Com_Mesh_¿Ã∏ß
+	wstring wstrFileName;
+	wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
+	CGameObject* pObject;
+	int iSize = 1;
+	fin >> iSize;
+	CRenderer::RenderType eRenderType;
+	switch (eType)
+	{
+	case Mesh::MESH_STATIC:
+	pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
+	eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
+	break;
+	case Mesh::MESH_STATIC_INST:
+	pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
+	eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
+	break;
+	}
 
 
-		pObject->SetCamera(Get_MainCam());
-		Ready_GameObject(L"Layer_Map", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
+	pObject->SetCamera(Get_MainCam());
+	Ready_GameObject(L"Layer_Map", pObject);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
 
-		std::string::size_type sz;
+	std::string::size_type sz;
 
-		string Value[9];
-		float fValue[9];
-		for (int i = 0; i < iSize; ++i)
-		{
-			for (int j = 0; j < 9; ++j)
-			{
-				fin >> Value[j];
-				fValue[j] = std::stof(Value[j], &sz);
-			}
-			if (eType == (Mesh::MESH_STATIC_INST))
-			{
-				pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
-				pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
-				pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
-			}
-			else
-			{
-				pObject->GetTransform()->Translation(fValue[0], fValue[1], fValue[2]);
-				pObject->GetTransform()->Scaling(fValue[3], fValue[4], fValue[5]);
-				pObject->GetTransform()->Rotation(fValue[6], fValue[7], fValue[8]);
-			}
-		}
+	string Value[9];
+	float fValue[9];
+	for (int i = 0; i < iSize; ++i)
+	{
+	for (int j = 0; j < 9; ++j)
+	{
+	fin >> Value[j];
+	fValue[j] = std::stof(Value[j], &sz);
+	}
+	if (eType == (Mesh::MESH_STATIC_INST))
+	{
+	pObject->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+	pObject->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+	pObject->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
+	}
+	else
+	{
+	pObject->GetTransform()->Translation(fValue[0], fValue[1], fValue[2]);
+	pObject->GetTransform()->Scaling(fValue[3], fValue[4], fValue[5]);
+	pObject->GetTransform()->Rotation(fValue[6], fValue[7], fValue[8]);
+	}
+	}
 	}
 	*/
+
 	while (!fin.eof())
 	{
-
-		fin >> ignore;		// > Com_Mesh_¿Ã∏ß
+		if (m_iObjectCount == 0)
+			fin >> m_iObjectCount;
+		fin >> ignore;      // > Com_Mesh_¿Ã∏ß
 		wstring wstrFileName;
 		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
 
@@ -457,10 +461,10 @@ HRESULT CTestScene::Load_Map()
 		CRenderer::RenderType eRenderType;
 
 		int iSize = 1;
-		fin >> iSize;			// > Instancing Size
+		fin >> iSize;         // > Instancing Size
 
-		//pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
-		//eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
+							  //pObject = CMapObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()));
+							  //eRenderType = CRenderer::RenderType::RENDER_NONALPHA_FORWARD;
 		pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, const_cast<wchar_t*>(meshName.c_str()), iSize);
 		eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
 		//eRenderType = CRenderer::RenderType::RENDER_ALPHA_INST;
@@ -478,13 +482,13 @@ HRESULT CTestScene::Load_Map()
 		{
 			int Alpha;
 			fin >> Alpha;
-			if(Alpha)
+			if (Alpha)
 				eRenderType = CRenderer::RenderType::RENDER_ALPHA_INST;
 			else
 				eRenderType = CRenderer::RenderType::RENDER_NONALPHA_INSTANCING;
-			fin >> ignore;			// > Tex_Name
-			Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_INST_2D);		// > ¿ŒΩ∫≈œΩÃ¿œ ∂ß πŸ≤„¡‹
-			//dynamic_cast<CInstancingObject*>(pObject)->SetTexture(i, tex->Num);
+			fin >> ignore;         // > Tex_Name
+			Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(ignore, CTexture_Manager::TEX_INST_2D);      // > ¿ŒΩ∫≈œΩÃ¿œ ∂ß πŸ≤„¡‹
+																													  //dynamic_cast<CInstancingObject*>(pObject)->SetTexture(i, tex->Num);
 
 			for (int j = 0; j < 9; ++j)
 			{
@@ -495,7 +499,7 @@ HRESULT CTestScene::Load_Map()
 			dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
 			dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
 			dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
-			dynamic_cast<CInstancingObject*>(pObject)->SetRenderType(eRenderType);
+			//dynamic_cast<CInstancingObject*>(pObject)->SetRenderType(eRenderType);
 		}
 		Ready_GameObject(L"Layer_Map", pObject);
 		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);

@@ -306,7 +306,3 @@ void AnimateStateMachine::SetTimerTrueFalse()
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
 }
-
-void AnimateStateMachine::Free()
-{
-}

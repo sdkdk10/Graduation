@@ -6,7 +6,6 @@
 #include "Transform.h"
 #include "ObjectManager.h"
 #include "Camera.h"
-#include "StaticMesh.h"
 
 CEffect::CEffect(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -25,26 +24,9 @@ CEffect::~CEffect()
 
 HRESULT CEffect::Initialize()
 {
-	wstring wstrMesh = wstring(m_tInfo.strMeshName.begin(), m_tInfo.strMeshName.end());
-	string geoName;
-
-	if (m_tInfo.strMeshName == "Com_Geometry")
-	{
-		m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Geometry"));
-		if (nullptr == m_pMesh)
-			return E_FAIL;
-		m_tInfo.strTexName = "eye_moo_t_sun014";
-		geoName = "grid";
-	}
-		
-	else
-	{
-		m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(const_cast<wchar_t*>(wstrMesh.c_str())));
-		if (nullptr == m_pMesh)
-			return E_FAIL;
-		m_tInfo.strTexName = dynamic_cast<StaticMesh*>(m_pMesh)->GetTexName();
-		geoName = "Barrel";
-	}
+	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Geometry"));
+	if (nullptr == m_pMesh)
+		return E_FAIL;
 
 	//m_tFrame.f2maxFrame = XMFLOAT2(5.f, 6.f);
 	//m_tFrame.f2FrameSize = XMFLOAT2(128.f, 171.f);
@@ -78,14 +60,11 @@ HRESULT CEffect::Initialize()
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 
-	if (m_tInfo.strMeshName == "Com_Geometry")
-		Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
-	else
-		Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
+	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs[geoName].IndexCount;
-	StartIndexLocation = Geo->DrawArgs[geoName].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs[geoName].BaseVertexLocation;
+	IndexCount = Geo->DrawArgs["grid"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["grid"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["grid"].BaseVertexLocation;
 
 	Mat->MatTransform(3, 0) = 1;
 	Mat->MatTransform(3, 1) = 1;
@@ -333,53 +312,6 @@ void CEffect::Update_Billboard(const GameTimer & gt)
 	m_pTransCom->GetWorld()._41 = m_pTransCom->GetPosition().x;
 	m_pTransCom->GetWorld()._42 = m_pTransCom->GetPosition().y;
 	m_pTransCom->GetWorld()._43 = m_pTransCom->GetPosition().z;
-}
-
-void CEffect::SetMesh(wchar_t* meshName)
-{
-	string geoName;
-	if (!wcscmp(meshName, L"Com_Geometry"))
-	{
-		GeometryMesh* pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Geometry"));
-		if (pMesh == nullptr)
-			return;
-		m_pMesh = pMesh;
-
-		Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
-		geoName = "grid";
-	}
-	else
-	{
-		StaticMesh* pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(meshName));
-		if (pMesh == nullptr)
-			return;
-		m_pMesh = pMesh;
-
-		wstring output;
-		m_tInfo.strTexName = dynamic_cast<StaticMesh*>(m_pMesh)->GetTexName();
-		output.clear();
-		output.assign(m_tInfo.strTexName.begin(), m_tInfo.strTexName.end());
-		auto Tex = CTexture_Manager::GetInstance()->Find_Texture(output, HEAP_DEFAULT);
-		if (Tex == nullptr)
-			return;
-
-		Mat->DiffuseSrvHeapIndex = Tex->Num;
-
-		Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
-		geoName = "Barrel";
-	}
-
-
-	//Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
-	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs[geoName].IndexCount;
-	StartIndexLocation = Geo->DrawArgs[geoName].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs[geoName].BaseVertexLocation;
-	Bounds = Geo->DrawArgs[geoName].Bounds;
-	wstring wstr(meshName);
-	m_strMeshName.assign(wstr.begin(), wstr.end());
-	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.1f, Bounds.Center.y * 0.1f, Bounds.Center.z * 0.1f), XMFLOAT3(Bounds.Extents.x * 0.1f, Bounds.Extents.y * 0.1f, Bounds.Extents.z * 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-
 }
 
 void CEffect::SetTexture(Texture * tex)

@@ -24,10 +24,7 @@ struct CB_ObjectConstants
 };
 
 class AnimateStateMachine
-	: public CBase
 {
-public:
-	enum ANIM_STATE { STATE_IDLE, STATE_WALK, STATE_ATTACK1, STATE_ATTACK2, STATE_ATTACK3, STATE_DEAD, STATE_END };
 public:
 	bool m_bIsLife = true;
 
@@ -40,7 +37,7 @@ public:
 	bool bTimerDead = false;
 private:
 
-protected:
+private:
 	float			m_fAnimationKeyFrameIndex = 0.f;		// 애니메이션 인덱스
 	float			m_fAnimationKeyFrameIndex_Walk = 0.f;		// 애니메이션 인덱스
 
@@ -60,18 +57,15 @@ public: //애니메이션 상태
 	const int Attack2State = 3;
 	const int Attack3State = 4;
 	const int DeadState = 5;
-protected:
+private:
 	int m_iAnimState = 0; // 현재 애니메이션 상태
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지
 public:
-	virtual void AnimationStateUpdate(const GameTimer & gt);
+	void AnimationStateUpdate(const GameTimer & gt);
 	void SetTimerTrueFalse();
 	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
 	int GetCurAnimFrame() { return m_iCurAnimFrame;  }
-
-private:
-	virtual void Free();
 };
 
 class CGameObject
@@ -86,11 +80,11 @@ public:
 	XMFLOAT3 m_MovingRefletVector = XMFLOAT3(0, 0, 0); // 슬라이딩 벡터를 위한 반사벡터
 	//XMFLOAT4					m_pxmf4WallPlanes[4]; 
 public:
-	AnimateStateMachine * GetAnimateMachine() { return AnimStateMachine; }
+	AnimateStateMachine * GetAnimateMachine() { return &AnimStateMachine; }
 public:
-	void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
+	void SetObjectAnimState(int _animState) { AnimStateMachine.SetAnimState(_animState); }
 protected:
-	AnimateStateMachine* AnimStateMachine;
+	AnimateStateMachine AnimStateMachine;
 public:
 	int planeCollision = 0;
 public:

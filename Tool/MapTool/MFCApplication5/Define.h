@@ -24,19 +24,11 @@ struct EFFECT_INFO
 	float		LifeTime;
 	float		StartTime;
 	string		strName;
-	string		strMeshName;
 	string		strTexName;
 	bool		isBillboard;
 
-
-	// for. Com_Mesh_Geometry
-	EFFECT_INFO(XMFLOAT3 _sPos, XMFLOAT3 _ePos, XMFLOAT3 _sSize, XMFLOAT3 _eSize, XMFLOAT3 _sRot, XMFLOAT3 _eRot, XMFLOAT4 _sColor, XMFLOAT4 _eColor, float _lifeTime, float _startTime, string _name, string _meshName, string _texName, bool _isBillboard)
-		: S_Pos(_sPos), E_Pos(_ePos), S_Size(_sSize), E_Size(_eSize), S_Rot(_sRot), E_Rot(_eRot), S_Color(_sColor), E_Color(_eColor), LifeTime(_lifeTime), StartTime(_startTime), strName(_name), strMeshName(_meshName), strTexName(_texName), isBillboard(_isBillboard)
-	{}
-
-	// for. Static Mesh
-	EFFECT_INFO(XMFLOAT3 _sPos, XMFLOAT3 _ePos, XMFLOAT3 _sSize, XMFLOAT3 _eSize, XMFLOAT3 _sRot, XMFLOAT3 _eRot, XMFLOAT4 _sColor, XMFLOAT4 _eColor, float _lifeTime, float _startTime, string _name, string _meshName, bool _isBillboard)
-		: S_Pos(_sPos), E_Pos(_ePos), S_Size(_sSize), E_Size(_eSize), S_Rot(_sRot), E_Rot(_eRot), S_Color(_sColor), E_Color(_eColor), LifeTime(_lifeTime), StartTime(_startTime), strName(_name), strMeshName(_meshName), isBillboard(_isBillboard)
+	EFFECT_INFO(XMFLOAT3 _sPos, XMFLOAT3 _ePos, XMFLOAT3 _sSize, XMFLOAT3 _eSize, XMFLOAT3 _sRot, XMFLOAT3 _eRot, XMFLOAT4 _sColor, XMFLOAT4 _eColor, float _lifeTime, float _startTime, string _name, string _texName, bool _isBillboard)
+		: S_Pos(_sPos), E_Pos(_ePos), S_Size(_sSize), E_Size(_eSize), S_Rot(_sRot), E_Rot(_eRot), S_Color(_sColor), E_Color(_eColor), LifeTime(_lifeTime), StartTime(_startTime), strName(_name), strTexName(_texName), isBillboard(_isBillboard)
 	{}
 };
 

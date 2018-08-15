@@ -11,22 +11,39 @@
 #include <set>
 #include <unordered_set>
 #include <queue>
-
+#include <fstream>
+#include <type_traits>
 #include "Functor.h"
 #include "../../Slash/Common/MathHelper.h"
+
+
 #pragma comment (lib, "ws2_32.lib")
+#pragma comment(lib,  "lua53.lib")
 
 #include "protocol.h"
 
 using namespace std;
 
-mutex p_lock;
+// For Script
+extern "C"
+{
+#include "include\lua.h"
+#include "include\lauxlib.h"
+#include "include\lualib.h"
+}
+
+void display_error(lua_State* L, int errnum)
+{
+	printf("Erorr : %s\n", lua_tostring(L, -1));
+	lua_pop(L, 1);
+}
 
 void SendObjectPos(int client, int object_id);
 void SendObjectLook(int client, int object_id);
 void SendObjectState(int client, int object_id);
 void SendRemoveObject(int client, int object_id);
 void SendPutObject(int client, int object_id);
+void SendObjectHp(int client, int object_id);
 void SendPacket(int cl, void *packet);
 
 struct EXOver {
@@ -51,6 +68,7 @@ struct CLIENT {
 	bool is_active;
 	int Hp;
 	int Dmg;
+	lua_State* L;
 
 	EXOver exover;
 	int packet_size;
@@ -58,8 +76,15 @@ struct CLIENT {
 	char prev_packet[MAX_PACKET_SIZE];
 };
 
+struct MapObject {
+	XMFLOAT4X4 World;
+	BoundingOrientedBox xmOOBB;
+	BoundingOrientedBox xmOOBBTransformed;
+};
+
 HANDLE g_iocp; // IOCP 전역변수 객체
 CLIENT g_clients[NUM_OF_NPC];
+vector<MapObject*> g_mapobjects;
 
 struct EVENT {
 	unsigned int s_time;
@@ -103,11 +128,91 @@ void TimerThread()
 	}
 }
 
+void SetOOBB(MapObject* d, XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, const XMFLOAT4& xmOrientation)
+{
+	d->xmOOBBTransformed = d->xmOOBB = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
+}
+
+void SetOOBB(CLIENT& cl , const XMFLOAT3& xmCenter, const XMFLOAT3& xmExtents, const XMFLOAT4& xmOrientation)
+{
+	cl.xmOOBBTransformed = cl.xmOOBB = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
+}
+
+
+//void LoadMap()
+//{
+//	ifstream fin("../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Data/MapData.txt");
+//	if (!fin)
+//	{
+//		cout << "MapData Load Failed" << endl;
+//	}
+//
+//	g_mapobjects.reserve(MAX_MAPOBJECT);
+//
+//	string ignore;
+//
+//	while (!fin.eof())
+//	{
+//
+//		fin >> ignore;		// > Com_Mesh_이름
+//		wstring wstrFileName;
+//		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
+//
+//		int iSize = 1;
+//		fin >> iSize;			// > Instancing Size
+//
+//		std::string::size_type sz;
+//
+//		string Value[9];
+//		float fValue[9];
+//
+//		for (int i = 0; i < iSize; ++i)
+//		{
+//			int Alpha;
+//			fin >> Alpha;
+//			fin >> ignore;			// > Tex_Name
+//		
+//			
+//			for (int j = 0; j < 9; ++j)
+//			{
+//				fin >> Value[j];
+//				fValue[j] = std::stof(Value[j], &sz);
+//			}
+//
+//			MapObject* p = new MapObject;
+//
+//			p->World = MathHelper::Identity4x4();
+//
+//			XMStoreFloat4x4(&p->World, XMMatrixScaling(fValue[3], fValue[4], fValue[5])
+//				* XMMatrixRotationX(XMConvertToRadians(fValue[6])) * XMMatrixRotationY(XMConvertToRadians(fValue[7])) * XMMatrixRotationZ(XMConvertToRadians(fValue[8]))
+//				*XMMatrixTranslation(fValue[0], fValue[1], fValue[2]));
+//
+//			p->xmOOBBTransformed.Transform(p->xmOOBB, XMLoadFloat4x4(&p->World));
+//			XMStoreFloat4(&p->xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&p->xmOOBBTransformed.Orientation)));
+//
+//			g_mapobjects.emplace_back(p);
+//
+//			//dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Translation(fValue[0], fValue[1], fValue[2]);
+//			//dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Scaling(fValue[3], fValue[4], fValue[5]);
+//			//dynamic_cast<CInstancingObject*>(pObject)->GetTransform(i)->Rotation(fValue[6], fValue[7], fValue[8]);
+//
+//		}
+//	}
+//}
+
 bool CanSee(int a, int b)
 {
 	float dist_sq = (g_clients[a].World._41 - g_clients[b].World._41) * (g_clients[a].World._41 - g_clients[b].World._41)
 		+ (g_clients[a].World._42 - g_clients[b].World._42) * (g_clients[a].World._42 - g_clients[b].World._42)
 		+ (g_clients[a].World._43 - g_clients[b].World._43) * (g_clients[a].World._43 - g_clients[b].World._43);
+	return (dist_sq <= VIEW_RADIUS * VIEW_RADIUS);
+}
+
+bool CanSee(int a, MapObject* b)
+{
+	float dist_sq = (g_clients[a].World._41 - b->World._41) * (g_clients[a].World._41 - b->World._41)
+		+ (g_clients[a].World._42 - b->World._42) * (g_clients[a].World._42 - b->World._42)
+		+ (g_clients[a].World._43 - b->World._43) * (g_clients[a].World._43 - b->World._43);
 	return (dist_sq <= VIEW_RADIUS * VIEW_RADIUS);
 }
 
@@ -139,6 +244,14 @@ void WakeUpNPC(int id, int target)
 	if (g_clients[id].is_active) return;
 	if (!IsInAgroRange(id, target))return;
 	g_clients[id].is_active = true;
+	g_clients[id].cur_state = WALK;
+
+	for (int i = 0; i < MAX_USER; ++i)
+	{
+		if (false == g_clients[i].in_use) continue;
+		if (false == CanSee(id, i)) continue;
+		SendObjectState(i, id);
+	}
 
 	add_timer(id, EVT_CHASE, GetTickCount(), target);
 }
@@ -146,6 +259,7 @@ void WakeUpNPC(int id, int target)
 XMFLOAT3 GetSlideVector(CLIENT& Obj, CLIENT& CollObj)
 {
 	XMFLOAT3 Center = XMFLOAT3{ CollObj.World._41, CollObj.World._42, CollObj.World._43 };
+
 	XMFLOAT3 Player = XMFLOAT3{ Obj.World._41, Obj.World._42, Obj.World._43 };
 	XMFLOAT3 dirVector = Vector3::Subtract(Player, Center);   // 충돌 객체에서 플레이어로 가는 벡터
 	XMFLOAT3 MovingRefletVector = XMFLOAT3{ 0, 0, 0 };
@@ -178,9 +292,52 @@ XMFLOAT3 GetSlideVector(CLIENT& Obj, CLIENT& CollObj)
 	return MovingRefletVector;
 }
 
+XMFLOAT3 GetSlideVector(CLIENT& Obj, MapObject* CollObj)
+{
+	BoundingBox WorldBounds = BoundingBox(CollObj->xmOOBB.Center, CollObj->xmOOBB.Extents);
+	WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&CollObj->World));
+
+	//XMFLOAT3 pCollObjPos2= pCollobj->m_pTransCom->m_f3Position;
+	XMFLOAT3 Center = XMFLOAT3(CollObj->World._41, CollObj->World._42, CollObj->World._43);
+	XMFLOAT3 Player = XMFLOAT3(Obj.World._41, Obj.World._42, Obj.World._43);
+	XMFLOAT3 look = XMFLOAT3(CollObj->World._21, CollObj->World._22, CollObj->World._23);
+	XMFLOAT3 dirVector = Vector3::Subtract(Player, Center);   // 충돌 객체에서 플레이어로 가는 벡터
+	XMFLOAT3 MovingRefletVector = XMFLOAT3{ 0, 0, 0 };
+
+	float tanceta = dirVector.z / dirVector.x;
+	float ceta = atan(tanceta) * 57.3248f;
+
+	float extenttanceta = WorldBounds.Extents.z / WorldBounds.Extents.x;
+
+	float extentceta = atan(extenttanceta) * 57.3248f;
+
+	look = Vector3::Normalize(look);
+	dirVector = Vector3::Normalize(dirVector);
+
+	if (Player.x > Center.x && 0 < ceta && ceta< extentceta)
+		MovingRefletVector = XMFLOAT3(1, 0, 0);
+	if (Player.z > Center.z && extentceta <ceta && ceta < 90)
+		MovingRefletVector = XMFLOAT3(0, 0, 1);
+	if (Player.z > Center.z && -90 < ceta && ceta < -extentceta)
+		MovingRefletVector = XMFLOAT3(0, 0, 1);
+	if (Player.x < Center.x && -extentceta < ceta && ceta < 0)
+		MovingRefletVector = XMFLOAT3(-1, 0, 0);
+	if (Player.x < Center.x && 0 < ceta && ceta < extentceta)
+		MovingRefletVector = XMFLOAT3(-1, 0, 0);
+	if (Player.z < Center.z && extentceta < ceta && ceta < 90)
+		MovingRefletVector = XMFLOAT3(0, 0, -1);
+	if (Player.z < Center.z && -90 < ceta && ceta < -extentceta)
+		MovingRefletVector = XMFLOAT3(0, 0, -1);
+	if (Player.x > Center.x && -extentceta < ceta && ceta < 0)
+		MovingRefletVector = XMFLOAT3(1, 0, 0);
+
+	return MovingRefletVector;
+}
+
 void ChasingPlayer(int source, int target) {
 
-	g_clients[source].cur_state = WALK;
+	if (g_clients[source].cur_state == DEAD)
+		return;
 
 	// 거미끼리 충돌체크할때 계속 거리 재야하는가
 	// 아니면 전체 거미끼리 충돌하는지 검사하는가
@@ -222,7 +379,7 @@ void ChasingPlayer(int source, int target) {
 	else
 		ceta = ceta * 57.3248f;
 
-	cout << ceta << endl;
+	//cout << ceta << endl;
 
 	XMFLOAT3 MovingReflectVector = XMFLOAT3(0, 0, 0); // 나중에 충돌하면 갱신해줘야함 이동하기전에
 
@@ -278,7 +435,16 @@ void ChasingPlayer(int source, int target) {
 		}
 	}
 
-	auto result = Vector3::MultiplyScalr(MovingReflectVector, Vector3::DotProduct(movingVector, MovingReflectVector));
+	for(auto d : g_mapobjects)
+	{
+		if (g_clients[source].xmOOBB.Contains(d->xmOOBB))
+		{
+			MovingReflectVector = GetSlideVector(g_clients[source], d);
+			break;
+		}
+	}
+
+	auto result = Vector3::MultiplyScalr(MovingReflectVector, Vector3::DotProduct(movingVector, MovingReflectVector)); // 쓸데없이 실행되는가 체크
 	movingVector = Vector3::Subtract(movingVector, result);
 
 	//g_clients[source].World._41 += movingVector.x;
@@ -430,18 +596,21 @@ void PutNewPlayer(int new_key) {
 	{
 		if (false == CanSee(new_key, i)) continue;
 
+		if (IsInAgroRange(i, new_key))
+			WakeUpNPC(i, new_key); // 상태 2번 보냄 수정해야함
+
 		p.id = i;
 		p.posX = g_clients[i].World._41;
 		p.posY = g_clients[i].World._42;
 		p.posZ = g_clients[i].World._43;
 		p.lookDegree = g_clients[i].LookDegree;
 		p.state = g_clients[i].cur_state;
+		SendPacket(new_key, &p);
 
 		g_clients[new_key].vlm.lock();
 		g_clients[new_key].viewlist.insert(i);
 		g_clients[new_key].vlm.unlock();
-		WakeUpNPC(i, new_key);
-		SendPacket(new_key, &p);
+
 		//cout << "접속 : " << i << " 번째 몬스터 보임" << endl;
 	}
 
@@ -454,9 +623,9 @@ void MonsterAttack(int source, int target) {
 	{
 		return;
 	}
-	else if (g_clients[target].cur_state == DEAD)
+	else if (!IsClose(source, target))
 	{
-		g_clients[source].cur_state = IDLE;
+		g_clients[source].cur_state = WALK;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -464,10 +633,7 @@ void MonsterAttack(int source, int target) {
 			if (false == CanSee(i, source)) continue;
 			SendObjectState(i, source);
 		}
-		return;
-	}
-	else if (!IsClose(source, target))
-	{
+
 		add_timer(source, EVT_CHASE, GetTickCount(), target);
 		return;
 	}
@@ -482,9 +648,21 @@ void MonsterAttack(int source, int target) {
 			SendObjectState(i, source);
 		}
 
-		add_timer(source, EVT_DAMAGE, GetTickCount() + 500, target);
+		add_timer(source, EVT_DAMAGE, GetTickCount() + 1000, target);
 		if((g_clients[target].Hp - g_clients[source].Dmg) > 0)
-			add_timer(source, EVT_MONSTER_ATTACK, GetTickCount() + 500, target);
+			add_timer(source, EVT_MONSTER_ATTACK, GetTickCount() + 1000, target);
+		else
+		{
+			g_clients[source].cur_state = IDLE;
+			g_clients[source].is_active = false;
+
+			for (int i = 0; i < MAX_USER; ++i)
+			{
+				if (false == g_clients[i].in_use) continue;
+				if (false == CanSee(i, source)) continue;
+				SendObjectState(i, source);
+			}
+		}
 	}
 }
 
@@ -497,7 +675,7 @@ void PlayerAttack(int source) {
 
 		// 몬스터가 앞에 있는가 여기에서 판단
 
-		add_timer(source, EVT_DAMAGE, GetTickCount() + 500, i);
+		add_timer(source, EVT_DAMAGE, GetTickCount() + 100, i);
 	}
 
 }
@@ -506,9 +684,17 @@ void ProcessDamage(int source, int target) {
 
 	g_clients[target].Hp -= g_clients[source].Dmg;
 
+	if ((g_clients[target].Hp - g_clients[source].Dmg) < 0)
+		g_clients[target].Hp = 0;
+
+	if(!IsNPC(target))
+		SendObjectHp(target, target);
+
 	if ((g_clients[target].Hp) <= 0)
 	{
 		g_clients[target].cur_state = DEAD;
+		if (IsNPC(target))
+			g_clients[target].is_active = false;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -517,7 +703,7 @@ void ProcessDamage(int source, int target) {
 			SendObjectState(i, target);
 		}
 
-		add_timer(target, EVT_RESPOWN, GetTickCount() + 10000, 0);
+		add_timer(target, EVT_RESPOWN, GetTickCount() + 5000, 0);
 	}
 }
 
@@ -527,14 +713,21 @@ void ProcessRespown(int source)
 
 	if (IsNPC(source))
 	{
-		// 예전 그위치에 리스폰?
-		// 가만히 있는 플레이어 뷰리스트에 넣어줘야함
-		// PutNewPlayer랑 비슷하게 PutNewMonster하면 될듯
-		// 어그로 거리에 있는 플레이어 검색해서 쫓아가야함
+		g_clients[source].Hp = 60;
+
+		for (int i = 0; i < MAX_USER; ++i)
+		{
+			if (false == g_clients[i].in_use) continue;
+			if (false == CanSee(i, source)) continue;
+			SendObjectState(i, source);
+			if (false == IsInAgroRange(i, source)) continue;
+			ChasingPlayer(source, i);
+			break;
+		}
 	}
 	else
 	{
-		g_clients[source].Hp = 200;
+		g_clients[source].Hp = 100;
 		g_clients[source].World._41 = 15;
 		g_clients[source].World._42 = 0;
 		g_clients[source].World._43 = 0;
@@ -574,16 +767,44 @@ void Initialize()
 	{
 		XMStoreFloat4x4(&g_clients[i].World, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 		g_clients[i].World._41 = 15, g_clients[i].World._42 = 0, g_clients[i].World._43 = 0; // 플레이어 위치 초기화
-		g_clients[i].Hp = 200;
+		g_clients[i].Hp = 100;
 		g_clients[i].Dmg = 20;
+		SetOOBB(g_clients[i], XMFLOAT3(-7.5388, -5.98235, 28.8367), XMFLOAT3(23.1505, 16.4752, 28.5554), XMFLOAT4(0.0, 0.0, 0.0, 1.0));
 	}
 	for (int i = NPC_START; i < NUM_OF_NPC; ++i)
 	{
 		XMStoreFloat4x4(&g_clients[i].World, XMMatrixScaling(2.0f, 2.0f, 2.0f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
-		g_clients[i].World._41 = 0, g_clients[i].World._42 = 0, g_clients[i].World._43 = (i - NPC_START); // 거미 위치 초기화
-		g_clients[i].Hp = 100;
-		g_clients[i].Dmg = 10;
+		//g_clients[i].World._41 = 0, g_clients[i].World._42 = 0, g_clients[i].World._43 = (i - NPC_START); // 거미 위치 초기화
+		//g_clients[i].Hp = 60;
+		//g_clients[i].Dmg = 10;
+
+		lua_State* L = luaL_newstate();
+		luaL_openlibs(L);
+		int error = luaL_loadfile(L, "monster.lua");
+		lua_pcall(L, 0, 0, 0);
+		lua_getglobal(L, "set_myid");
+		lua_pushnumber(L, i);
+		lua_pcall(L, 1, 0, 0);
+		g_clients[i].L = L;
+
+		lua_getglobal(g_clients[i].L, "LoadMonsterData");
+		lua_pcall(g_clients[i].L, 0, 4, 0);
+		g_clients[i].World._41 = (int)lua_tonumber(L, -4);
+		g_clients[i].World._42 = 0;
+		g_clients[i].World._43 = (int)lua_tonumber(L, -3);
+		g_clients[i].Hp = (int)lua_tonumber(L, -2);
+		g_clients[i].Dmg = (int)lua_tonumber(L, -1);
+		lua_pop(L, 4);
+
+		SetOOBB(g_clients[i], XMFLOAT3(0, 0.3232, 0.7277), XMFLOAT3(1.0345, 0.7848, 1.0931), XMFLOAT4(0.0, 0.0, 0.0, 1.0));
+
+		g_clients[i].xmOOBBTransformed.Transform(g_clients[i].xmOOBB, XMLoadFloat4x4(&g_clients[i].World));
+		XMStoreFloat4(&g_clients[i].xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&g_clients[i].xmOOBBTransformed.Orientation)));
+
 	}
+
+	//LoadMap();
+	g_mapobjects.reserve(MAX_MAPOBJECT);
 
 	WSADATA   wsadata;
 	WSAStartup(MAKEWORD(2, 2), &wsadata);
@@ -620,9 +841,9 @@ void DisconnectPlayer(int cl)
 	printf("%d번 플레이어 접속종료.\n", cl);
 
 	sc_packet_remove_object p;
-	p.ID = cl;
-	p.SIZE = sizeof(p);
-	p.TYPE = SC_REMOVE_OBJECT;
+	p.id = cl;
+	p.size = sizeof(p);
+	p.type = SC_REMOVE_OBJECT;
 
 	g_clients[cl].vlm.lock();
 	unordered_set <int> vl_copy = g_clients[cl].viewlist;
@@ -699,12 +920,24 @@ void SendPutObject(int client, int object_id)
 void SendRemoveObject(int client, int object_id)
 {
 	sc_packet_remove_object p;
-	p.ID = object_id;
-	p.SIZE = sizeof(sc_packet_remove_object);
-	p.TYPE = SC_REMOVE_OBJECT;
+	p.id = object_id;
+	p.size = sizeof(sc_packet_remove_object);
+	p.type = SC_REMOVE_OBJECT;
 
 	SendPacket(client, &p);
 }
+
+void SendObjectHp(int client, int object_id)
+{
+	sc_packet_hp p;
+	p.id = object_id;
+	p.size = sizeof(sc_packet_hp);
+	p.type = SC_HP;
+	p.hp = g_clients[object_id].Hp;
+
+	SendPacket(client, &p);
+}
+
 
 void ProcessPacket(int cl, char *packet)
 {
@@ -723,6 +956,8 @@ void ProcessPacket(int cl, char *packet)
 		if (p->type & CS_DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Height), -fMoveSpeed);
 		if (p->type & CS_DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Width), fMoveSpeed);
 		if (p->type & CS_DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Width), -fMoveSpeed);
+		if (p->type & CS_DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Depth), fMoveSpeed);
+		if (p->type & CS_DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Depth), -fMoveSpeed);
 
 		XMFLOAT3 SlideVector{};
 
@@ -775,21 +1010,52 @@ void ProcessPacket(int cl, char *packet)
 
 		bool IsCollision = false;
 
-		for (int i = 0; i < MAX_USER; ++i)
+		cout << "Player Pos << " << g_clients[cl].World._41 << "\t" << g_clients[cl].World._42 << "\t" << g_clients[cl].World._43 << endl;
+
+
+		// 플레이어 이동시 충돌체크
+
+		for (auto d : g_mapobjects)
 		{
-			if (false == g_clients[i].in_use) continue;
+			if (false == CanSee(cl, d)) continue;
+
+			if (g_clients[cl].xmOOBB.Contains(d->xmOOBB))
+			{
+				cout <<  "Center : " << d->xmOOBB.Center.x << "\t" << d->xmOOBB.Center.y << "\t" << d->xmOOBB.Center.z << endl;
+				cout <<  "Extents : " << d->xmOOBB.Extents.x << "\t" << d->xmOOBB.Extents.y << "\t" << d->xmOOBB.Extents.z << endl;
+
+
+				cout << "충돌하는코드" << endl;
+				SlideVector = GetSlideVector(g_clients[cl], d);
+				float cosCeta = Vector3::DotProduct(SlideVector, xmf3Shift);
+				if (cosCeta < 0)
+				{
+					auto result = Vector3::MultiplyScalr(SlideVector, Vector3::DotProduct(xmf3Shift, SlideVector));
+					XMFLOAT3 sub_xmf3Shift = Vector3::Subtract(xmf3Shift, result);
+
+					g_clients[cl].World._41 += sub_xmf3Shift.x, g_clients[cl].World._42 += sub_xmf3Shift.y, g_clients[cl].World._43 += sub_xmf3Shift.z;
+					IsCollision = true;
+					break;
+				}
+			}
+		}
+
+		for (int i = 0; i < NUM_OF_NPC; ++i)
+		{
+			if (i < NPC_START)
+			{
+				if (false == g_clients[i].in_use) continue;
+			}
+			else if (i > NPC_START)
+			{
+				if (false == g_clients[i].is_active) continue;
+			}
 			if (false == IsClose(i, cl)) continue;
 			if (i == cl) continue;
 
-			p_lock.lock();
-			g_clients[cl].xmOOBB.Extents.x = 1.f; // 이거 수정
-			g_clients[cl].xmOOBB.Extents.y = 1.f;
-			g_clients[cl].xmOOBB.Extents.z = 1.f;
-			g_clients[i].xmOOBB.Extents.x = 1.f;
-			g_clients[i].xmOOBB.Extents.y = 1.f;
-			g_clients[i].xmOOBB.Extents.z = 1.f;
 			if (g_clients[cl].xmOOBB.Contains(g_clients[i].xmOOBB))
 			{
+				cout << i << "번째 객체와 충돌" << endl;
 				SlideVector = GetSlideVector(g_clients[cl], g_clients[i]);
 				float cosCeta = Vector3::DotProduct(SlideVector, xmf3Shift);
 				if (cosCeta < 0)
@@ -799,11 +1065,9 @@ void ProcessPacket(int cl, char *packet)
 
 					g_clients[cl].World._41 += sub_xmf3Shift.x, g_clients[cl].World._42 += sub_xmf3Shift.y, g_clients[cl].World._43 += sub_xmf3Shift.z;
 					IsCollision = true;
-					p_lock.unlock();
 					break; // 먼저 충돌한 객체만 처리
 				}
 			}
-			p_lock.unlock();
 		}
 
 		if (!IsCollision)
@@ -845,13 +1109,15 @@ void ProcessPacket(int cl, char *packet)
 		for (auto id : new_view_list) {
 			g_clients[cl].vlm.lock();
 
-			WakeUpNPC(id, cl);
+			if (IsInAgroRange(id, cl))
+				WakeUpNPC(id, cl);
 
 			// 나의 기존 뷰리스트에는 없었다 // 즉 새로 들어왔다
 			if (0 == g_clients[cl].viewlist.count(id))
 			{
 				g_clients[cl].viewlist.insert(id);
 				g_clients[cl].vlm.unlock();
+
 				//cout << "뷰리스트 배치 : " << id << " 번째 몬스터 보임" << endl;
 				SendPutObject(cl, id);
 			}
@@ -936,6 +1202,39 @@ void ProcessPacket(int cl, char *packet)
 		}
 
 		add_timer(cl, EVT_PLAYER_ATTACK, GetTickCount() + iAttackDelay, 0);
+
+		return;
+	}
+	else if (packet[1] == CS_MAP_INIT_DATA)
+	{
+		static int first_client = cl;
+
+		if (first_client != cl)
+			return;
+
+		cs_packet_mapinitdata *p = reinterpret_cast<cs_packet_mapinitdata *>(packet);
+		
+		MapObject* MapData = new MapObject;
+
+		MapData->World = p->world;
+		MapData->World._11 *= 2;
+		BoundingBox Bounds = p->bounds;
+
+		DirectX::BoundingOrientedBox::CreateFromBoundingBox(MapData->xmOOBB, Bounds);
+		DirectX::BoundingOrientedBox::CreateFromBoundingBox(MapData->xmOOBBTransformed, Bounds);
+
+		//SetOOBB(MapData, p->Center, p->Extents, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
+		//cout << p->world._11 << " " << p->world._12 << " " << p->world._13 << " " << p->world._14 << endl;
+		//cout << p->world._21 << " " << p->world._22 << " " << p->world._23 << " " << p->world._24 << endl;
+		//cout << p->world._31 << " " << p->world._32 << " " << p->world._33 << " " << p->world._34 << endl;
+		//cout << p->world._41 << " " << p->world._42 << " " << p->world._43 << " " << p->world._44 << endl << endl;
+
+
+		//MapData->xmOOBBTransformed.Transform(MapData->xmOOBB, XMLoadFloat4x4(&MapData->World));
+		//XMStoreFloat4(&MapData->xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&MapData->xmOOBBTransformed.Orientation)));
+
+		g_mapobjects.emplace_back(MapData);
 
 		return;
 	}

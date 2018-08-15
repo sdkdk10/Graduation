@@ -92,7 +92,7 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable)
 	{
-		AnimStateMachine->SetTimerTrueFalse();
+		AnimStateMachine.SetTimerTrueFalse();
 
 
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
@@ -124,8 +124,8 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 
 		//int iTest = (int)pMesh->m_fTest;
-		int iTest = AnimStateMachine->GetCurAnimFrame();
-		int AnimaState = AnimStateMachine->GetAnimState();
+		int iTest = AnimStateMachine.GetCurAnimFrame();
+		int AnimaState = AnimStateMachine.GetAnimState();
 
 
 
@@ -148,9 +148,9 @@ HRESULT Dragon::Initialize()
 	if (nullptr == tex)
 		return E_FAIL;
 
-	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
 
 
 
@@ -193,7 +193,7 @@ HRESULT Dragon::Initialize()
 
 void Dragon::Animate(const GameTimer & gt)
 {
-	AnimStateMachine->AnimationStateUpdate(gt);
+	AnimStateMachine.AnimationStateUpdate(gt);
 
 }
 

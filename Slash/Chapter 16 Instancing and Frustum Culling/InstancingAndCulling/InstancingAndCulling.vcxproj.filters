@@ -169,9 +169,6 @@
     <Filter Include="03. Mesh\05. BillboardMesh">
       <UniqueIdentifier>{00786757-6296-433b-b8f6-6652b07791ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Scene\01. EffectScene">
-      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObject\08. Skill">
       <UniqueIdentifier>{dd92fb56-72aa-4706-b3cc-104a9242b096}</UniqueIdentifier>
     </Filter>
@@ -186,6 +183,9 @@
     </Filter>
     <Filter Include="02. GameObject\09. Effect\00. SkillEffect">
       <UniqueIdentifier>{d6f088e1-54eb-47f5-8763-482968f354dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\01. EffectScene">
+      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -546,10 +546,5 @@
     <None Include="Shaders\UI.hlsl">
       <Filter>93. Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders\Effect.hlsl">
-      <Filter>93. Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

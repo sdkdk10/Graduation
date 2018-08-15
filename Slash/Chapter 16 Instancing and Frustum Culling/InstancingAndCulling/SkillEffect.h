@@ -8,7 +8,6 @@ class CSkillEffect
 	: public CGameObject
 {
 	explicit CSkillEffect(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, string name);
-	explicit CSkillEffect(CSkillEffect& other);
 	virtual ~CSkillEffect();
 
 public:
@@ -22,8 +21,6 @@ public:
 	string					GetName() { return m_strName; }
 	void					SetPlay(bool _isPlay);
 	void					Set_Enable(bool isEnable);
-	void					Set_ParentMatrix(XMFLOAT4X4* f4x4Parent);
-	void					Set_Parent(CGameObject* pObj);
 
 private:
 	list<CEffect*>			m_EffectList;
@@ -32,7 +29,6 @@ private:
 
 public:
 	static CSkillEffect* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, string name);
-	static CSkillEffect* Create(CSkillEffect& other);
 
 private:
 	virtual void Free();
