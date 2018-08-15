@@ -25,9 +25,6 @@
     <Filter Include="00. Dialog\00. MapTool">
       <UniqueIdentifier>{fedae913-4f47-490c-afa6-f7bb8e0c0fe4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. Dialog\01. View">
-      <UniqueIdentifier>{2b49c894-5022-42cd-9dcb-c0f50144b92a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. App">
       <UniqueIdentifier>{cd6d8f36-3e5e-46b9-a1ef-bb22bb9a89d7}</UniqueIdentifier>
     </Filter>
@@ -55,12 +52,6 @@
     <Filter Include="96. Component\03. Camera">
       <UniqueIdentifier>{825229db-dc40-436a-8cb8-71aab25895dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="95. Manager">
-      <UniqueIdentifier>{2bc3dde1-3d6b-4836-8a8c-215887419806}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="95. Manager\01. InputDevice">
-      <UniqueIdentifier>{72ad9a47-3bef-4b78-88af-530e517d147f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. GameObject">
       <UniqueIdentifier>{13b4b61b-114b-4862-a201-47dc3cab55c2}</UniqueIdentifier>
     </Filter>
@@ -72,9 +63,6 @@
     </Filter>
     <Filter Include="96. Component\01. Renderer">
       <UniqueIdentifier>{0af91fee-a65b-4f3a-9784-2e97381c341f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="95. Manager\00. ObjectManager">
-      <UniqueIdentifier>{8fb4d17e-bbae-4f53-8a72-7fb8106d082b}</UniqueIdentifier>
     </Filter>
     <Filter Include="00. App\00. MainApp">
       <UniqueIdentifier>{2f79400b-10bc-4a83-b67b-0def00136e0e}</UniqueIdentifier>
@@ -100,11 +88,47 @@
     <Filter Include="01. GameObject\01. Terrain">
       <UniqueIdentifier>{e74a18c1-9434-4a7f-805b-6e128197c138}</UniqueIdentifier>
     </Filter>
-    <Filter Include="96. Component\99. Manager\00. Texture_Manager">
-      <UniqueIdentifier>{706bda7f-2a77-4353-a456-04993094a412}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. GameObject\02. SkyBox">
       <UniqueIdentifier>{9581357e-1afa-4c3c-8b67-9ded6c2362fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92. Shader">
+      <UniqueIdentifier>{b458599e-76d8-4d61-acb8-720d2dbfd128}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. GameObject\03. Skill">
+      <UniqueIdentifier>{8ab7f43c-989c-4fa4-b2cc-80a620334d1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Manager">
+      <UniqueIdentifier>{d1bd6cf4-be62-42cc-8a6a-11368868298d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Manager\00. ObjectManager">
+      <UniqueIdentifier>{8fb4d17e-bbae-4f53-8a72-7fb8106d082b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Manager\01. InputDevice">
+      <UniqueIdentifier>{72ad9a47-3bef-4b78-88af-530e517d147f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. Component\99. Manager\01. Texture_Manager">
+      <UniqueIdentifier>{706bda7f-2a77-4353-a456-04993094a412}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Dialog\01. EffectTool">
+      <UniqueIdentifier>{62215414-65b0-44ff-baf1-1e3476c504da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Dialog\99. View">
+      <UniqueIdentifier>{2b49c894-5022-42cd-9dcb-c0f50144b92a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. GameObject\99. Basic">
+      <UniqueIdentifier>{bff0a0c7-f7d8-4e31-a362-1c1f5324ff3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. GameObject\04. Effect">
+      <UniqueIdentifier>{65ce4715-9008-4dbc-87fd-349df28e8c85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. GameObject\03. Skill\00.SkillEffect">
+      <UniqueIdentifier>{abaf5dd8-6f80-4c53-9bcc-2d126dcdbac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. Component\02. Mesh\02. DynamicMesh">
+      <UniqueIdentifier>{c7c57aa9-99f7-4b2d-9252-1f03ae53749a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. GameObject\05. Player">
+      <UniqueIdentifier>{6e6f7fb7-5e8e-4724-a024-f5c0fbf8d245}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -139,7 +163,7 @@
       <Filter>00. Dialog\00. MapTool</Filter>
     </ClInclude>
     <ClInclude Include="View_0.h">
-      <Filter>00. Dialog\01. View</Filter>
+      <Filter>00. Dialog\99. View</Filter>
     </ClInclude>
     <ClInclude Include="d3dApp.h">
       <Filter>00. App</Filter>
@@ -201,9 +225,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>01. GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Component_Manager.h">
-      <Filter>96. Component\99. Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>96. Component\01. Renderer</Filter>
     </ClInclude>
@@ -229,10 +250,34 @@
       <Filter>01. GameObject\01. Terrain</Filter>
     </ClInclude>
     <ClInclude Include="Texture_Manager.h">
-      <Filter>96. Component\99. Manager\00. Texture_Manager</Filter>
+      <Filter>96. Component\99. Manager\01. Texture_Manager</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>01. GameObject\02. SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill_Billboard.h">
+      <Filter>01. GameObject\03. Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Component_Manager.h">
+      <Filter>96. Component\99. Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectTool.h">
+      <Filter>00. Dialog\01. EffectTool</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicLine.h">
+      <Filter>01. GameObject\99. Basic</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>01. GameObject\04. Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillEffect.h">
+      <Filter>01. GameObject\03. Skill\00.SkillEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicMesh.h">
+      <Filter>96. Component\02. Mesh\02. DynamicMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>01. GameObject\05. Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -258,7 +303,7 @@
       <Filter>00. Dialog\00. MapTool</Filter>
     </ClCompile>
     <ClCompile Include="View_0.cpp">
-      <Filter>00. Dialog\01. View</Filter>
+      <Filter>00. Dialog\99. View</Filter>
     </ClCompile>
     <ClCompile Include="d3dApp.cpp">
       <Filter>00. App</Filter>
@@ -302,9 +347,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>01. GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="Component_Manager.cpp">
-      <Filter>96. Component\99. Manager</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>96. Component\01. Renderer</Filter>
     </ClCompile>
@@ -330,10 +372,34 @@
       <Filter>01. GameObject\01. Terrain</Filter>
     </ClCompile>
     <ClCompile Include="Texture_Manager.cpp">
-      <Filter>96. Component\99. Manager\00. Texture_Manager</Filter>
+      <Filter>96. Component\99. Manager\01. Texture_Manager</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>01. GameObject\02. SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill_Billboard.cpp">
+      <Filter>01. GameObject\03. Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Component_Manager.cpp">
+      <Filter>96. Component\99. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectTool.cpp">
+      <Filter>00. Dialog\01. EffectTool</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicLine.cpp">
+      <Filter>01. GameObject\99. Basic</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>01. GameObject\04. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillEffect.cpp">
+      <Filter>01. GameObject\03. Skill\00.SkillEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicMesh.cpp">
+      <Filter>96. Component\02. Mesh\02. DynamicMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>01. GameObject\05. Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -362,5 +428,19 @@
     <None Include="res\MFCApplication5.rc2">
       <Filter>99. Default</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Common.hlsl">
+      <Filter>92. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Default.hlsl">
+      <Filter>92. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\color.hlsl">
+      <Filter>92. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Effect.hlsl">
+      <Filter>92. Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

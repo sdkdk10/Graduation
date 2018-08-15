@@ -5,7 +5,7 @@
 #include "MFCApplication5.h"
 #include "View_0.h"
 
-
+;
 // CView_0
 
 IMPLEMENT_DYNCREATE(CView_0, CView)
@@ -63,7 +63,6 @@ void CView_0::Loop(const GameTimer & gt)
 void CView_0::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();
-
 	m_MainApp.Initialize();
 
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
@@ -78,3 +77,10 @@ void CView_0::OnInitialUpdate()
 //	cs.cy = 600;
 //	return CView::PreCreateWindow(cs);
 //}
+
+
+void CView_0::OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	int i = 0;
+}

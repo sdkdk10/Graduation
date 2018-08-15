@@ -24,8 +24,20 @@ float4 PS(VertexOut_UI pin) : SV_Target
 		discard;
 	//litColor = ceil(litColor * 5) / 5.0f;
 	return litColor;
-
 }
 
+float4 PS_Change(VertexOut_UI pin) : SV_Target
+{
+	//float4 litColor = gCubeMap.Sample(gsamLinearWrap, pin.PosL);
+	//float4 litColor = gDiffuseMap_Default[0].Sample(gsamAnisotropicWrap, pin.TexC);
+	MaterialData matData = gMaterialData_Default[0];
+	float4 diffuseAlbedo = matData.DiffuseAlbedo;
 
+	diffuseAlbedo *= gDiffuseMap_Default[0].Sample(gsamAnisotropicWrap, pin.TexC);
 
+	if (diffuseAlbedo.a < 0.2)
+		discard;
+	//litColor = ceil(litColor * 5) / 5.0f;
+	return diffuseAlbedo;
+
+}

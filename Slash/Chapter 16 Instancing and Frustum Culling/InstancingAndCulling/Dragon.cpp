@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Management.h"
 #include "Component_Manager.h"
+#include "Renderer.h"
 #include "Texture_Manager.h"
 
 Dragon::Dragon(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
@@ -85,6 +86,8 @@ bool Dragon::Update(const GameTimer & gt)
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }
 
@@ -92,7 +95,7 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable)
 	{
-		AnimStateMachine.SetTimerTrueFalse();
+		AnimStateMachine->SetTimerTrueFalse();
 
 
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
@@ -124,8 +127,8 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 
 		//int iTest = (int)pMesh->m_fTest;
-		int iTest = AnimStateMachine.GetCurAnimFrame();
-		int AnimaState = AnimStateMachine.GetAnimState();
+		int iTest = AnimStateMachine->GetCurAnimFrame();
+		int AnimaState = AnimStateMachine->GetAnimState();
 
 
 
@@ -148,15 +151,15 @@ HRESULT Dragon::Initialize()
 	if (nullptr == tex)
 		return E_FAIL;
 
-	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
+	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
 
 
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
-	Mat->MatCBIndex = 4; 
+	Mat->MatCBIndex = m_iMyObjectID; 
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -193,7 +196,7 @@ HRESULT Dragon::Initialize()
 
 void Dragon::Animate(const GameTimer & gt)
 {
-	AnimStateMachine.AnimationStateUpdate(gt);
+	AnimStateMachine->AnimationStateUpdate(gt);
 
 }
 

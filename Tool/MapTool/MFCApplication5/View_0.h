@@ -31,6 +31,7 @@ protected:
 public:
 	virtual void OnInitialUpdate();
 	//virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/);
 };
 
 

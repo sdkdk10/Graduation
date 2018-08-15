@@ -57,6 +57,8 @@ HRESULT CManagement::Change_Scene(CScene* pScene)
 
 	m_pCurScene = pScene;
 
+	m_pCurScene->Get_MainCam()->Set_Object(CManagement::GetInstance()->Get_CurScene()->Find_Object(L"Layer_Player", 0));
+
 	return S_OK;
 }
 

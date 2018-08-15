@@ -78,6 +78,25 @@ static DirectX::XMFLOAT3& XMFloat3Normalize(DirectX::XMFLOAT3& f3Src)
 	return f3Src;
 }
 
+// XMFLOAT4
+static void operator+=(DirectX::XMFLOAT4& f4Src, const DirectX::XMFLOAT4& f4Desc)
+{
+	f4Src.x += f4Desc.x;
+	f4Src.y += f4Desc.y;
+	f4Src.z += f4Desc.z;
+	f4Src.w += f4Desc.w;
+}
+
+static void operator+=(DirectX::XMFLOAT4& f4Src, const DirectX::XMVECTOR& vDesc)
+{
+	DirectX::XMFLOAT4 f4Desc;
+	XMStoreFloat4(&f4Desc, vDesc);
+	f4Src.x += f4Desc.x;
+	f4Src.y += f4Desc.y;
+	f4Src.z += f4Desc.z;
+	f4Src.w += f4Desc.w;
+}
+
 // XMFLOAT4X4
 static void operator*=(DirectX::XMFLOAT4X4& f4x4Src, const DirectX::XMFLOAT4X4& f4x4Desc)
 {

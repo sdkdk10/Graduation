@@ -6,6 +6,8 @@
 #include "Texture_Manager.h"
 #include "Component_Manager.h"
 #include "Define.h"
+#include "Management.h"
+#include "Renderer.h"
 
 
 
@@ -52,6 +54,8 @@ bool SkyBox::Update(const GameTimer & gt)
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
 	return true;
 }
 
@@ -95,7 +99,7 @@ HRESULT SkyBox::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
-	Mat->MatCBIndex = 6; //0;
+	Mat->MatCBIndex = m_iMyObjectID; //0;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);

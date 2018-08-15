@@ -5,6 +5,7 @@
 #include "TestScene.h"
 #include "Player.h"
 #include "Skeleton.h"
+#include "Spider.h"
 #include "GameTimer_Manager.h"
 
 IMPLEMENT_SINGLETON(CNetwork)
@@ -89,32 +90,9 @@ void CNetwork::SendDirKeyPacket(DWORD& keyInput, XMFLOAT4X4& world)
 	send_wsabuf.len = sizeof(cs_packet_dir);
 	DWORD iobyte;
 
-	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-	XMFLOAT3	m_xmf3Height = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	XMFLOAT3	m_xmf3Width = XMFLOAT3(1.0f, 0.0f, 0.0f);
-
 	my_packet->type = keyInput;
 
-	if (keyInput & CS_DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fMoveSpeed);
-	if (keyInput & CS_DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fMoveSpeed);
-	if (keyInput & CS_DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fMoveSpeed);
-	if (keyInput & CS_DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fMoveSpeed);
-
-	// m_MovingRefletVector 이게 갱신되어야 할거 같은데..
-	float cosCeta = Vector3::DotProduct(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_MovingRefletVector, xmf3Shift);
-	if (cosCeta < 0)
-	{
-		xmf3Shift = Vector3::Subtract(xmf3Shift, Vector3::MultiplyScalr(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_MovingRefletVector,
-			Vector3::DotProduct(xmf3Shift, CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_MovingRefletVector)));
-		keyInput |= CS_COLLSION;
-		my_packet->type = keyInput;
-	}
-	my_packet->Shift = xmf3Shift;
-	my_packet->World = world;
 	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
-
-	//cout << my_packet->look_x << " " << my_packet->look_y << " " << my_packet->look_z << endl;
-
 	if (ret) {
 		int error_code = WSAGetLastError();
 		printf("Error while sending packet [%d]", error_code);
@@ -158,204 +136,124 @@ void CNetwork::ProcessPacket(char * ptr)
 {
 	switch (ptr[1])
 	{
-	case SC_PUT_PLAYER:
-	{
-		sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
-		static bool first_time = true;
-		int id = my_packet->id;
-		if (first_time) {
-			first_time = false;
-			myid = my_packet->id;
-		}
-		if (myid == id)
+		case SC_PUT_PLAYER:
 		{
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-		}
-		else
-		{
-			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = true;
-			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->Rotate(0.0f, fRotateSpeed * my_packet->RotateNum
-				/** CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->DeltaTime() * 20.f*/, 0.0f);
-		}
-		break;
-	}
-	case SC_POS:
-	{
-		sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
-		int id = my_packet->id;
-		if (myid == id)
-		{
-			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-			//dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetCurState(WALK);
-			//if (dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetCurState()
-			//	!= dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetPreState())
+			sc_packet_put_player * my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
+			static bool first_time = true;
+			int id = my_packet->id;
+			if (first_time) {
+				first_time = false;
+				myid = my_packet->id;
+			}
+			if (myid == id)
 			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = true;
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->Rotation(0.f, 0.f, my_packet->lookDegree);
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(my_packet->state);
+			}
+			else if (id < NPC_START)
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = true;
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->Rotation(0.f, 0.f, my_packet->lookDegree);
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(my_packet->state);
+			}
+			else
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = true;
+				CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->Rotation(0.f, my_packet->lookDegree, 0.0f);
+				CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetObjectAnimState(my_packet->state);
+			}
+			break;
+		}
+		case SC_POS:
+		{
+			sc_packet_pos * my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
+			int id = my_packet->id;
+			if (myid == id)
+			{
+				dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 				dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetObjectAnimState(WALK);
-				//dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetPreState(WALK);
 			}
-
-		}
-		else
-		{
-			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetPosition(my_packet->x, my_packet->y, my_packet->z);
-			//dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetCurState(WALK);
-			//if (dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->GetCurState()
-			//	!= dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->GetPreState())
+			else if (id < NPC_START)
 			{
+				dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 				dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetObjectAnimState(WALK);
-				//dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetPreState(WALK);
 			}
-		}
-		break;
-	}
-	case SC_ROTATE:
-	{
-		sc_packet_rotate * my_packet = reinterpret_cast<sc_packet_rotate *>(ptr);
-		int id = my_packet->id;
-		if (myid == id)
-		{
-			if (my_packet->IsClockWise)
-				dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->Rotate(0.0f, -fRotateSpeed
-					/** CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->DeltaTime() * 20.f*/, 0.0f);
 			else
-				dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->Rotate(0.0f, fRotateSpeed
-					/** CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->DeltaTime() * 20.f*/, 0.0f);
+			{
+				dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->SetObjectAnimState(WALK);
+			}
+			break;
 		}
-		else
+		case SC_ROTATE:
 		{
-			if (my_packet->IsClockWise)
-				dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->Rotate(0.0f, -fRotateSpeed
-					/** CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->DeltaTime() * 20.f*/, 0.0f);
+			sc_packet_look_degree * my_packet = reinterpret_cast<sc_packet_look_degree *>(ptr);
+			int id = my_packet->id;
+			if (myid == id)
+			{
+				dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->Rotation(0.f, 0.f, my_packet->lookDegree);
+				//cout <<  int(my_packet->lookDegree) << endl;
+			}
+			else if (id < NPC_START)
+				dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->Rotation(0.f, 0.f, my_packet->lookDegree);
 			else
-				dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->Rotate(0.0f, fRotateSpeed
-					/** CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS")->DeltaTime() * 20.f*/, 0.0f);
+			{
+				dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->Rotation(0.f, my_packet->lookDegree, 0.f);
+			}
+			break;
 		}
-		break;
-	}
-	case SC_STATE:
-	{
-		sc_packet_state * my_packet = reinterpret_cast<sc_packet_state *>(ptr);
-		int id = my_packet->id;
-		if (myid == id)
+		case SC_STATE:
 		{
-			//dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetCurState(my_packet->state);
-			//if (dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetCurState()
-			//	!= dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetPreState())
+			sc_packet_state * my_packet = reinterpret_cast<sc_packet_state *>(ptr);
+			int id = my_packet->id;
+			if (myid == id)
 			{
 				dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetObjectAnimState(my_packet->state);
-				//dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetPreState(my_packet->state);
 			}
-		}
-		else
-		{
-			//dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetCurState(my_packet->state);
-			//if (dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->GetCurState()
-			//	!= dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->GetPreState())
+			else if (id < NPC_START)
 			{
 				dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetObjectAnimState(my_packet->state);
-				//dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetPreState(my_packet->state);
 			}
+			else
+			{
+				dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->SetObjectAnimState(my_packet->state);
+			}
+			break;
 		}
-		break;
+		case SC_REMOVE_OBJECT:
+		{
+			sc_packet_remove_object *my_packet = reinterpret_cast<sc_packet_remove_object *>(ptr);
+			int id = my_packet->id;
+			if (myid == id)
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
+			else if (id < NPC_START)
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
+			else
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
+			}
+			break;
+		}
+		case SC_HP:
+		{
+			sc_packet_hp *my_packet = reinterpret_cast<sc_packet_hp *>(ptr);
+			int id = my_packet->id;
+			unsigned short hp = my_packet->hp;
+			if (myid == id)
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(hp);
+			//else if (id < NPC_START)
+			//	CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
+			//else
+			//{
+			//	CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
+			//}
+			break;
+		}
 	}
-	case SC_REMOVE_PLAYER:
-	{
-		sc_packet_remove_player *my_packet = reinterpret_cast<sc_packet_remove_player *>(ptr);
-		int id = my_packet->id;
-		if (myid == id)
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
-		else
-			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
-		break;
-	}
-	}
-
-	//switch (ptr[1])
-	//{
-	//case SC_PUT_PLAYER:
-	//{
-	//   sc_packet_put_player *my_packet = reinterpret_cast<sc_packet_put_player *>(ptr);
-	//   int id = my_packet->id;
-	//   if (first_time) {
-	//      first_time = false;
-	//      g_myid = id; // 처음에 아이디 보내줄때 나의 아이디 설정하는 듯
-	//   }
-	//   if (id == g_myid) {
-	//      player.x = my_packet->x;
-	//      player.y = my_packet->y;
-	//      player.attr |= ATTR_VISIBLE;
-	//   }
-	//   else if (id < NPC_START) {
-	//      skelaton[id].x = my_packet->x;
-	//      skelaton[id].y = my_packet->y;
-	//      skelaton[id].attr |= ATTR_VISIBLE;
-	//   }
-	//   else {
-	//      npc[id - NPC_START].x = my_packet->x;
-	//      npc[id - NPC_START].y = my_packet->y;
-	//      npc[id - NPC_START].attr |= BOB_ATTR_VISIBLE;
-	//   }*/
-	//   break;
-	//}
-	//case SC_POS:
-	//{
-	//   sc_packet_pos *my_packet = reinterpret_cast<sc_packet_pos *>(ptr);
-	//   int other_id = my_packet->id;
-	//   if (other_id == g_myid) {
-	//      g_left_x = my_packet->x - 4;
-	//      g_top_y = my_packet->y - 4;
-	//      player.x = my_packet->x;
-	//      player.y = my_packet->y;
-	//   }
-	//   else if (other_id < NPC_START) {
-	//      skelaton[other_id].x = my_packet->x;
-	//      skelaton[other_id].y = my_packet->y;
-	//   }
-	//   /*else {
-	//      npc[other_id - NPC_START].x = my_packet->x;
-	//      npc[other_id - NPC_START].y = my_packet->y;
-	//   }*/
-	//   break;
-	//}
-
-	//case SC_REMOVE_PLAYER:
-	//{
-	//   sc_packet_remove_player *my_packet = reinterpret_cast<sc_packet_remove_player *>(ptr);
-	//   int other_id = my_packet->id;
-	//   if (other_id == g_myid) {
-	//      player.Attr &= ~ATTR_VISIBLE;
-	//   }
-	//   else if (other_id < NPC_START) {
-	//      skelaton[other_id].Attr &= ~ATTR_VISIBLE;
-	//   }
-	//   else {
-	//      npc[other_id - NPC_START].attr &= ~BOB_ATTR_VISIBLE;
-	//   }*/
-	//   break;
-	//}
-	//case SC_CHAT:
-	//{
-	//   sc_packet_chat *my_packet = reinterpret_cast<sc_packet_chat *>(ptr);
-	//   int other_id = my_packet->id;
-	//   if (other_id == g_myid) {
-	//      wcsncpy_s(player.message, my_packet->message, 256);
-	//      player.message_time = GetTickCount();
-	//   }
-	//   else if (other_id < NPC_START) {
-	//      wcsncpy_s(skelaton[other_id].message, my_packet->message, 256);
-	//      skelaton[other_id].message_time = GetTickCount();
-	//   }
-	//   else {
-	//      wcsncpy_s(npc[other_id - NPC_START].message, my_packet->message, 256);
-	//      npc[other_id - NPC_START].message_time = GetTickCount();
-	//   }
-	//   break;
-
-	//}*/
-	//default:
-	//   printf("Unknown PACKET type [%d]\n", ptr[1]);
-	//}
 }
 
 void CNetwork::Free()

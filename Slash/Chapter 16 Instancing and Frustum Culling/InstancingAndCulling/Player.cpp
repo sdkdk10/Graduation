@@ -6,7 +6,9 @@
 #include "Network.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
+#include "Effect_Manager.h"
 #include "Management.h"
+#include "Renderer.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -28,7 +30,7 @@ Player::~Player()
 
 void Player::Animate(const GameTimer & gt)
 {
-	if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack1State)
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack1State)
 	{
 		if (GetAnimateMachine()->GetCurAnimFrame() == 0)
 		{
@@ -42,122 +44,39 @@ void Player::Animate(const GameTimer & gt)
 		{
 			m_bAttackMotionForSound = true;
 		}
+// > =======================Test===========================
+		//if (GetAnimateMachine()->GetCurAnimFrame() == 8)
+		//{
+		//	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+		//	CNetwork::GetInstance()->SendStopPacket();
+		//}
+// > ===========================================================
 
 	}
-	if (GetHp() < 0)
-	{
-		SetObjectAnimState(AnimStateMachine.DeadState);
-		AnimStateMachine.AnimationStateUpdate(gt);
-		return;
-	}
-	AnimStateMachine.AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
-
-	DWORD dwDirection = 0;
-	static bool IsPlayerMoved = false;
-
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_FORWARD;
-	else if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_FORWARD;
-
-	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_BACKWARD;
-	else if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_BACKWARD;
-
-	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_LEFT;
-	else if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_LEFT;
-
-	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_RIGHT;
-	else if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_UP) dwDirection &= ~DIR_RIGHT;
-
-	//m_curKeyInputTime = gt.TotalTime();
-	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
-	{
-		if (0 == dwDirection)
-		{
-			if (IsPlayerMoved)
-			{
-				CNetwork::GetInstance()->SendStopPacket();
-				IsPlayerMoved = false;
-			}
-		}
-		else
-		{
-
-			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection, World);
-			IsPlayerMoved = true;
-		}
-		//m_preKeyInputTime = gt.TotalTime();
-	}
-
-	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-		CNetwork::GetInstance()->SendAttackPacket();
-	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	//if (GetHp() < 0)
 	//{
-	//	//KeyInputTest = 2;
-	//	if (AnimStateMachine.GetAnimState() != AnimStateMachine.Attack1State)
-	//	{
-	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack1State);
-	//		
-	//		//KeyInputTest = 2;
-	//	}
-	//	else
-	//	{
-	//		AnimStateMachine.SetAnimState(AnimStateMachine.Attack3State);
-
-
-	//		//KeyInputTest = 4;//3;
-	//		bAttackMotionTest = true;
-	//	}
-
-	//	if (bAttackMotionTest == false)
-	//	{
-	//		if (AnimStateMachine.GetAnimState() == AnimStateMachine.Attack2State)
-	//		{
-
-	//		}
-	//	}
-
-
+	//	SetObjectAnimState(AnimStateMachine->DeadState);
+	//	AnimStateMachine->AnimationStateUpdate(gt);
+	//	return;
 	//}
-	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-	}
-	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-	}
 
-	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
-	{
-		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
-		XMVECTOR q = XMLoadFloat4(&Test);
-	}
 
-	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
-	{
-		
-		SetHp(GetHp() - 1.0f);
 
-		//cout << GetHp() << endl;
-	}
-	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
-	{
+	AnimStateMachine->AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
 
-		SetHp(GetHp() + 1.0f);
-		//cout << GetHp() << endl;
-
-	}
+	KeyInput(gt);
 
 	//if (CInputDevice::GetInstance()->AnyKeyInput())
 	//{
 	//	
-	//	if (!AnimStateMachine.bTimerAttack1 &&
-	//		!AnimStateMachine.bTimerAttack2 &&
-	//		!AnimStateMachine.bTimerAttack3 /*&&
+	//	if (!AnimStateMachine->bTimerAttack1 &&
+	//		!AnimStateMachine->bTimerAttack2 &&
+	//		!AnimStateMachine->bTimerAttack3 /*&&
 	//		!pTestMesh->bTimerTestWalk*/
 	//		)
 	//	{
 	//		
-	//		AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
+	//		AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
 
 	//	//	KeyInputTest = 0;
 
@@ -172,7 +91,7 @@ void Player::Animate(const GameTimer & gt)
 
 bool Player::Update(const GameTimer & gt)
 {
-	
+	//return true;
 	CGameObject::Update(gt);
 
 	Animate(gt);
@@ -246,13 +165,15 @@ bool Player::Update(const GameTimer & gt)
 	// Next FrameResource need to be updated too.
 	//mat->NumFramesDirty--;
 
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
 	return true;
 }
 
 void Player::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	AnimStateMachine.SetTimerTrueFalse(); //어떤 애니메이션을 동작 시켜주는 지 
+	//return;
+	AnimStateMachine->SetTimerTrueFalse(); //어떤 애니메이션을 동작 시켜주는 지 
 
 	Render_Head(cmdList);
 	Render_Body(cmdList);
@@ -265,8 +186,15 @@ HRESULT Player::Initialize()
 
 	if (nullptr == m_pMesh)
 		return E_FAIL;
+
+	// > 테스트용으로 넣어둠
+	int test[AnimateStateMachine::STATE_END] = { 0, };
+	AnimStateMachine = AnimateStateMachine_Player::Create(this, L"Warrior", test, test);
+	if (AnimStateMachine == nullptr)
+		return E_FAIL;
+
 	
-	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
+	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("VillagerTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
 	if (tex == nullptr)
@@ -274,13 +202,14 @@ HRESULT Player::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
-	Mat->MatCBIndex = 0;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = tex->Num;			// 텍스쳐 힙에 저장ㄷ외나 수아아ㅇ아ㅏ 아하 지희야그럼 이거이렇게바꿔야함 
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
 	XMStoreFloat4x4(&World, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
+
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 
@@ -306,7 +235,8 @@ HRESULT Player::Initialize()
 	Element_Right.BaseVertexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].BaseVertexLocation;
 
 
-
+	m_xmf3Scale = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	m_xmf3Rot = XMFLOAT3(1.7f, 0.f, 3.14f);
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -359,8 +289,8 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][1];
 
-	int iTest = AnimStateMachine.GetCurAnimFrame();
-	int KeyInputTest = AnimStateMachine.GetAnimState();
+	int iTest = AnimStateMachine->GetCurAnimFrame();
+	int KeyInputTest = AnimStateMachine->GetAnimState();
 
 
 	//cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1, Element_Head.StartIndexLocation, Element_Head.BaseVertexLocation , 0);
@@ -399,8 +329,8 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][1];
 
-	int iTest = AnimStateMachine.GetCurAnimFrame();
-	int KeyInputTest = AnimStateMachine.GetAnimState();
+	int iTest = AnimStateMachine->GetCurAnimFrame();
+	int KeyInputTest = AnimStateMachine->GetAnimState();
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
 		Element_Body.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexAnimOffset[1][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
@@ -436,8 +366,8 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][1];
 
-	int iTest = AnimStateMachine.GetCurAnimFrame();
-	int KeyInputTest = AnimStateMachine.GetAnimState();
+	int iTest = AnimStateMachine->GetCurAnimFrame();
+	int KeyInputTest = AnimStateMachine->GetAnimState();
 
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
@@ -499,6 +429,11 @@ void Player::SetPosition(float x, float y, float z)
 	World._41 = x;
 	World._42 = y;
 	World._43 = z;
+
+	//cout << World._11 << " " << World._12 << " " << World._13 << " " << World._14 << endl;
+	//cout << World._21 << " " << World._22 << " " << World._23 << " " << World._24 << endl;
+	//cout << World._31 << " " << World._32 << " " << World._33 << " " << World._34 << endl;
+	//cout << World._41 << " " << World._42 << " " << World._43 << " " << World._44 << endl << endl;
 }
 
 void Player::SetPosition(XMFLOAT3 xmf3Position)
@@ -553,6 +488,106 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 }
 
+void Player::KeyInput(const GameTimer & gt)
+{
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->DeadState)
+		return;
+
+	if (CManagement::GetInstance()->Get_IsStop() == true)
+		return;
+	DWORD dwDirection = 0;
+	static bool IsPlayerMoved = false;
+
+	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_UP;
+	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_DOWN;
+
+	//m_curKeyInputTime = gt.TotalTime();
+	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
+	{
+		if (0 == dwDirection)
+		{
+			if (IsPlayerMoved)
+			{
+				CNetwork::GetInstance()->SendStopPacket();
+				IsPlayerMoved = false;
+			}
+		}
+		else
+		{
+			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection, World);
+			IsPlayerMoved = true;
+		}
+		//m_preKeyInputTime = gt.TotalTime();
+	}
+
+	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	{
+		if(m_bIsConnected)
+			CNetwork::GetInstance()->SendAttackPacket();
+	}
+	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+	//{
+	//	//KeyInputTest = 2;
+	//	if (AnimStateMachine->GetAnimState() != AnimStateMachine->Attack1State)
+	//	{
+	//		AnimStateMachine->SetAnimState(AnimStateMachine->Attack1State);
+	//		
+	//		//KeyInputTest = 2;
+	//	}
+	//	else
+	//	{
+	//		AnimStateMachine->SetAnimState(AnimStateMachine->Attack3State);
+
+
+	//		//KeyInputTest = 4;//3;
+	//		bAttackMotionTest = true;
+	//	}
+
+	//	if (bAttackMotionTest == false)
+	//	{
+	//		if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack2State)
+	//		{
+
+	//		}
+	//	}
+
+
+	//}
+	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+	{
+		//KeyInputTest = 2;
+	}
+	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
+	{
+		//KeyInputTest = 2;
+	}
+
+	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
+	{
+		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
+		XMVECTOR q = XMLoadFloat4(&Test);
+	}
+
+	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
+	{
+
+		SetHp(GetHp() - 1.0f);
+
+		//cout << GetHp() << endl;
+	}
+	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
+	{
+
+		SetHp(GetHp() + 1.0f);
+		//cout << GetHp() << endl;
+
+	}
+}
+
 //void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
 //{
 //	
@@ -598,3 +633,197 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 //
 //	
 //}
+
+//--------------------------------------- AnimateStateMachine-----------------------------------------
+
+AnimateStateMachine_Player::AnimateStateMachine_Player(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
+	: m_pMachineName(pMachineName)
+	, m_pObject(pObj)
+{
+	for (int i = 0; i < AnimateStateMachine::STATE_END; ++i)
+	{
+		m_SoundFrame[i] = SoundFrame[i];
+		m_EffectFrame[i] = EffectFrame[i];
+		m_IsSoundPlay[i] = false;
+		m_IsEffectPlay[i] = false;
+	}
+}
+
+AnimateStateMachine_Player::~AnimateStateMachine_Player()
+{
+}
+
+HRESULT AnimateStateMachine_Player::Initialize()
+{
+	return S_OK;
+}
+
+// > ---------------------------- StateMachine_Player -----------------------------------
+void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
+{
+	if (bTimerIdle == true)
+	{
+		m_fAnimationKeyFrameIndex += gt.DeltaTime() * 25;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
+		if (m_fAnimationKeyFrameIndex > (*vecAnimFrame)[0])
+		{
+			bTimerIdle = false;
+
+			m_fAnimationKeyFrameIndex = 0;
+		}
+	}
+
+
+	if (bTimerWalk == true)
+	{
+		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 45;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+		if (m_fAnimationKeyFrameIndex_Walk > (*vecAnimFrame)[1])
+		{
+			bTimerWalk = false;
+			m_fAnimationKeyFrameIndex_Walk = 0;
+		}
+
+	}
+
+
+	if (bTimerAttack1 == true)
+	{
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() *20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK1]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK1])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			cout << "스킬!" << endl;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+			cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[2])
+		{
+			bTimerAttack1 = false;
+			m_fAnimationKeyFrameIndex_Attack1 = 0.f;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+	}
+
+
+	if (bTimerAttack2 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack2 += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK2])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK2])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])
+		{
+			bTimerAttack2 = false;
+			m_fAnimationKeyFrameIndex_Attack2 = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = false;
+		}
+
+
+	}
+
+
+
+	if (bTimerAttack3 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack3 += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK3])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK3])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[4])
+		{
+			bTimerAttack3 = false;
+			m_fAnimationKeyFrameIndex_Attack3 = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = false;
+		}
+
+	}
+
+	if (bTimerDead == true)
+	{
+		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
+		if (m_bIsLife == true)
+			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
+		{
+			m_bIsLife = false;
+			bTimerDead = false;
+			//m_fAnimationKeyFrameIndex_Dead = 0;
+		}
+
+	}
+
+
+
+
+}
+
+AnimateStateMachine_Player * AnimateStateMachine_Player::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
+{
+	AnimateStateMachine_Player* pInstance = new AnimateStateMachine_Player(pObj, pMachineName, SoundFrame, EffectFrame);
+
+	if (FAILED(pInstance->Initialize()))
+	{
+		MSG_BOX(L"AnimateStateMachine_Player Created Failed");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void AnimateStateMachine_Player::Free()
+{
+}

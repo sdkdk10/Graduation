@@ -169,14 +169,26 @@
     <Filter Include="03. Mesh\05. BillboardMesh">
       <UniqueIdentifier>{00786757-6296-433b-b8f6-6652b07791ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Scene\01. EffectScene">
-      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObject\08. Skill">
       <UniqueIdentifier>{dd92fb56-72aa-4706-b3cc-104a9242b096}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObject\08. Skill\00. Skill_Billboard">
       <UniqueIdentifier>{c8a8db26-5d2f-4501-bff1-a994a10eb0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94. Manager\04. Effect_Manager">
+      <UniqueIdentifier>{e18249bf-41eb-4fb5-bb68-15e146f73ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\09. Effect">
+      <UniqueIdentifier>{75946594-71ca-4ceb-b073-06c3524a06c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\09. Effect\00. SkillEffect">
+      <UniqueIdentifier>{d6f088e1-54eb-47f5-8763-482968f354dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\01. EffectScene">
+      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\02. SelectScene">
+      <UniqueIdentifier>{6462773b-450e-4cdf-a42d-6423b51de9f9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -325,6 +337,28 @@
     <ClCompile Include="Skill_Billboard.cpp">
       <Filter>02. GameObject\08. Skill\00. Skill_Billboard</Filter>
     </ClCompile>
+    <ClCompile Include="Effect_Manager.cpp">
+      <Filter>94. Manager\04. Effect_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>02. GameObject\09. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillEffect.cpp">
+      <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryReader.cpp" />
+    <ClCompile Include="ChangeUI.cpp" />
+    <ClCompile Include="DescriptorHeap.cpp" />
+    <ClCompile Include="DirectXHelpers.cpp" />
+    <ClCompile Include="GraphicsMemory.cpp" />
+    <ClCompile Include="LinearAllocator.cpp" />
+    <ClCompile Include="ResourceUploadBatch.cpp" />
+    <ClCompile Include="SpriteBatch.cpp" />
+    <ClCompile Include="SpriteFont.cpp" />
+    <ClCompile Include="VertexTypes.cpp" />
+    <ClCompile Include="SelectScene.cpp">
+      <Filter>01. Scene\02. SelectScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\d3dApp.h">
@@ -457,9 +491,6 @@
     <ClInclude Include="Network.h">
       <Filter>91. Network</Filter>
     </ClInclude>
-    <ClInclude Include="Protocol.h">
-      <Filter>98. Header</Filter>
-    </ClInclude>
     <ClInclude Include="MapObject.h">
       <Filter>02. GameObject\01. StaticObject\01. MapObject</Filter>
     </ClInclude>
@@ -496,6 +527,37 @@
     <ClInclude Include="Skill_Billboard.h">
       <Filter>02. GameObject\08. Skill\00. Skill_Billboard</Filter>
     </ClInclude>
+    <ClInclude Include="Effect_Manager.h">
+      <Filter>94. Manager\04. Effect_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>02. GameObject\09. Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillEffect.h">
+      <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\SlashServer\SlashServer\Protocol.h">
+      <Filter>98. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AlignedNew.h" />
+    <ClInclude Include="BinaryReader.h" />
+    <ClInclude Include="ChangeUI.h" />
+    <ClInclude Include="dds.h" />
+    <ClInclude Include="DescriptorHeap.h" />
+    <ClInclude Include="DirectXHelpers.h" />
+    <ClInclude Include="GraphicsMemory.h" />
+    <ClInclude Include="LinearAllocator.h" />
+    <ClInclude Include="LoaderHelpers.h" />
+    <ClInclude Include="PlatformHelpers.h" />
+    <ClInclude Include="RenderTargetState.h" />
+    <ClInclude Include="ResourceUploadBatch.h" />
+    <ClInclude Include="SharedResourcePool.h" />
+    <ClInclude Include="SpriteBatch.h" />
+    <ClInclude Include="SpriteFont.h" />
+    <ClInclude Include="VertexTypes.h" />
+    <ClInclude Include="SelectScene.h">
+      <Filter>01. Scene\02. SelectScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsl">
@@ -519,5 +581,6 @@
     <None Include="Shaders\UI.hlsl">
       <Filter>93. Shaders</Filter>
     </None>
+    <None Include="myfile.spritefont" />
   </ItemGroup>
 </Project>

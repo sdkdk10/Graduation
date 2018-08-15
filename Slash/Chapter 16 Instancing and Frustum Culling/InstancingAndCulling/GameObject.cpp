@@ -130,6 +130,17 @@ void CGameObject::Rotate(XMFLOAT3 * pxmf3Axis, float fAngle)
 	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
+void CGameObject::Rotation(float x, float y, float z)
+{
+	XMMATRIX mat = XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z)
+		*XMMatrixRotationX(m_xmf3Rot.x)*XMMatrixRotationY(m_xmf3Rot.y)*XMMatrixRotationZ(m_xmf3Rot.z)
+		*XMMatrixTranslation(World._41, World._42, World._43);
+
+	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(x), XMConvertToRadians(y), XMConvertToRadians(z));
+
+	XMStoreFloat4x4(&World, XMMatrixMultiply(mtxRotate, mat));
+}
+
 void CGameObject::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 {
 	XMFLOAT3 CurPos = XMFLOAT3(World._41, World._42, World._43);
@@ -139,8 +150,6 @@ void CGameObject::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 	XMFLOAT3 xmf3shiftTest = xmf3Shift;
 
 	//XMFLOAT3 test = Vector3::Subtract(CurPos, xmf3shiftTest);
-
-	//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
 
 
 
@@ -175,7 +184,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 			m_fAnimationKeyFrameIndex = 0;
 		}
 	}
-	
+
 
 	if (bTimerWalk == true)
 	{
@@ -189,7 +198,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 		}
 
 	}
-	
+
 
 	if (bTimerAttack1 == true)
 	{
@@ -203,7 +212,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 		}
 
 	}
-	
+
 
 	if (bTimerAttack2 == true)
 	{
@@ -238,11 +247,11 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerDead == true)
 	{
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
-		if(m_bIsLife == true)
+		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
-		if (m_fAnimationKeyFrameIndex_Dead  + 1> (*vecAnimFrame)[5])
+		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
 		{
 			m_bIsLife = false;
 			bTimerDead = false;
@@ -293,7 +302,11 @@ void AnimateStateMachine::SetTimerTrueFalse()
 
 	if (m_iAnimState == DeadState)
 	{
-		bTimerDead  =  true;
+		bTimerDead = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
+}
+
+void AnimateStateMachine::Free()
+{
 }

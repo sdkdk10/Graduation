@@ -28,6 +28,7 @@ public:
 	CSound*							GetSound() { return m_pSound; }
 	CScene*							Get_CurScene() { return m_pCurScene; }
 
+	bool&							Get_IsStop() { return m_IsStop; }
 public:
 	Camera*			Get_MainCam() { return m_pCurScene->Get_MainCam(); }
 	HRESULT			Set_MainCam(Camera* pCam) { return m_pCurScene->Set_MainCam(pCam); }
@@ -48,6 +49,7 @@ private:
 
 	FrameResource* mCurrFrameResource = nullptr;
 
+	bool				m_IsStop = false;
 public:
 	void		Init_Management(CRenderer* pRenderer);
 	bool		Update(const GameTimer& gt, const FrameResource* pCruRrc);

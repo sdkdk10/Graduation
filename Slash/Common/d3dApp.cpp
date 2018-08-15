@@ -9,6 +9,9 @@
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Frame_Manager.h"
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Network.h"
 #include "GameTimer.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Management.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/SpriteFont.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/DescriptorHeap.h"
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -105,7 +108,7 @@ int D3DApp::Run()
         {	
 			//mTimer.Tick();
 			CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Time_Default");
-			if( !mAppPaused )
+			//if( !mAppPaused )
 			{
 				GameTimer pTimer = *(CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default"));
 				if (CFrame_Manager::GetInstance()->Permit_Call(wstrFrame[m_eCurFrameState], const_cast<GameTimer&>(pTimer)))
@@ -117,10 +120,10 @@ int D3DApp::Run()
 					Draw(const_cast<GameTimer&>(pFPSTimer));
 				}
 			}
-			else
+			/*else
 			{
 				Sleep(100);
-			}
+			}*/
         }
     }
 
@@ -227,6 +230,12 @@ void D3DApp::OnResize()
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mDepthStencilBuffer.Get(),
 		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
 	
+	// > Font Test
+	m_font.reset();
+	m_resourceDescriptors.reset();
+	m_spriteBatch.reset();
+	// >
+
     // Execute the resize commands.
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
@@ -258,11 +267,13 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			mAppPaused = true;
 			mTimer.Stop();
+			CManagement::GetInstance()->Get_IsStop() = true;
 		}
 		else
 		{
 			mAppPaused = false;
 			mTimer.Start();
+			CManagement::GetInstance()->Get_IsStop() = false;
 		}
 		return 0;
 

@@ -216,7 +216,7 @@ BOOL CMFCApplication5App::OnIdle(LONG lCount)
 			CMyForm* pMainForm = pMainFrame->GetMainForm();
 			if (pMainForm != NULL)
 			{
-				CView_0* pView = pMainForm->Get_Dialog()->GetView();
+				CView_0* pView = pMainForm->Get_View();//->GetView();
 				if (pView != NULL)
 				{
 					GameTimer gt;

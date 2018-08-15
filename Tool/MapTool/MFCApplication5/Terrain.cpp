@@ -92,7 +92,7 @@ HRESULT Terrain::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
-	Mat->MatCBIndex = 2;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = 3;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -105,7 +105,8 @@ HRESULT Terrain::Initialize()
 	ObjCBIndex = m_iMyObjectID;
 
 	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
-	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	//PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 	IndexCount = Geo->DrawArgs["grid"].IndexCount;
 	StartIndexLocation = Geo->DrawArgs["grid"].StartIndexLocation;
 	BaseVertexLocation = Geo->DrawArgs["grid"].BaseVertexLocation;

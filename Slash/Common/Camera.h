@@ -73,6 +73,7 @@ public:
 	void UpdateViewMatrix();
 
 	HRESULT Set_Object(CGameObject* pObj);
+	void Set_Dynamic(bool _isDynamic) { m_IsDynamic = _isDynamic; }
 
 	int Update();
 

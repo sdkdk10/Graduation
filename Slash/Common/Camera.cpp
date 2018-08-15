@@ -9,7 +9,7 @@
 
 Camera::Camera()
 	: m_pObject(nullptr)
-	, m_IsDynamic(false)
+	, m_IsDynamic(true)
 {
 	SetLens(0.25f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f);
 }

@@ -4,6 +4,7 @@
 #include "DynamicMesh.h"
 #include "Camera.h"
 #include "Management.h"
+#include "Renderer.h"
 #include "Texture_Manager.h"
 
 CSkeleton::CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName)
@@ -22,7 +23,7 @@ void CSkeleton::OnPrepareRender()
 
 void CSkeleton::Animate(const GameTimer & gt)
 {
-	AnimStateMachine.AnimationStateUpdate(gt);
+	AnimStateMachine->AnimationStateUpdate(gt);
 
 	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
 	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
@@ -40,13 +41,15 @@ HRESULT CSkeleton::Initialize()
 	if (tex == nullptr)
 		return E_FAIL;
 
-	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
-	AnimStateMachine.SetAnimState(AnimStateMachine.WalkState);
+	AnimStateMachine = new AnimateStateMachine;
+
+	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
+	AnimStateMachine->SetAnimState(AnimStateMachine->WalkState);
 
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
-	Mat->MatCBIndex = 5;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -77,7 +80,8 @@ HRESULT CSkeleton::Initialize()
 	Element_Right.StartIndexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].StartIndexLocation;
 	Element_Right.BaseVertexLocation = Geo_Right->DrawArgs[" \"_rh-01\""].BaseVertexLocation;
 
-
+	m_xmf3Scale = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	m_xmf3Rot = XMFLOAT3(1.7f, 0.f, 3.14f);
 
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -166,6 +170,7 @@ bool CSkeleton::Update(const GameTimer & gt)
 	// Next FrameResource need to be updated too.
 	//mat->NumFramesDirty--;
 
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
 	return true;
 }
@@ -174,7 +179,7 @@ void CSkeleton::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	if (m_bIsVisiable && m_bIsConnected)
 	{
-		AnimStateMachine.SetTimerTrueFalse();
+		AnimStateMachine->SetTimerTrueFalse();
 
 
 		Render_Head(cmdList);
@@ -210,8 +215,8 @@ void CSkeleton::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0][1];
 
-	int iTest = AnimStateMachine.GetCurAnimFrame();
-	int m_iCurAnimState = AnimStateMachine.GetAnimState();
+	int iTest = AnimStateMachine->GetCurAnimFrame();
+	int m_iCurAnimState = AnimStateMachine->GetAnimState();
 
 	//cmdList->DrawIndexedInstanced(Element_Head.IndexCount, 1, Element_Head.StartIndexLocation, Element_Head.BaseVertexLocation , 0);
 	//	dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[0].
@@ -250,8 +255,8 @@ void CSkeleton::Render_Body(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[1][1];
 
-	int iTest = AnimStateMachine.GetCurAnimFrame();
-	int m_iCurAnimState = AnimStateMachine.GetAnimState();
+	int iTest = AnimStateMachine->GetCurAnimFrame();
+	int m_iCurAnimState = AnimStateMachine->GetAnimState();
 
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,
@@ -290,8 +295,8 @@ void CSkeleton::Render_Right(ID3D12GraphicsCommandList * cmdList)
 
 	auto indexcnt = dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset[2][1];
 
-	int iTest = AnimStateMachine.GetCurAnimFrame();
-	int m_iCurAnimState = AnimStateMachine.GetAnimState();
+	int iTest = AnimStateMachine->GetCurAnimFrame();
+	int m_iCurAnimState = AnimStateMachine->GetAnimState();
 
 
 	cmdList->DrawIndexedInstanced(indexcnt, 1,

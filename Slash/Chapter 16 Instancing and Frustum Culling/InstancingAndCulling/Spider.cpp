@@ -4,6 +4,7 @@
 #include "DynamicMeshSingle.h"
 #include "Camera.h"
 #include "Management.h"
+#include "Renderer.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
 #include "Player.h"
@@ -104,15 +105,15 @@ bool Spider::Update(const GameTimer & gt)
 
 	// Next FrameResource need to be updated too.
 	//NumFramesDirty--;
-
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }
 
 void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	if (m_bIsVisiable)
+	if (m_bIsVisiable && m_bIsConnected)
 	{
-		AnimStateMachine.SetTimerTrueFalse();
+		AnimStateMachine->SetTimerTrueFalse();
 
 		UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 		UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
@@ -144,8 +145,8 @@ void Spider::Render(ID3D12GraphicsCommandList * cmdList)
 
 		//int iTest = (int)pMesh->m_fTest;
 
-		int iTest = AnimStateMachine.GetCurAnimFrame();
-		int AnimaState = AnimStateMachine.GetAnimState();
+		int iTest = AnimStateMachine->GetCurAnimFrame();
+		int AnimaState = AnimStateMachine->GetAnimState();
 
 
 		if (m_bLODState == true)
@@ -181,13 +182,16 @@ HRESULT Spider::Initialize()
 	if (nullptr == tex)
 		return E_FAIL;
 
-	AnimStateMachine.vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine.SetAnimState(AnimStateMachine.IdleState);
+	AnimStateMachine = new AnimateStateMachine;
+
+	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
+
+	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
-	Mat->MatCBIndex = 3;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -210,66 +214,89 @@ HRESULT Spider::Initialize()
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x , Bounds.Center.y , Bounds.Center.z ), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
-
+	m_xmf3Scale = XMFLOAT3(2.0f, 2.0f, 2.0f);
+	m_xmf3Rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	return S_OK;
 }
 
 void Spider::Animate(const GameTimer & gt)
 {
-	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 500.0f)
-	{
-		m_bLODState = true;
+	//if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 500.0f)
+	//{
+	//	m_bLODState = true;
 
 
-		return;
-	}
-	m_bLODState = false;
+	//	return;
+	//}
+	//m_bLODState = false;
 
-	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 100.0f)
-	{
-		m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
-		XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
+	//if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) > 100.0f)
+	//{
+	//	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
+	//	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
-		return;
-	}
-	if (GetHp() < 0)
-	{
-		SetObjectAnimState(AnimStateMachine.DeadState);
-		AnimStateMachine.AnimationStateUpdate(gt);
-		return;
-	}
+	//	return;
+	//}
+	//if (GetHp() < 0)
+	//{
+	//	SetObjectAnimState(AnimStateMachine->DeadState);
+	//	AnimStateMachine->AnimationStateUpdate(gt);
+	//	return;
+	//}
 
-	XMFLOAT3 playerPos = m_pPlayer->GetPosition();
-	XMFLOAT3 Shaft = GetLook();
+	//XMFLOAT3 playerPos = m_pPlayer->GetPosition();
+	//XMFLOAT3 Shaft = GetLook();
 
-	//	cout << Shaft.x << "\t" << Shaft.y << "\t" << Shaft.z << endl;
+	////	cout << Shaft.x << "\t" << Shaft.y << "\t" << Shaft.z << endl;
 
-	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, GetPosition());   // 객체에서 플레이어로 가는 벡터
+	//XMFLOAT3 dirVector = Vector3::Subtract(playerPos, GetPosition());   // 객체에서 플레이어로 가는 벡터
 
-	dirVector = Vector3::Normalize(dirVector);
+	//dirVector = Vector3::Normalize(dirVector);
 
-	XMFLOAT3 crossVector = Vector3::CrossProduct(Shaft, dirVector, true);
+	//XMFLOAT3 crossVector = Vector3::CrossProduct(Shaft, dirVector, true);
 
-	float dotproduct = Vector3::DotProduct(Shaft, dirVector);
-	float ShafttLength = Vector3::Length(Shaft);
-	float dirVectorLength = Vector3::Length(dirVector);
+	//float dotproduct = Vector3::DotProduct(Shaft, dirVector);
+	//float ShafttLength = Vector3::Length(Shaft);
+	//float dirVectorLength = Vector3::Length(dirVector);
 
-	float cosCeta = (dotproduct / ShafttLength * dirVectorLength);
+	//float cosCeta = (dotproduct / ShafttLength * dirVectorLength);
 
-	float ceta = acos(cosCeta);
+	//float ceta = acos(cosCeta);
 
-	if (playerPos.z < GetPosition().z)
-		ceta = 360.f - ceta * 57.3248f;// +180.0f;
-	else
-		ceta = ceta * 57.3248f;
+	//if (playerPos.z < GetPosition().z)
+	//	ceta = 360.f - ceta * 57.3248f;// +180.0f;
+	//else
+	//	ceta = ceta * 57.3248f;
 
-	//cout << ceta << endl;
-	float a = Vector3::Length(dirVector);
-	XMFLOAT3 Normal = XMFLOAT3(a * cos(ceta), 0, a * sin(ceta));
-	Normal = Vector3::Normalize(Normal);
+	////cout << ceta << endl;
+	////float a = Vector3::Length(dirVector);
+	////XMFLOAT3 Normal = XMFLOAT3(a * cos(ceta), 0, a * sin(ceta));
+	////Normal = Vector3::Normalize(Normal);
 
-	////다른애들 찾기
+	//////다른애들 찾기
+	////auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	////if (pLayer != nullptr)
+	////{
+	////	auto objList = pLayer->Get_ObjectList();
+	////	size_t iSize = objList.size();
+	////	for (size_t i = 0; i < iSize; ++i)
+	////	{
+	////		if (objList[i] == this)
+	////			continue;
+
+	////	}
+	////}
+
+
+
+	//if (m_pPlayer->m_xmOOBB.Contains(this->m_xmOOBB))
+	//{
+	//	//cout << "거미랑 충돌" << endl;
+
+
+	//}
+
 	//auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
 	//if (pLayer != nullptr)
 	//{
@@ -277,136 +304,112 @@ void Spider::Animate(const GameTimer & gt)
 	//	size_t iSize = objList.size();
 	//	for (size_t i = 0; i < iSize; ++i)
 	//	{
+
+	//		/*	float MinX = objList[i]->m_xmOOBB.Center.x - m_xmOOBB.Extents.x;
+	//		float MaxX = objList[i]->m_xmOOBB.Center.x + m_xmOOBB.Extents.x;
+
+	//		float MinZ = objList[i]->m_xmOOBB.Center.z - m_xmOOBB.Extents.z;
+	//		float MaxZ = objList[i]->m_xmOOBB.Center.z + m_xmOOBB.Extents.z;*/
+
 	//		if (objList[i] == this)
 	//			continue;
+
+	//		if (objList[i]->m_xmOOBB.Contains(m_xmOOBB))
+	//		{
+	//			objList[i]->m_pCollider = this;
+	//			this->m_pCollider = objList[i];
+
+
+	//		}
 
 	//	}
 	//}
 
 
 
-	if (m_pPlayer->m_xmOOBB.Contains(this->m_xmOOBB))
-	{
-		//cout << "거미랑 충돌" << endl;
+
+	AnimStateMachine->AnimationStateUpdate(gt);
+
+	//if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) < 15.0f)
+	//{
+
+	//	if (m_pPlayer->m_xmOOBB.Contains(m_xmOOBB)) //충돌할 정도로 가까워 졌으면
+	//	{
+	//		if (m_pPlayer->GetAnimateMachine()->GetAnimState() == m_pPlayer->GetAnimateMachine()->Attack1State)
+	//		{
+	//			if (m_pPlayer->GetAnimateMachine()->GetCurAnimFrame() == 8)
+	//			{
+	//				SetHp(-100);
+	//				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Hit");
+	//			}
+
+	//		}
+	//		//cout << "거미 충돌 " << endl;
+
+	//		m_pPlayer->m_pCollider = this;
+	//		//SetObjectAnimState(AnimStateMachine->Attack1State);
+	//		SetObjectAnimState(AnimStateMachine->Attack1State);
+
+	//		//cout << m_pPlayer->GetHp() - 1.0f << endl;
+	//		if (AnimStateMachine->GetCurAnimFrame() == 13)
+	//			m_pPlayer->SetHp(m_pPlayer->GetHp() - 1.0f);
+
+	//	}
+	//	else //충돌은 안했지만 플레이어한테 이동
+	//	{
+
+	//		if (crossVector.y > 0)
+	//		{
+	//			if (ceta > 0.1f)
+	//			{
+	//				Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 10.0f, 0.0f);
+
+	//			}
+	//			//cout << "시계로" << endl;
+
+	//		}
+	//		if (crossVector.y < 0)
+	//		{
+	//			if (ceta > 0.1f)
+	//			{
+	//				Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime()*10.0f, 0.0f);
 
 
-	}
+	//			}
+	//			//cout << "반시계로" << endl;
 
-	auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
-	if (pLayer != nullptr)
-	{
-		auto objList = pLayer->Get_ObjectList();
-		size_t iSize = objList.size();
-		for (size_t i = 0; i < iSize; ++i)
-		{
+	//		}
+	//		XMFLOAT3 moveingVector = XMFLOAT3(dirVector.x * gt.DeltaTime() *m_fMoveSpeed, dirVector.y * gt.DeltaTime() *m_fMoveSpeed, dirVector.z * gt.DeltaTime() *m_fMoveSpeed);
 
-			/*	float MinX = objList[i]->m_xmOOBB.Center.x - m_xmOOBB.Extents.x;
-			float MaxX = objList[i]->m_xmOOBB.Center.x + m_xmOOBB.Extents.x;
-
-			float MinZ = objList[i]->m_xmOOBB.Center.z - m_xmOOBB.Extents.z;
-			float MaxZ = objList[i]->m_xmOOBB.Center.z + m_xmOOBB.Extents.z;*/
+	//		moveingVector = Vector3::Subtract(moveingVector, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(moveingVector, m_MovingRefletVector)));
 
 
+	//		Move(XMFLOAT3(moveingVector.x, moveingVector.y, moveingVector.z), true);
 
-			if (objList[i] == this)
-				continue;
+	//		//cout << "이동하자" << endl;
+	//		SetObjectAnimState(AnimStateMachine->WalkState);
 
-			if (objList[i]->m_xmOOBB.Contains(m_xmOOBB))
-			{
-				objList[i]->m_pCollider = this;
-				this->m_pCollider = objList[i];
+	//	}
 
+	//}
+	//else
+	//{
+	//	/*m_bIsCollide = false;
 
-			}
+	//	if (coll == false)
+	//	{
+	//	m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
 
-		}
-	}
-
-
-
-
-	AnimStateMachine.AnimationStateUpdate(gt);
-
-	if (Vector3::BetweenVectorLength(m_pPlayer->GetPosition(), GetPosition()) < 15.0f)
-	{
-
-		if (m_pPlayer->m_xmOOBB.Contains(m_xmOOBB)) //충돌할 정도로 가까워 졌으면
-		{
-			if (m_pPlayer->GetAnimateMachine()->GetAnimState() == m_pPlayer->GetAnimateMachine()->Attack1State)
-			{
-				if (m_pPlayer->GetAnimateMachine()->GetCurAnimFrame() == 8)
-				{
-					SetHp(-100);
-					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Hit");
-				}
-
-			}
-			//cout << "거미 충돌 " << endl;
-
-			m_pPlayer->m_pCollider = this;
-			//SetObjectAnimState(AnimStateMachine.Attack1State);
-			SetObjectAnimState(AnimStateMachine.Attack1State);
-
-			//cout << m_pPlayer->GetHp() - 1.0f << endl;
-			if (AnimStateMachine.GetCurAnimFrame() == 13)
-				m_pPlayer->SetHp(m_pPlayer->GetHp() - 1.0f);
-
-		}
-		else //충돌은 안했지만 플레이어한테 이동
-		{
-
-			if (crossVector.y > 0)
-			{
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, m_fRotateSpeed * gt.DeltaTime() * 10.0f, 0.0f);
-
-				}
-				//cout << "시계로" << endl;
-
-			}
-			if (crossVector.y < 0)
-			{
-				if (ceta > 0.1f)
-				{
-					Rotate(0.0f, -m_fRotateSpeed * gt.DeltaTime()*10.0f, 0.0f);
+	//	}*/
+	//	SetObjectAnimState(AnimStateMachine->IdleState);
 
 
-				}
-				//cout << "반시계로" << endl;
-
-			}
-			XMFLOAT3 moveingVector = XMFLOAT3(dirVector.x * gt.DeltaTime() *m_fMoveSpeed, dirVector.y * gt.DeltaTime() *m_fMoveSpeed, dirVector.z * gt.DeltaTime() *m_fMoveSpeed);
-
-			moveingVector = Vector3::Subtract(moveingVector, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(moveingVector, m_MovingRefletVector)));
+	//}
 
 
-			Move(XMFLOAT3(moveingVector.x, moveingVector.y, moveingVector.z), true);
-
-			//cout << "이동하자" << endl;
-			SetObjectAnimState(AnimStateMachine.WalkState);
-
-		}
-
-	}
-	else
-	{
-		/*m_bIsCollide = false;
-
-		if (coll == false)
-		{
-		m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
-
-		}*/
-		SetObjectAnimState(AnimStateMachine.IdleState);
-
-
-	}
-
-
-	//cout << coll << endl;
-	m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
-	XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
+	////cout << coll << endl;
+	//m_xmOOBBTransformed.Transform(m_xmOOBB, XMLoadFloat4x4(&(GetWorld())));
+	//XMStoreFloat4(&m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmOOBBTransformed.Orientation)));
 
 
 }
@@ -489,8 +492,6 @@ void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
 
 	}
-
-
 }
 
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)

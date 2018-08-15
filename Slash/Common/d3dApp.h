@@ -10,7 +10,12 @@
 #endif
 
 #include "GameTimer.h"
-
+namespace DirectX
+{
+	class SpriteFont;
+	class DescriptorHeap;
+	class SpriteBatch;
+}
 class D3DApp
 {
 public:
@@ -122,5 +127,18 @@ protected:
 	int mClientHeight = 600;
 
 	Frame_State			m_eCurFrameState = FPS_NON;
+
+
+	// > Font Test
+protected:
+	std::unique_ptr<DirectX::DescriptorHeap> m_resourceDescriptors;
+	std::unique_ptr<DirectX::SpriteFont> m_font;
+	enum Descriptors
+	{
+		MyFont,
+		Count
+	};
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	XMFLOAT2 m_fontPos;
 };
 

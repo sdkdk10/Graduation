@@ -31,6 +31,7 @@
 #define IDD_MYFORM                      310
 #define IDD_MAPTOOL                     311
 #define IDD_CTEST                       312
+#define IDD_EFFECTTOOL                  313
 #define IDC_MAPTOOL                     1000
 #define IDC_LIST_MODEL                  1002
 #define IDC_LIST_OBJECTS                1003
@@ -52,6 +53,7 @@
 #define IDC_SCROLLBAR_POSX              1019
 #define IDC_SCROLLBAR_POSY              1020
 #define IDC_LIST1                       1020
+#define IDC_LIST_TEX                    1020
 #define IDC_SCROLLBAR_POSZ              1021
 #define IDC_SCROLLBAR_SCALEX            1022
 #define IDC_SCROLLBAR_SCALEY            1023
@@ -71,14 +73,80 @@
 #define IDC_CHECK_ONEMINUS              1037
 #define IDC_CHECK1                      1038
 #define IDC_CHECK_ALPHA                 1038
+#define IDC_CHECK_EFFECT_BILLBOARD      1038
+#define IDC_BUTTON_EFFECT_TOOL          1039
+#define IDC_CHECK_EFFECT_FRAME          1039
+#define IDC_LIST_LOAD_TEX               1040
+#define IDC_EDIT_S_POS_X                1041
+#define IDC_EDIT_S_POS_Y                1042
+#define IDC_EDIT_S_POS_Z                1043
+#define IDC_EDIT_E_POS_X                1044
+#define IDC_EDIT_E_POS_Y                1045
+#define IDC_EDIT_E_POS_Z                1046
+#define IDC_EDIT_S_SIZE_X               1047
+#define IDC_EDIT_S_SIZE_Y               1048
+#define IDC_EDIT_S_SIZE_Z               1049
+#define IDC_EDIT_E_SIZE_X               1050
+#define IDC_EDIT_E_SIZE_Y               1051
+#define IDC_EDIT_E_SIZE_Z               1052
+#define IDC_EDIT_S_ROT_X                1053
+#define IDC_EDIT_S_ROT_Y                1054
+#define IDC_EDIT_S_ROT_Z                1055
+#define IDC_EDIT_E_ROT_X                1056
+#define IDC_EDIT_E_ROT_Y                1057
+#define IDC_EDIT_E_ROT_Z                1058
+#define IDC_EDIT_S_ALPHA                1059
+#define IDC_EDIT_E_ALPHA                1060
+#define IDC_EDIT_LIFETIME               1061
+#define IDC_EDIT_S_COLOR_R              1062
+#define IDC_EDIT_S_COLOR_G              1063
+#define IDC_EDIT_S_COLOR_B              1064
+#define IDC_EDIT_E_COLOR_R              1065
+#define IDC_EDIT_E_COLOR_G              1066
+#define IDC_EDIT_E_COLOR_B              1067
+#define IDC_EDIT_EFFECT_NAME            1068
+#define IDC_EDIT_STARTTIME              1069
+#define IDC_LIST_EFFECT                 1070
+#define IDC_BUTTON_ADD_EFFECT           1071
+#define IDC_BUTTON_APPLY_EFFECT         1072
+#define IDC_BUTTON_PLAY_EFFECT          1073
+#define IDC_BUTTON_STOP_EFFECT          1074
+#define IDC_EDIT_EFFECT_FRAME_MAX_X     1075
+#define IDC_EDIT_EFFECT_FRAME_SIZE_X    1076
+#define IDC_EDIT_EFFECT_FRAME_SIZE_Y    1077
+#define IDC_EDIT_EFFECT_FRAME_MAX_Y     1078
+#define IDC_EDIT_EFFECT_FRAME_SPEED     1079
+#define IDC_CHECK_END_FRAME             1080
+#define IDC_EDIT_FRAME_END_CNT          1081
+#define IDC_BUTTON_CANCLE_SELECT        1082
+#define IDC_LIST_SKILL_EFFECT           1083
+#define IDC_BUTTON_ADD_SKILL_EFFECT     1084
+#define IDC_BUTTON_DEL_EFFECT           1085
+#define IDC_BUTTON_MAKE_SKILLEFFECT     1086
+#define IDC_LIST_COMPLETE_SKILL_EFFECT  1087
+#define IDC_EDIT_SKILLEFFECT_NAME       1088
+<<<<<<< HEAD
+#define IDC_RADIO_MAPTOOL               1090
+#define IDC_RADIO_EFFECTTOOL            1091
+#define IDC_BUTTON_SHOW                 1091
+#define IDC_BUTTON_PLAY_ALL             1092
+#define IDC_BUTTON_PLAY_ALL2            1093
+#define IDC_BUTTON_STOP_ALL             1093
+=======
+#define IDC_BUTTON1                     1089
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        312
+#define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1039
-#define _APS_NEXT_SYMED_VALUE           313
+<<<<<<< HEAD
+#define _APS_NEXT_CONTROL_VALUE         1093
+=======
+#define _APS_NEXT_CONTROL_VALUE         1090
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
+#define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

@@ -12,7 +12,7 @@ StaticMesh::~StaticMesh()
 {
 }
 
-HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePath)
+HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePath, bool isInst)
 {
 	std::ifstream fin(pFilePath[0].second);
 
@@ -68,7 +68,10 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 						Tex->Resource, Tex->UploadHeap));
 
 					m_strTexName = texName;
-					CTexture_Manager::GetInstance()->Ready_Texture(m_strTexName, Tex, CTexture_Manager::TEX_INST_2D);
+					if (isInst)
+						CTexture_Manager::GetInstance()->Ready_Texture(m_strTexName, Tex, CTexture_Manager::TEX_INST_2D);
+					else
+						CTexture_Manager::GetInstance()->Ready_Texture(m_strTexName, Tex, CTexture_Manager::TEX_DEFAULT_2D);
 				}
 			}
 		}
@@ -302,10 +305,10 @@ void StaticMesh::Free()
 {
 }
 
-StaticMesh * StaticMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>> & pFilePath)
+StaticMesh * StaticMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<pair<const string, const string>> & pFilePath, bool isInst)
 {
 	StaticMesh* pInstance = new StaticMesh(d3dDevice);
-	if (FAILED(pInstance->Initialize(pFilePath)))
+	if (FAILED(pInstance->Initialize(pFilePath, isInst)))
 	{
 		MSG_BOX(L"StaticMesh Created Failed");
 		Safe_Release(pInstance);

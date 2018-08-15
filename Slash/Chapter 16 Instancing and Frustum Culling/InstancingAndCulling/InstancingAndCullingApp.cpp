@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "TestScene.h"
 #include "EffectScene.h"
+#include "SelectScene.h"
 #include "Network.h"
 #include "DynamicMesh.h"
 #include "StaticMesh.h"
@@ -20,6 +21,14 @@
 #include "BillboardMesh.h"
 #include "Sound.h"
 #include "Skeleton.h"
+#include "Effect.h"
+#include "SkillEffect.h"
+#include "Effect_Manager.h"
+#include "UIMesh.h"
+#include "ResourceUploadBatch.h"
+#include "SpriteFont.h"
+#include "SpriteBatch.h"
+#include "DescriptorHeap.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -148,13 +157,23 @@ bool InstancingAndCullingApp::Initialize()
 	CManagement::GetInstance()->Init_Management(pRenderer);
 	CManagement::GetInstance()->Set_Sound(pSound);
 
-	CNetwork::GetInstance()->InitSock(mhMainWnd);
+	//CNetwork::GetInstance()->InitSock(mhMainWnd);
 
 	BuildPSOs();
 	BuildMaterials();
+	LoadEffects();
 	BuildRenderItems();
 	BuildFrameResources();
 
+	// > Font Test
+	//D3D12_VIEWPORT viewport = { 0.0f, 0.0f,
+	//	static_cast<float>(800.f), static_cast<float>(600.f),
+	//	D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
+	//m_spriteBatch->SetViewport(viewport);
+
+	//m_fontPos.x = 800.f / 2.f;
+	//m_fontPos.y = 600.f / 2.f;
+	// > 
 
 	CManagement::GetInstance()->GetRenderer()->SetPSOs(mPSOs);
 	CManagement::GetInstance()->Get_CurScene()->Set_MainCam(&mCamera);
@@ -563,7 +582,28 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"MageUITex Ready Failed"); 
 
+
 	auto Tex = new Texture;
+	Tex->Name = "SelectUI";
+	Tex->Filename = L"Assets/Textures/SelectUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SelectUI Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "PressEnter";
+	Tex->Filename = L"Assets/Textures/PressEnter.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"PressEnter Ready Failed");
+
+	Tex = new Texture;
 	Tex->Name = "Aura0";
 	Tex->Filename = L"Assets/Textures/Aura0.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
@@ -582,6 +622,28 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(treeArrayTex->Name, treeArrayTex, CTexture_Manager::TEX_DEFAULT_BILLBOARD)))
 		MSG_BOX(L"MageUITex Ready Failed");
+
+	ifstream texIn("Assets/Data/EffectTexture.txt");
+	int iSize = 0;
+	texIn >> iSize;
+	for (int i = 0; i < iSize; ++i)
+	{
+		string ignore;
+		texIn >> ignore;
+		
+		auto Tex = new Texture;
+		Tex->Name = ignore;
+		texIn >> ignore;
+		wstring fileName;
+		fileName.assign(ignore.begin(), ignore.end());
+		Tex->Filename = fileName;
+		ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+			mCommandList.Get(), Tex->Filename.c_str(),
+			Tex->Resource, Tex->UploadHeap));
+
+		if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+			MSG_BOX(L"Effect Texture Ready Failed");
+	}
 
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
@@ -608,6 +670,7 @@ void InstancingAndCullingApp::LoadMeshes()
 {
 
 	vector<pair<const string, const string>> path;
+	//path.push_back(make_pair("Attack", "Assets/Models/Warrior/Warrior_Attack_Turn.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/Warrior/Warrior_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Warrior/Warrior_Walk.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack1.ASE"));
@@ -652,6 +715,31 @@ void InstancingAndCullingApp::LoadMeshes()
 	pComponent = GeometryMesh::Create(md3dDevice);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Geometry", pComponent);
 
+	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
+	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
+	move.x = -0.82f;
+	move.y = 0.75f;
+
+	scale.x = 1.0f;
+	scale.y = 1.0f;
+
+	float size = 0.125f;
+
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_WarriorUI", pComponent);
+
+	move.x = -0.5f;
+	move.y = 1.45f;
+
+	scale.x = 1.0f;
+	scale.y = 0.5f;
+
+	size = 0.5f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerHPState", pComponent);
+
+
+
 	// > Map Object ASE Load
 	fstream in("Assets/Data/ModelList.txt");
 	if (in.is_open() == false)
@@ -671,6 +759,94 @@ void InstancingAndCullingApp::LoadMeshes()
 		wstring wstr;
 		wstr.assign(meshName.begin(), meshName.end());
 		CComponent_Manager::GetInstance()->Ready_Component(const_cast<wchar_t*>(wstr.c_str()), pComponent);
+	}
+
+	// > Effect Object ASE Load
+	ifstream Modelin("Assets/Data/EffectModelList.txt");
+	int iSize = 0;
+	Modelin >> iSize;
+	for (int i = 0; i < iSize; ++i)
+	{
+		Modelin >> meshName;
+		Modelin >> meshPath;
+		path.clear();
+		path.push_back(make_pair("Idle", meshPath));
+		pComponent = StaticMesh::Create(md3dDevice, path);
+		wstring wstr;
+		wstr.assign(meshName.begin(), meshName.end());
+		CComponent_Manager::GetInstance()->Ready_Component(const_cast<wchar_t*>(wstr.c_str()), pComponent);
+
+	}
+}
+
+void InstancingAndCullingApp::LoadEffects()
+{
+
+	ifstream in("Assets/Data/Effect.txt");
+	int iSize;
+	in >> iSize;
+	
+	for (int i = 0; i < iSize; ++i)
+	{
+		EFFECT_INFO info;
+
+		in >> info.isBillboard >> info.strName >> info.strMeshName >> info.strTexName;
+		in >> info.S_Pos.x >> info.S_Pos.y >> info.S_Pos.z;
+		in >> info.S_Size.x >> info.S_Size.y >> info.S_Size.z;
+		in >> info.S_Rot.x >> info.S_Rot.y >> info.S_Rot.z;
+		in >> info.S_Color.x >> info.S_Color.y >> info.S_Color.z >> info.S_Color.w;
+		in >> info.E_Pos.x >> info.E_Pos.y >> info.E_Pos.z;
+		in >> info.E_Size.x >> info.E_Size.y >> info.E_Size.z;
+		in >> info.E_Rot.x >> info.E_Rot.y >> info.E_Rot.z;
+		in >> info.E_Color.x >> info.E_Color.y >> info.E_Color.z >> info.E_Color.w;
+		in >> info.StartTime >> info.LifeTime;
+
+
+		CEffect* effect = CEffect::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, info);
+
+		bool isFrame = false;
+		in >> isFrame;
+
+
+
+		if (isFrame)
+		{
+			UV_FRAME_INFO frameInfo;
+			in >> frameInfo.f2FrameSize.x >> frameInfo.f2FrameSize.y;
+			in >> frameInfo.f2maxFrame.x >> frameInfo.f2maxFrame.y;
+			in >> frameInfo.fSpeed;
+			effect->Get_FrameInfo() = frameInfo;
+		}
+		//effect->Get_EffectInfo() = info;
+
+		CEffect_Manager::GetInstance()->Ready_Effect(info.strName, effect);
+	}
+
+	ifstream skillIn("Assets/Data/EffectSkill.txt");
+	skillIn >> iSize;
+	for (int i = 0; i < iSize; ++i)
+	{
+		
+		string name;
+		skillIn >> name;
+
+		CSkillEffect* skillEffect = CSkillEffect::Create(md3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
+
+		int listSize = 0;
+		skillIn >> listSize;
+
+		list<CEffect*> list;
+
+		for (int j = 0; j < listSize; ++j)
+		{
+			string name;
+			skillIn >> name;
+			CEffect* effect = CEffect_Manager::GetInstance()->Find_Effect(name);
+			if (effect)
+				list.push_back(effect);
+		}
+		skillEffect->GetEffectList() = list;
+		CEffect_Manager::GetInstance()->Ready_SkillEffect(name, skillEffect);
 	}
 }
 
@@ -763,6 +939,34 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_INSTANCING])));
+
+
+	// > Font Test
+	//m_resourceDescriptors = std::make_unique<DescriptorHeap>(md3dDevice.Get(),
+	//	D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+	//	D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+	//	Descriptors::Count);
+
+	//ResourceUploadBatch resourceUpload(md3dDevice.Get());
+
+	//resourceUpload.Begin();
+
+	//m_font = std::make_unique<SpriteFont>(md3dDevice.Get(), resourceUpload,
+	//	L"myfile.spritefont",
+	//	m_resourceDescriptors->GetCpuHandle(Descriptors::MyFont),
+	//	m_resourceDescriptors->GetGpuHandle(Descriptors::MyFont));
+
+	//RenderTargetState rtState(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+
+	//SpriteBatchPipelineStateDescription pd(rtState);
+	//m_spriteBatch = std::make_unique<SpriteBatch>(md3dDevice.Get(), resourceUpload, pd);
+
+	//auto uploadResourcesFinished = resourceUpload.End(mCommandQueue.Get());
+
+	//uploadResourcesFinished.wait();
+
+	// > 
+
 
 	//
 	// Fill out the heap with actual descriptors.
@@ -927,6 +1131,8 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
 
+	mShaders["UIChangePS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS_Change", "ps_5_1");
+
 	mShaders["AlphaTestPS_Inst"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
 	mShaders["treeSpriteVS"] = d3dUtil::CompileShader(L"Shaders\\TreeSprite.hlsl", nullptr, "VS", "vs_5_1");
@@ -1019,6 +1225,20 @@ void InstancingAndCullingApp::BuildPSOs()
 	};
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
+
+	//
+	// PSO for UIChange objects.
+	//
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIChangePsoDesc = UIPsoDesc;
+
+	UIChangePsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["UIChangePS"]->GetBufferPointer()),
+		mShaders["UIChangePS"]->GetBufferSize()
+	};
+
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIChangePsoDesc, IID_PPV_ARGS(&mPSOs["UIChange"])));
 
 
 
@@ -1153,7 +1373,7 @@ void InstancingAndCullingApp::BuildFrameResources()
 	for (int i = 0; i < gNumFrameResources; ++i)
 	{
 		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-			1, MAXOBJECTID, (UINT)mMaterials.size()));
+			1, MAXOBJECTID, MAXOBJECTID));
 	}
 }
 
@@ -1242,8 +1462,10 @@ void InstancingAndCullingApp::BuildMaterials()
 void InstancingAndCullingApp::BuildRenderItems()
 {
 
-	CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
+	//CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
+	CScene* pScene = CSelectScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 	CManagement::GetInstance()->Change_Scene(pScene);
+	CEffect_Manager::GetInstance()->Ready_EffectManager(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 }
 
 void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems )
@@ -1255,6 +1477,25 @@ void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList
 
 
 	CManagement::GetInstance()->Render(cmdList);
+
+	// > Font Test
+	//ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
+	//cmdList->SetDescriptorHeaps(_countof(heaps), heaps);
+
+	//m_spriteBatch->Begin(cmdList);
+
+	//const wchar_t* output = L"Hello World";
+
+	//XMFLOAT2 origin;
+	////XMFLOAT2 f2origin;
+	//XMStoreFloat2(&origin, m_font->MeasureString(output) / 2.f);
+
+	//XMVECTORF32 White = { 1.000000000f, 1.000000000f, 1.000000000f, 1.000000000f };
+	//m_font->DrawString(m_spriteBatch.get(), output,
+	//	m_fontPos, White, 0.f, origin);
+
+	//m_spriteBatch->End();
+	// > 
 
 	//mCommandList->SetPipelineState(mPSOs["Opaque"].Get());
 

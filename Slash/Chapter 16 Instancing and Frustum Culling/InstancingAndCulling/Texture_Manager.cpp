@@ -34,5 +34,15 @@ Texture* CTexture_Manager::Find_Texture(string TexName, TEXTYPE eType)
 
 void CTexture_Manager::Free()
 {
-
+	for (int i = 0; i < TEX_END; ++i)
+	{
+		auto iter_end = m_mapTexture[i].end();
+		for (auto iter = m_mapTexture[i].begin(); iter != iter_end; ++iter)
+		{
+			if (iter->second)
+				delete iter->second;
+		}
+			
+	}
+		
 }

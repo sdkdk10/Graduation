@@ -75,37 +75,37 @@ int D3DApp::Run(const GameTimer& gt)
 	wchar_t* wstrFrame[FPS_END] = { L"Frame 30", L"Frame 60", L"Frame 100" , L"Frame 3000" };
 	MSG msg = { 0 };
 
-	CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Time_Default");
-	//if (!mAppPaused)
-	{
-		GameTimer pTimer = *(CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default"));
-		if (CFrame_Manager::GetInstance()->Permit_Call(wstrFrame[FPS_30], const_cast<GameTimer&>(pTimer)))
-		{
-			CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Timer_FPS");
-			GameTimer pFPSTimer = *CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS");
-			CalculateFrameStats();
-			Update(const_cast<GameTimer&>(pFPSTimer));
-			Draw(const_cast<GameTimer&>(pFPSTimer));
-		}
-	}
+	//CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Time_Default");
+	////if (!mAppPaused)
+	//{
+	//	GameTimer pTimer = *(CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default"));
+	//	if (CFrame_Manager::GetInstance()->Permit_Call(wstrFrame[FPS_100], const_cast<GameTimer&>(pTimer)))
+	//	{
+	//		CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Timer_FPS");
+	//		GameTimer pFPSTimer = *CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS");
+	//		CalculateFrameStats();
+	//		Update(const_cast<GameTimer&>(pFPSTimer));
+	//		Draw(const_cast<GameTimer&>(pFPSTimer));
+	//	}
+	//}
 	/*else
 	{
 		Sleep(100);
 	}*/
 	
-	/*
-	CalculateFrameStats();
-	GameTimer pFPSTimer = *CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS");
-	Update(gt);
-	Draw(gt);
+	
+	//CalculateFrameStats();
+	//GameTimer pFPSTimer = *CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Timer_FPS");
+	//Update(gt);
+	//Draw(gt);
 
 
 	
 	
  //
-	wchar_t* wstrFrame[FPS_END] = { L"Frame 30", L"Frame 60", L"Frame 100" , L"Frame 3000" };
+	//wchar_t* wstrFrame[FPS_END] = { L"Frame 30", L"Frame 60", L"Frame 100" , L"Frame 3000" };
 
-	//while(msg.message != WM_QUIT)
+	while(msg.message != WM_QUIT)
 	{
 
 		// If there are Window messages then process them.
@@ -119,7 +119,7 @@ int D3DApp::Run(const GameTimer& gt)
         {	
 			//mTimer.Tick();
 			CGameTimer_Manager::GetInstance()->Compute_TimeDelta(L"Time_Default");
-			if( !mAppPaused )
+			//if( !mAppPaused )
 			{
 				GameTimer pTimer = *(CGameTimer_Manager::GetInstance()->Get_GameTimer(L"Time_Default"));
 				if (CFrame_Manager::GetInstance()->Permit_Call(wstrFrame[FPS_30], const_cast<GameTimer&>(pTimer)))
@@ -131,13 +131,13 @@ int D3DApp::Run(const GameTimer& gt)
 					Draw(const_cast<GameTimer&>(pFPSTimer));
 				}
 			}
-			else
+			/*else
 			{
 				Sleep(100);
-			}
+			}*/
         }
     }
-	*/
+	
 
 	return (int)msg.wParam;
 }
