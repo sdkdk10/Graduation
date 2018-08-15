@@ -10,6 +10,8 @@
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Network.h"
 #include "GameTimer.h"
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Management.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/SpriteFont.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/DescriptorHeap.h"
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -228,6 +230,12 @@ void D3DApp::OnResize()
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mDepthStencilBuffer.Get(),
 		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
 	
+	// > Font Test
+	m_font.reset();
+	m_resourceDescriptors.reset();
+	m_spriteBatch.reset();
+	// >
+
     // Execute the resize commands.
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };

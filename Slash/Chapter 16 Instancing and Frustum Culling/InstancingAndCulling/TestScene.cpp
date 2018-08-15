@@ -24,6 +24,9 @@
 #include "Transform.h"
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
+#include "Network.h"
+#include "d3dApp.h"
+
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize)
 	: CScene(d3dDevice, srv, srvSize)
 {
@@ -36,23 +39,24 @@ CTestScene::~CTestScene()
 
 HRESULT CTestScene::Initialize()
 {
+	CNetwork::GetInstance()->InitSock(D3DApp::GetApp()->MainWnd());
 	//CManagement::GetInstance()->GetSound()->PlayBGM(L"Sound", L"village");
 
 	CGameObject* pObject = SkyBox::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	Ready_GameObject(L"Layer_SkyBox", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_PRIORITY, pObject);
 
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 	for(int i = 0; i < MAX_USER; ++i)
 	{
 		pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage");
 		pObject->SetCamera(Get_MainCam());
 		Ready_GameObject(L"Layer_Skeleton", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 	
 	for (int i = NPC_START; i < NUM_OF_NPC; ++i)
@@ -63,7 +67,7 @@ HRESULT CTestScene::Initialize()
 		pObject->SetPosition(0, 0, 5 + i);
 
 		Ready_GameObject(L"Layer_Spider", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 
 
@@ -133,7 +137,7 @@ HRESULT CTestScene::Initialize()
 	pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Terrain", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 	//for (int i = 0; i < 30; ++i)
 	//{
@@ -160,8 +164,8 @@ HRESULT CTestScene::Initialize()
 	UISetting();
 
 	
-	//if (FAILED(Load_Map()))
-	//	return E_FAIL;
+	if (FAILED(Load_Map()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -446,9 +450,11 @@ HRESULT CTestScene::Load_Map()
 		}
 	}
 	*/
+	
 	while (!fin.eof())
 	{
-
+		if (m_iObjectCount == 0)
+			fin >> m_iObjectCount;
 		fin >> ignore;		// > Com_Mesh_¿Ã∏ß
 		wstring wstrFileName;
 		wstring meshName = wstrFileName.assign(ignore.begin(), ignore.end());
@@ -498,7 +504,7 @@ HRESULT CTestScene::Load_Map()
 			dynamic_cast<CInstancingObject*>(pObject)->SetRenderType(eRenderType);
 		}
 		Ready_GameObject(L"Layer_Map", pObject);
-		CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
+		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(eRenderType, pObject);
 	}
 
 
@@ -534,7 +540,7 @@ void CTestScene::UISetting()
 	CGameObject* pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_HPBar", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
 	move.x = -0.82f;
 	move.y = 0.75f;
@@ -546,11 +552,12 @@ void CTestScene::UISetting()
 
 	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
 
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_WarriorUI", tex->Num);
 	pObject->SetCamera(Get_MainCam());
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
 	move.x = -0.5f;
 	move.y = 1.45f;
@@ -562,11 +569,12 @@ void CTestScene::UISetting()
 
 	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
 
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerHPState", tex->Num);
 	pObject->SetCamera(Get_MainCam());
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 }
 
 void CTestScene::Free()

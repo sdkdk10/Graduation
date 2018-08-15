@@ -8,6 +8,7 @@
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
 #include "Layer.h"
+#include "TestScene.h"
 
 CInstancingObject* CInstancingObject::m_pAllInstObject[MAXINSTOBJECTID] = { nullptr };
 unsigned long CInstancingObject::m_iAllInstObjectIndex = 0;
@@ -748,7 +749,10 @@ void CInstancingObject::Animate(const GameTimer & gt, CTransform * transform)
 	// Transform the camera frustum from view space to the object's local space.
 	WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&(transform->GetWorld())));
 
-
+	CTestScene* pScene = dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene());
+	if (pScene == nullptr)
+		return;
+	pScene->GetObjectCount();
 
 	
 	if (mLocalPlayerBounds.Contains(GetBounds()) != DirectX::DISJOINT)

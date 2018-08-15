@@ -90,7 +90,7 @@ public:
 public:
 	void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
 protected:
-	AnimateStateMachine* AnimStateMachine;
+	AnimateStateMachine* AnimStateMachine = nullptr;
 public:
 	int planeCollision = 0;
 public:
@@ -217,8 +217,8 @@ protected:
 	unsigned long         m_iMyObjectID;
 
 public:
-	Mesh*				m_pMesh;
-	CTransform*			m_pTransCom;
+	Mesh*				m_pMesh = nullptr;
+	CTransform*			m_pTransCom = nullptr;
 	wchar_t*			m_pwstrMeshName;
 public:
 	BoundingBox GetBounds() { return Bounds; }

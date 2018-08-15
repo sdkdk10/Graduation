@@ -136,3 +136,145 @@ void CGameObject::Animate(const GameTimer & gt)
 	// Animate
 
 }
+
+
+
+void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
+{
+	if (bTimerIdle == true)
+	{
+		m_fAnimationKeyFrameIndex += gt.DeltaTime() * 25;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
+		if (m_fAnimationKeyFrameIndex > (*vecAnimFrame)[0])
+		{
+			bTimerIdle = false;
+
+			m_fAnimationKeyFrameIndex = 0;
+		}
+	}
+
+
+	if (bTimerWalk == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 45;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+		if (m_fAnimationKeyFrameIndex_Walk > (*vecAnimFrame)[1])
+		{
+			bTimerWalk = false;
+			m_fAnimationKeyFrameIndex_Walk = 0;
+		}
+
+	}
+
+
+	if (bTimerAttack1 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[2])
+		{
+			bTimerAttack1 = false;
+			m_fAnimationKeyFrameIndex_Attack1 = 0;
+		}
+
+	}
+
+
+	if (bTimerAttack2 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack2 += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])
+		{
+			bTimerAttack2 = false;
+			m_fAnimationKeyFrameIndex_Attack2 = 0;
+		}
+
+
+	}
+
+
+
+	if (bTimerAttack3 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack3 += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[4])
+		{
+			bTimerAttack3 = false;
+			m_fAnimationKeyFrameIndex_Attack3 = 0;
+		}
+
+	}
+
+	if (bTimerDead == true)
+	{
+		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
+		if (m_bIsLife == true)
+			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
+		{
+			m_bIsLife = false;
+			bTimerDead = false;
+			//m_fAnimationKeyFrameIndex_Dead = 0;
+		}
+
+	}
+
+
+
+
+}
+
+void AnimateStateMachine::SetTimerTrueFalse()
+{
+	//
+	//
+	//
+	//
+
+	//
+
+	if (m_iAnimState == IdleState)
+	{
+		bTimerIdle = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
+	}
+	if (m_iAnimState == WalkState)
+	{
+		bTimerWalk = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+	}
+	if (m_iAnimState == Attack1State)
+	{
+		bTimerAttack1 = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+	}
+	if (m_iAnimState == Attack2State)
+	{
+		bTimerAttack2 = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+	}
+	if (m_iAnimState == Attack3State)
+	{
+		bTimerAttack3 = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+	}
+
+	if (m_iAnimState == DeadState)
+	{
+		bTimerDead = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
+	}
+}
+
+void AnimateStateMachine::Free()
+{
+}

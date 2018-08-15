@@ -119,6 +119,9 @@ BEGIN_MESSAGE_MAP(CEffectTool, CDialog)
 	ON_LBN_SELCHANGE(IDC_LIST_COMPLETE_SKILL_EFFECT, &CEffectTool::OnLbnSelchangeListCompleteSkillEffect)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CEffectTool::OnBnClickedButtonSave)
 	ON_LBN_SELCHANGE(IDC_LIST_MODEL, &CEffectTool::OnLbnSelchangeListModel)
+	ON_BN_CLICKED(IDC_BUTTON_SHOW, &CEffectTool::OnBnClickedButtonShow)
+	ON_BN_CLICKED(IDC_BUTTON_PLAY_ALL, &CEffectTool::OnBnClickedButtonPlayAll)
+	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CEffectTool::OnBnClickedButtonStopAll)
 END_MESSAGE_MAP()
 
 
@@ -358,6 +361,7 @@ void CEffectTool::OnLbnSelchangeListEffect()
 
 	if (m_pCurObject)
 	{
+		return;
 		m_pCurObject->Set_Enable(false);
 		m_pCurObject = nullptr;
 
@@ -479,8 +483,10 @@ void CEffectTool::OnBnClickedButtonSave()
 	for (int i = 0; i < iSize; ++i)
 	{
 		EFFECT_INFO info = dynamic_cast<CEffect*>(m_vecEffect[i])->Get_EffectInfo();
+		if (info.strMeshName == "Com_Geometry")
+			info.strMeshName = "Com_Mesh_Geometry";
 		
-		out << info.isBillboard << '\t' << info.strName << '\t' << info.strTexName << '\t';
+		out << info.isBillboard << '\t' << info.strName << '\t' << info.strMeshName << '\t' << info.strTexName << '\t';
 		out << info.S_Pos.x << '\t' << info.S_Pos.y << '\t' << info.S_Pos.z << '\t';
 		out << info.S_Size.x << '\t' << info.S_Size.y << '\t' << info.S_Size.z << '\t';
 		out << info.S_Rot.x << '\t' << info.S_Rot.y << '\t' << info.S_Rot.z << '\t';
@@ -507,7 +513,7 @@ void CEffectTool::OnBnClickedButtonSave()
 	iSize = m_vecEffectSkill.size();
 	ofstream skillOut("EffectSkill.txt");
 
-	out << iSize << endl;
+	skillOut << iSize << endl;
 
 	for (int i = 0; i < iSize; ++i)
 	{
@@ -541,6 +547,8 @@ void CEffectTool::OnBnClickedButtonSave()
 		if (i < iSize - 1)
 			texOut << endl;
 	}
+
+	ofstream modelOut("EffectModelList.txt");
 }
 
 void CEffectTool::OnLbnSelchangeListModel()
@@ -573,6 +581,61 @@ void CEffectTool::OnLbnSelchangeListModel()
 	{
 		wstring wstr = wstring(strMesh.begin(), strMesh.end());
 		dynamic_cast<CEffect*>(m_pCurObject)->SetMesh(const_cast<wchar_t*>(wstr.c_str()));
+	}
+
+	UpdateData(FALSE);
+}
+
+
+void CEffectTool::OnBnClickedButtonShow()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+	int iSel = m_EffectListBox.GetCurSel();
+	if (iSel > m_vecEffect.size())
+		return;
+
+	if(m_vecEffect[iSel])
+	{
+		m_vecEffect[iSel]->Set_Enable(!m_vecEffect[iSel]->IsEnable());
+	}
+	
+	UpdateData(FALSE);
+}
+
+
+void CEffectTool::OnBnClickedButtonPlayAll()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+
+	size_t iCnt = m_vecEffect.size();
+
+	for (size_t i = 0; i < iCnt; ++i)
+	{
+		if (m_vecEffect[i]->IsEnable())
+		{
+			dynamic_cast<CEffect*>(m_vecEffect[i])->SetPlay(true);
+		}
+	}
+
+	UpdateData(FALSE);
+}
+
+
+void CEffectTool::OnBnClickedButtonStopAll()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData();
+
+	size_t iCnt = m_vecEffect.size();
+
+	for (size_t i = 0; i < iCnt; ++i)
+	{
+		if (m_vecEffect[i]->IsEnable())
+		{
+			dynamic_cast<CEffect*>(m_vecEffect[i])->SetPlay(false);
+		}
 	}
 
 	UpdateData(FALSE);

@@ -499,7 +499,6 @@ void PlayerAttack(int source) {
 
 		add_timer(source, EVT_DAMAGE, GetTickCount() + 500, i);
 	}
-
 }
 
 void ProcessDamage(int source, int target) {

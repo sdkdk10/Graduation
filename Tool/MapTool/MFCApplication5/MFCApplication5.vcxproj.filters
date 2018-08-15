@@ -124,6 +124,12 @@
     <Filter Include="01. GameObject\03. Skill\00.SkillEffect">
       <UniqueIdentifier>{abaf5dd8-6f80-4c53-9bcc-2d126dcdbac9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96. Component\02. Mesh\02. DynamicMesh">
+      <UniqueIdentifier>{c7c57aa9-99f7-4b2d-9252-1f03ae53749a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. GameObject\05. Player">
+      <UniqueIdentifier>{6e6f7fb7-5e8e-4724-a024-f5c0fbf8d245}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -267,6 +273,12 @@
     <ClInclude Include="SkillEffect.h">
       <Filter>01. GameObject\03. Skill\00.SkillEffect</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicMesh.h">
+      <Filter>96. Component\02. Mesh\02. DynamicMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>01. GameObject\05. Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -382,6 +394,12 @@
     </ClCompile>
     <ClCompile Include="SkillEffect.cpp">
       <Filter>01. GameObject\03. Skill\00.SkillEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicMesh.cpp">
+      <Filter>96. Component\02. Mesh\02. DynamicMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>01. GameObject\05. Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

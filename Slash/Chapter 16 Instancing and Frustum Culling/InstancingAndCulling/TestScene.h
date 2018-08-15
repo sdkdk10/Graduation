@@ -26,6 +26,11 @@ public:
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 	virtual void	CollisionProcess();
 	
+public:
+	int			GetObjectCount() { return m_iObjectCount; }
+private:
+	int				m_iObjectCount = 0;
+
 private:
 	HRESULT Load_Map();
 

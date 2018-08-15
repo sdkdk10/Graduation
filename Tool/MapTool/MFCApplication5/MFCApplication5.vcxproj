@@ -196,6 +196,7 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="DynamicMesh.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectTool.h" />
     <ClInclude Include="Frame.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="MFCApplication5View.h" />
     <ClInclude Include="MyForm.h" />
     <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SkillEffect.h" />
@@ -242,6 +244,7 @@
     <ClCompile Include="d3dApp.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="DynamicMesh.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectTool.cpp" />
     <ClCompile Include="Frame.cpp" />
@@ -262,6 +265,7 @@
     <ClCompile Include="MFCApplication5View.cpp" />
     <ClCompile Include="MyForm.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SkillEffect.cpp" />
     <ClCompile Include="Skill_Billboard.cpp" />

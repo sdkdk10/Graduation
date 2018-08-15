@@ -79,4 +79,7 @@ public:
 	afx_msg void OnBnClickedButtonSave();
 	CListBox m_ModelListBox;
 	afx_msg void OnLbnSelchangeListModel();
+	afx_msg void OnBnClickedButtonShow();
+	afx_msg void OnBnClickedButtonPlayAll();
+	afx_msg void OnBnClickedButtonStopAll();
 };

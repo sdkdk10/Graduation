@@ -1,7 +1,9 @@
 
 #include "stdafx.h"
 #include "StaticUI.h"
-
+#include "Management.h"
+#include "Renderer.h"
+#include "Component_Manager.h"
 #include "UIMesh.h"
 #include "Define.h"
 
@@ -12,6 +14,12 @@ StaticUI::StaticUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12
 	scale = _scale;
 	size = _size;
 
+	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+}
+
+StaticUI::StaticUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t * wstrUIName, int diffuseSrvHeapIndex)
+	: UI(d3dDevice, srv, srvSize)
+{
 	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
 }
 
@@ -34,9 +42,24 @@ StaticUI * StaticUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 	return pInstance;
 }
 
+StaticUI * StaticUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t * wstrUIName, int diffuseSrvHeapIndex)
+{
+	StaticUI* pInstance = new StaticUI(d3dDevice, srv, srvSize, wstrUIName, diffuseSrvHeapIndex);
+
+	if (FAILED(pInstance->Initialize(wstrUIName)))
+	{
+		MSG_BOX(L"Player Created Failed");
+		Safe_Release(pInstance);
+	}
+
+
+	return pInstance;
+}
+
 bool StaticUI::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	return true;
 }
 
@@ -74,12 +97,43 @@ void StaticUI::Render(ID3D12GraphicsCommandList * cmdList)
 
 HRESULT StaticUI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 {
-	m_pMesh = UIMesh::Create(m_d3dDevice, move, scale, size);
-
+	//m_pMesh = UIMesh::Create(m_d3dDevice, move, scale, size);
+	//Com_Mesh_WarriorUI
+	m_pMesh = dynamic_cast<UIMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_WarriorUI"));
+	if (m_pMesh == nullptr)
+		return E_FAIL;
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
-	Mat->MatCBIndex = 2;
+	Mat->MatCBIndex = m_iMyObjectID;
+	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Mat->Roughness = 0.3f;
+
+	/* CB(World,TextureTranform...) Build */
+
+	TexTransform = MathHelper::Identity4x4();
+	ObjCBIndex = m_iMyObjectID;
+
+	Geo = dynamic_cast<UIMesh*>(m_pMesh)->m_Geometry[0].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	IndexCount = Geo->DrawArgs["UI"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["UI"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
+
+	return S_OK;
+}
+
+HRESULT StaticUI::Initialize(wchar_t* uiName)
+{
+	m_pMesh = dynamic_cast<UIMesh*>(CComponent_Manager::GetInstance()->Clone_Component(uiName));
+	if (m_pMesh == nullptr)
+		return E_FAIL;
+	/* Material Build */
+	Mat = new Material;
+	Mat->Name = "TerrainMat";
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);

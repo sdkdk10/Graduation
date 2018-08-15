@@ -289,6 +289,9 @@ void CMapTool::OnBnClickedButtonSave()
 
 	auto obj_iter = m_mapObject.begin();
 	auto obj_iter_end = m_mapObject.end();
+	int iNum = 0;
+
+	out << m_ObjectListBox.GetCount() << endl;
 
 	for (; obj_iter != obj_iter_end; ++obj_iter)
 	{
@@ -298,7 +301,7 @@ void CMapTool::OnBnClickedButtonSave()
 
 		out << obj_iter->first << '\t';			// > Mesh Name
 		out << objSize << '\t';					// > Object Count
-
+		iNum += objSize;
 		for (size_t i = 0; i < objSize; ++i)
 		{
 			out << dynamic_cast<CMapObject*>((obj_iter->second)[i])->IsAlpha() << '\t';
@@ -359,8 +362,11 @@ void CMapTool::OnBnClickedButtonLoad()
 	string str;
 	string meshName;
 	string ignore;
+	int ObjCnt = 0;
 	while (!in.eof())
 	{
+		if(ObjCnt == 0)
+			in >> ObjCnt;
 		in >> meshName;		// MeshName
 
 		size_t needed = ::mbstowcs(NULL, &meshName[0], meshName.length());

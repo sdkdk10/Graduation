@@ -44,12 +44,13 @@ void Player::Animate(const GameTimer & gt)
 		{
 			m_bAttackMotionForSound = true;
 		}
-
-		if (GetAnimateMachine()->GetCurAnimFrame() == 8)
-		{
-			AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
-			CNetwork::GetInstance()->SendStopPacket();
-		}
+// > =======================Test===========================
+		//if (GetAnimateMachine()->GetCurAnimFrame() == 8)
+		//{
+		//	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+		//	CNetwork::GetInstance()->SendStopPacket();
+		//}
+// > ===========================================================
 
 	}
 	//if (GetHp() < 0)
@@ -683,7 +684,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
-		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() *20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
 		{
@@ -698,17 +699,20 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
 			cout << "스킬!" << endl;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
 			cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[2])
 		{
 			bTimerAttack1 = false;
-			m_fAnimationKeyFrameIndex_Attack1 = 0;
+			m_fAnimationKeyFrameIndex_Attack1 = 0.f;
 
 			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = false;
 			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 	}

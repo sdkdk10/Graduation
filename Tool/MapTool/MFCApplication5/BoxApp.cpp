@@ -15,6 +15,8 @@
 #include "Terrain.h"
 #include "GeometryMesh.h"
 #include "Skill_Billboard.h"
+#include "Player.h"
+#include "DynamicMesh.h"
 
 const int gNumFrameResources = 3;
 int KeyInputTest = 0;
@@ -389,6 +391,21 @@ void InstancingAndCullingApp::LoadMesh()
 	pComponent = GeometryMesh::Create(md3dDevice);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Geometry", pComponent, CComponent_Manager::COM_MESH);
 
+
+
+	//vector<pair<const string, const string>> path;
+	//path.push_back(make_pair("Attack", "Assets/Models/Warrior/Warrior_Attack_Turn.ASE"));
+	path.clear();
+	path.push_back(make_pair("Idle", "../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Models/Warrior/Warrior_Idle.ASE"));
+	//path.push_back(make_pair("Walk", "Assets/Models/Warrior/Warrior_Walk.ASE"));
+	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack1.ASE"));
+	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack2.ASE"));
+	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack3.ASE"));
+	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
+
+	pComponent = DynamicMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent, CComponent_Manager::COM_MESH);
+
 }
 
 void InstancingAndCullingApp::LoadTextures()
@@ -478,7 +495,7 @@ void InstancingAndCullingApp::LoadTextures()
 	defaultTex->Resource, defaultTex->UploadHeap));*/
 
 	auto InsecTex = new Texture;
-	InsecTex->Name = "InsecTex";
+	InsecTex->Name = "VillagerTex";
 	InsecTex->Filename = L"Textures/villager02_diff.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), InsecTex->Filename.c_str(),
@@ -679,7 +696,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto grassTex = mMaterials_Instancing["grassTex"]->Resource;
 	//auto defaultTex = mMaterials["defaultTex"]->Resource;
 	//auto skyTex = mMaterials["skyCubeMap"]->Resource;
-	auto InsecTex = mMaterials_Instancing["InsecTex"]->Resource;
+	auto InsecTex = mMaterials_Instancing["VillagerTex"]->Resource;
 	auto SkyTex = mMaterials_Instancing["SkyTex"]->Resource;
 	auto FenceTex = mMaterials_Instancing["FenceTex"]->Resource;
 	auto SpiderTex = mMaterials_Instancing["SpiderTex"]->Resource;
@@ -1168,9 +1185,9 @@ void InstancingAndCullingApp::BuildRenderItems()
 
 
 
-	//pObject = CMapObject::Create(md3dDevice, mSrvDescriptorHeap[0], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel");
-	//CObjectManager::GetInstance()->Add_Object(pObject);
-	//CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	CGameObject* pObject = Player::Create(md3dDevice, mSrvDescriptorHeap[0], mCbvSrvDescriptorSize);
+	CObjectManager::GetInstance()->Add_Object(pObject);
+	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	//pObject->GetTransform()->Translate(10, 30, 10);
 
 	//pObject = CMapObject::Create(md3dDevice, mSrvDescriptorHeap[0], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel");

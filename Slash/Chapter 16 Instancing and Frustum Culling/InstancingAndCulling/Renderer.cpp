@@ -102,6 +102,10 @@ void CRenderer::Render_UI(ID3D12GraphicsCommandList * cmdList)
 	mCommandList->SetPipelineState(mPSOs["UI"].Get());
 	for (auto& elem : m_vecObject[RENDER_UI])
 		elem->Render(cmdList);
+
+	mCommandList->SetPipelineState(mPSOs["UIChange"].Get());
+	for (auto& elem : m_vecObject[RENDER_UICHANGE])
+		elem->Render(cmdList);
 }
 
 void CRenderer::Clear_Renderer()

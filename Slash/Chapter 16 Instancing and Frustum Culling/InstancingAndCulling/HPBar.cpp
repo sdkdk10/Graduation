@@ -2,6 +2,8 @@
 #include "HPBar.h"
 
 #include "UIMesh.h"
+#include "Management.h"
+#include "Renderer.h"
 #include "Define.h"
 
 HPBar::HPBar(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
@@ -81,6 +83,8 @@ bool HPBar::Update(const GameTimer & gt)
 	
 	Geo->VertexBufferGPU = currVB->Resource();
 
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
 	return true;
 }
 
@@ -128,7 +132,7 @@ HRESULT HPBar::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
-	Mat->MatCBIndex = 2;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;// 6;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);

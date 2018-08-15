@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Effect.h"
 #include "GeometryMesh.h"
+#include "StaticMesh.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
 #include "Transform.h"
@@ -34,7 +35,21 @@ CEffect::~CEffect()
 
 HRESULT CEffect::Initialize()
 {
-	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
+	string geoName = "";
+	bool isStaticMesh = false;
+	if (m_tInfo.strMeshName == "Com_Mesh_Geometry")
+	{
+		m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
+		geoName = "grid";
+	}
+		
+	else
+	{
+		wstring wstrMesh = wstring(m_tInfo.strMeshName.begin(), m_tInfo.strMeshName.end());
+		m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(const_cast<wchar_t*>(wstrMesh.c_str())));
+		geoName = "Barrel";
+		isStaticMesh = true;
+	}
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
@@ -70,11 +85,14 @@ HRESULT CEffect::Initialize()
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 
-	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
+	if (isStaticMesh)
+		Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
+	else
+		Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs["grid"].IndexCount;
-	StartIndexLocation = Geo->DrawArgs["grid"].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs["grid"].BaseVertexLocation;
+	IndexCount = Geo->DrawArgs[geoName].IndexCount;
+	StartIndexLocation = Geo->DrawArgs[geoName].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs[geoName].BaseVertexLocation;
 
 	Mat->MatTransform(3, 0) = 1;
 	Mat->MatTransform(3, 1) = 1;

@@ -369,7 +369,6 @@ void CEffect::SetMesh(wchar_t* meshName)
 		geoName = "Barrel";
 	}
 
-
 	//Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	IndexCount = Geo->DrawArgs[geoName].IndexCount;
@@ -378,6 +377,7 @@ void CEffect::SetMesh(wchar_t* meshName)
 	Bounds = Geo->DrawArgs[geoName].Bounds;
 	wstring wstr(meshName);
 	m_strMeshName.assign(wstr.begin(), wstr.end());
+	m_tInfo.strMeshName.assign(wstr.begin(), wstr.end());
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.1f, Bounds.Center.y * 0.1f, Bounds.Center.z * 0.1f), XMFLOAT3(Bounds.Extents.x * 0.1f, Bounds.Extents.y * 0.1f, Bounds.Extents.z * 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 }

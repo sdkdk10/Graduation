@@ -12,30 +12,30 @@ UIMesh::~UIMesh()
 {
 }
 
-HRESULT UIMesh::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
+HRESULT UIMesh::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size, float fZ)
 {
 	std::vector<Vertex> vertices(6);
 	//std::vector<uint32> Indices32;
 
 
-	vertices[0].Pos = XMFLOAT3((-size + move.x) * scale.x, (size + move.y) * scale.y, 0.0f);
+	vertices[0].Pos = XMFLOAT3((-size + move.x) * scale.x, (size + move.y) * scale.y, fZ);
 	vertices[0].TexC = XMFLOAT2(0.0f, 0.0f);
 
-	vertices[1].Pos = XMFLOAT3((size + move.x)* scale.x, (-size + move.y) * scale.y, 0.0f);
+	vertices[1].Pos = XMFLOAT3((size + move.x)* scale.x, (-size + move.y) * scale.y, fZ);
 	vertices[1].TexC = XMFLOAT2(1.0f, 1.0f);
 
-	vertices[2].Pos = XMFLOAT3((-size + move.x)* scale.x, (-size + move.y) * scale.y, 0.0f);
+	vertices[2].Pos = XMFLOAT3((-size + move.x)* scale.x, (-size + move.y) * scale.y, fZ);
 	vertices[2].TexC = XMFLOAT2(0.0f, 1.0f);
 
 
 
-	vertices[3].Pos = XMFLOAT3((-size + move.x)* scale.x, (size + move.y) * scale.y, 0.0f);
+	vertices[3].Pos = XMFLOAT3((-size + move.x)* scale.x, (size + move.y) * scale.y, fZ);
 	vertices[3].TexC = XMFLOAT2(0.0f, 0.0f);
 
-	vertices[4].Pos = XMFLOAT3((size + move.x)* scale.x, (size + move.y) * scale.y, 0.0f);
+	vertices[4].Pos = XMFLOAT3((size + move.x)* scale.x, (size + move.y) * scale.y, fZ);
 	vertices[4].TexC = XMFLOAT2(1.0f, 0.0f);
 
-	vertices[5].Pos = XMFLOAT3((size + move.x)* scale.x, (-size + move.y) * scale.y, 0.0f);
+	vertices[5].Pos = XMFLOAT3((size + move.x)* scale.x, (-size + move.y) * scale.y, fZ);
 	vertices[5].TexC = XMFLOAT2(1.0f, 1.0f);
 
 	/*
@@ -147,10 +147,10 @@ void UIMesh::Draw()
 {
 }
 
-UIMesh * UIMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, XMFLOAT2 move, XMFLOAT2 scale, float size)
+UIMesh * UIMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, XMFLOAT2 move, XMFLOAT2 scale, float size, float fZ)
 {
 	UIMesh* pInstance = new UIMesh(d3dDevice);
-	if (pInstance->Initialize(move,scale,size))
+	if (pInstance->Initialize(move,scale,size, fZ))
 	{
 		MSG_BOX(L"UIMesh Created Failed");
 		Safe_Release(pInstance);
@@ -160,7 +160,8 @@ UIMesh * UIMesh::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, XMFLOAT2
 
 CComponent * UIMesh::Clone(void)
 {
-	return nullptr;
+	AddRef();
+	return this;
 }
 
 void UIMesh::Free()

@@ -3,7 +3,6 @@
 #include "d3dApp.h"
 
 #include "Camera.h"
-
 class CGameObject;
 
 
@@ -19,6 +18,9 @@ public:
 
 	virtual bool Initialize()override;
 	//////////////////////////////////
+
+	//std::unique_ptr<DirectX::SpriteFont>	m_font;
+
 private:
 	virtual void OnResize()override;
 	virtual void Update(const GameTimer& gt)override;
