@@ -490,6 +490,12 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 void Player::KeyInput(const GameTimer & gt)
 {
+	if (GetHp() <= 0) return;
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->DeadState) return;
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack1State) return;
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack2State) return;
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack3State) return;
+
 	if (AnimStateMachine->GetAnimState() == AnimStateMachine->DeadState)
 		return;
 

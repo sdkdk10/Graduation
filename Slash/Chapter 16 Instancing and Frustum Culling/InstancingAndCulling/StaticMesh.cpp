@@ -58,6 +58,7 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 					size_t iLength = wstrFileName.length();
 					size_t iDotPos = wstrFileName.rfind(L".");											// > .tga에서 .위치 찾기
 					wstrFileName.erase(iDotPos, iLength);												// > TextureName만 남기기
+
 					wstring wstrTexPath = L"Assets/Textures/" + wstrFileName + L".dds";					// > 경로 지정 L"Assets/Textures/TextureName.dds"
 					auto Tex = new Texture;
 					string texName;
@@ -247,8 +248,6 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 	BoundingBox bounds;
 	XMStoreFloat3(&bounds.Center, 0.5f*(vMin + vMax));
 	XMStoreFloat3(&bounds.Extents, 0.5f*(vMax - vMin));
-
-
 
 	size_t indexTest = curCharacter.uvIndex.size();
 

@@ -59,8 +59,7 @@ struct CLIENT {
 	bool in_use;
 	XMFLOAT4X4 World;
 	float LookDegree;
-	BYTE cur_state;
-	BYTE pre_state;
+	BYTE State;
 	BoundingOrientedBox xmOOBB;
 	BoundingOrientedBox xmOOBBTransformed;
 	unordered_set<int> viewlist;
@@ -78,6 +77,7 @@ struct CLIENT {
 
 struct MapObject {
 	XMFLOAT4X4 World;
+	BoundingBox Bounds;
 	BoundingOrientedBox xmOOBB;
 	BoundingOrientedBox xmOOBBTransformed;
 };
@@ -200,6 +200,14 @@ void SetOOBB(CLIENT& cl, const XMFLOAT3& xmCenter, const XMFLOAT3& xmExtents, co
 //	}
 //}
 
+bool CanSeeMapObject(int a, MapObject* b)
+{
+	float dist_sq = (g_clients[a].World._41 - b->World._41) * (g_clients[a].World._41 - b->World._41)
+		+ (g_clients[a].World._42 - b->World._42) * (g_clients[a].World._42 - b->World._42)
+		+ (g_clients[a].World._43 - b->World._43) * (g_clients[a].World._43 - b->World._43);
+	return (dist_sq <= MAPOBJECT_RADIUS * MAPOBJECT_RADIUS);
+}
+
 bool CanSee(int a, int b)
 {
 	float dist_sq = (g_clients[a].World._41 - g_clients[b].World._41) * (g_clients[a].World._41 - g_clients[b].World._41)
@@ -224,6 +232,14 @@ bool IsClose(int a, int b)
 	return (dist_sq <= CLOSE_RADIUS * CLOSE_RADIUS);
 }
 
+bool IsClose(int a, MapObject* b)
+{
+	float dist_sq = (g_clients[a].World._41 - b->World._41) * (g_clients[a].World._41 - b->World._41)
+		+ (g_clients[a].World._42 - b->World._42) * (g_clients[a].World._42 - b->World._42)
+		+ (g_clients[a].World._43 - b->World._43) * (g_clients[a].World._43 - b->World._43);
+	return (dist_sq <= CLOSE_RADIUS * CLOSE_RADIUS);
+}
+
 bool IsInAgroRange(int a, int b)
 {
 	float dist_sq = (g_clients[a].World._41 - g_clients[b].World._41) * (g_clients[a].World._41 - g_clients[b].World._41)
@@ -243,9 +259,9 @@ void WakeUpNPC(int id, int target)
 
 	if (g_clients[id].is_active) return;
 	if (!IsInAgroRange(id, target))return;
-	if (DEAD == g_clients[id].cur_state) return;
+	if (DEAD == g_clients[id].State) return;
 	g_clients[id].is_active = true;
-	g_clients[id].cur_state = WALK;
+	g_clients[id].State = WALK;
 
 	for (int i = 0; i < MAX_USER; ++i)
 	{
@@ -295,10 +311,27 @@ XMFLOAT3 GetSlideVector(CLIENT& Obj, CLIENT& CollObj)
 
 XMFLOAT3 GetSlideVector(CLIENT& Obj, MapObject* CollObj)
 {
-	BoundingBox WorldBounds = BoundingBox(CollObj->xmOOBB.Center, CollObj->xmOOBB.Extents);
-	WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&CollObj->World));
+	XMMATRIX world = XMLoadFloat4x4(&CollObj->World);
+
+	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+	// View space to the object's local space.
+
+	// Transform the camera frustum from view space to the object's local space.
+
+	BoundingOrientedBox mLocalPlayerBounds;
+	// Transform the camera frustum from view space to the object's local space.
+	Obj.xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+	BoundingBox WorldBounds = CollObj->Bounds;
+	// Transform the camera frustum from view space to the object's local space.
+	WorldBounds.Transform(WorldBounds, XMLoadFloat4x4(&(CollObj->World)));
+
 
 	//XMFLOAT3 pCollObjPos2= pCollobj->m_pTransCom->m_f3Position;
+	//XMFLOAT3 Center = pCollobj->GetTransform()->GetPosition();
+	//XMFLOAT3 Player = pobj->GetPosition();
+
 	XMFLOAT3 Center = XMFLOAT3(CollObj->World._41, CollObj->World._42, CollObj->World._43);
 	XMFLOAT3 Player = XMFLOAT3(Obj.World._41, Obj.World._42, Obj.World._43);
 	XMFLOAT3 look = XMFLOAT3(CollObj->World._21, CollObj->World._22, CollObj->World._23);
@@ -315,9 +348,9 @@ XMFLOAT3 GetSlideVector(CLIENT& Obj, MapObject* CollObj)
 	look = Vector3::Normalize(look);
 	dirVector = Vector3::Normalize(dirVector);
 
-	if (Player.x > Center.x && 0 < ceta && ceta< extentceta)
+	if (Player.x > Center.x && 0 < ceta && ceta < extentceta)
 		MovingRefletVector = XMFLOAT3(1, 0, 0);
-	if (Player.z > Center.z && extentceta <ceta && ceta < 90)
+	if (Player.z > Center.z && extentceta < ceta && ceta < 90)
 		MovingRefletVector = XMFLOAT3(0, 0, 1);
 	if (Player.z > Center.z && -90 < ceta && ceta < -extentceta)
 		MovingRefletVector = XMFLOAT3(0, 0, 1);
@@ -333,12 +366,13 @@ XMFLOAT3 GetSlideVector(CLIENT& Obj, MapObject* CollObj)
 		MovingRefletVector = XMFLOAT3(1, 0, 0);
 
 	return MovingRefletVector;
-}
 
+}
 void ChasingPlayer(int source, int target) {
 
-	if (g_clients[source].cur_state == DEAD)
+	if (g_clients[source].State == DEAD)
 		return;
+
 	// 거미끼리 충돌체크할때 계속 거리 재야하는가
 	// 아니면 전체 거미끼리 충돌하는지 검사하는가
 
@@ -411,7 +445,7 @@ void ChasingPlayer(int source, int target) {
 	//cout << g_clients[source].World._31 << " " << g_clients[source].World._32 << " " << g_clients[source].World._33 << " " << g_clients[source].World._34 << " " << endl;
 	//cout << g_clients[source].World._41 << " " << g_clients[source].World._42 << " " << g_clients[source].World._43 << " " << g_clients[source].World._44 << " " << endl << endl;
 
-	XMFLOAT3 movingVector = XMFLOAT3(dirVector.x * fMonsterMoveSpeed, dirVector.y * fMonsterMoveSpeed, dirVector.z * fMonsterMoveSpeed); // 빠를수있음
+	XMFLOAT3 movingVector = XMFLOAT3(dirVector.x * dMonsterMoveSpeed, dirVector.y * dMonsterMoveSpeed, dirVector.z * dMonsterMoveSpeed); // 빠를수있음
 
 																																		 //cout << movingVector.x << " " << movingVector.y << " " << movingVector.z << endl;
 
@@ -437,6 +471,8 @@ void ChasingPlayer(int source, int target) {
 
 	for (auto d : g_mapobjects)
 	{
+		if (false == IsClose(source, d)) continue;
+
 		if (g_clients[source].xmOOBB.Contains(d->xmOOBB))
 		{
 			MovingReflectVector = GetSlideVector(g_clients[source], d);
@@ -517,7 +553,7 @@ void ChasingPlayer(int source, int target) {
 			}
 		}
 
-		g_clients[source].cur_state = IDLE;
+		g_clients[source].State = IDLE;
 		g_clients[source].is_active = false;
 
 		for (int i = 0; i < MAX_USER; ++i)
@@ -529,7 +565,7 @@ void ChasingPlayer(int source, int target) {
 	}
 	else if (IsClose(target, source))	 //충돌할 정도로 가까워 졌으면
 	{
-		if (ATTACK1 == g_clients[source].cur_state) return;
+		if (ATTACK1 == g_clients[source].State) return;
 
 		add_timer(source, EVT_MONSTER_ATTACK, GetTickCount(), target);
 
@@ -591,7 +627,7 @@ void PutNewPlayer(int new_key) {
 		p.posY = g_clients[i].World._42;
 		p.posZ = g_clients[i].World._43;
 		p.lookDegree = g_clients[i].LookDegree;
-		p.state = g_clients[i].cur_state;
+		p.state = g_clients[i].State;
 
 		SendPacket(new_key, &p);
 
@@ -611,7 +647,7 @@ void PutNewPlayer(int new_key) {
 		p.posY = g_clients[i].World._42;
 		p.posZ = g_clients[i].World._43;
 		p.lookDegree = g_clients[i].LookDegree;
-		p.state = g_clients[i].cur_state;
+		p.state = g_clients[i].State;
 		SendPacket(new_key, &p);
 
 		g_clients[new_key].vlm.lock();
@@ -627,12 +663,12 @@ void MonsterAttack(int source, int target) {
 
 	if (g_clients[target].in_use == false)
 		return;
-	if (g_clients[source].cur_state == DEAD)
+	if (g_clients[source].State == DEAD)
 		return;
 
 	if (!IsClose(source, target))
 	{
-		g_clients[source].cur_state = WALK;
+		g_clients[source].State = WALK;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -646,7 +682,7 @@ void MonsterAttack(int source, int target) {
 	}
 	else
 	{
-		g_clients[source].cur_state = ATTACK1;
+		g_clients[source].State = ATTACK1;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -655,7 +691,7 @@ void MonsterAttack(int source, int target) {
 			SendObjectState(i, source);
 		}
 
-		add_timer(source, EVT_DAMAGE, GetTickCount(), target);
+		add_timer(source, EVT_DAMAGE, GetTickCount() + 300, target);
 
 		if ((g_clients[target].Hp - g_clients[source].Dmg) > 0)
 		{
@@ -663,7 +699,7 @@ void MonsterAttack(int source, int target) {
 		}
 		else
 		{
-			g_clients[source].cur_state = IDLE;
+			g_clients[source].State = IDLE;
 			g_clients[source].is_active = false;
 
 			for (int i = 0; i < MAX_USER; ++i)
@@ -692,6 +728,9 @@ void PlayerAttack(int source) {
 
 void ProcessDamage(int source, int target) {
 
+	if (g_clients[target].State == DEAD)
+		return;
+
 	g_clients[target].Hp -= g_clients[source].Dmg;
 
 	if ((g_clients[target].Hp - g_clients[source].Dmg) < 0)
@@ -702,7 +741,7 @@ void ProcessDamage(int source, int target) {
 
 	if ((g_clients[target].Hp) <= 0)
 	{
-		g_clients[target].cur_state = DEAD;
+		g_clients[target].State = DEAD;
 		if (IsNPC(target))
 			g_clients[target].is_active = false;
 
@@ -720,10 +759,10 @@ void ProcessDamage(int source, int target) {
 void ProcessRespown(int source)
 {
 	if (false == IsNPC(source))
-	if (false == g_clients[source].in_use)
-		return;
+		if (false == g_clients[source].in_use)
+			return;
 
-	g_clients[source].cur_state = IDLE;
+	g_clients[source].State = IDLE;
 
 	if (IsNPC(source))
 	{
@@ -769,7 +808,7 @@ void Initialize()
 		cl.packet_size = 0;
 		cl.prev_size = 0;
 		cl.LookDegree = 0;
-		cl.cur_state = IDLE;
+		cl.State = IDLE;
 		cl.is_active = false;
 	}
 
@@ -907,7 +946,7 @@ void SendObjectState(int client, int object_id)
 	state_p.id = object_id;
 	state_p.size = sizeof(sc_packet_state);
 	state_p.type = SC_STATE;
-	state_p.state = g_clients[object_id].cur_state;
+	state_p.state = g_clients[object_id].State;
 
 	SendPacket(client, &state_p);
 }
@@ -922,7 +961,7 @@ void SendPutObject(int client, int object_id)
 	put_p.posY = g_clients[object_id].World._42;
 	put_p.posZ = g_clients[object_id].World._43;
 	put_p.lookDegree = g_clients[object_id].LookDegree;
-	put_p.state = g_clients[object_id].cur_state;
+	put_p.state = g_clients[object_id].State;
 
 	SendPacket(client, &put_p);
 }
@@ -956,7 +995,7 @@ void ProcessPacket(int cl, char *packet)
 		// LEFT RIGHT 이동 시 룩벡터 3열 부호 다름
 		// UP DOWN 이동 시 라이트벡터 3열 부호 다름
 
-		g_clients[cl].cur_state = WALK;
+		g_clients[cl].State = WALK;
 
 		XMFLOAT3 xmf3Shift{ 0.0f, 0.0f, 0.0f };
 
@@ -1020,22 +1059,23 @@ void ProcessPacket(int cl, char *packet)
 
 		bool IsCollision = false;
 
-		cout << "Player Pos << " << g_clients[cl].World._41 << "\t" << g_clients[cl].World._42 << "\t" << g_clients[cl].World._43 << endl;
+		//cout << "Player Pos << " << g_clients[cl].World._41 << "\t" << g_clients[cl].World._42 << "\t" << g_clients[cl].World._43 << endl;
 
 
 		// 플레이어 이동시 충돌체크
 
 		for (auto d : g_mapobjects)
 		{
-			if (false == CanSee(cl, d)) continue;
+			if (false == CanSeeMapObject(cl, d)) continue;
 
-			if (g_clients[cl].xmOOBB.Contains(d->xmOOBB))
+			XMMATRIX world = XMLoadFloat4x4(&d->World);
+			XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+			BoundingOrientedBox mLocalPlayerBounds;
+			g_clients[cl].xmOOBB.Transform(mLocalPlayerBounds, invWorld);
+
+			if (mLocalPlayerBounds.Contains(d->Bounds) != DirectX::DISJOINT)
 			{
-				cout << "Center : " << d->xmOOBB.Center.x << "\t" << d->xmOOBB.Center.y << "\t" << d->xmOOBB.Center.z << endl;
-				cout << "Extents : " << d->xmOOBB.Extents.x << "\t" << d->xmOOBB.Extents.y << "\t" << d->xmOOBB.Extents.z << endl;
 
-
-				cout << "충돌하는코드" << endl;
 				SlideVector = GetSlideVector(g_clients[cl], d);
 				float cosCeta = Vector3::DotProduct(SlideVector, xmf3Shift);
 				if (cosCeta < 0)
@@ -1183,12 +1223,12 @@ void ProcessPacket(int cl, char *packet)
 	{
 		//cout << cl << g_clients[cl].LookVector.x << " " << g_clients[cl].LookVector.y << " " << g_clients[cl].LookVector.z << endl;
 
-		g_clients[cl].cur_state = IDLE;
+		g_clients[cl].State = IDLE;
 		sc_packet_state sp;
 		sp.id = cl;
 		sp.size = sizeof(sc_packet_state);
 		sp.type = SC_STATE;
-		sp.state = g_clients[cl].cur_state;
+		sp.state = g_clients[cl].State;
 		for (int i = 0; i < MAX_USER; ++i)
 		{
 			if (false == g_clients[i].in_use) continue;
@@ -1200,7 +1240,7 @@ void ProcessPacket(int cl, char *packet)
 	}
 	else if (packet[1] == CS_ATTACK)
 	{
-		g_clients[cl].cur_state = ATTACK1;
+		g_clients[cl].State = ATTACK1;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -1226,13 +1266,12 @@ void ProcessPacket(int cl, char *packet)
 		MapObject* MapData = new MapObject;
 
 		MapData->World = p->world;
-		MapData->World._11 *= 2;
-		BoundingBox Bounds = p->bounds;
+		MapData->Bounds = p->bounds;
 
-		DirectX::BoundingOrientedBox::CreateFromBoundingBox(MapData->xmOOBB, Bounds);
-		DirectX::BoundingOrientedBox::CreateFromBoundingBox(MapData->xmOOBBTransformed, Bounds);
+		//BoundingBox Bounds = p->bounds;
+		//DirectX::BoundingOrientedBox::CreateFromBoundingBox(MapData->xmOOBB, Bounds);
+		//DirectX::BoundingOrientedBox::CreateFromBoundingBox(MapData->xmOOBBTransformed, Bounds);
 
-		//SetOOBB(MapData, p->Center, p->Extents, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		//cout << p->world._11 << " " << p->world._12 << " " << p->world._13 << " " << p->world._14 << endl;
 		//cout << p->world._21 << " " << p->world._22 << " " << p->world._23 << " " << p->world._24 << endl;
