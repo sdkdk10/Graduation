@@ -138,20 +138,20 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	//for (int i = 0; i < 30; ++i)
-	//{
-	//	
-	//		for (int k = 0; k < 30; ++k)
-	//		{
-	//			pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//			pObject->SetCamera(Get_MainCam());
-	//			pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
+	for (int i = 0; i < 30; ++i)
+	{
+		
+			for (int k = 0; k < 30; ++k)
+			{
+				pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+				pObject->SetCamera(Get_MainCam());
+				pObject->SetPosition(i * 50 -750, 0, k * 50 - 750);
 
-	//			Ready_GameObject(L"Layer_Terrain", pObject);
-	//		}
-	//	
+				Ready_GameObject(L"Layer_Terrain", pObject);
+			}
+		
 
-	//}
+	}
 
 	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	//pObject->SetCamera(Get_MainCam());
