@@ -391,6 +391,7 @@ void InstancingAndCullingApp::LoadMesh()
 	pComponent = GeometryMesh::Create(md3dDevice);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Geometry", pComponent, CComponent_Manager::COM_MESH);
 
+<<<<<<< HEAD
 
 
 	//vector<pair<const string, const string>> path;
@@ -406,6 +407,42 @@ void InstancingAndCullingApp::LoadMesh()
 	pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent, CComponent_Manager::COM_MESH);
 
+=======
+/*
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/staticMesh.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Barrel", pComponent, CComponent_Manager::COM_MESH);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House1.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House1", pComponent, CComponent_Manager::COM_MESH);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House2.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House2", pComponent, CComponent_Manager::COM_MESH);
+
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House3.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House3", pComponent, CComponent_Manager::COM_MESH);
+
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/House4.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_House4", pComponent, CComponent_Manager::COM_MESH);
+
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Models/StaticMesh/Screaming_statue.ASE"));
+	pComponent = StaticMesh::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Scream", pComponent, CComponent_Manager::COM_MESH);
+	*/
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
 }
 
 void InstancingAndCullingApp::LoadTextures()
@@ -550,16 +587,16 @@ void InstancingAndCullingApp::LoadTextures()
 	CTexture_Manager::GetInstance()->Ready_Texture(wstr, MageTex, HEAP_DEFAULT);
 
 
-	//auto Tex = new Texture;
-	//Tex->Name = "Aura0";
-	//Tex->Filename = L"Textures/Aura0.dds";
-	//ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-	//	mCommandList.Get(), Tex->Filename.c_str(),
-	//	Tex->Resource, Tex->UploadHeap));
+	auto Tex = new Texture;
+	Tex->Name = "Aura0";
+	Tex->Filename = L"../../../Textures/Aura0.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
 
-	//wstr = L"";
-	//wstr.assign(Tex->Name.begin(), Tex->Name.end());
-	//CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
+	wstr = L"";
+	wstr.assign(Tex->Name.begin(), Tex->Name.end());
+	CTexture_Manager::GetInstance()->Ready_Texture(wstr, Tex, HEAP_DEFAULT);
 
 
 	// > Effect Texture Load
@@ -571,7 +608,7 @@ void InstancingAndCullingApp::LoadTextures()
 	{
 		str.clear();
 		str.assign((*iter).wstrFileName.begin(), (*iter).wstrFileName.end());
-		auto Tex = new Texture;
+		Tex = new Texture;
 		Tex->Name = str;
 		Tex->Filename = (*iter).wstrPath;
 		ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
@@ -669,7 +706,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	unordered_map<wstring, Texture*> mapEffectTexture = CTexture_Manager::GetInstance()->Get_TextureMap(HEAP_TEXTURE_EFFECT);
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = mapTexture.size() + mapEffectTexture.size();
+	srvHeapDesc2.NumDescriptors = mapTexture.size() + mapTexture.size();
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
@@ -790,7 +827,6 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
 		srvDesc_Default.Texture2D.MipLevels = iter->second->Resource->GetDesc().MipLevels;
 		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
-		int i = 0;
 		iter->second->Num = Idx++;
 	}
 

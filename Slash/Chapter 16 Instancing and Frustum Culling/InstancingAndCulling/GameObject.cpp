@@ -184,7 +184,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 			m_fAnimationKeyFrameIndex = 0;
 		}
 	}
-	
+
 
 	if (bTimerWalk == true)
 	{
@@ -198,7 +198,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 		}
 
 	}
-	
+
 
 	if (bTimerAttack1 == true)
 	{
@@ -212,7 +212,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 		}
 
 	}
-	
+
 
 	if (bTimerAttack2 == true)
 	{
@@ -247,11 +247,11 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerDead == true)
 	{
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
-		if(m_bIsLife == true)
+		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
-		if (m_fAnimationKeyFrameIndex_Dead  + 1> (*vecAnimFrame)[5])
+		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
 		{
 			m_bIsLife = false;
 			bTimerDead = false;
@@ -302,7 +302,7 @@ void AnimateStateMachine::SetTimerTrueFalse()
 
 	if (m_iAnimState == DeadState)
 	{
-		bTimerDead  =  true;
+		bTimerDead = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
 }

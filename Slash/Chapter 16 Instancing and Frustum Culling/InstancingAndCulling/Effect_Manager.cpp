@@ -66,7 +66,7 @@ CEffect * CEffect_Manager::Find_Effect(string name)
 	return iter->second;
 }
 
-HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4* Parent)
+HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent)
 {
 	auto effect = Find_SkillEffect(name);
 	if (effect == nullptr)

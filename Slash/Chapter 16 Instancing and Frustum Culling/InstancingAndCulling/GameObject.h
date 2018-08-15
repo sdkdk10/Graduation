@@ -68,7 +68,7 @@ public:
 	void SetTimerTrueFalse();
 	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
-	int GetCurAnimFrame() { return m_iCurAnimFrame;  }
+	int GetCurAnimFrame() { return m_iCurAnimFrame; }
 
 private:
 	virtual void Free();

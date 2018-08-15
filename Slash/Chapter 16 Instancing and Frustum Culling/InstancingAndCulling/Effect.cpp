@@ -42,7 +42,7 @@ HRESULT CEffect::Initialize()
 		m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
 		geoName = "grid";
 	}
-		
+
 	else
 	{
 		wstring wstrMesh = wstring(m_tInfo.strMeshName.begin(), m_tInfo.strMeshName.end());
@@ -123,7 +123,7 @@ void CEffect::Render(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
 	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
-	
+
 
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
@@ -238,7 +238,7 @@ void CEffect::Update_Play(const GameTimer & gt)
 		first = false;
 		ifir = 0;
 	}
-		
+
 	if (!first)
 	{
 		cout << m_tInfo.strName << "  :  " << m_pTransCom->GetWorld()._41 << ", " << m_pTransCom->GetWorld()._42 << ", " << m_pTransCom->GetWorld()._43 << endl;

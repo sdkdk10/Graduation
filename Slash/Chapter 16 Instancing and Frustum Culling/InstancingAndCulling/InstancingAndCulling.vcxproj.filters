@@ -169,9 +169,6 @@
     <Filter Include="03. Mesh\05. BillboardMesh">
       <UniqueIdentifier>{00786757-6296-433b-b8f6-6652b07791ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Scene\01. EffectScene">
-      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObject\08. Skill">
       <UniqueIdentifier>{dd92fb56-72aa-4706-b3cc-104a9242b096}</UniqueIdentifier>
     </Filter>
@@ -187,47 +184,11 @@
     <Filter Include="02. GameObject\09. Effect\00. SkillEffect">
       <UniqueIdentifier>{d6f088e1-54eb-47f5-8763-482968f354dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97. DirectHelper\05. Font">
-      <UniqueIdentifier>{e8159520-19a4-400b-a849-33fe64e91ea6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\05. Font\00. SpriteFont">
-      <UniqueIdentifier>{008a4eef-aeb0-44d6-959a-e4aec6995513}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\06. BinaryReader">
-      <UniqueIdentifier>{4ff51444-6bb0-46f9-b8dc-8fd27128f99d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\07. LoadHelper">
-      <UniqueIdentifier>{663c2da2-c40e-4a78-9577-108c77f3a646}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\08. ResourceUploadBatch">
-      <UniqueIdentifier>{009e0101-ea9a-4d90-9628-ad3a76520bf8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\09. GraphicsMemory">
-      <UniqueIdentifier>{3e31d2f4-d438-4a76-b418-013ded2a520e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\10. RenderTargetState">
-      <UniqueIdentifier>{08570b3c-24ac-4cfc-ab0c-3589ab0e896b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\99.Header">
-      <UniqueIdentifier>{180c5cfe-7853-480c-b978-c83fc93e4ee1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\11. VertexTypes">
-      <UniqueIdentifier>{f2e7f24b-88d6-4cd6-96d5-26dd8e7b51fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\12. LinearAllocator">
-      <UniqueIdentifier>{2323e13f-7126-491e-9bc4-a58b237dcf5d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\13. DirectXHelper">
-      <UniqueIdentifier>{d88e2012-103e-4b71-bc9c-8f7670df4f87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\14. Decript">
-      <UniqueIdentifier>{1e3312ed-bda3-4581-8d2a-989534f2ce87}</UniqueIdentifier>
+    <Filter Include="01. Scene\01. EffectScene">
+      <UniqueIdentifier>{ec084c89-2a2e-4748-b5c4-7dbc794edf23}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Scene\02. SelectScene">
-      <UniqueIdentifier>{4f4323d5-34ec-4c02-aac5-ed51a81f3ab2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObject\07. UI\03. ChangeUI">
-      <UniqueIdentifier>{d2993536-3a7d-45f9-9625-4b31604e8b2f}</UniqueIdentifier>
+      <UniqueIdentifier>{6462773b-450e-4cdf-a42d-6423b51de9f9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -385,38 +346,18 @@
     <ClCompile Include="SkillEffect.cpp">
       <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteBatch.cpp">
-      <Filter>97. DirectHelper\05. Font\00. SpriteFont</Filter>
-    </ClCompile>
-    <ClCompile Include="SpriteFont.cpp">
-      <Filter>97. DirectHelper\05. Font\00. SpriteFont</Filter>
-    </ClCompile>
-    <ClCompile Include="BinaryReader.cpp">
-      <Filter>97. DirectHelper\06. BinaryReader</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceUploadBatch.cpp">
-      <Filter>97. DirectHelper\08. ResourceUploadBatch</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsMemory.cpp">
-      <Filter>97. DirectHelper\09. GraphicsMemory</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexTypes.cpp">
-      <Filter>97. DirectHelper\11. VertexTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="LinearAllocator.cpp">
-      <Filter>97. DirectHelper\12. LinearAllocator</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectXHelpers.cpp">
-      <Filter>97. DirectHelper\13. DirectXHelper</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorHeap.cpp">
-      <Filter>97. DirectHelper\14. Decript</Filter>
-    </ClCompile>
+    <ClCompile Include="BinaryReader.cpp" />
+    <ClCompile Include="ChangeUI.cpp" />
+    <ClCompile Include="DescriptorHeap.cpp" />
+    <ClCompile Include="DirectXHelpers.cpp" />
+    <ClCompile Include="GraphicsMemory.cpp" />
+    <ClCompile Include="LinearAllocator.cpp" />
+    <ClCompile Include="ResourceUploadBatch.cpp" />
+    <ClCompile Include="SpriteBatch.cpp" />
+    <ClCompile Include="SpriteFont.cpp" />
+    <ClCompile Include="VertexTypes.cpp" />
     <ClCompile Include="SelectScene.cpp">
       <Filter>01. Scene\02. SelectScene</Filter>
-    </ClCompile>
-    <ClCompile Include="ChangeUI.cpp">
-      <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -598,56 +539,24 @@
     <ClInclude Include="..\..\..\SlashServer\SlashServer\Protocol.h">
       <Filter>98. Header</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteBatch.h">
-      <Filter>97. DirectHelper\05. Font\00. SpriteFont</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteFont.h">
-      <Filter>97. DirectHelper\05. Font\00. SpriteFont</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryReader.h">
-      <Filter>97. DirectHelper\06. BinaryReader</Filter>
-    </ClInclude>
-    <ClInclude Include="LoaderHelpers.h">
-      <Filter>97. DirectHelper\07. LoadHelper</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceUploadBatch.h">
-      <Filter>97. DirectHelper\08. ResourceUploadBatch</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsMemory.h">
-      <Filter>97. DirectHelper\09. GraphicsMemory</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTargetState.h">
-      <Filter>97. DirectHelper\10. RenderTargetState</Filter>
-    </ClInclude>
-    <ClInclude Include="SharedResourcePool.h">
-      <Filter>97. DirectHelper\99.Header</Filter>
-    </ClInclude>
-    <ClInclude Include="AlignedNew.h">
-      <Filter>97. DirectHelper\99.Header</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexTypes.h">
-      <Filter>97. DirectHelper\11. VertexTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="LinearAllocator.h">
-      <Filter>97. DirectHelper\12. LinearAllocator</Filter>
-    </ClInclude>
-    <ClInclude Include="dds.h">
-      <Filter>97. DirectHelper\99.Header</Filter>
-    </ClInclude>
-    <ClInclude Include="PlatformHelpers.h">
-      <Filter>97. DirectHelper\99.Header</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXHelpers.h">
-      <Filter>97. DirectHelper\13. DirectXHelper</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorHeap.h">
-      <Filter>97. DirectHelper\14. Decript</Filter>
-    </ClInclude>
+    <ClInclude Include="AlignedNew.h" />
+    <ClInclude Include="BinaryReader.h" />
+    <ClInclude Include="ChangeUI.h" />
+    <ClInclude Include="dds.h" />
+    <ClInclude Include="DescriptorHeap.h" />
+    <ClInclude Include="DirectXHelpers.h" />
+    <ClInclude Include="GraphicsMemory.h" />
+    <ClInclude Include="LinearAllocator.h" />
+    <ClInclude Include="LoaderHelpers.h" />
+    <ClInclude Include="PlatformHelpers.h" />
+    <ClInclude Include="RenderTargetState.h" />
+    <ClInclude Include="ResourceUploadBatch.h" />
+    <ClInclude Include="SharedResourcePool.h" />
+    <ClInclude Include="SpriteBatch.h" />
+    <ClInclude Include="SpriteFont.h" />
+    <ClInclude Include="VertexTypes.h" />
     <ClInclude Include="SelectScene.h">
       <Filter>01. Scene\02. SelectScene</Filter>
-    </ClInclude>
-    <ClInclude Include="ChangeUI.h">
-      <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -673,10 +582,5 @@
       <Filter>93. Shaders</Filter>
     </None>
     <None Include="myfile.spritefont" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders\Effect.hlsl">
-      <Filter>93. Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

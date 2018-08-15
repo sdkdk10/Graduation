@@ -13,6 +13,7 @@ typedef struct uiInfo
 class CTestScene
 	: public CScene
 {
+
 private:
 	explicit CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
 public:
@@ -25,11 +26,8 @@ public:
 	void UpdateUI();
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 	virtual void	CollisionProcess();
-	
 public:
-	int			GetObjectCount() { return m_iObjectCount; }
-private:
-	int				m_iObjectCount = 0;
+	int         GetObjectCount() { return m_iObjectCount; }
 
 private:
 	HRESULT Load_Map();
@@ -42,4 +40,6 @@ private:
 	virtual void Free();
 private:
 	vector<pair<const string, const string>> path;
+private:
+	int            m_iObjectCount = 0;
 };

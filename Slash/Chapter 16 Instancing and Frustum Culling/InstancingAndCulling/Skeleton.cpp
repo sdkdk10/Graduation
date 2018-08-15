@@ -49,7 +49,7 @@ HRESULT CSkeleton::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
-	Mat->MatCBIndex = 5;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -170,8 +170,8 @@ bool CSkeleton::Update(const GameTimer & gt)
 	// Next FrameResource need to be updated too.
 	//mat->NumFramesDirty--;
 
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }
 

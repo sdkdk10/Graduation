@@ -6,9 +6,9 @@
 #include "Network.h"
 #include "Component_Manager.h"
 #include "Texture_Manager.h"
+#include "Effect_Manager.h"
 #include "Management.h"
 #include "Renderer.h"
-#include "Effect_Manager.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -36,7 +36,7 @@ void Player::Animate(const GameTimer & gt)
 		{
 			if (m_bAttackMotionForSound == true)
 			{
-				//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 				m_bAttackMotionForSound = false;
 			}
 		}
@@ -164,6 +164,7 @@ bool Player::Update(const GameTimer & gt)
 
 	// Next FrameResource need to be updated too.
 	//mat->NumFramesDirty--;
+
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
 	return true;
@@ -185,7 +186,6 @@ HRESULT Player::Initialize()
 
 	if (nullptr == m_pMesh)
 		return E_FAIL;
-	
 
 	// > 테스트용으로 넣어둠
 	int test[AnimateStateMachine::STATE_END] = { 0, };
@@ -193,6 +193,7 @@ HRESULT Player::Initialize()
 	if (AnimStateMachine == nullptr)
 		return E_FAIL;
 
+	
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("VillagerTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
@@ -201,7 +202,7 @@ HRESULT Player::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "InsecMat";
-	Mat->MatCBIndex = 0;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = tex->Num;			// 텍스쳐 힙에 저장ㄷ외나 수아아ㅇ아ㅏ 아하 지희야그럼 이거이렇게바꿔야함 
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
@@ -489,15 +490,20 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 void Player::KeyInput(const GameTimer & gt)
 {
+	if (AnimStateMachine->GetAnimState() == AnimStateMachine->DeadState)
+		return;
+
 	if (CManagement::GetInstance()->Get_IsStop() == true)
 		return;
 	DWORD dwDirection = 0;
 	static bool IsPlayerMoved = false;
 
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_FORWARD;
-	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_BACKWARD;
-	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_LEFT;
-	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= DIR_RIGHT;
+	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_UP;
+	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_DOWN;
 
 	//m_curKeyInputTime = gt.TotalTime();
 	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
@@ -628,7 +634,6 @@ void Player::KeyInput(const GameTimer & gt)
 //	
 //}
 
-
 //--------------------------------------- AnimateStateMachine-----------------------------------------
 
 AnimateStateMachine_Player::AnimateStateMachine_Player(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
@@ -736,7 +741,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])

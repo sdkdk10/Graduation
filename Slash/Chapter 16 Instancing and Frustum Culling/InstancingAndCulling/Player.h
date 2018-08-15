@@ -96,6 +96,7 @@ private:
 	int m_PreState;
 };
 
+
 class AnimateStateMachine_Player
 	: public AnimateStateMachine
 {

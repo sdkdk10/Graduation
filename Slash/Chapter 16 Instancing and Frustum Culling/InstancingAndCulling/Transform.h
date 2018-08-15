@@ -16,7 +16,8 @@ public:
 public:
 	HRESULT				Initialize();
 	virtual void		Update_Component(const GameTimer& gt);
-	virtual void		Update_Component();
+	void				Update_Component();  
+	void				SendMapInitData();
 
 
 	// Get / Set

@@ -5,9 +5,9 @@
 #include "SkyBox.h"
 #include "Texture_Manager.h"
 #include "Component_Manager.h"
+#include "Define.h"
 #include "Management.h"
 #include "Renderer.h"
-#include "Define.h"
 
 
 
@@ -99,7 +99,7 @@ HRESULT SkyBox::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "SkyBoxMat";
-	Mat->MatCBIndex = 6; //0;
+	Mat->MatCBIndex = m_iMyObjectID; //0;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);

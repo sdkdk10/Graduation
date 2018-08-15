@@ -176,11 +176,14 @@ HRESULT Spider::Initialize()
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
-	AnimStateMachine = new AnimateStateMachine;
+
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SpiderTex", CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
 		return E_FAIL;
+
+
+	AnimStateMachine = new AnimateStateMachine;
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
@@ -188,7 +191,7 @@ HRESULT Spider::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
-	Mat->MatCBIndex = 3;
+	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);

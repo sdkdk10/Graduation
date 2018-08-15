@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Management.h"
 #include "Component_Manager.h"
+#include "Renderer.h"
 #include "Texture_Manager.h"
 
 Dragon::Dragon(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
@@ -85,6 +86,8 @@ bool Dragon::Update(const GameTimer & gt)
 	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }
 
@@ -156,7 +159,7 @@ HRESULT Dragon::Initialize()
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
-	Mat->MatCBIndex = 4; 
+	Mat->MatCBIndex = m_iMyObjectID; 
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);

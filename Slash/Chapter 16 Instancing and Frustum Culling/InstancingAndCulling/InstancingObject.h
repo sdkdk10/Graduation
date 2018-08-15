@@ -30,7 +30,6 @@ public:
 	void SetTexture(int matIdx, int idx) { mMaterials[m_iMyInstObject + matIdx]->DiffuseSrvHeapIndex = idx; }
 
 	void SetRenderType(CRenderer::RenderType eType) { m_eMyRenderType = eType; }
-
 public:
 	virtual HRESULT			Initialize();
 	virtual bool			Update(const GameTimer & gt);
@@ -61,6 +60,7 @@ private:
 	unsigned long				m_iMyInstObject;
 
 	CRenderer::RenderType		m_eMyRenderType;
+
 public:
 	static CInstancingObject* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize);
 

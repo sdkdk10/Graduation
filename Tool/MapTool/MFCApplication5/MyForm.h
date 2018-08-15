@@ -55,7 +55,6 @@ public:
 	afx_msg void OnBnClickedButtonEffectTool();
 	CListBox m_LoadTextureListBox;
 	afx_msg void OnLbnSelchangeListLoadTex();
-	CButton m_ToolRadio[2];
 };
 
 

@@ -125,12 +125,16 @@
 #define IDC_BUTTON_MAKE_SKILLEFFECT     1086
 #define IDC_LIST_COMPLETE_SKILL_EFFECT  1087
 #define IDC_EDIT_SKILLEFFECT_NAME       1088
+<<<<<<< HEAD
 #define IDC_RADIO_MAPTOOL               1090
 #define IDC_RADIO_EFFECTTOOL            1091
 #define IDC_BUTTON_SHOW                 1091
 #define IDC_BUTTON_PLAY_ALL             1092
 #define IDC_BUTTON_PLAY_ALL2            1093
 #define IDC_BUTTON_STOP_ALL             1093
+=======
+#define IDC_BUTTON1                     1089
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
 
 // Next default values for new objects
 // 
@@ -138,7 +142,11 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32771
+<<<<<<< HEAD
 #define _APS_NEXT_CONTROL_VALUE         1093
+=======
+#define _APS_NEXT_CONTROL_VALUE         1090
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

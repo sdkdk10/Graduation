@@ -100,7 +100,6 @@ void CEffectTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_SKILL_EFFECT, m_SkillEffectListBox);
 	DDX_Control(pDX, IDC_LIST_COMPLETE_SKILL_EFFECT, m_ComSkillEffectListBox);
 	DDX_Text(pDX, IDC_EDIT_SKILLEFFECT_NAME, m_cstrSkillEffectName);
-	DDX_Control(pDX, IDC_LIST_MODEL, m_ModelListBox);
 }
 
 
@@ -118,10 +117,13 @@ BEGIN_MESSAGE_MAP(CEffectTool, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_MAKE_SKILLEFFECT, &CEffectTool::OnBnClickedButtonMakeSkilleffect)
 	ON_LBN_SELCHANGE(IDC_LIST_COMPLETE_SKILL_EFFECT, &CEffectTool::OnLbnSelchangeListCompleteSkillEffect)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CEffectTool::OnBnClickedButtonSave)
+<<<<<<< HEAD
 	ON_LBN_SELCHANGE(IDC_LIST_MODEL, &CEffectTool::OnLbnSelchangeListModel)
 	ON_BN_CLICKED(IDC_BUTTON_SHOW, &CEffectTool::OnBnClickedButtonShow)
 	ON_BN_CLICKED(IDC_BUTTON_PLAY_ALL, &CEffectTool::OnBnClickedButtonPlayAll)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CEffectTool::OnBnClickedButtonStopAll)
+=======
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
 END_MESSAGE_MAP()
 
 
@@ -160,23 +162,13 @@ BOOL CEffectTool::OnInitDialog()
 	pObject->Rotate(0.f, 0.f, -90.f);
 	
 
-	// > Model List
-	unordered_map<wstring, CComponent*> mapComponent = CComponent_Manager::GetInstance()->Get_ComponentMap(CComponent_Manager::COM_MESH);
-
-	auto iter = mapComponent.begin();
-	auto iter_end = mapComponent.end();
-	for (iter; iter != iter_end; ++iter)
-	{
-		m_ModelListBox.AddString(iter->first.c_str());
-	}
-
 	// > Texture List 
 	unordered_map<wstring, Texture*> mapTex = CTexture_Manager::GetInstance()->Get_TextureMap(HEAP_TEXTURE_EFFECT);
-	auto Texiter = mapTex.begin();
-	auto Texiter_end = mapTex.end();
-	for (Texiter; Texiter != Texiter_end; ++Texiter)
+	auto iter = mapTex.begin();
+	auto iter_end = mapTex.end();
+	for (iter; iter != iter_end; ++iter)
 	{
-		m_TexListBox.AddString(Texiter->first.c_str());
+		m_TexListBox.AddString(iter->first.c_str());
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -196,28 +188,23 @@ void CEffectTool::OnLbnSelchangeListTex()
 	CT2CA pszConvertedAnsiString(cstrTexName);
 	std::string strTex(pszConvertedAnsiString);
 
-	if (m_pCurObject == nullptr)
-		return;
+	if (m_IsReplace)
+	{
+		EFFECT_INFO tInfo(m_SPos, m_EPos, m_SSize, m_ESize, m_SRot, m_ERot, m_SColor, m_EColor, m_fLifeTime, m_fStartTime, "", strTex, m_ButtonIsBillboard.GetCheck());
+		m_pCurObject = CEffect::Create(CObjectManager::GetInstance()->GetDevice()
+			, CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT]
+			, CObjectManager::GetInstance()->GetCbvSrvDescriptorSize()
+			, tInfo);
 
-	dynamic_cast<CEffect*>(m_pCurObject)->SetTexture(strTex);
+		CObjectManager::GetInstance()->Add_Object(m_pCurObject);
+		CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_DEFAULT, m_pCurObject);
+		m_IsReplace = false;
+	}
 
-	//if (m_IsReplace)
-	//{
-	//	EFFECT_INFO tInfo(m_SPos, m_EPos, m_SSize, m_ESize, m_SRot, m_ERot, m_SColor, m_EColor, m_fLifeTime, m_fStartTime, "", strTex, m_ButtonIsBillboard.GetCheck());
-	//	m_pCurObject = CEffect::Create(CObjectManager::GetInstance()->GetDevice()
-	//		, CObjectManager::GetInstance()->GetSrvDescriptorHeap()[HEAP_DEFAULT]
-	//		, CObjectManager::GetInstance()->GetCbvSrvDescriptorSize()
-	//		, tInfo);
-
-	//	CObjectManager::GetInstance()->Add_Object(m_pCurObject);
-	//	CObjectManager::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_DEFAULT, m_pCurObject);
-	//	m_IsReplace = false;
-	//}
-
-	//else
-	//{
-	//	dynamic_cast<CEffect*>(m_pCurObject)->SetTexture(strTex);
-	//}
+	else
+	{
+		dynamic_cast<CEffect*>(m_pCurObject)->SetTexture(strTex);
+	}
 	UpdateData(FALSE);
 }
 
@@ -547,6 +534,7 @@ void CEffectTool::OnBnClickedButtonSave()
 		if (i < iSize - 1)
 			texOut << endl;
 	}
+<<<<<<< HEAD
 
 	ofstream modelOut("EffectModelList.txt");
 }
@@ -640,3 +628,6 @@ void CEffectTool::OnBnClickedButtonStopAll()
 
 	UpdateData(FALSE);
 }
+=======
+}
+>>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d

@@ -8,6 +8,7 @@ const float fMonsterMoveSpeed = 0.033344f * 5.0f;
 const int iAttackDelay = 500;
 const XMFLOAT3	xmf3Height{ 0.0f, 0.0f, 1.0f };
 const XMFLOAT3	xmf3Width{ 1.0f, 0.0f, 0.0f };
+const XMFLOAT3	xmf3Depth{ 0.0f, 1.0f, 0.0f };
 //const XMFLOAT3 InitLookVector{ 1.02601e-05f, 0.00644221f, 0.0495832f }; // ∏µ®¿« √ ±‚ ∑Ë∫§≈Õ
 //const XMFLOAT3 InitRightVector{ -0.0499999f, 7.96318e-05f, 0 }; // ∏µ®¿« √ ±‚ ∂Û¿Ã∆Æ∫§≈Õ
 const XMFLOAT3 InitLookVector{ 1.03023e-05f, 0.00644221f, 0.0495832f }; // ∏µ®¿« √ ±‚ ∑Ë∫§≈Õ
@@ -28,7 +29,7 @@ static const int EVT_ATTACKMOVE = 6;
 static const int EVT_RESPOWN = 7;
 
 #define MAX_BUFF_SIZE   1024
-#define MAX_PACKET_SIZE  255
+#define MAX_PACKET_SIZE  256
 
 #define BOARD_WIDTH   400
 #define BOARD_HEIGHT  400
@@ -37,10 +38,11 @@ static const int EVT_RESPOWN = 7;
 #define AGRO_RADIUS		8
 #define CLOSE_RADIUS	4
 
+#define MAX_MAPOBJECT 61
 #define MAX_USER 1000
 
 #define NPC_START  2000
-#define NUM_OF_NPC  2001
+#define NUM_OF_NPC  3000
 
 #define MY_SERVER_PORT  4000
 
@@ -51,8 +53,11 @@ static const int EVT_RESPOWN = 7;
 #define CS_DIR_BACKWARD					0x02
 #define CS_DIR_LEFT						0x04
 #define CS_DIR_RIGHT					0x08
-#define CS_STOP							0x16
-#define CS_ATTACK						0x17
+#define CS_DIR_UP						0x10
+#define CS_DIR_DOWN						0x20
+#define CS_STOP							0x40
+#define CS_ATTACK						0x41
+#define CS_MAP_INIT_DATA				0x42
 
 #define SC_POS   1
 #define SC_PUT_PLAYER    2
@@ -60,9 +65,10 @@ static const int EVT_RESPOWN = 7;
 #define SC_CHAT			4
 #define SC_ROTATE		5
 #define SC_STATE		6
+#define SC_HP			7
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
-static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT;
+static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_DIR_UP + CS_DIR_DOWN;
 
 #pragma pack (push, 1)
 
@@ -85,6 +91,15 @@ struct cs_packet_chat {
 	BYTE size;
 	BYTE type;
 	WCHAR message[MAX_STR_SIZE];
+};
+
+struct cs_packet_mapinitdata {
+	BYTE size;
+	BYTE type;
+	XMFLOAT4X4 world;
+	BoundingBox bounds;
+	//BoundingOrientedBox xmOOBB;
+	//BoundingOrientedBox xmOOBBTransformed;
 };
 
 struct sc_packet_pos {
@@ -122,9 +137,16 @@ struct sc_packet_put_player {
 };
 
 struct sc_packet_remove_object {
-	BYTE SIZE;
-	BYTE TYPE;
-	WORD ID;
+	BYTE size;
+	BYTE type;
+	WORD id;
+};
+
+struct sc_packet_hp {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	unsigned short hp;
 };
 
 struct sc_packet_chat {

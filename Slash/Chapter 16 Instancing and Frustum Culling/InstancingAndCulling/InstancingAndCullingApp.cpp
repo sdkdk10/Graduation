@@ -785,11 +785,10 @@ void InstancingAndCullingApp::LoadEffects()
 	ifstream in("Assets/Data/Effect.txt");
 	int iSize;
 	in >> iSize;
-
+	
 	for (int i = 0; i < iSize; ++i)
 	{
 		EFFECT_INFO info;
-
 
 		in >> info.isBillboard >> info.strName >> info.strMeshName >> info.strTexName;
 		in >> info.S_Pos.x >> info.S_Pos.y >> info.S_Pos.z;
@@ -827,7 +826,7 @@ void InstancingAndCullingApp::LoadEffects()
 	skillIn >> iSize;
 	for (int i = 0; i < iSize; ++i)
 	{
-
+		
 		string name;
 		skillIn >> name;
 

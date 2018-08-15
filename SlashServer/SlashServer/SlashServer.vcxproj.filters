@@ -14,6 +14,9 @@
     <Filter Include="98.DirectHelper">
       <UniqueIdentifier>{4baa54d2-d7fe-4e81-9d01-7aa96c5f7d53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="98.Lua">
+      <UniqueIdentifier>{873c3f7f-3671-4bbd-9c2f-4aa2edc51d25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerMain.cpp">
@@ -33,5 +36,25 @@
     <ClInclude Include="..\..\Slash\Common\MathHelper.h">
       <Filter>98.DirectHelper</Filter>
     </ClInclude>
+    <ClInclude Include="include\lauxlib.h">
+      <Filter>98.Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lua.h">
+      <Filter>98.Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lua.hpp">
+      <Filter>98.Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="include\luaconf.h">
+      <Filter>98.Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lualib.h">
+      <Filter>98.Lua</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="monster.lua">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

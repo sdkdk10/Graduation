@@ -90,8 +90,8 @@ bool Terrain::Update(const GameTimer & gt)
 	//	m_bIsVisiable = false;
 	//}
 
-
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
+
 	
 	return true;
 
@@ -144,7 +144,7 @@ HRESULT Terrain::Initialize()
 	/* Material Build */
 	Mat = new Material;
 	Mat->Name = "TerrainMat";
-	Mat->MatCBIndex = 2;
+	Mat->MatCBIndex =  m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = 0;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
