@@ -691,7 +691,7 @@ void CEffect::Update_Play(const GameTimer & gt)
 
 	if (!first)
 	{
-		cout << m_tInfo.strName << "  :  " << m_pTransCom->GetWorld()._41 << ", " << m_pTransCom->GetWorld()._42 << ", " << m_pTransCom->GetWorld()._43 << endl;
+		//cout << m_tInfo.strName << "  :  " << m_pTransCom->GetWorld()._41 << ", " << m_pTransCom->GetWorld()._42 << ", " << m_pTransCom->GetWorld()._43 << endl;
 		first = true;
 	}
 

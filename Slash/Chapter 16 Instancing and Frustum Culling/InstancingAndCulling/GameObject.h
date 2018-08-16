@@ -84,13 +84,13 @@ public:
 	CGameObject * m_pCollider = NULL;
 public:
 	XMFLOAT3 m_MovingRefletVector = XMFLOAT3(0, 0, 0); // 슬라이딩 벡터를 위한 반사벡터
-	//XMFLOAT4					m_pxmf4WallPlanes[4]; 
+													   //XMFLOAT4					m_pxmf4WallPlanes[4]; 
 public:
 	AnimateStateMachine * GetAnimateMachine() { return AnimStateMachine; }
 public:
 	void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
 protected:
-	AnimateStateMachine* AnimStateMachine = nullptr;
+	AnimateStateMachine * AnimStateMachine = nullptr;
 public:
 	int planeCollision = 0;
 public:
@@ -118,7 +118,7 @@ public:
 
 	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation) { m_xmOOBBTransformed = m_xmOOBB = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation); }
 
-////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
 protected:
 	float m_fMoveSpeed = 8.0f;
 	float m_fRotateSpeed = 12.0f;
@@ -157,7 +157,7 @@ public:
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	XMFLOAT3					m_xmf3Height= XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3					m_xmf3Height = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Width = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Scale;
 	XMFLOAT3					m_xmf3Rot;
@@ -165,13 +165,13 @@ public:
 	float           			m_fPitch = 0.0f;
 	float           			m_fYaw = 0.0f;
 	float           			m_fRoll = 0.0f;
-////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
 public:
 	CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 	virtual ~CGameObject();
 
 public:
-	XMFLOAT4X4& GetWorld() { return World; }
+	XMFLOAT4X4 & GetWorld() { return World; }
 
 protected:
 	// World matrix of the shape that describes the object's local space
@@ -217,7 +217,7 @@ protected:
 	unsigned long         m_iMyObjectID;
 
 public:
-	Mesh*				m_pMesh = nullptr;
+	Mesh * m_pMesh = nullptr;
 	CTransform*			m_pTransCom = nullptr;
 	wchar_t*			m_pwstrMeshName;
 public:
@@ -239,7 +239,7 @@ public:
 	virtual void			RenderBounds(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	
+
 protected:
 	virtual void			Free();
 };

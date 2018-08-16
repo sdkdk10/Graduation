@@ -26,7 +26,9 @@ public:
 	void InitSock(HWND MainWnd);
 	void ReadPacket(SOCKET sock);
 	void SendDirKeyPacket(DWORD& keyInput, XMFLOAT4X4& world);
-	void SendAttackPacket(void);
+	void SendAttack1Packet(void);
+	void SendAttack2Packet(void);
+	void SendAttack3Packet(void);
 	void SendStopPacket(void);
 	void ProcessPacket(char* ptr);
 	int GetMyID() {

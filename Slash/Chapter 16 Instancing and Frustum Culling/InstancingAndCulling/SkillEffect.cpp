@@ -139,7 +139,7 @@ void CSkillEffect::Set_ParentMatrix(XMFLOAT4X4* f4x4Parent)
 	m_pTransCom->Translation(pos);
 	m_pTransCom->Update_Component();
 	//m_pTransCom->SetParentMatrix(&mat);
-	cout << "EffectSkill : " << m_pTransCom->GetPosition().x << ", " << m_pTransCom->GetPosition().y << ", " << m_pTransCom->GetPosition().z << endl;
+	//cout << "EffectSkill : " << m_pTransCom->GetPosition().x << ", " << m_pTransCom->GetPosition().y << ", " << m_pTransCom->GetPosition().z << endl;
 
 	for (auto& elem : m_EffectList)
 	{
