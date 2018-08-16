@@ -49,7 +49,7 @@ private:
 	float			m_fLifeTimeAcc = 0.f;
 
 	bool			m_IsPlay = false;
-	bool			m_IsFrame = false;
+	bool			m_IsFrame;
 
 private:
 	virtual void Free();

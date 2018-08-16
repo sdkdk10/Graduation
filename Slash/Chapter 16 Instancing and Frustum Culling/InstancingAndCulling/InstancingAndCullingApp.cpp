@@ -815,6 +815,7 @@ void InstancingAndCullingApp::LoadEffects()
 			in >> frameInfo.f2FrameSize.x >> frameInfo.f2FrameSize.y;
 			in >> frameInfo.f2maxFrame.x >> frameInfo.f2maxFrame.y;
 			in >> frameInfo.fSpeed;
+			effect->SetIsFrame(true);
 			effect->Get_FrameInfo() = frameInfo;
 		}
 		//effect->Get_EffectInfo() = info;
@@ -1087,21 +1088,21 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 
 
 	// > For. Billboard Texture
-	iter = mapDefaultBill.begin();
-	iter_end = mapDefaultBill.end();
-	for (iter; iter != iter_end; ++iter)
-	{
-		hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
+	//iter = mapDefaultBill.begin();
+	//iter_end = mapDefaultBill.end();
+	//for (iter; iter != iter_end; ++iter)
+	//{
+	//	hDescriptor_Default.Offset(1, mCbvSrvDescriptorSize);
 
-		srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
-		srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
-		srvDesc_Default.Texture2DArray.MostDetailedMip = 0;
-		srvDesc_Default.Texture2DArray.MipLevels = -1;
-		srvDesc_Default.Texture2DArray.FirstArraySlice = 0;
-		srvDesc_Default.Texture2DArray.ArraySize = iter->second->Resource->GetDesc().DepthOrArraySize;
-		md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
-		iter->second->Num = idx++;
-	}
+	//	srvDesc_Default.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+	//	srvDesc_Default.Format = iter->second->Resource->GetDesc().Format;
+	//	srvDesc_Default.Texture2DArray.MostDetailedMip = 0;
+	//	srvDesc_Default.Texture2DArray.MipLevels = -1;
+	//	srvDesc_Default.Texture2DArray.FirstArraySlice = 0;
+	//	srvDesc_Default.Texture2DArray.ArraySize = iter->second->Resource->GetDesc().DepthOrArraySize;
+	//	md3dDevice->CreateShaderResourceView(iter->second->Resource.Get(), &srvDesc_Default, hDescriptor_Default);
+	//	iter->second->Num = idx++;
+	//}
 }
 
 void InstancingAndCullingApp::BuildShadersAndInputLayout()
@@ -1139,8 +1140,11 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["treeSpriteGS"] = d3dUtil::CompileShader(L"Shaders\\TreeSprite.hlsl", nullptr, "GS", "gs_5_1");
 	mShaders["treeSpritePS"] = d3dUtil::CompileShader(L"Shaders\\TreeSprite.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
+	mShaders["AlphaBelndVS"] = d3dUtil::CompileShader(L"Shaders\\Effect.hlsl", alphaTestDefines, "VS", "vs_5_1");
 	mShaders["AlphaBelndPS"] = d3dUtil::CompileShader(L"Shaders\\Effect.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
+	mShaders["AlphaBelndPS_Sprite"] = d3dUtil::CompileShader(L"Shaders\\Effect.hlsl", alphaTestDefines, "PS_SPRITE", "ps_5_1");
+	
 	mInputLayout =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -1315,12 +1319,17 @@ void InstancingAndCullingApp::BuildPSOs()
 	// PSO for Alpha Blending objects
 	//
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC alphaBlendPsoDesc = opaquePsoDesc;
+	alphaBlendPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["AlphaBelndVS"]->GetBufferPointer()),
+		mShaders["AlphaBelndVS"]->GetBufferSize()
+	};
 	alphaBlendPsoDesc.PS =
 	{
-		reinterpret_cast<BYTE*>(mShaders["AlphaBelndPS"]->GetBufferPointer()),
-		mShaders["AlphaBelndPS"]->GetBufferSize()
+		reinterpret_cast<BYTE*>(mShaders["AlphaBelndPS_Sprite"]->GetBufferPointer()),
+		mShaders["AlphaBelndPS_Sprite"]->GetBufferSize()
 	};
-
+	
 	alphaBlendPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
 	
@@ -1340,6 +1349,32 @@ void InstancingAndCullingApp::BuildPSOs()
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaBlendPsoDesc, IID_PPV_ARGS(&mPSOs["alphaBelnd"])));
 
+	// PSO for Effect
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC alphaBlend_EffectPsoDesc = opaquePsoDesc;
+	alphaBlend_EffectPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["AlphaBelndPS"]->GetBufferPointer()),
+		mShaders["AlphaBelndPS"]->GetBufferSize()
+	};
+
+	alphaBlend_EffectPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc_effect;
+
+	transparencyBlendDesc_effect.BlendEnable = true;
+	transparencyBlendDesc_effect.LogicOpEnable = false;
+	transparencyBlendDesc_effect.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	transparencyBlendDesc_effect.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	transparencyBlendDesc_effect.BlendOp = D3D12_BLEND_OP_ADD;
+	transparencyBlendDesc_effect.SrcBlendAlpha = D3D12_BLEND_ONE;
+	transparencyBlendDesc_effect.DestBlendAlpha = D3D12_BLEND_ZERO;
+	transparencyBlendDesc_effect.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	transparencyBlendDesc_effect.LogicOp = D3D12_LOGIC_OP_NOOP;
+	transparencyBlendDesc_effect.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	alphaBlend_EffectPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc_effect;
+
+
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaBlend_EffectPsoDesc, IID_PPV_ARGS(&mPSOs["alphaBelnd_Object"])));
 
 	//
 	// PSO for tree sprites

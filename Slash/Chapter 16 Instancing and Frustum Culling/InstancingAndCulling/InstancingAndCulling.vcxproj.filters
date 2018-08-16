@@ -582,5 +582,8 @@
       <Filter>93. Shaders</Filter>
     </None>
     <None Include="myfile.spritefont" />
+    <None Include="Shaders\Effect.hlsl">
+      <Filter>93. Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

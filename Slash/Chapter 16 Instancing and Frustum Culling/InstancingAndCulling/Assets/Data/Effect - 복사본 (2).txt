@@ -1,5 +1,0 @@
-4
-0	Warrior_Turn_0	Loft01_Thin	eye_fxl_swordpower_002	0	0	0	0.05	0.05	0.05	0	0	90	1	1	1	1	0	0	0	0.05	0.05	0.05	360	0	90	1	1	1	0	0	2	0
-0	Warrior_Turn_1	Loft01_Thin	eye_fxl_swordpower_002	0	0	0	0.05	0.05	0.05	90	0	90	1	1	1	1	0	0	0	0.05	0.05	0.05	450	0	90	1	1	1	0	0	2	0
-0	Warrior_Turn_2	Loft01_Thin	eye_fxl_swordpower_002	0	0	0	0.025	0.025	0.025	180	0	90	1	1	1	1	0	0	0	0.025	0.025	0.025	540	0	90	1	1	1	0	0	2	0
-0	Warrior_Turn_3	Loft01_Thin	eye_fxl_swordpower_002	0	0	0	0.025	0.025	0.025	270	0	90	1	1	1	1	0	0	0	0.025	0.025	0.025	630	0	90	1	1	1	0	0	2	0

@@ -104,7 +104,7 @@ public:
 public:
 	bool m_bIsVisiable = true;
 	bool m_bIsConnected = false;
-	Camera * m_pCamera;
+	Camera * m_pCamera = nullptr;
 	BoundingFrustum				mCamFrustum;
 	bool						mFrustumCullingEnabled = true;
 

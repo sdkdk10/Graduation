@@ -94,6 +94,11 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent)
 	{
 		CEffect* finder = Find_Effect(elem->Get_EffectInfo().strName);
 		CEffect* pInst = CEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, finder->Get_EffectInfo());
+		if (finder->Get_IsFrame())
+		{
+			pInst->SetIsFrame(true);
+			pInst->Get_FrameInfo() = finder->Get_FrameInfo();
+		}
 		play->GetEffectList().push_back(pInst);
 	}
 

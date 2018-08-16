@@ -75,12 +75,22 @@ void CRenderer::Render_ForWard(ID3D12GraphicsCommandList* cmdList)
 
 void CRenderer::Render_Alpha(ID3D12GraphicsCommandList * cmdList)
 {
+	// > RENDER_ALPHA_SPRITE
 	mCommandList->SetPipelineState(mPSOs["alphaBelnd"].Get());
+	for (auto & elem : m_vecObject[RENDER_ALPHA_SPRITE])
+	{
+		elem->Render(cmdList);
+		//mCommandList->ClearState(mPSOs["treeSprites"].Get());
+	}
+	// > 
+	mCommandList->SetPipelineState(mPSOs["alphaBelnd_Object"].Get());
 	for (auto & elem : m_vecObject[RENDER_ALPHA_DEFAULT])
 	{
 		elem->Render(cmdList);
 		//mCommandList->ClearState(mPSOs["treeSprites"].Get());
 	}
+
+	// > 
 }
 
 void CRenderer::Render_Instancing(ID3D12GraphicsCommandList* cmdList)
