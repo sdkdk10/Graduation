@@ -8,7 +8,6 @@ const double dMonsterMoveSpeed = 0.033344 * 5.0;
 const int iAttackDelay = 500;
 const XMFLOAT3	xmf3Height{ 0.0f, 0.0f, 1.0f };
 const XMFLOAT3	xmf3Width{ 1.0f, 0.0f, 0.0f };
-const XMFLOAT3	xmf3Depth{ 0.0f, 1.0f, 0.0f };
 //const XMFLOAT3 InitLookVector{ 1.02601e-05f, 0.00644221f, 0.0495832f }; // ¸ðµ¨ÀÇ ÃÊ±â ·èº¤ÅÍ
 //const XMFLOAT3 InitRightVector{ -0.0499999f, 7.96318e-05f, 0 }; // ¸ðµ¨ÀÇ ÃÊ±â ¶óÀÌÆ®º¤ÅÍ
 const XMFLOAT3 InitLookVector{ 1.03023e-05f, 0.00644221f, 0.0495832f }; // ¸ðµ¨ÀÇ ÃÊ±â ·èº¤ÅÍ
@@ -16,6 +15,11 @@ const XMFLOAT3 InitRightVector{ -0.0499999f, 7.96318e-05f, 3.72529e-08f }; // ¸ð
 const XMFLOAT3 UpVector{ 7.8968e-05f, 0.0495832f, -0.00644222f }; // ¸ðµ¨ ÃÊ±â ¾÷º¤ÅÍ °ª
 
 enum STATE { IDLE, WALK, ATTACK1, ATTACK2, ATTACK3, DEAD };
+enum MONSTER_ZONE { ZONE1, ZONE2, ZONE3 };
+enum SpiderTex
+{
+	SPIDER_BRICK, SPIDER_STONE, SPIDER_TILE, SPIDER_ICE, SPIDER_END
+};
 
 const float CS_SEND_PACKET_DELAY = 10;
 
@@ -37,13 +41,14 @@ static const int EVT_RESPOWN = 7;
 #define MAPOBJECT_RADIUS	30
 #define VIEW_RADIUS		14
 #define AGRO_RADIUS		8
+#define PLAYER_ATTACK_RADIUS	6
 #define CLOSE_RADIUS	4
 
 #define MAX_MAPOBJECT 61
 #define MAX_USER 1000
 
 #define NPC_START  2000
-#define NUM_OF_NPC  2001
+#define NUM_OF_NPC  2500
 
 #define MY_SERVER_PORT  4000
 
@@ -54,11 +59,11 @@ static const int EVT_RESPOWN = 7;
 #define CS_DIR_BACKWARD					0x02
 #define CS_DIR_LEFT						0x04
 #define CS_DIR_RIGHT					0x08
-#define CS_DIR_UP						0x10
-#define CS_DIR_DOWN						0x20
-#define CS_STOP							0x40
-#define CS_ATTACK						0x41
-#define CS_MAP_INIT_DATA				0x42
+#define CS_STOP							0x10
+#define CS_ATTACK1						0x11
+#define CS_ATTACK2						0x12
+#define CS_ATTACK3						0x13
+#define CS_MAP_INIT_DATA				0x14
 
 #define SC_POS   1
 #define SC_PUT_PLAYER    2
@@ -67,9 +72,10 @@ static const int EVT_RESPOWN = 7;
 #define SC_ROTATE		5
 #define SC_STATE		6
 #define SC_HP			7
+#define SC_PUT_MONSTER    8
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
-static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_DIR_UP + CS_DIR_DOWN;
+static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT;
 
 #pragma pack (push, 1)
 
@@ -135,6 +141,18 @@ struct sc_packet_put_player {
 	float posY;
 	float posZ;
 	float lookDegree;
+};
+
+struct sc_packet_put_monster {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	BYTE state;
+	float posX;
+	float posY;
+	float posZ;
+	float lookDegree;
+	BYTE monsterType;
 };
 
 struct sc_packet_remove_object {

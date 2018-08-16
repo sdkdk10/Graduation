@@ -7,8 +7,9 @@
 #include "Renderer.h"
 #include "Texture_Manager.h"
 
-CSkeleton::CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName)
+CSkeleton::CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName, bool isWarrior)
 	: CGameObject(d3dDevice, srv, srvSize)
+	, m_IsWarrior(isWarrior)
 {
 	m_pwstrMeshName = meshName;
 }
@@ -32,12 +33,26 @@ void CSkeleton::Animate(const GameTimer & gt)
 
 HRESULT CSkeleton::Initialize()
 {
-	m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
+	//m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(m_pwstrMeshName));
+	string strTexName;
+	if (m_IsWarrior)
+	{
+		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
+		strTexName = "VillagerTex";
+	}
+		
+	else
+	{
+		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Mage"));
+		strTexName = "MageTex";
+	}
+		
 
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
-	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("MageTex", CTexture_Manager::TEX_DEFAULT_2D);
+	
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(strTexName, CTexture_Manager::TEX_DEFAULT_2D);
 	if (tex == nullptr)
 		return E_FAIL;
 
@@ -311,9 +326,9 @@ void CSkeleton::Rotate(float fPitch, float fYaw, float fRoll)
 	World = Matrix4x4::Multiply(mtxRotate, World);
 }
 
-CSkeleton * CSkeleton::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName)
+CSkeleton * CSkeleton::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName, bool isWarrior)
 {
-	CSkeleton* pInstance = new CSkeleton(d3dDevice, srv, srvSize, meshName);
+	CSkeleton* pInstance = new CSkeleton(d3dDevice, srv, srvSize, meshName, isWarrior);
 	
 	if (FAILED(pInstance->Initialize()))
 	{

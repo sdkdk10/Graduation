@@ -182,6 +182,11 @@ HRESULT Spider::Initialize()
 	if (nullptr == tex)
 		return E_FAIL;
 
+	m_strTexName[SPIDER_BRICK] = "bricksTex";
+	m_strTexName[SPIDER_STONE] = "stoneTex";
+	m_strTexName[SPIDER_TILE] = "tileTex";
+	m_strTexName[SPIDER_ICE] = "iceTex";
+
 
 	AnimStateMachine = new AnimateStateMachine;
 
@@ -492,6 +497,15 @@ void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
 
 	}
+}
+
+void Spider::SetTexture(SpiderTex _tex)
+{
+	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(m_strTexName[_tex], CTexture_Manager::TEX_DEFAULT_2D);
+	if (nullptr == tex)
+		return;
+	Mat->DiffuseSrvHeapIndex = tex->Num;
+	
 }
 
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)

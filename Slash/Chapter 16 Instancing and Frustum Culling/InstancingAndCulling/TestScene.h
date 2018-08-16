@@ -15,7 +15,7 @@ class CTestScene
 {
 
 private:
-	explicit CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
+	explicit CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize, bool isWarrior);
 public:
 	virtual ~CTestScene();
 
@@ -33,13 +33,14 @@ private:
 	HRESULT Load_Map();
 
 public:
-	static CTestScene* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
+	static CTestScene* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize, bool isWarrior);
 
 	void UISetting();
 private:
 	virtual void Free();
 private:
 	vector<pair<const string, const string>> path;
+	bool				m_IsWarrior = true;
 private:
 	int            m_iObjectCount = 0;
 };

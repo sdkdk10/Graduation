@@ -72,7 +72,7 @@ HRESULT CSelectScene::Initialize()
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UICHANGE, pObject);
 	m_vecSelect.push_back(dynamic_cast<ChangeUI*>(pObject));
 
-	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
+	tex = CTexture_Manager::GetInstance()->Find_Texture("MageUITex", CTexture_Manager::TEX_DEFAULT_2D);
 	move.x = 0.8f;
 	move.y = 0.25f;
 	scale.x = 0.5f;
@@ -115,6 +115,7 @@ bool CSelectScene::Update(const GameTimer & gt)
 
 	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
 	{
+		// 얘는 법사
 		m_isLeft = false;
 		m_vecSelect[0]->SetisChange(false);
 		m_vecSelect[1]->SetisChange(true);
@@ -122,6 +123,7 @@ bool CSelectScene::Update(const GameTimer & gt)
 
 	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS)
 	{
+		// > 여기가 워리어
 		m_isLeft = true;
 		m_vecSelect[0]->SetisChange(true);
 		m_vecSelect[1]->SetisChange(false);
@@ -129,7 +131,7 @@ bool CSelectScene::Update(const GameTimer & gt)
 
 	if (KeyBoard_Input(DIK_RETURN) == CInputDevice::INPUT_PRESS)
 	{
-		CScene* pScene = CTestScene::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
+		CScene* pScene = CTestScene::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, m_isLeft);
 
 		pScene->Set_MainCam(m_pMainCam);
 		pScene->Set_CamFrustum(m_pCamFrustum);

@@ -433,12 +433,15 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto tileTex = new Texture;
 	tileTex->Name = "tileTex";
-	tileTex->Filename = L"Assets/Textures/tile.dds";
+	tileTex->Filename = L"Assets/Textures/ice.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), tileTex->Filename.c_str(),
 		tileTex->Resource, tileTex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(tileTex->Name, tileTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"tileTex Ready Failed");
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(tileTex->Name, tileTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"tileTex Ready Failed");
 
 	auto crateTex = new Texture;
@@ -451,6 +454,9 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(crateTex->Name, crateTex, CTexture_Manager::TEX_INST_2D)))
 		MSG_BOX(L"crateTex Ready Failed");
 
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(crateTex->Name, crateTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"crateTex Ready Failed");
+
 	auto iceTex = new Texture;
 	iceTex->Name = "iceTex";
 	iceTex->Filename = L"Assets/Textures/ice.dds";
@@ -459,6 +465,9 @@ void InstancingAndCullingApp::LoadTextures()
 		iceTex->Resource, iceTex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(iceTex->Name, iceTex, CTexture_Manager::TEX_INST_2D)))		// 이거 텍스쳐 매니저 만들어서 애들 관리하고
+		MSG_BOX(L"iceTex Ready Failed");
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(iceTex->Name, iceTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"iceTex Ready Failed");
 
 	auto grassTex = new Texture;
@@ -470,7 +479,6 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(grassTex->Name, grassTex, CTexture_Manager::TEX_INST_2D)))
 		MSG_BOX(L"grassTex Ready Failed");
-
 
 	// > Default Heap 2D Texture Load
 
@@ -574,7 +582,7 @@ void InstancingAndCullingApp::LoadTextures()
 
 	auto MageUITex = new Texture;
 	MageUITex->Name = "MageUITex";
-	MageUITex->Filename = L"Assets/Textures/warriorUI.dds";
+	MageUITex->Filename = L"Assets/Textures/MageUI.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), MageUITex->Filename.c_str(),
 		MageUITex->Resource, MageUITex->UploadHeap));
@@ -687,6 +695,8 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Attack1.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell1.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell2.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE"));
+
 
 	pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);

@@ -68,6 +68,7 @@ struct CLIENT {
 	int Hp;
 	int Dmg;
 	lua_State* L;
+	BYTE Type;
 
 	EXOver exover;
 	int packet_size;
@@ -240,6 +241,13 @@ bool IsClose(int a, MapObject* b)
 	return (dist_sq <= CLOSE_RADIUS * CLOSE_RADIUS);
 }
 
+bool IsAttackRange(int a, int b)
+{
+	float dist_sq = (g_clients[a].World._41 - g_clients[b].World._41) * (g_clients[a].World._41 - g_clients[b].World._41)
+		+ (g_clients[a].World._42 - g_clients[b].World._42) * (g_clients[a].World._42 - g_clients[b].World._42)
+		+ (g_clients[a].World._43 - g_clients[b].World._43) * (g_clients[a].World._43 - g_clients[b].World._43);
+	return (dist_sq <= PLAYER_ATTACK_RADIUS * PLAYER_ATTACK_RADIUS);
+}
 bool IsInAgroRange(int a, int b)
 {
 	float dist_sq = (g_clients[a].World._41 - g_clients[b].World._41) * (g_clients[a].World._41 - g_clients[b].World._41)
@@ -582,7 +590,7 @@ void ChasingPlayer(int source, int target) {
 
 void PutNewPlayer(int new_key) {
 
-	g_clients[new_key].Hp = 100;
+	g_clients[new_key].Hp = 200;
 	g_clients[new_key].World._41 = 15;
 	g_clients[new_key].World._42 = 0;
 	g_clients[new_key].World._43 = 0;
@@ -717,11 +725,11 @@ void PlayerAttack(int source) {
 	for (int i = NPC_START; i < NUM_OF_NPC; ++i) // 뷰리스트에 있는 애들 쓰는게 더 나으려나..
 	{
 		if (false == g_clients[i].is_active) continue;
-		if (false == IsClose(source, i)) continue;
+		if (false == IsAttackRange(source, i)) continue;
 
 		// 몬스터가 앞에 있는가 여기에서 판단
 
-		add_timer(source, EVT_DAMAGE, GetTickCount() + 100, i);
+		add_timer(source, EVT_DAMAGE, GetTickCount() + 50, i);
 	}
 
 }
@@ -752,7 +760,10 @@ void ProcessDamage(int source, int target) {
 			SendObjectState(i, target);
 		}
 		cout << "살아남" << endl;
-		add_timer(target, EVT_RESPOWN, GetTickCount() + 5000, 0);
+		if(IsNPC(target))
+			add_timer(target, EVT_RESPOWN, GetTickCount() + 50000, 0);
+		else
+			add_timer(target, EVT_RESPOWN, GetTickCount() + 5000, 0);
 	}
 }
 
@@ -766,7 +777,7 @@ void ProcessRespown(int source)
 
 	if (IsNPC(source))
 	{
-		g_clients[source].Hp = 60;
+		g_clients[source].Hp = 5;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -816,8 +827,8 @@ void Initialize()
 	{
 		XMStoreFloat4x4(&g_clients[i].World, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 		g_clients[i].World._41 = 15, g_clients[i].World._42 = 0, g_clients[i].World._43 = 0; // 플레이어 위치 초기화
-		g_clients[i].Hp = 100;
-		g_clients[i].Dmg = 20;
+		g_clients[i].Hp = 200;
+		g_clients[i].Dmg = 10;
 		SetOOBB(g_clients[i], XMFLOAT3(-7.5388, -5.98235, 28.8367), XMFLOAT3(23.1505, 16.4752, 28.5554), XMFLOAT4(0.0, 0.0, 0.0, 1.0));
 	}
 	for (int i = NPC_START; i < NUM_OF_NPC; ++i)
@@ -837,13 +848,14 @@ void Initialize()
 		g_clients[i].L = L;
 
 		lua_getglobal(g_clients[i].L, "LoadMonsterData");
-		lua_pcall(g_clients[i].L, 0, 4, 0);
-		g_clients[i].World._41 = (int)lua_tonumber(L, -4);
+		lua_pcall(g_clients[i].L, 0, 5, 0);
+		g_clients[i].World._41 = (int)lua_tonumber(L, -5);
 		g_clients[i].World._42 = 0;
-		g_clients[i].World._43 = (int)lua_tonumber(L, -3);
-		g_clients[i].Hp = (int)lua_tonumber(L, -2);
-		g_clients[i].Dmg = (int)lua_tonumber(L, -1);
-		lua_pop(L, 4);
+		g_clients[i].World._43 = (int)lua_tonumber(L, -4);
+		g_clients[i].Hp = (int)lua_tonumber(L, -3);
+		g_clients[i].Dmg = (int)lua_tonumber(L, -2);
+		g_clients[i].Type = (int)lua_tonumber(L, -1);
+		lua_pop(L, 5);
 
 		SetOOBB(g_clients[i], XMFLOAT3(0, 0.3232, 0.7277), XMFLOAT3(1.0345, 0.7848, 1.0931), XMFLOAT4(0.0, 0.0, 0.0, 1.0));
 
@@ -966,6 +978,22 @@ void SendPutObject(int client, int object_id)
 	SendPacket(client, &put_p);
 }
 
+void SendPutMonster(int client, int object_id)
+{
+	sc_packet_put_monster put_p;
+	put_p.id = object_id;
+	put_p.size = sizeof(sc_packet_put_monster);
+	put_p.type = SC_PUT_MONSTER;
+	put_p.posX = g_clients[object_id].World._41;
+	put_p.posY = g_clients[object_id].World._42;
+	put_p.posZ = g_clients[object_id].World._43;
+	put_p.lookDegree = g_clients[object_id].LookDegree;
+	put_p.state = g_clients[object_id].State;
+	put_p.monsterType = g_clients[object_id].Type;
+
+	SendPacket(client, &put_p);
+}
+
 void SendRemoveObject(int client, int object_id)
 {
 	sc_packet_remove_object p;
@@ -1005,8 +1033,6 @@ void ProcessPacket(int cl, char *packet)
 		if (p->type & CS_DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Height), -fMoveSpeed);
 		if (p->type & CS_DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Width), fMoveSpeed);
 		if (p->type & CS_DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Width), -fMoveSpeed);
-		if (p->type & CS_DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Depth), fMoveSpeed);
-		if (p->type & CS_DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(xmf3Depth), -fMoveSpeed);
 
 		XMFLOAT3 SlideVector{};
 
@@ -1105,7 +1131,7 @@ void ProcessPacket(int cl, char *packet)
 
 			if (g_clients[cl].xmOOBB.Contains(g_clients[i].xmOOBB))
 			{
-				cout << i << "번째 객체와 충돌" << endl;
+				//cout << i << "번째 객체와 충돌 Type : " << int(g_clients[i].Type) << endl;
 				SlideVector = GetSlideVector(g_clients[cl], g_clients[i]);
 				float cosCeta = Vector3::DotProduct(SlideVector, xmf3Shift);
 				if (cosCeta < 0)
@@ -1122,6 +1148,8 @@ void ProcessPacket(int cl, char *packet)
 
 		if (!IsCollision)
 			g_clients[cl].World._41 += xmf3Shift.x, g_clients[cl].World._42 += xmf3Shift.y, g_clients[cl].World._43 += xmf3Shift.z;
+
+		cout << " Pos = X : " << g_clients[cl].World._41 << " Y : " << g_clients[cl].World._42 << " Z : " << g_clients[cl].World._43 << endl;
 
 		sc_packet_pos sp_pos;
 		sp_pos.id = cl;
@@ -1167,8 +1195,11 @@ void ProcessPacket(int cl, char *packet)
 				g_clients[cl].viewlist.insert(id);
 				g_clients[cl].vlm.unlock();
 
-				//cout << "뷰리스트 배치 : " << id << " 번째 몬스터 보임" << endl;
-				SendPutObject(cl, id);
+				if (IsNPC(id))
+					SendPutMonster(cl, id);
+				else
+					SendPutObject(cl, id);
+				
 			}
 			else
 				g_clients[cl].vlm.unlock();
@@ -1180,7 +1211,10 @@ void ProcessPacket(int cl, char *packet)
 			if (0 == g_clients[id].viewlist.count(cl)) {
 				g_clients[id].viewlist.insert(cl);
 				g_clients[id].vlm.unlock();
-				SendPutObject(id, cl);
+				if (IsNPC(id))
+					SendPutMonster(cl, id);
+				else
+					SendPutObject(cl, id);
 			}
 			// 상대방한테 내가 있었다? // 위치값만
 			else
@@ -1238,9 +1272,14 @@ void ProcessPacket(int cl, char *packet)
 
 		return;
 	}
-	else if (packet[1] == CS_ATTACK)
+	else if ((packet[1] == CS_ATTACK1) || (packet[1] == CS_ATTACK2) || (packet[1] == CS_ATTACK3))
 	{
-		g_clients[cl].State = ATTACK1;
+		if(packet[1] == CS_ATTACK1)
+			g_clients[cl].State = ATTACK1;
+		else if (packet[1] == CS_ATTACK2)
+			g_clients[cl].State = ATTACK2;
+		else if (packet[1] == CS_ATTACK3)
+			g_clients[cl].State = ATTACK3;
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
@@ -1248,6 +1287,7 @@ void ProcessPacket(int cl, char *packet)
 			if (false == CanSee(i, cl)) continue;
 
 			SendObjectState(i, cl);
+
 		}
 
 		add_timer(cl, EVT_PLAYER_ATTACK, GetTickCount() + iAttackDelay, 0);

@@ -99,14 +99,48 @@ void CNetwork::SendDirKeyPacket(DWORD& keyInput, XMFLOAT4X4& world)
 	}
 }
 
-void CNetwork::SendAttackPacket(void)
+void CNetwork::SendAttack1Packet(void)
 {
 	cs_packet_attack *my_packet = reinterpret_cast<cs_packet_attack *>(send_buffer);
 	my_packet->size = sizeof(cs_packet_attack);
 	send_wsabuf.len = sizeof(cs_packet_attack);
 	DWORD iobyte;
 
-	my_packet->type = CS_ATTACK;
+	my_packet->type = CS_ATTACK1;
+
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+void CNetwork::SendAttack2Packet(void)
+{
+	cs_packet_attack *my_packet = reinterpret_cast<cs_packet_attack *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_attack);
+	send_wsabuf.len = sizeof(cs_packet_attack);
+	DWORD iobyte;
+
+	my_packet->type = CS_ATTACK2;
+
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+void CNetwork::SendAttack3Packet(void)
+{
+	cs_packet_attack *my_packet = reinterpret_cast<cs_packet_attack *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_attack);
+	send_wsabuf.len = sizeof(cs_packet_attack);
+	DWORD iobyte;
+
+	my_packet->type = CS_ATTACK3;
 
 	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
 
@@ -151,7 +185,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->Rotation(0.f, 0.f, my_packet->lookDegree);
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(my_packet->state);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(100);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(200);
 		}
 		else if (id < NPC_START)
 		{
@@ -253,6 +287,18 @@ void CNetwork::ProcessPacket(char * ptr)
 		//	CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
 		//}
 		break;
+	}
+	case SC_PUT_MONSTER:
+	{
+		sc_packet_put_monster *my_packet = reinterpret_cast<sc_packet_put_monster *>(ptr);
+		int id = my_packet->id;
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = true;
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->Rotation(0.f, my_packet->lookDegree, 0.0f);
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetObjectAnimState(my_packet->state);
+		//if (my_packet->monsterType == 2)
+		//	my_packet->monsterType = 3;
+		dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider",id - NPC_START))->SetTexture((SpiderTex)my_packet->monsterType);
 	}
 	}
 }

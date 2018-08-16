@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "../../SlashServer/SlashServer/Protocol.h"
 
 class Player;
 
@@ -19,8 +20,13 @@ public:
 	virtual void			Animate(const GameTimer & gt);
 	virtual void			SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
 
+public:
+	void SetTexture(SpiderTex _tex);
+
 private:
 	Player *				m_pPlayer = nullptr;
+	string					m_strTexName[SPIDER_END];
+	
 public:
 	static Spider* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 

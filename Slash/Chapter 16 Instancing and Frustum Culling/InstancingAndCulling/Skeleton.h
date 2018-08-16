@@ -7,7 +7,7 @@ class CSkeleton
 	: public CGameObject
 {
 private:
-	explicit CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
+	explicit CSkeleton(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName, bool isWarrior);
 public:
 	virtual ~CSkeleton();
 
@@ -29,6 +29,8 @@ private:
 	DrawElement Element_Left;
 	DrawElement Element_Right;
 
+	bool		m_IsWarrior;
+
 public:
 	virtual HRESULT			Initialize();
 	virtual bool			Update(const GameTimer& gt);
@@ -42,7 +44,7 @@ public:
 	virtual void Rotate(float fPitch, float fYaw, float fRoll);
 
 public:
-	static CSkeleton* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName);
+	static CSkeleton* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* meshName, bool isWarrior);
 
 	void Move(const XMFLOAT3 & xmf3Shift, bool bVelocity);
 

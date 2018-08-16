@@ -57,7 +57,7 @@ public:
 	float fAngleTestSum2 = 0.0f;
 	CBoundingBox*						m_pBoundMesh = nullptr;
 private:
-	Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+	Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior);
 public:
 	virtual ~Player();
 public:
@@ -73,7 +73,7 @@ public:
 	void					Render_Right(ID3D12GraphicsCommandList* cmdList);
 
 public:
-	static Player* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
+	static Player* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior);
 
 public:
 	void SetCurState(int state) {
@@ -94,6 +94,8 @@ private:
 private:
 	int m_CurState;
 	int m_PreState;
+
+	bool m_IsWarrior;
 };
 
 
