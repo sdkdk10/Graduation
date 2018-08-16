@@ -650,13 +650,8 @@ void PutNewPlayer(int new_key) {
 		if (IsInAgroRange(i, new_key))
 			WakeUpNPC(i, new_key); // 상태 2번 보냄 수정해야함
 
-		p.id = i;
-		p.posX = g_clients[i].World._41;
-		p.posY = g_clients[i].World._42;
-		p.posZ = g_clients[i].World._43;
-		p.lookDegree = g_clients[i].LookDegree;
-		p.state = g_clients[i].State;
-		SendPacket(new_key, &p);
+
+		SendPutMonster(new_key, i);
 
 		g_clients[new_key].vlm.lock();
 		g_clients[new_key].viewlist.insert(i);
