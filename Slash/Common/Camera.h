@@ -16,7 +16,7 @@ class CGameObject;
 class Camera
 {
 public:
-
+	float testnum = 0.0f;
 	Camera();
 	~Camera();
 
@@ -77,6 +77,15 @@ public:
 
 	int Update();
 
+	void CameraShakingEffect();
+	void SetViewMatrix(DirectX::XMFLOAT4X4 inView);
+
+	bool GetCameraShakingEffect() { return bCameraShakingEffect; }
+	void SetCameraShakingEffect(bool inCameraShakingEffect) 
+	{
+		bCameraShakingEffect = inCameraShakingEffect; 
+		CameraShakingEffect();
+	} //
 private:
 
 	// Camera coordinate system with coordinates relative to world space.
@@ -94,7 +103,7 @@ private:
 	float mFarWindowHeight = 0.0f;
 
 	bool mViewDirty = true;
-
+	bool bCameraShakingEffect = false;
 	// Cache View/Proj matrices.
 	DirectX::XMFLOAT4X4 mView = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 mProj = MathHelper::Identity4x4();

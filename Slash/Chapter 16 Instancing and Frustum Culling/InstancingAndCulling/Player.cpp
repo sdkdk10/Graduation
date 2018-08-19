@@ -16,7 +16,6 @@ Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12Desc
 {
 	m_preKeyInputTime = 0;
 	m_curKeyInputTime = 0;
-
 }
 
 Player::~Player()
@@ -60,7 +59,6 @@ void Player::Animate(const GameTimer & gt)
 	//	AnimStateMachine->AnimationStateUpdate(gt);
 	//	return;
 	//}
-
 
 
 	AnimStateMachine->AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
@@ -541,8 +539,14 @@ void Player::KeyInput(const GameTimer & gt)
 	}
 	if (m_bIsConnected)
 	{
+		auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+		
+	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
+		{
+			m_pCamera->SetCameraShakingEffect(true);
 			CNetwork::GetInstance()->SendAttack1Packet();
+		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack2Packet();
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
@@ -708,6 +712,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
+		
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() *20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])

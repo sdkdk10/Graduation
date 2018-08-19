@@ -172,10 +172,21 @@ HRESULT CTestScene::Initialize()
 
 bool CTestScene::Update(const GameTimer & gt)
 {
+	
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+
+	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+
+	if (m_pCamera != NULL)
+	{
+		m_pCamera->CameraShakingEffect();
+	}
 
 	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
 	m_pPlayer->m_pCollider = NULL;
+
+
 
 	for (int i = 0; i < spiderList.size(); ++i)
 	{
