@@ -210,8 +210,6 @@ HRESULT Player::Initialize()
 	if (tex == nullptr)
 		return E_FAIL;
 
-
-
 	Mat = new Material;
 	Mat->Name = "InsecMat";
 	Mat->MatCBIndex = m_iMyObjectID;
@@ -276,8 +274,6 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 
 
 
-
-
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
@@ -289,14 +285,6 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (GetAnimateMachine()->bTimerUltimate)
-	{
-		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
-		if (WarriorUltimateTex == nullptr)
-			return;
-		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
-	}
-	else
 	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
@@ -337,14 +325,6 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (GetAnimateMachine()->bTimerUltimate)
-	{
-		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
-		if (WarriorUltimateTex == nullptr)
-			return;
-		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
-	}
-	else
 	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
@@ -382,14 +362,6 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (GetAnimateMachine()->bTimerUltimate)
-	{
-		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);			// 이런식으로 가져옴
-		if (WarriorUltimateTex == nullptr)
-			return;
-		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
-	}
-	else
 	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
@@ -579,12 +551,6 @@ void Player::KeyInput(const GameTimer & gt)
 			CNetwork::GetInstance()->SendAttack2Packet();
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
-		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
-		{
-			SetObjectAnimState(6);
-		}
-
-
 	}
 	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	//{
@@ -867,41 +833,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		}
 
 	}
-	if (bTimerUltimate == true)
-	{
 
-		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
-		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
-
-		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate> m_SoundFrame[AnimateStateMachine::STATE_ULTIMATE])
-		{
-			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
-			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
-		}
-
-		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate> m_EffectFrame[AnimateStateMachine::STATE_ULTIMATE])
-		{
-			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
-			// > 스킬넣어주기
-			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
-		}
-
-		if (m_fAnimationKeyFrameIndex_Ultimate> (*vecAnimFrame)[6])
-		{
-			bTimerUltimate = false;
-			m_fAnimationKeyFrameIndex_Ultimate= 0;
-
-			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
-			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
-		}
-
-
-	}
 }
 
 AnimateStateMachine_Player * AnimateStateMachine_Player::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])

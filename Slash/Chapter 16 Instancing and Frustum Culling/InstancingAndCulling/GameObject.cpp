@@ -305,12 +305,6 @@ void AnimateStateMachine::SetTimerTrueFalse()
 		bTimerDead = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
-
-	if (m_iAnimState == UltimateState)
-	{
-		bTimerUltimate = true;
-		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Ultimate;
-	}
 }
 
 void AnimateStateMachine::Free()

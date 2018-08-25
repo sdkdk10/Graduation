@@ -71,12 +71,6 @@ HRESULT CTestScene::Initialize()
 		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 
-	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//pObject->SetCamera(Get_MainCam());
-	//pObject->SetPosition(0, 0, 15);
-	//Ready_GameObject(L"Layer_Dragon", pObject);
-
-	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 //	pObject->SetCamera(Get_MainCam());
@@ -130,7 +124,11 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Spider", pObject);
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);*/
 
-
+	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(0,0,15);
+	//Ready_GameObject(L"Layer_Dragon", pObject);
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	
 	//pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	//pObject->SetCamera(Get_MainCam());
@@ -187,8 +185,6 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
 	m_pPlayer->m_pCollider = NULL;
-
-
 
 
 
@@ -542,8 +538,6 @@ CTestScene * CTestScene::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, 
 
 void CTestScene::UISetting()
 {
-
-
 	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 
 	move.x = -0.3f;
@@ -560,27 +554,6 @@ void CTestScene::UISetting()
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_HPBar", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-
-	///
-	move.x = -0.82f;
-	move.y = 0.75f;
-
-	scale.x = 1.0f;
-	scale.y = 1.0f;
-
-	size = 0.125f;
-
-	tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
-
-	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_WarriorUI", tex->Num);
-	pObject->SetCamera(Get_MainCam());
-	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
-	//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-
-
-/// 다른 UI추가
 
 	move.x = -0.82f;
 	move.y = 0.75f;
