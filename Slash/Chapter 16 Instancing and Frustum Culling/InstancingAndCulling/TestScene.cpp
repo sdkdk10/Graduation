@@ -71,6 +71,13 @@ HRESULT CTestScene::Initialize()
 		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 
+	pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	pObject->SetPosition(0, 0, 15);
+	Ready_GameObject(L"Layer_Dragon", pObject);
+
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 //	pObject->SetCamera(Get_MainCam());

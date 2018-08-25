@@ -285,7 +285,15 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (GetAnimateMachine()->bTimerUltimate)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -325,7 +333,15 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (GetAnimateMachine()->bTimerUltimate)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -362,6 +378,14 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	if (GetAnimateMachine()->bTimerUltimate)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
 	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
@@ -551,6 +575,10 @@ void Player::KeyInput(const GameTimer & gt)
 			CNetwork::GetInstance()->SendAttack2Packet();
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
+		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
+		{
+			SetObjectAnimState(6);
+		}
 	}
 	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	//{
@@ -712,8 +740,8 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
-		
-		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() *20;
+
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
 		{
@@ -825,12 +853,45 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
-		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
+		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[5])
 		{
 			m_bIsLife = false;
 			bTimerDead = false;
 			//m_fAnimationKeyFrameIndex_Dead = 0;
 		}
+
+	}
+	if (bTimerUltimate == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[AnimateStateMachine::STATE_ULTIMATE])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[AnimateStateMachine::STATE_ULTIMATE])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Ultimate > (*vecAnimFrame)[6])
+		{
+			bTimerUltimate = false;
+			m_fAnimationKeyFrameIndex_Ultimate = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
 
 	}
 

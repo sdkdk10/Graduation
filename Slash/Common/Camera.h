@@ -84,7 +84,7 @@ public:
 	void SetCameraShakingEffect(bool inCameraShakingEffect) 
 	{
 		bCameraShakingEffect = inCameraShakingEffect; 
-		CameraShakingEffect();
+		//CameraShakingEffect();
 	} //
 private:
 
