@@ -587,6 +587,21 @@ void ChasingPlayer(int source, int target) {
 
 
 }
+void SendPutMonster(int client, int object_id)
+{
+	sc_packet_put_monster put_p;
+	put_p.id = object_id;
+	put_p.size = sizeof(sc_packet_put_monster);
+	put_p.type = SC_PUT_MONSTER;
+	put_p.posX = g_clients[object_id].World._41;
+	put_p.posY = g_clients[object_id].World._42;
+	put_p.posZ = g_clients[object_id].World._43;
+	put_p.lookDegree = g_clients[object_id].LookDegree;
+	put_p.state = g_clients[object_id].State;
+	put_p.monsterType = g_clients[object_id].Type;
+
+	SendPacket(client, &put_p);
+}
 
 void PutNewPlayer(int new_key) {
 
@@ -973,21 +988,6 @@ void SendPutObject(int client, int object_id)
 	SendPacket(client, &put_p);
 }
 
-void SendPutMonster(int client, int object_id)
-{
-	sc_packet_put_monster put_p;
-	put_p.id = object_id;
-	put_p.size = sizeof(sc_packet_put_monster);
-	put_p.type = SC_PUT_MONSTER;
-	put_p.posX = g_clients[object_id].World._41;
-	put_p.posY = g_clients[object_id].World._42;
-	put_p.posZ = g_clients[object_id].World._43;
-	put_p.lookDegree = g_clients[object_id].LookDegree;
-	put_p.state = g_clients[object_id].State;
-	put_p.monsterType = g_clients[object_id].Type;
-
-	SendPacket(client, &put_p);
-}
 
 void SendRemoveObject(int client, int object_id)
 {

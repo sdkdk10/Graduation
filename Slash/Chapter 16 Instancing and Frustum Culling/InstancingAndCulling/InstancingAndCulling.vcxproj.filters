@@ -7,9 +7,6 @@
     <Filter Include="98. Header">
       <UniqueIdentifier>{0333f282-1715-467c-ba19-d0b359d050a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97. DirectHelper">
-      <UniqueIdentifier>{fdb0c758-a44d-455b-8092-72b1ea67018e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. GameTimer">
       <UniqueIdentifier>{e6a50856-a91c-4450-b29b-ed2b142f1671}</UniqueIdentifier>
     </Filter>
@@ -24,21 +21,6 @@
     </Filter>
     <Filter Include="03. Mesh">
       <UniqueIdentifier>{76a84540-07f4-440f-859c-998876f01c09}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\00. FrameResource">
-      <UniqueIdentifier>{5ebb86a5-3752-4868-9d09-6ea79a26f144}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\01. DDSTextureLoader">
-      <UniqueIdentifier>{043e596b-98e9-4847-ac46-a71e7fb9e7fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\02. GeometryGenerator">
-      <UniqueIdentifier>{a2cf27ee-6b98-46fc-a7a4-5f0a83af2bdf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\02. MathHelper">
-      <UniqueIdentifier>{af70f472-4f92-4bb2-b73b-c4e28441a106}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="97. DirectHelper\04. d3dUtil">
-      <UniqueIdentifier>{74352b70-43e8-4ee9-ab62-f2dcc1525ef3}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObject\00. AnimObject">
       <UniqueIdentifier>{8e400ced-35f9-4a12-891d-b2fac526e1f1}</UniqueIdentifier>
@@ -189,6 +171,24 @@
     </Filter>
     <Filter Include="01. Scene\02. SelectScene">
       <UniqueIdentifier>{6462773b-450e-4cdf-a42d-6423b51de9f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. DirectHelper">
+      <UniqueIdentifier>{fdb0c758-a44d-455b-8092-72b1ea67018e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. DirectHelper\00. FrameResource">
+      <UniqueIdentifier>{5ebb86a5-3752-4868-9d09-6ea79a26f144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. DirectHelper\01. DDSTextureLoader">
+      <UniqueIdentifier>{043e596b-98e9-4847-ac46-a71e7fb9e7fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. DirectHelper\02. GeometryGenerator">
+      <UniqueIdentifier>{a2cf27ee-6b98-46fc-a7a4-5f0a83af2bdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. DirectHelper\02. MathHelper">
+      <UniqueIdentifier>{af70f472-4f92-4bb2-b73b-c4e28441a106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. DirectHelper\04. d3dUtil">
+      <UniqueIdentifier>{74352b70-43e8-4ee9-ab62-f2dcc1525ef3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

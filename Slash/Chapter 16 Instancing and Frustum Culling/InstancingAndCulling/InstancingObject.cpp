@@ -311,14 +311,14 @@ bool CInstancingObject::Update(const GameTimer & gt)
 void CInstancingObject::Render(ID3D12GraphicsCommandList * cmdList)
 {
 
-	//RenderBounds(cmdList);
-	
+	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
 	cmdList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	//UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
 	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
-
+	
 	// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
 	// the heap and set as a root descriptor.
 

@@ -509,6 +509,16 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(InsecTex->Name, InsecTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"InsecTex Ready Failed");
 
+	auto WarriorUltimateTex = new Texture;
+	WarriorUltimateTex->Name = "WarriorUltimateTex";
+	WarriorUltimateTex->Filename = L"Assets/Textures/WarriorUltimateTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), WarriorUltimateTex->Filename.c_str(),
+		WarriorUltimateTex->Resource, WarriorUltimateTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(WarriorUltimateTex->Name, WarriorUltimateTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"WarriorUltimateTex Ready Failed");
+
 	auto SkyTex = new Texture;
 	SkyTex->Name = "SkyTex"; 
 	SkyTex->Filename = L"Assets/Textures/desertcube1024.dds";
@@ -548,6 +558,8 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageTex->Name, MageTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"MageTex Ready Failed");
+
+	
 
 	auto BloodTex = new Texture;
 	BloodTex->Name = "BloodTex";
@@ -653,6 +665,10 @@ void InstancingAndCullingApp::LoadTextures()
 			MSG_BOX(L"Effect Texture Ready Failed");
 	}
 
+
+
+
+
 	mMaterials_Instancing[bricksTex->Name] = std::move(bricksTex);
 	mMaterials_Instancing[stoneTex->Name] = std::move(stoneTex);
 	mMaterials_Instancing[tileTex->Name] = std::move(tileTex);
@@ -685,11 +701,13 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack2.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack3.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Ultimate.ASE"));
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
 
 	path.clear();
+	//
 	path.push_back(make_pair("Idle", "Assets/Models/Mage/Mage_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Mage/Mage_Walk.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Attack1.ASE"));
@@ -702,6 +720,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);
 
 	path.clear();
+	//
 	path.push_back(make_pair("Idle", "Assets/Models/Spider/Spider_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Walk.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Attack1.ASE"));
@@ -711,6 +730,16 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
+
+	/*path.clear();
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyIdle.ASE"));
+	
+
+	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Dragon", pComponentSingle);*/
+
+
+
 	/*
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/StaticMesh/staticMesh.ASE"));
