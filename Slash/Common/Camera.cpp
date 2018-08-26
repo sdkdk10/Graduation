@@ -315,4 +315,36 @@ int Camera::Update()
 	return 0;
 }
 
+void Camera::CameraShakingEffect()
+{
+	if (bCameraShakingEffect)
+	{
+		if (this != NULL)
+		{
+			m_IsDynamic = true;
+			RotateY(0.01 *  sin(testnum * 5.f));
+		
+
+			SetPosition(m_pObject->GetPosition().x, m_pObject->GetPosition().y + 20, m_pObject->GetPosition().z - 20);
+			if (testnum < 2.0f * 3.14f / 5.f)
+				testnum += 0.1f;
+			else
+			{
+				m_IsDynamic = false;
+				bCameraShakingEffect = false;
+				testnum = 0.0f;
+			}
+
+		}
+	}
+	
+}
+
+void Camera::SetViewMatrix(DirectX::XMFLOAT4X4 inView)
+{
+	XMMATRIX mtxInView = XMLoadFloat4x4(&inView);
+
+
+}
+
 

@@ -151,6 +151,8 @@ HRESULT Dragon::Initialize()
 	if (nullptr == tex)
 		return E_FAIL;
 
+	AnimStateMachine = new AnimateStateMachine;
+
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
 	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
