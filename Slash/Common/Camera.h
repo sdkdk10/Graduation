@@ -77,18 +77,6 @@ public:
 
 	int Update();
 
-<<<<<<< HEAD
-=======
-	void CameraShakingEffect();
-	void SetViewMatrix(DirectX::XMFLOAT4X4 inView);
-
-	bool GetCameraShakingEffect() { return bCameraShakingEffect; }
-	void SetCameraShakingEffect(bool inCameraShakingEffect) 
-	{
-		bCameraShakingEffect = inCameraShakingEffect; 
-		CameraShakingEffect();
-	} //
->>>>>>> parent of 19ae9e7... 궁극기 추가 , 용 몬스터 추가
 private:
 
 	// Camera coordinate system with coordinates relative to world space.

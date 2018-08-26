@@ -1,0 +1,25 @@
+﻿  MathHelper.cpp
+  ServerMain.cpp
+ServerMain.cpp(434): warning C4244: '인수': 'const double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(436): warning C4305: '+=': 'const double'에서 'float'(으)로 잘립니다.
+ServerMain.cpp(440): warning C4305: '인수': 'const double'에서 'float'(으)로 잘립니다.
+ServerMain.cpp(442): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+ServerMain.cpp(456): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(832): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+ServerMain.cpp(852): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(854): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(860): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+ServerMain.cpp(1350): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(1356): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(1400): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(1407): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(1413): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(1420): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+ServerMain.cpp(1426): warning C4244: '인수': 'unsigned __int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+MSVCRT.lib(initializers.obj) : warning LNK4098: 'libcmt.lib' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
+  코드를 생성하고 있습니다.
+  115 of 743 functions (15.5%) were compiled, the rest were copied from previous compilation.
+    14 functions were new in current compilation
+    12 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  SlashServer.vcxproj -> C:\Users\Jihee\Desktop\Graduation\Graduation\SlashServer\x64\Release\SlashServer.exe

@@ -708,10 +708,6 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
-<<<<<<< HEAD
-=======
-		
->>>>>>> parent of 19ae9e7... 궁극기 추가 , 용 몬스터 추가
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() *20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
