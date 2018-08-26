@@ -3,8 +3,8 @@
 const float fMoveSpeed = 0.1f;
 const float fDegree = 57.3248f;
 const float fRotateDegree = 15.0f;
-const double fMonsterRotateDegree = 0.66688 * 10.0;
-const double dMonsterMoveSpeed = 0.033344 * 8.0;
+const double fMonsterRotateDegree = 0.66688 * 8.0;
+const double dMonsterMoveSpeed = 0.033344 * 5.0;
 const int iAttackDelay = 500;
 const XMFLOAT3	xmf3Height{ 0.0f, 0.0f, 1.0f };
 const XMFLOAT3	xmf3Width{ 1.0f, 0.0f, 0.0f };
@@ -39,8 +39,8 @@ static const int EVT_RESPOWN = 7;
 #define BOARD_HEIGHT  400
 
 #define MAPOBJECT_RADIUS	30
-#define VIEW_RADIUS		24
-#define AGRO_RADIUS		18
+#define VIEW_RADIUS		14
+#define AGRO_RADIUS		8
 #define PLAYER_ATTACK_RADIUS	6
 #define CLOSE_RADIUS	4
 
