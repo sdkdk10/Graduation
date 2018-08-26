@@ -769,7 +769,7 @@ void CEffect::Update_Play(const GameTimer & gt)
 		if (m_IsFrame)
 		{
 			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_SPRITE, this);
-			cout << "프레임!!!" << endl;
+			//cout << "프레임!!!" << endl;
 		}
 			
 		
@@ -777,7 +777,7 @@ void CEffect::Update_Play(const GameTimer & gt)
 	
 		{
 			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_DEFAULT, this);
-			cout << "그냐으" << endl;
+			//cout << "그냐으" << endl;
 		}
 }
 

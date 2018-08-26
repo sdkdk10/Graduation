@@ -58,7 +58,10 @@ HRESULT CSkeleton::Initialize()
 	if (tex == nullptr)
 		return E_FAIL;
 
-	AnimStateMachine = new AnimateStateMachine;
+	int test[AnimateStateMachine::STATE_END] = { 0, };
+	AnimStateMachine = AnimateStateMachine_Skeleton::Create(this, L"Warrior", test, test);
+	if (AnimStateMachine == nullptr)
+		return E_FAIL;
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
 	AnimStateMachine->SetAnimState(AnimStateMachine->WalkState);
