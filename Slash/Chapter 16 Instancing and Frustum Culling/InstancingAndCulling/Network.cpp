@@ -37,8 +37,8 @@ void CNetwork::InitSock(HWND MainWnd)
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(MY_SERVER_PORT);
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.83.227");
-	//ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.227");
+	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
 	int Result = WSAConnect(mysocket, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
 
 	if (Result)
