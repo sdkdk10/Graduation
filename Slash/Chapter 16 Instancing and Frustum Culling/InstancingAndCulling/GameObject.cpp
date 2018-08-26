@@ -207,6 +207,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[2])
 		{
+			
 			bTimerAttack1 = false;
 			m_fAnimationKeyFrameIndex_Attack1 = 0;
 		}
@@ -262,7 +263,6 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 
 
 
-
 }
 
 void AnimateStateMachine::SetTimerTrueFalse()
@@ -305,6 +305,13 @@ void AnimateStateMachine::SetTimerTrueFalse()
 		bTimerDead = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
+
+	if (m_iAnimState == UltimateState)
+	{
+		bTimerUltimate = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Ultimate;
+	}
+
 }
 
 void AnimateStateMachine::Free()
