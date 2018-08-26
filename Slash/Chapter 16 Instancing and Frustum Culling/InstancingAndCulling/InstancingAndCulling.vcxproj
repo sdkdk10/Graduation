@@ -22,15 +22,7 @@
     <ProjectGuid>{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>InstancingAndCulling</RootNamespace>
-<<<<<<< HEAD
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
-=======
-<<<<<<< HEAD
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
-=======
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
->>>>>>> 19ae9e73a1d72d8c1f2ce39df2850b28f03fb0df
->>>>>>> parent of 36e1320... Revert "Merge branch 'master' of https://github.com/sdkdk10/Graduation"
     <ProjectName>Slash</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
