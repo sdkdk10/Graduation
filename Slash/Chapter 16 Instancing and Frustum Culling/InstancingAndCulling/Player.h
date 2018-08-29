@@ -6,6 +6,10 @@ class CBoundingBox;
 
 class Player : public CGameObject
 {
+public:
+	bool bIsUltimateState = false;
+	float m_fUltimateTime = 20.0f;
+	void CheckUltimate(const GameTimer & gt);
 private:
 	bool m_bAttackMotionForSound = true;
 public:
@@ -102,6 +106,8 @@ private:
 class AnimateStateMachine_Player
 	: public AnimateStateMachine
 {
+public:
+
 public:
 	explicit AnimateStateMachine_Player(CGameObject* pObj, wchar_t* pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END]);
 	virtual ~AnimateStateMachine_Player();

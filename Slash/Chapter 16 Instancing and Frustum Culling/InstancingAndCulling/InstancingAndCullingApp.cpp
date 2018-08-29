@@ -321,11 +321,22 @@ void InstancingAndCullingApp::OnMouseUp(WPARAM btnState, int x, int y)
 
 void InstancingAndCullingApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
+
 	if ((btnState & MK_LBUTTON) != 0)
 	{
 		// Make each pixel correspond to a quarter of a degree.
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
+
+		mCamera.Pitch(dy);
+		mCamera.RotateY(dx);
+	}
+
+	if (mCamera.bFirstPersonView) //1인칭 모드에서
+	{
+
+		float dx = XMConvertToRadians(0.35f*static_cast<float>(x - mLastMousePos.x));
+		float dy = XMConvertToRadians(0.35f*static_cast<float>(y - mLastMousePos.y));
 
 		mCamera.Pitch(dy);
 		mCamera.RotateY(dx);
@@ -725,7 +736,9 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyIdle.ASE"));
-
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyForward.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyAttack.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_TakeOff.ASE"));
 	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Dragon", pComponentSingle);
 

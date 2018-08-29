@@ -56,6 +56,7 @@ public:
 	vector<int> * vecAnimFrame;
 
 public: //애니메이션 상태
+
 	const int IdleState = 0;
 	const int WalkState = 1;
 	const int Attack1State = 2;
@@ -106,6 +107,7 @@ public:
 	void SetHp(float _hp) { hp = _hp; }
 public:
 	bool m_bIsVisiable = true;
+
 	bool m_bIsConnected = false;
 	Camera * m_pCamera = nullptr;
 	BoundingFrustum				mCamFrustum;
