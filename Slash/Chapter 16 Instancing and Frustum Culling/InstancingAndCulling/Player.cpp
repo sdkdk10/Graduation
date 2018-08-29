@@ -9,6 +9,7 @@
 #include "Effect_Manager.h"
 #include "Management.h"
 #include "Renderer.h"
+#include "Camera.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -90,6 +91,8 @@ void Player::Animate(const GameTimer & gt)
 
 bool Player::Update(const GameTimer & gt)
 {
+	CheckUltimate(gt);
+
 	//return true;
 	CGameObject::Update(gt);
 
@@ -285,7 +288,7 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (GetAnimateMachine()->bTimerUltimate)
+	if (bIsUltimateState)
 	{
 		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
 		if (WarriorUltimateTex == nullptr)
@@ -333,7 +336,7 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (GetAnimateMachine()->bTimerUltimate)
+	if (bIsUltimateState)
 	{
 		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
 		if (WarriorUltimateTex == nullptr)
@@ -378,7 +381,7 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (GetAnimateMachine()->bTimerUltimate)
+	if (bIsUltimateState)
 	{
 		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
 		if (WarriorUltimateTex == nullptr)
@@ -457,6 +460,19 @@ Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 //	//cmdList->DrawIndexedInstanced(Element_Left.IndexCount, 1, Element_Left.StartIndexLocation, Element_Left.BaseVertexLocation, 0);
 //}
 
+
+void Player::CheckUltimate(const GameTimer & gt)
+{
+	if (bIsUltimateState)
+	{
+		m_fUltimateTime -= gt.DeltaTime();
+		if (m_fUltimateTime < 0.0f)
+		{
+			m_fUltimateTime = 20.0f;
+			bIsUltimateState = false;
+		}
+	}
+}
 
 void Player::SetPosition(float x, float y, float z)
 {
@@ -538,10 +554,34 @@ void Player::KeyInput(const GameTimer & gt)
 	DWORD dwDirection = 0;
 	static bool IsPlayerMoved = false;
 
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+
+	if (CManagement::GetInstance()->Get_MainCam() != NULL)
+	{
+		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && !bIsUltimateState)
+		{
+			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+		}
+		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && bIsUltimateState)
+		{
+			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+		}
+
+		else
+		{
+			if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+			if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+			if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+			if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+		}
+
+	}
+
 
 	//m_curKeyInputTime = gt.TotalTime();
 	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
@@ -568,7 +608,7 @@ void Player::KeyInput(const GameTimer & gt)
 	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
 		{
-			m_pCamera->SetCameraShakingEffect(true);
+			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
 		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
@@ -577,51 +617,26 @@ void Player::KeyInput(const GameTimer & gt)
 			CNetwork::GetInstance()->SendAttack3Packet();
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{
+			bIsUltimateState = true; //±Ã»óÅÂ·Î
+			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
+
 			SetObjectAnimState(6);
 		}
+		else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
+		{
+			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
+		}
+		if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+		{
+
+		}
 	}
-	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-	//{
-	//	//KeyInputTest = 2;
-	//	if (AnimStateMachine->GetAnimState() != AnimStateMachine->Attack1State)
-	//	{
-	//		AnimStateMachine->SetAnimState(AnimStateMachine->Attack1State);
-	//		
-	//		//KeyInputTest = 2;
-	//	}
-	//	else
-	//	{
-	//		AnimStateMachine->SetAnimState(AnimStateMachine->Attack3State);
 
-
-	//		//KeyInputTest = 4;//3;
-	//		bAttackMotionTest = true;
-	//	}
-
-	//	if (bAttackMotionTest == false)
-	//	{
-	//		if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack2State)
-	//		{
-
-	//		}
-	//	}
-
-
-	//}
-	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-	}
 	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
 	}
 
-	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
-	{
-		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
-		XMVECTOR q = XMLoadFloat4(&Test);
-	}
 
 	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
 	{
@@ -863,6 +878,9 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 	}
 	if (bTimerUltimate == true)
 	{
+		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+	
 
 		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
@@ -884,7 +902,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		{
 			bTimerUltimate = false;
 			m_fAnimationKeyFrameIndex_Ultimate = 0;
-
+			
 			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
 			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
 

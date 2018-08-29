@@ -777,7 +777,6 @@ void CEffect::Update_Play(const GameTimer & gt)
 	
 		{
 			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_DEFAULT, this);
-			cout << "±×³ÄÀ¸" << endl;
 		}
 }
 

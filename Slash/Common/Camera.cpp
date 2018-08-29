@@ -1,11 +1,12 @@
 //***************************************************************************************
 // Camera.h by Frank Luna (C) 2011 All Rights Reserved.
 //***************************************************************************************
-
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/stdafx.h"
 #include "Camera.h"
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/GameObject.h"
 #include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/InputDevice.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Management.h"
+#include "../Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Player.h"
 
 Camera::Camera()
 	: m_pObject(nullptr)
@@ -289,11 +290,18 @@ int Camera::Update()
 {
 	if (KeyBoard_Input(DIK_F3) == CInputDevice::INPUT_DOWN)
 	{
-		m_IsDynamic = true;
+		SetViewMode(DYNAMIC);
 	}
 	if (KeyBoard_Input(DIK_F4) == CInputDevice::INPUT_DOWN)
 	{
-		m_IsDynamic = false;
+		SetViewMode(TOPVIEW);
+
+	}
+	if (KeyBoard_Input(DIK_F5) == CInputDevice::INPUT_DOWN)
+	{
+		SetViewMode(FIRST);
+
+	
 	}
 
 	if (!m_IsDynamic)
@@ -309,29 +317,74 @@ int Camera::Update()
 
 		LookAt(vPos, vLook, XMFLOAT3(0, 1, 0));
 	}
+	if (m_IsDynamic && bFirstPersonView)
+	{
+		if (nullptr == m_pObject)
+			return 0;
+		XMFLOAT4X4 world = m_pObject->GetWorld();
+		XMFLOAT3 vPos, vLook;
+		
+		vLook = XMFLOAT3((m_pObject->GetPosition().x - m_pObject->GetUp().x), (m_pObject->GetPosition().y + 1.7 - m_pObject->GetUp().y), (m_pObject->GetPosition().z - m_pObject->GetUp().z));
+		//memcpy(&vLook, &world._21, sizeof(XMFLOAT3));
+		vPos.x = m_pObject->GetPosition().x;// + 10.f;
+		vPos.y = m_pObject->GetPosition().y + 1.7;
+		vPos.z = m_pObject->GetPosition().z ;
+		
+		SetPosition(vPos);
+		if (!bTestFirstPerson)
+		{
+			LookAt(vPos, vLook, XMFLOAT3(0, 1, 0));
+			bTestFirstPerson = true;
+
+		}
+	}
 
 	UpdateViewMatrix();
 
 	return 0;
 }
 
-void Camera::CameraShakingEffect()
+void Camera::CameraEffect_Shaking()
 {
-	if (bCameraShakingEffect)
+
+	if (bCameraEffect_Shaking)
 	{
+		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+		cout << dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState<< endl;
+
 		if (this != NULL)
 		{
 			m_IsDynamic = true;
-			RotateY(0.01 *  sin(testnum * 5.f));
-		
+			if (!bFirstPersonView && !(dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState)) //3인칭 모드
+			{
+				RotateY(0.01 *  sin(testnum * 5.f));
+				Pitch(0.01 *  sin(testnum * 5.f));
 
-			SetPosition(m_pObject->GetPosition().x, m_pObject->GetPosition().y + 20, m_pObject->GetPosition().z - 20);
-			if (testnum < 2.0f * 3.14f / 5.f)
+				SetPosition(m_pObject->GetPosition().x, m_pObject->GetPosition().y + 20, m_pObject->GetPosition().z - 20);
+
+			}
+			else if ((dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState))
+			{
+			
+				//SetPosition(pos);
+			}
+			else
+			{
+				RotateY(0.05 *  sin(testnum * 5.f));
+				Pitch(0.05 *  sin(testnum * 5.f));
+				SetPosition(m_pObject->GetPosition().x, m_pObject->GetPosition().y + 1.7, m_pObject->GetPosition().z);
+
+			}
+
+
+			if (testnum < 4.0f * 3.14f / 5.f)
 				testnum += 0.1f;
 			else
 			{
-				m_IsDynamic = false;
-				bCameraShakingEffect = false;
+				if (!bFirstPersonView) // TopView에선 카메라 고정시켜야함
+					m_IsDynamic = false;
+
+				bCameraEffect_Shaking = false;
 				testnum = 0.0f;
 			}
 
@@ -339,6 +392,181 @@ void Camera::CameraShakingEffect()
 	}
 	
 }
+
+void Camera::CameraEffect_Damage()
+{
+
+	if (bCameraEffect_Damage)
+	{
+		if (this != NULL)
+		{
+			m_IsDynamic = true;
+			if (bFirstPersonView) //3인칭 모드
+			{
+				RotateY(0.05 *  sin(-testnum * 5.f));
+				Pitch(0.05 *  sin(-testnum * 5.f));
+				SetPosition(m_pObject->GetPosition().x, m_pObject->GetPosition().y + 1.7, m_pObject->GetPosition().z);
+
+			}
+
+			if (testnum < 2.0f * 3.14f / 5.f)
+				testnum += 0.01f;
+			else
+			{
+				if (!bFirstPersonView) //3인칭 모드
+					m_IsDynamic = false;
+				else
+					m_IsDynamic = true;
+
+
+				bCameraEffect_Damage = false;
+				testnum = 0.0f;
+			}
+
+		}
+	}
+}
+
+void Camera::CameraEffect_ZoomIn()
+{
+
+	if (bCameraEffect_ZoomIn)
+	{
+		if (this != NULL)
+		{
+			m_IsDynamic = true;
+
+			XMFLOAT3 dir = XMFLOAT3(Target->GetPosition().x - GetPosition3f().x, Target->GetPosition().y - GetPosition3f().y, Target->GetPosition().z - GetPosition3f().z);
+			XMFLOAT3 normalizeDir;
+			XMStoreFloat3(&normalizeDir, XMVector3Normalize(XMLoadFloat3(&dir)));
+
+			XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x, Target->GetPosition().y +40, Target->GetPosition().z);
+			XMFLOAT3 movePos = XMFLOAT3(GetPosition3f().x + normalizeDir.x * testnum * 0.01, GetPosition3f().y + normalizeDir.y * testnum* 0.01, GetPosition3f().z + normalizeDir.z * testnum* 0.01);
+
+			LookAt(movePos, pos, XMFLOAT3(0, 1, 0));
+			if (sqrt(pow(pos.x - GetPosition3f().x,2) + pow(pos.y - GetPosition3f().y, 2)+ pow(pos.z - GetPosition3f().z, 2))  > 50.0f)
+				testnum += 0.1f;
+			else
+			{
+				Target = NULL;
+				bCameraEffect_ZoomIn = false;
+				testnum = 0.0f;
+				SetViewMode(FIRST);
+			}
+		}
+
+		
+
+	}
+}
+void Camera::CameraEffect_ZoomIn_Round()
+{
+
+	if (bCameraEffect_ZoomIn_Round)
+	{
+		if (this != NULL && !bFirstPersonView)
+		{
+			m_IsDynamic = true;
+
+			XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x, Target->GetPosition().y, Target->GetPosition().z);
+			XMFLOAT3 movePos = XMFLOAT3(15.0f * cos(testnum) + Target->GetPosition().x, Target->GetPosition().y + 10.0f + Target->GetPosition().y, 15.0f * sin(testnum) + Target->GetPosition().z);
+			LookAt(movePos, Target->GetPosition(), XMFLOAT3(0, 1, 0));
+		}
+
+		if (testnum < 3.14f) //180도 회전
+			testnum += 0.06f;
+		else
+		{
+			Target = NULL;
+			bCameraEffect_ZoomIn_Round = false;
+			testnum = 0.0f;
+			m_IsDynamic = false;
+			
+		}
+
+	}
+}
+
+void Camera::CameraEffect_ZoomIn_RoundUltimate()
+{
+	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+	if (bCameraEffect_ZoomIn_RoundUltimate)
+	{
+	
+		if (this != NULL && !bFirstPersonView )
+		{
+			m_IsDynamic = true;
+
+			XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x, Target->GetPosition().y, Target->GetPosition().z);
+			XMFLOAT3 movePos = XMFLOAT3(10.0f * cos(testnum) + Target->GetPosition().x, Target->GetPosition().y + 5.0f + Target->GetPosition().y, 10.0f * sin(testnum) + Target->GetPosition().z);
+			LookAt(movePos, Target->GetPosition(), XMFLOAT3(0, 1, 0));
+		}
+
+		if (m_pPlayer->GetAnimateMachine()->bTimerUltimate) //180도 회전
+			testnum += 0.06f;
+		else //180도 다 돌았으면
+		{
+			if (dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState) //궁 상태에서 카메라
+			{
+				XMFLOAT3 offset = XMFLOAT3((m_pPlayer->GetUp().x) * 10, (m_pPlayer->GetUp().y) * 5, (m_pPlayer->GetUp().z) * 10);
+				XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x + offset.x, Target->GetPosition().y + 10, Target->GetPosition().z + offset.z); //최종목표
+				XMFLOAT3 Direction = Vector3::Subtract(pos, SaveUltimateCameraPos); // 현재카메라에서 최종목표까지 방향벡터
+				Direction = Vector3::Normalize(Direction);
+				//cout << Length << endl;
+				//cout << mPosition.x << "\t" << mPosition.y << "\t" << mPosition.z << endl;
+			
+				XMFLOAT3 movePos;
+
+				float Length = Vector3::Length(Vector3::Subtract(pos, SaveUltimateCameraPos));
+				if (Length > 1.25f && Length < LastLength)
+				{
+					SaveUltimateCameraPos.x += Direction.x;
+					SaveUltimateCameraPos.y += Direction.y;
+					SaveUltimateCameraPos.z += Direction.z;
+
+				}
+		
+
+				movePos = SaveUltimateCameraPos;
+
+			/*	movePos.x += SaveUltimateCameraPos.x + Direction.x;
+				movePos.y += SaveUltimateCameraPos.y + Direction.y;
+				movePos.z += SaveUltimateCameraPos.z + Direction.z;*/
+
+		
+				cout << Length << endl;
+				LastLength = Length;
+				if (!bCameraEffect_Shaking)
+				{
+					LookAt(movePos, Target->GetPosition(), XMFLOAT3(0, 1, 0));
+					if (bSaveUltimateCameraPosTest == false)
+					{
+						SaveUltimateCameraPos = GetPosition3f();
+						bSaveUltimateCameraPosTest = true;
+					}
+				}
+			}
+			else //궁 끝나면
+			{
+				Target = NULL;
+				bCameraEffect_ZoomIn_RoundUltimate = false;
+				testnum = 0.0f;
+				m_IsDynamic = false;
+				timeLag = 0.0f;
+				bSaveUltimateCameraPosTest = false;
+				LastLength = 0.0f;
+			}
+
+		
+
+		}
+
+
+
+	}
+}
+
 
 void Camera::SetViewMatrix(DirectX::XMFLOAT4X4 inView)
 {
