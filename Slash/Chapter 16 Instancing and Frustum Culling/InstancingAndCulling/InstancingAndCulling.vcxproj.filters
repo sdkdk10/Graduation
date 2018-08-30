@@ -190,7 +190,10 @@
     <Filter Include="01. Scene\02. SelectScene">
       <UniqueIdentifier>{6462773b-450e-4cdf-a42d-6423b51de9f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\07. UI\03. NumUI">
+    <Filter Include="02. GameObject\07. UI\03. ChangeUI">
+      <UniqueIdentifier>{4ab5c8d3-cde2-4c05-bea1-031c1e1047af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\07. UI\04. NumUI">
       <UniqueIdentifier>{04f679d0-5f7d-4e66-8055-0fa972a4e078}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -350,7 +353,6 @@
       <Filter>02. GameObject\09. Effect\00. SkillEffect</Filter>
     </ClCompile>
     <ClCompile Include="BinaryReader.cpp" />
-    <ClCompile Include="ChangeUI.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectXHelpers.cpp" />
     <ClCompile Include="GraphicsMemory.cpp" />
@@ -363,7 +365,10 @@
       <Filter>01. Scene\02. SelectScene</Filter>
     </ClCompile>
     <ClCompile Include="NumUI.cpp">
-      <Filter>02. GameObject\07. UI\03. NumUI</Filter>
+      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeUI.cpp">
+      <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -547,7 +552,6 @@
     </ClInclude>
     <ClInclude Include="AlignedNew.h" />
     <ClInclude Include="BinaryReader.h" />
-    <ClInclude Include="ChangeUI.h" />
     <ClInclude Include="dds.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectXHelpers.h" />
@@ -565,7 +569,10 @@
       <Filter>01. Scene\02. SelectScene</Filter>
     </ClInclude>
     <ClInclude Include="NumUI.h">
-      <Filter>02. GameObject\07. UI\03. NumUI</Filter>
+      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeUI.h">
+      <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

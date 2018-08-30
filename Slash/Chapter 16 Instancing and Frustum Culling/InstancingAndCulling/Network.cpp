@@ -280,7 +280,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		int id = my_packet->id;
 		unsigned short hp = my_packet->hp;
 		if (myid == id)
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(100);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(hp);
 		//else if (id < NPC_START)
 		//	CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
 		//else
