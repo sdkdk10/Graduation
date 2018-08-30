@@ -9,6 +9,7 @@
 #include "Effect_Manager.h"
 #include "Management.h"
 #include "Renderer.h"
+#include "Camera.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -16,7 +17,6 @@ Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12Desc
 {
 	m_preKeyInputTime = 0;
 	m_curKeyInputTime = 0;
-
 }
 
 Player::~Player()
@@ -62,7 +62,6 @@ void Player::Animate(const GameTimer & gt)
 	//}
 
 
-
 	AnimStateMachine->AnimationStateUpdate(gt); //애니메이션 상태 설정해주는 함수
 
 	KeyInput(gt);
@@ -92,6 +91,8 @@ void Player::Animate(const GameTimer & gt)
 
 bool Player::Update(const GameTimer & gt)
 {
+	CheckUltimate(gt);
+
 	//return true;
 	CGameObject::Update(gt);
 
@@ -287,7 +288,15 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (bIsUltimateState)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -327,7 +336,15 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (bIsUltimateState)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -364,6 +381,14 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	if (bIsUltimateState)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
 	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
@@ -435,6 +460,19 @@ Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 //	//cmdList->DrawIndexedInstanced(Element_Left.IndexCount, 1, Element_Left.StartIndexLocation, Element_Left.BaseVertexLocation, 0);
 //}
 
+
+void Player::CheckUltimate(const GameTimer & gt)
+{
+	if (bIsUltimateState)
+	{
+		m_fUltimateTime -= gt.DeltaTime();
+		if (m_fUltimateTime < 0.0f)
+		{
+			m_fUltimateTime = 20.0f;
+			bIsUltimateState = false;
+		}
+	}
+}
 
 void Player::SetPosition(float x, float y, float z)
 {
@@ -516,10 +554,34 @@ void Player::KeyInput(const GameTimer & gt)
 	DWORD dwDirection = 0;
 	static bool IsPlayerMoved = false;
 
-	if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-	if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-	if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+
+	if (CManagement::GetInstance()->Get_MainCam() != NULL)
+	{
+		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && !bIsUltimateState)
+		{
+			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+		}
+		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && bIsUltimateState)
+		{
+			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+		}
+
+		else
+		{
+			if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+			if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+			if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+			if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+		}
+
+	}
+
 
 	//m_curKeyInputTime = gt.TotalTime();
 	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
@@ -541,55 +603,40 @@ void Player::KeyInput(const GameTimer & gt)
 	}
 	if (m_bIsConnected)
 	{
+		auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+		
+	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
+		{
+			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
+		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack2Packet();
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
+		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
+		{
+			bIsUltimateState = true; //궁상태로
+			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
+
+			SetObjectAnimState(6);
+		}
+		else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
+		{
+			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
+		}
+		if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+		{
+
+		}
 	}
-	//if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-	//{
-	//	//KeyInputTest = 2;
-	//	if (AnimStateMachine->GetAnimState() != AnimStateMachine->Attack1State)
-	//	{
-	//		AnimStateMachine->SetAnimState(AnimStateMachine->Attack1State);
-	//		
-	//		//KeyInputTest = 2;
-	//	}
-	//	else
-	//	{
-	//		AnimStateMachine->SetAnimState(AnimStateMachine->Attack3State);
 
-
-	//		//KeyInputTest = 4;//3;
-	//		bAttackMotionTest = true;
-	//	}
-
-	//	if (bAttackMotionTest == false)
-	//	{
-	//		if (AnimStateMachine->GetAnimState() == AnimStateMachine->Attack2State)
-	//		{
-
-	//		}
-	//	}
-
-
-	//}
-	if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
-	{
-		//KeyInputTest = 2;
-	}
 	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
 	{
 		//KeyInputTest = 2;
 	}
 
-	if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_PRESS)
-	{
-		XMFLOAT4 Test = XMFLOAT4(0, 1, 0, 0.1);
-		XMVECTOR q = XMLoadFloat4(&Test);
-	}
 
 	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
 	{
@@ -708,7 +755,8 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
-		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() *20;
+
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
 		{
@@ -820,12 +868,48 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
-		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
+		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[5])
 		{
 			m_bIsLife = false;
 			bTimerDead = false;
 			//m_fAnimationKeyFrameIndex_Dead = 0;
 		}
+
+	}
+	if (bTimerUltimate == true)
+	{
+		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+	
+
+		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[AnimateStateMachine::STATE_ULTIMATE])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[AnimateStateMachine::STATE_ULTIMATE])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Ultimate > (*vecAnimFrame)[6])
+		{
+			bTimerUltimate = false;
+			m_fAnimationKeyFrameIndex_Ultimate = 0;
+			
+			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
 
 	}
 

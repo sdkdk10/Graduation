@@ -321,11 +321,22 @@ void InstancingAndCullingApp::OnMouseUp(WPARAM btnState, int x, int y)
 
 void InstancingAndCullingApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
+
 	if ((btnState & MK_LBUTTON) != 0)
 	{
 		// Make each pixel correspond to a quarter of a degree.
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
+
+		mCamera.Pitch(dy);
+		mCamera.RotateY(dx);
+	}
+
+	if (mCamera.bFirstPersonView) //1인칭 모드에서
+	{
+
+		float dx = XMConvertToRadians(0.35f*static_cast<float>(x - mLastMousePos.x));
+		float dy = XMConvertToRadians(0.35f*static_cast<float>(y - mLastMousePos.y));
 
 		mCamera.Pitch(dy);
 		mCamera.RotateY(dx);
@@ -521,6 +532,16 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(InsecTex->Name, InsecTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"InsecTex Ready Failed");
 
+	auto WarriorUltimateTex = new Texture;
+	WarriorUltimateTex->Name = "WarriorUltimateTex";
+	WarriorUltimateTex->Filename = L"Assets/Textures/WarriorUltimateTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), WarriorUltimateTex->Filename.c_str(),
+		WarriorUltimateTex->Resource, WarriorUltimateTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(WarriorUltimateTex->Name, WarriorUltimateTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"WarriorUltimateTex Ready Failed");
+
 	auto SkyTex = new Texture;
 	SkyTex->Name = "SkyTex"; 
 	SkyTex->Filename = L"Assets/Textures/desertcube1024.dds";
@@ -697,6 +718,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack2.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack3.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Ultimate.ASE"));
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
@@ -723,6 +745,15 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyIdle.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyForward.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyAttack.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_TakeOff.ASE"));
+	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Dragon", pComponentSingle);
+
 	/*
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/StaticMesh/staticMesh.ASE"));

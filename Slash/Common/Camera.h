@@ -16,10 +16,94 @@ class CGameObject;
 class Camera
 {
 public:
+	enum EFFECT { SHAKING, DAMAGE, ZOOMIN, ZOOMINROUND, ZOOMINROUNDULTIMATE};
+	enum VIEWMODE { FIRST, TOPVIEW, DYNAMIC}; //FIRST 1ÀÎÄª
+	XMFLOAT3 SaveUltimateCameraPos;
+public:
+	void SetViewMode(int inViewMode)
+	{
+		switch (inViewMode)
+		{
+		case FIRST:
+			m_IsDynamic = true;
+			bFirstPersonView = true;
+			break;
+		case TOPVIEW:
+			bFirstPersonView = false;
+			m_IsDynamic = false;
+			bTestFirstPerson = false;
+			break;
+		case DYNAMIC:
+			bFirstPersonView = false;
+			m_IsDynamic = true;
+			bTestFirstPerson = false;
+			break;
+
+		}
+	}
+	void SetCameraEffect(int CameraEffectState, CGameObject * Target = NULL)
+	{
+		switch (CameraEffectState)
+		{
+		case SHAKING: // Shaking
+			bCameraEffect_Shaking = true;
+			bCameraEffect_Damage = false;
+			bCameraEffect_ZoomIn = false;
+			bCameraEffect_ZoomIn_Round = false;
+
+			break;
+		case DAMAGE: // Damage
+			bCameraEffect_Shaking = false;
+			bCameraEffect_Damage = true;
+			bCameraEffect_ZoomIn = false;
+			bCameraEffect_ZoomIn_Round = false;
+
+			break;
+		case ZOOMIN: // ZoomIn
+			bCameraEffect_Shaking = false;
+			bCameraEffect_Damage = false;
+			bCameraEffect_ZoomIn = true;
+			bCameraEffect_ZoomIn_Round = false;
+
+			SetZoomInTarget(Target);
+			break;
+		case ZOOMINROUND: // ZoomIn
+			bCameraEffect_Shaking = false;
+			bCameraEffect_Damage = false;
+			bCameraEffect_ZoomIn = false;
+			bCameraEffect_ZoomIn_Round = true;
+
+
+			SetZoomInTarget(Target);
+			break;
+		case ZOOMINROUNDULTIMATE: // ZoomIn
+			bCameraEffect_Damage = false;
+			bCameraEffect_ZoomIn = false;
+			bCameraEffect_ZoomIn_Round = false;
+			bCameraEffect_ZoomIn_RoundUltimate = true;
+
+			SetZoomInTarget(Target);
+			break;
+		}
+		//CameraShakingEffect();
+	} //
+public:
+	bool bTestFirstPerson = false;
+
+	bool bCameraEffect_Shaking = false;
+	bool bCameraEffect_Damage = false;
+	bool bCameraEffect_ZoomIn = false;
+	bool bCameraEffect_ZoomIn_Round = false;
+	bool bCameraEffect_ZoomIn_RoundUltimate = false;
+
+	CGameObject * Target = NULL;
+public:
+	float testnum = 0.0f;
+	float timeLag = 0.0f;
 
 	Camera();
 	~Camera();
-
+	bool bFirstPersonView = false;
 	// Get/Set world camera position.
 	DirectX::XMVECTOR GetPosition()const;
 	DirectX::XMFLOAT3 GetPosition3f()const;
@@ -77,6 +161,19 @@ public:
 
 	int Update();
 
+	void CameraEffect_Shaking();
+	void CameraEffect_Damage();
+	void CameraEffect_ZoomIn();
+	void CameraEffect_ZoomIn_Round();
+	void CameraEffect_ZoomIn_RoundUltimate();
+
+	void SetViewMatrix(DirectX::XMFLOAT4X4 inView);
+
+	void SetZoomInTarget(CGameObject * InTarget)
+	{
+		Target = InTarget;
+	}
+
 private:
 
 	// Camera coordinate system with coordinates relative to world space.
@@ -95,6 +192,8 @@ private:
 
 	bool mViewDirty = true;
 
+
+
 	// Cache View/Proj matrices.
 	DirectX::XMFLOAT4X4 mView = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 mProj = MathHelper::Identity4x4();
@@ -102,6 +201,9 @@ private:
 	CGameObject*			m_pObject;
 
 	bool					m_IsDynamic;
+	bool bSaveUltimateCameraPosTest = false;
+
+	float LastLength = 0.0f;
 };
 
 #endif // CAMERA_H

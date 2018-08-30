@@ -7,6 +7,8 @@
 #include "Component_Manager.h"
 #include "Renderer.h"
 #include "Texture_Manager.h"
+#include "Network.h"
+#include "Effect_Manager.h"
 
 Dragon::Dragon(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -128,6 +130,7 @@ void Dragon::Render(ID3D12GraphicsCommandList * cmdList)
 
 		//int iTest = (int)pMesh->m_fTest;
 		int iTest = AnimStateMachine->GetCurAnimFrame();
+		//int AnimaState = AnimStateMachine->GetAnimState();
 		int AnimaState = AnimStateMachine->GetAnimState();
 
 
@@ -151,9 +154,15 @@ HRESULT Dragon::Initialize()
 	if (nullptr == tex)
 		return E_FAIL;
 
+	// > 테스트용으로 넣어둠
+	int test[AnimateStateMachine::STATE_END] = { 0, };
+	AnimStateMachine = AnimateStateMachine_Dragon::Create(this, L"Dragon", test, test);
+	if (AnimStateMachine == nullptr)
+		return E_FAIL;
+
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+	AnimStateMachine->SetAnimState(AnimStateMachine->Attack2State);
 
 
 
@@ -194,6 +203,195 @@ HRESULT Dragon::Initialize()
 	return S_OK;
 }
 
+void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
+{
+	if (bTimerIdle == true)
+	{
+		m_fAnimationKeyFrameIndex += gt.DeltaTime() * 25;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
+		if (m_fAnimationKeyFrameIndex > (*vecAnimFrame)[0])
+		{
+			bTimerIdle = false;
+
+			m_fAnimationKeyFrameIndex = 0;
+		}
+	}
+
+
+	if (bTimerWalk == true)
+	{
+		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 15;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+		if (m_fAnimationKeyFrameIndex_Walk > (*vecAnimFrame)[1])
+		{
+			bTimerWalk = false;
+			m_fAnimationKeyFrameIndex_Walk = 0;
+		}
+
+	}
+
+
+	if (bTimerAttack1 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 15;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK1]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK1])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			//cout << "스킬!" << endl;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Warrior_Turn", &m_pObject->GetWorld());
+			//cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[2])
+		{
+			bTimerAttack1 = false;
+			m_fAnimationKeyFrameIndex_Attack1 = 0.f;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+	}
+
+
+	if (bTimerAttack2 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack2 += gt.DeltaTime() * 10;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK2])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK2])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])
+		{
+			bTimerAttack2 = false;
+			m_fAnimationKeyFrameIndex_Attack2 = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+
+	}
+
+	if (bTimerAttack3 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack3 += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK3])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK3])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[4])
+		{
+			bTimerAttack3 = false;
+			m_fAnimationKeyFrameIndex_Attack3 = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+	}
+
+	if (bTimerDead == true)
+	{
+		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
+		if (m_bIsLife == true)
+			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[5])
+		{
+			m_bIsLife = false;
+			bTimerDead = false;
+			//m_fAnimationKeyFrameIndex_Dead = 0;
+		}
+
+	}
+	if (bTimerUltimate == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[AnimateStateMachine::STATE_ULTIMATE])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[AnimateStateMachine::STATE_ULTIMATE])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Ultimate > (*vecAnimFrame)[6])
+		{
+			bTimerUltimate = false;
+
+			m_fAnimationKeyFrameIndex_Ultimate = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+
+	}
+
+}
+
+
 void Dragon::Animate(const GameTimer & gt)
 {
 	AnimStateMachine->AnimationStateUpdate(gt);
@@ -211,4 +409,45 @@ Dragon * Dragon::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 	}
 
 	return pInstance;
+}
+
+//--------------------------------------- AnimateStateMachine-----------------------------------------
+
+AnimateStateMachine_Dragon::AnimateStateMachine_Dragon(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
+	: m_pMachineName(pMachineName)
+	, m_pObject(pObj)
+{
+	for (int i = 0; i < AnimateStateMachine::STATE_END; ++i)
+	{
+		m_SoundFrame[i] = SoundFrame[i];
+		m_EffectFrame[i] = EffectFrame[i];
+		m_IsSoundPlay[i] = false;
+		m_IsEffectPlay[i] = false;
+	}
+}
+
+AnimateStateMachine_Dragon::~AnimateStateMachine_Dragon()
+{
+}
+
+HRESULT AnimateStateMachine_Dragon::Initialize()
+{
+	return S_OK;
+}
+
+AnimateStateMachine_Dragon * AnimateStateMachine_Dragon::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
+{
+	AnimateStateMachine_Dragon* pInstance = new AnimateStateMachine_Dragon(pObj, pMachineName, SoundFrame, EffectFrame);
+
+	if (FAILED(pInstance->Initialize()))
+	{
+		MSG_BOX(L"AnimateStateMachine_Dragon Created Failed");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void AnimateStateMachine_Dragon::Free()
+{
 }

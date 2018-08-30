@@ -42,24 +42,22 @@ HRESULT CSkeleton::Initialize()
 		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
 		strTexName = "VillagerTex";
 	}
-		
+
 	else
 	{
 		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Mage"));
 		strTexName = "MageTex";
 	}
-		
+
 
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 
-	
+
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(strTexName, CTexture_Manager::TEX_DEFAULT_2D);
 	if (tex == nullptr)
 		return E_FAIL;
 
-	AnimStateMachine = new AnimateStateMachine;
-	// > 테스트용으로 넣어둠
 	int test[AnimateStateMachine::STATE_END] = { 0, };
 	AnimStateMachine = AnimateStateMachine_Skeleton::Create(this, L"Warrior", test, test);
 	if (AnimStateMachine == nullptr)
@@ -192,7 +190,7 @@ bool CSkeleton::Update(const GameTimer & gt)
 	// Next FrameResource need to be updated too.
 	//mat->NumFramesDirty--;
 
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this); CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
 	return true;
 }
@@ -208,7 +206,7 @@ void CSkeleton::Render(ID3D12GraphicsCommandList * cmdList)
 		Render_Body(cmdList);
 		Render_Right(cmdList);
 	}
-	
+
 }
 void CSkeleton::Render_Head(ID3D12GraphicsCommandList * cmdList)
 {
@@ -336,7 +334,7 @@ void CSkeleton::Rotate(float fPitch, float fYaw, float fRoll)
 CSkeleton * CSkeleton::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t* meshName, bool isWarrior)
 {
 	CSkeleton* pInstance = new CSkeleton(d3dDevice, srv, srvSize, meshName, isWarrior);
-	
+
 	if (FAILED(pInstance->Initialize()))
 	{
 		MSG_BOX(L"CSkeleton Created Failed");

@@ -72,6 +72,13 @@ HRESULT CTestScene::Initialize()
 		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 
+	pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	pObject->SetPosition(0, 0, 15);
+	Ready_GameObject(L"Layer_Dragon", pObject);
+
+	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+
 
 //	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 //	pObject->SetCamera(Get_MainCam());
@@ -175,10 +182,28 @@ HRESULT CTestScene::Initialize()
 
 bool CTestScene::Update(const GameTimer & gt)
 {
+	
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+
+	if (m_pCamera != NULL)
+	{
+		m_pCamera->CameraEffect_Shaking();
+		m_pCamera->CameraEffect_Damage();
+		if (m_pCamera->Target != NULL)
+		{
+			m_pCamera->CameraEffect_ZoomIn();
+			m_pCamera->CameraEffect_ZoomIn_Round();
+			m_pCamera->CameraEffect_ZoomIn_RoundUltimate();
+		}
+
+	}
 
 	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
 	m_pPlayer->m_pCollider = NULL;
+
+
 
 	for (int i = 0; i < spiderList.size(); ++i)
 	{

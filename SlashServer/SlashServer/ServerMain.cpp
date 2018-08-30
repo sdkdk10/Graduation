@@ -16,7 +16,6 @@
 #include "Functor.h"
 #include "../../Slash/Common/MathHelper.h"
 
-
 #pragma comment (lib, "ws2_32.lib")
 #pragma comment(lib,  "lua53.lib")
 
@@ -755,8 +754,8 @@ void ProcessDamage(int source, int target) {
 			if (false == CanSee(i, target)) continue;
 			SendObjectState(i, target);
 		}
-		cout << "살아남" << endl;
-		if(IsNPC(target))
+		//cout << "살아남" << endl;
+		if (IsNPC(target))
 			add_timer(target, EVT_RESPOWN, GetTickCount() + 50000, 0);
 		else
 			add_timer(target, EVT_RESPOWN, GetTickCount() + 5000, 0);
@@ -883,9 +882,9 @@ void SendPacket(int cl, void *packet)
 
 	int ret = WSASend(g_clients[cl].s, &o->wsabuf, 1, NULL, 0, &o->wsaover, NULL);
 	if (0 != ret) {
-		int err_no = WSAGetLastError();
-		if (WSA_IO_PENDING != err_no) // WSA_IO_PENDING 뭐냐? 샌드가 계속 실행되고 있다. IOCP는 WSA_IO_PENDING 에러를 리턴한다.
-			error_display("Error in SendPacket:", err_no);
+		//int err_no = WSAGetLastError();
+		//if (WSA_IO_PENDING != err_no) // WSA_IO_PENDING 뭐냐? 샌드가 계속 실행되고 있다. IOCP는 WSA_IO_PENDING 에러를 리턴한다.
+		//	error_display("Error in SendPacket:", err_no);
 	}
 
 	//printf("SendPacket to Client [ %d ] Type [ %d ] Size [ %d ]\n", cl, (int)p[1], (int)p[0]);
@@ -1145,7 +1144,7 @@ void ProcessPacket(int cl, char *packet)
 		if (!IsCollision)
 			g_clients[cl].World._41 += xmf3Shift.x, g_clients[cl].World._42 += xmf3Shift.y, g_clients[cl].World._43 += xmf3Shift.z;
 
-		cout << " Pos = X : " << g_clients[cl].World._41 << " Y : " << g_clients[cl].World._42 << " Z : " << g_clients[cl].World._43 << endl;
+		//cout << " Pos = X : " << g_clients[cl].World._41 << " Y : " << g_clients[cl].World._42 << " Z : " << g_clients[cl].World._43 << endl;
 
 		sc_packet_pos sp_pos;
 		sp_pos.id = cl;
@@ -1195,10 +1194,16 @@ void ProcessPacket(int cl, char *packet)
 					SendPutMonster(cl, id);
 				else
 					SendPutObject(cl, id);
-				
+
 			}
 			else
+			{
+				if (IsNPC(id))
+					SendPutMonster(cl, id);
+				else
+					SendPutObject(cl, id);
 				g_clients[cl].vlm.unlock();
+			}
 
 			if (true == IsNPC(id)) continue;
 
@@ -1207,10 +1212,7 @@ void ProcessPacket(int cl, char *packet)
 			if (0 == g_clients[id].viewlist.count(cl)) {
 				g_clients[id].viewlist.insert(cl);
 				g_clients[id].vlm.unlock();
-				if (IsNPC(id))
-					SendPutMonster(cl, id);
-				else
-					SendPutObject(cl, id);
+				SendPutObject(cl, id);
 			}
 			// 상대방한테 내가 있었다? // 위치값만
 			else
@@ -1270,7 +1272,7 @@ void ProcessPacket(int cl, char *packet)
 	}
 	else if ((packet[1] == CS_ATTACK1) || (packet[1] == CS_ATTACK2) || (packet[1] == CS_ATTACK3))
 	{
-		if(packet[1] == CS_ATTACK1)
+		if (packet[1] == CS_ATTACK1)
 			g_clients[cl].State = ATTACK1;
 		else if (packet[1] == CS_ATTACK2)
 			g_clients[cl].State = ATTACK2;
@@ -1324,7 +1326,7 @@ void ProcessPacket(int cl, char *packet)
 	}
 	else
 	{
-		cout << cl << " ProcessPacket Error" << endl;
+		//cout << cl << " ProcessPacket Error" << endl;
 		return;
 	}
 }

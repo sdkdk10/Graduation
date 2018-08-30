@@ -39,7 +39,7 @@ void CNetwork::InitSock(HWND MainWnd)
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.83.227");
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.227");
 	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
+	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.227");
 	int Result = WSAConnect(mysocket, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
 
 	if (Result)
@@ -280,7 +280,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		int id = my_packet->id;
 		unsigned short hp = my_packet->hp;
 		if (myid == id)
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(hp);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(100);
 		//else if (id < NPC_START)
 		//	CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
 		//else
