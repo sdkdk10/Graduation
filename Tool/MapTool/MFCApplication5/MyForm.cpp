@@ -26,6 +26,8 @@ void CMyForm::DoDataExchange(CDataExchange* pDX)
 	CFormView::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_LoadObjectListBox);
 	DDX_Control(pDX, IDC_LIST_LOAD_TEX, m_LoadTextureListBox);
+	DDX_Control(pDX, IDC_RADIO_MAPTOOL, m_ToolRadio[0]);
+	DDX_Control(pDX, IDC_RADIO_EFFECTTOOL, m_ToolRadio[1]);
 }
 
 BEGIN_MESSAGE_MAP(CMyForm, CFormView)
@@ -160,14 +162,26 @@ void CMyForm::FindPath(const std::wstring& wstrPath, const std::wstring& wstrExt
 			if (wstrExt == L"ASE")
 			{
 				std::wstring wstrFileName = Find.GetFileName().operator LPCWSTR();
-				wstring FullPath = L"../../../Models/StaticMesh/" + wstrFileName;
+				wstring a = Find.GetFileTitle();
+				wstring b = Find.GetFilePath();
+
+				//wstring FullPath = L"../../../Models/StaticMesh/" + wstrFileName;
+				wstring FullPath = L"";
+				if(m_ToolRadio[0].GetCheck())
+					FullPath = L"../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Models/StaticMesh/MapObject/" + wstrFileName;
+				else if(m_ToolRadio[1].GetCheck())
+					FullPath = L"../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Models/StaticMesh/Effect/" + wstrFileName;
+				
 				FILE_PATH newFile;
 				wstring::size_type stTmp = wstrFileName.find(L'.', 0);
 				wstrFileName.erase(stTmp, 4);
 				newFile.wstrFileName = wstrFileName;
 				newFile.wstrPath = FullPath;
 				FullPath.clear();
-				FullPath = L"Asset/Models/StaticMesh/" + wstrFileName;
+				if (m_ToolRadio[0].GetCheck())
+					FullPath = L"Asset/Models/StaticMesh/MapObject/" + wstrFileName;
+				else if (m_ToolRadio[1].GetCheck())
+					FullPath = L"Asset/Models/StaticMesh/Effect/" + wstrFileName;
 				newFile.wstrPath_Client = FullPath;
 
 				m_ObjectList.push_back(newFile);

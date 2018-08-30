@@ -25,6 +25,7 @@ public:
 	void	Update_Default(const GameTimer& gt);
 	void	Update_Play(const GameTimer& gt);
 	void	Update_Billboard(const GameTimer& gt);
+	void	SetMesh(wchar_t* meshName);
 	void	SetTexture(Texture* tex);
 	void	SetTexture(string texName);
 	void	SetTexture(int idx) { Mat->DiffuseSrvHeapIndex = idx; }

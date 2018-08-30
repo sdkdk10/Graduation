@@ -190,6 +190,9 @@
     <Filter Include="01. Scene\02. SelectScene">
       <UniqueIdentifier>{6462773b-450e-4cdf-a42d-6423b51de9f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\07. UI\03. NumUI">
+      <UniqueIdentifier>{04f679d0-5f7d-4e66-8055-0fa972a4e078}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -358,6 +361,9 @@
     <ClCompile Include="VertexTypes.cpp" />
     <ClCompile Include="SelectScene.cpp">
       <Filter>01. Scene\02. SelectScene</Filter>
+    </ClCompile>
+    <ClCompile Include="NumUI.cpp">
+      <Filter>02. GameObject\07. UI\03. NumUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -557,6 +563,9 @@
     <ClInclude Include="VertexTypes.h" />
     <ClInclude Include="SelectScene.h">
       <Filter>01. Scene\02. SelectScene</Filter>
+    </ClInclude>
+    <ClInclude Include="NumUI.h">
+      <Filter>02. GameObject\07. UI\03. NumUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

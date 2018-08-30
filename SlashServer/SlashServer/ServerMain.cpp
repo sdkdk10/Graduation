@@ -45,6 +45,7 @@ void SendRemoveObject(int client, int object_id);
 void SendPutObject(int client, int object_id);
 void SendObjectHp(int client, int object_id);
 void SendPacket(int cl, void *packet);
+void SendPutMonster(int client, int object_id);
 
 struct EXOver {
 	WSAOVERLAPPED wsaover;

@@ -25,6 +25,7 @@
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
 #include "Network.h"
+#include "NumUI.h"
 #include "d3dApp.h"
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize, bool isWarrior)
@@ -161,11 +162,13 @@ HRESULT CTestScene::Initialize()
 	//Ready_GameObject(L"Layer_Instance", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
 
+	if (FAILED(Load_Map()))
+		return E_FAIL;
+
 	UISetting();
 
 	
-	if (FAILED(Load_Map()))
-		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -577,6 +580,10 @@ void CTestScene::UISetting()
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
 //	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+
+
+	// > UINum Setting
+
 }
 
 void CTestScene::Free()

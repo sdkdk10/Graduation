@@ -59,6 +59,11 @@ HRESULT CSkeleton::Initialize()
 		return E_FAIL;
 
 	AnimStateMachine = new AnimateStateMachine;
+	// > 테스트용으로 넣어둠
+	int test[AnimateStateMachine::STATE_END] = { 0, };
+	AnimStateMachine = AnimateStateMachine_Skeleton::Create(this, L"Warrior", test, test);
+	if (AnimStateMachine == nullptr)
+		return E_FAIL;
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMesh*>(m_pMesh)->vecAnimFrame);
 	AnimStateMachine->SetAnimState(AnimStateMachine->WalkState);
@@ -474,7 +479,7 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect("orbAttack", &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])

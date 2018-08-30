@@ -64,7 +64,8 @@ HRESULT StaticMesh::Initialize(vector<pair<const string, const string>> &pFilePa
 					size_t iLength = wstrFileName.length();
 					size_t iDotPos = wstrFileName.rfind(L".");						 					// > .tga에서 .위치 찾기
 					wstrFileName.erase(iDotPos, iLength);												// > TextureName만 남기기
-					wstring wstrTexPath = L"../../../Textures/" + wstrFileName + L".dds";					// > 경로 지정 L"../../Textures/TextureName.dds"
+					//wstring wstrTexPath = L"../../../Textures/" + wstrFileName + L".dds";					// > 경로 지정 L"../../Textures/TextureName.dds"
+					wstring wstrTexPath = L"../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Textures/" + wstrFileName + L".dds";
 					auto Tex = new Texture;
 					string texName;
 					Tex->Name = texName.assign(wstrFileName.begin(), wstrFileName.end());

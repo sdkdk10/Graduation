@@ -480,6 +480,18 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(grassTex->Name, grassTex, CTexture_Manager::TEX_INST_2D)))
 		MSG_BOX(L"grassTex Ready Failed");
 
+
+	// > For NumUI Texture(Inst)
+	auto NumUiTex = new Texture;
+	NumUiTex->Name = "NumTex";
+	NumUiTex->Filename = L"Assets/Textures/Num.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), NumUiTex->Filename.c_str(),
+		NumUiTex->Resource, NumUiTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(NumUiTex->Name, NumUiTex, CTexture_Manager::TEX_INST_2D)))
+		MSG_BOX(L"NumUiTex Ready Failed");
+
 	// > Default Heap 2D Texture Load
 
 	auto SpiderTex = new Texture;
