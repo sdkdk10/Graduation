@@ -13,6 +13,9 @@ Camera::Camera()
 	, m_IsDynamic(true)
 {
 	SetLens(0.25f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f);
+	SaveUltimateCameraPos.x = GetPosition3f().x;
+	SaveUltimateCameraPos.y = 50.f;
+	SaveUltimateCameraPos.z = GetPosition3f().z;
 }
 
 Camera::~Camera()
@@ -228,7 +231,7 @@ void Camera::RotateY(float angle)
 }
 
 void Camera::UpdateViewMatrix()
-{
+{	
 	if(mViewDirty)
 	{
 		XMVECTOR R = XMLoadFloat3(&mRight);

@@ -196,6 +196,18 @@
     <Filter Include="02. GameObject\07. UI\04. NumUI">
       <UniqueIdentifier>{04f679d0-5f7d-4e66-8055-0fa972a4e078}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\10. NagaGuard">
+      <UniqueIdentifier>{87827470-6ead-46c5-bfa8-20ea56d06050}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\11. RockWarrior">
+      <UniqueIdentifier>{d590d3e2-fe82-4dee-98f8-0e60ba05f422}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\12. TreeGuard">
+      <UniqueIdentifier>{15805a59-0882-41bc-837c-7cf2ba7a50c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\13. Mushroom">
+      <UniqueIdentifier>{f271224a-92c3-4762-a04f-517fefb6f354}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -369,6 +381,18 @@
     </ClCompile>
     <ClCompile Include="ChangeUI.cpp">
       <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
+    </ClCompile>
+    <ClCompile Include="NagaGuard.cpp">
+      <Filter>02. GameObject\10. NagaGuard</Filter>
+    </ClCompile>
+    <ClCompile Include="RockWarrior.cpp">
+      <Filter>02. GameObject\11. RockWarrior</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeGuard.cpp">
+      <Filter>02. GameObject\12. TreeGuard</Filter>
+    </ClCompile>
+    <ClCompile Include="Mushroom.cpp">
+      <Filter>02. GameObject\13. Mushroom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -573,6 +597,18 @@
     </ClInclude>
     <ClInclude Include="ChangeUI.h">
       <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
+    </ClInclude>
+    <ClInclude Include="NagaGuard.h">
+      <Filter>02. GameObject\10. NagaGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="RockWarrior.h">
+      <Filter>02. GameObject\11. RockWarrior</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeGuard.h">
+      <Filter>02. GameObject\12. TreeGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="Mushroom.h">
+      <Filter>02. GameObject\13. Mushroom</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -542,6 +542,49 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(WarriorUltimateTex->Name, WarriorUltimateTex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"WarriorUltimateTex Ready Failed");
 
+	//
+
+	auto NagaGuardTex = new Texture;
+	NagaGuardTex->Name = "NagaGuardTex";
+	NagaGuardTex->Filename = L"Assets/Textures/NagaGuardTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), NagaGuardTex->Filename.c_str(),
+		NagaGuardTex->Resource, NagaGuardTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(NagaGuardTex->Name, NagaGuardTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"NagaGuardTex Ready Failed");
+
+	auto RockWarriorTex = new Texture;
+	RockWarriorTex->Name = "RockWarriorTex";
+	RockWarriorTex->Filename = L"Assets/Textures/RockWarriorTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), RockWarriorTex->Filename.c_str(),
+		RockWarriorTex->Resource, RockWarriorTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(RockWarriorTex->Name, RockWarriorTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"RockWarriorTex Ready Failed");
+
+	auto MushroomTex = new Texture;
+	MushroomTex->Name = "MushroomTex";
+	MushroomTex->Filename = L"Assets/Textures/MushroomTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), MushroomTex->Filename.c_str(),
+		MushroomTex->Resource, MushroomTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MushroomTex->Name, MushroomTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"MushroomTex Ready Failed");
+
+	auto TreeGuardTex = new Texture;
+	TreeGuardTex->Name = "TreeGuardTex";
+	TreeGuardTex->Filename = L"Assets/Textures/TreeGuardTex.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), TreeGuardTex->Filename.c_str(),
+		TreeGuardTex->Resource, TreeGuardTex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(TreeGuardTex->Name, TreeGuardTex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"TreeGuardTex Ready Failed");
+
+	//
 	auto SkyTex = new Texture;
 	SkyTex->Name = "SkyTex"; 
 	SkyTex->Filename = L"Assets/Textures/desertcube1024.dds";
@@ -719,6 +762,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack3.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Ultimate.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Roll.ASE"));
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
@@ -753,6 +797,47 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_TakeOff.ASE"));
 	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Dragon", pComponentSingle);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Assets/Models/NagaGuard/NagaGuard_Idle.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/NagaGuard/NagaGuard_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/NagaGuard/NagaGuard_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/NagaGuard/NagaGuard_Attack2.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/NagaGuard/NagaGuard_Hit.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/NagaGuard/NagaGuard_Die.ASE"));
+
+	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_NagaGuard", pComponentSingle);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Idle.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Hit.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Die.ASE"));
+
+	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_RockWarrior", pComponentSingle);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Hit.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Die.ASE"));
+
+	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mushroom", pComponentSingle);
+
+	path.clear();
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Idle.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Hit.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Die.ASE"));
+
+	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_TreeGuard", pComponentSingle);
 
 	/*
 	path.clear();

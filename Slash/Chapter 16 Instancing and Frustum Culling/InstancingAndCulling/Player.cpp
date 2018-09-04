@@ -626,9 +626,9 @@ void Player::KeyInput(const GameTimer & gt)
 		{
 			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
 		}
-		if (KeyBoard_Input(DIK_P) == CInputDevice::INPUT_DOWN)
+		if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN)
 		{
-
+			SetObjectAnimState(7);
 		}
 	}
 
@@ -647,7 +647,6 @@ void Player::KeyInput(const GameTimer & gt)
 	}
 	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
 	{
-
 		SetHp(GetHp() + 1.0f);
 		//cout << GetHp() << endl;
 
@@ -878,7 +877,6 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 	}
 	if (bTimerUltimate == true)
 	{
-		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 	
 
@@ -910,6 +908,44 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			CNetwork::GetInstance()->SendStopPacket();
 		}
 
+
+	}
+
+	if (bTimerRoll == true)
+	{
+
+		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+		m_pPlayer->MoveForward(10.0f);
+		m_fAnimationKeyFrameIndex_Roll+= gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ROLL] && m_fAnimationKeyFrameIndex_Roll > m_SoundFrame[AnimateStateMachine::STATE_ROLL])
+		{
+			m_IsSoundPlay[AnimateStateMachine::STATE_ROLL] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+		}
+
+		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ROLL] && m_fAnimationKeyFrameIndex_Roll > m_EffectFrame[AnimateStateMachine::STATE_ROLL])
+		{
+			m_IsEffectPlay[AnimateStateMachine::STATE_ROLL] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Roll > (*vecAnimFrame)[7])
+		{
+			bTimerRoll= false;
+			m_fAnimationKeyFrameIndex_Roll = 0;
+
+			m_IsSoundPlay[AnimateStateMachine::STATE_ROLL] = false;
+			m_IsEffectPlay[AnimateStateMachine::STATE_ROLL] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
 
 	}
 

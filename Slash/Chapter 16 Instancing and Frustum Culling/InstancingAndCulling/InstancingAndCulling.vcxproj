@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>InstancingAndCulling</RootNamespace>
     <ProjectName>Slash</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -175,9 +175,12 @@
     <ClCompile Include="GameTimer_Manager.cpp" />
     <ClCompile Include="GeometryMesh.cpp" />
     <ClCompile Include="GraphicsMemory.cpp" />
+    <ClCompile Include="NagaGuard.cpp" />
     <ClCompile Include="NumUI.cpp" />
     <ClCompile Include="LinearAllocator.cpp" />
     <ClCompile Include="ResourceUploadBatch.cpp" />
+    <ClCompile Include="RockWarrior.cpp" />
+    <ClCompile Include="Mushroom.cpp" />
     <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Skill.cpp" />
@@ -207,6 +210,7 @@
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture_Manager.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TreeGuard.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIMesh.cpp" />
     <ClCompile Include="VertexTypes.cpp" />
@@ -250,12 +254,15 @@
     <ClInclude Include="GameTimer_Manager.h" />
     <ClInclude Include="GeometryMesh.h" />
     <ClInclude Include="GraphicsMemory.h" />
+    <ClInclude Include="NagaGuard.h" />
     <ClInclude Include="NumUI.h" />
     <ClInclude Include="LinearAllocator.h" />
     <ClInclude Include="LoaderHelpers.h" />
     <ClInclude Include="PlatformHelpers.h" />
     <ClInclude Include="RenderTargetState.h" />
     <ClInclude Include="ResourceUploadBatch.h" />
+    <ClInclude Include="RockWarrior.h" />
+    <ClInclude Include="Mushroom.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="SharedResourcePool.h" />
     <ClInclude Include="Skeleton.h" />
@@ -287,6 +294,7 @@
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture_Manager.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="TreeGuard.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="UIMesh.h" />
     <ClInclude Include="VertexTypes.h" />
