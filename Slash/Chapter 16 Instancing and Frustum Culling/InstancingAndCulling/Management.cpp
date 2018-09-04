@@ -67,6 +67,8 @@ HRESULT CManagement::Set_Sound(CSound * pSound)
 	if (pSound == nullptr)
 		return E_FAIL;
 	m_pSound = pSound;
+
+	return S_OK;
 }
 
 void CManagement::Free()

@@ -54,12 +54,15 @@ private:
 	vector<CTransform*>			m_vecTransCom;
 	string						m_strMesh;
 
-	static unsigned long		m_iAllInstObjectIndex;
-	static CInstancingObject*	m_pAllInstObject[MAXINSTOBJECTID];
 
 	unsigned long				m_iMyInstObject;
 
 	CRenderer::RenderType		m_eMyRenderType;
+	
+public:
+
+	static unsigned long		m_iAllInstObjectIndex;
+	static CInstancingObject*	m_pAllInstObject[MAXINSTOBJECTID];
 
 public:
 	static CInstancingObject* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, wchar_t* pMesh, int iSize);

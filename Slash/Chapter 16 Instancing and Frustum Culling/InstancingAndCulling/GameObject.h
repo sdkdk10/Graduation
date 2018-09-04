@@ -27,7 +27,7 @@ class AnimateStateMachine
 	: public CBase
 {
 public:
-	enum ANIM_STATE { STATE_IDLE, STATE_WALK, STATE_ATTACK1, STATE_ATTACK2, STATE_ATTACK3, STATE_DEAD, STATE_END,STATE_ULTIMATE };
+	enum ANIM_STATE { STATE_IDLE, STATE_WALK, STATE_ATTACK1, STATE_ATTACK2, STATE_ATTACK3, STATE_DEAD, STATE_END,STATE_ULTIMATE, STATE_ROLL};
 public:
 	bool m_bIsLife = true;
 
@@ -39,6 +39,8 @@ public:
 	bool bTimerAttack3 = false;
 	bool bTimerDead = false;
 	bool bTimerUltimate = false;
+	bool bTimerRoll = false;
+
 private:
 
 protected:
@@ -51,6 +53,8 @@ protected:
 
 	float			m_fAnimationKeyFrameIndex_Dead = 0.f;		// 애니메이션 인덱스
 	float			m_fAnimationKeyFrameIndex_Ultimate = 0.f;
+	float			m_fAnimationKeyFrameIndex_Roll = 0.f;
+
 
 public:
 	vector<int> * vecAnimFrame;
@@ -64,6 +68,7 @@ public: //애니메이션 상태
 	const int Attack3State = 4;
 	const int DeadState = 5;
 	const int UltimateState = 6;
+	const int RollState = 7;
 protected:
 	int m_iAnimState = 0; // 현재 애니메이션 상태
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지

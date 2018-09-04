@@ -7,6 +7,10 @@
 #include "SkyBox.h"
 #include "InstancingObject.h"
 #include "Spider.h"
+#include "NagaGuard.h"
+#include "RockWarrior.h"
+#include "TreeGuard.h"
+#include "MushRoom.h"
 #include "Layer.h"
 #include "Management.h"
 #include "Renderer.h"
@@ -25,6 +29,7 @@
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
 #include "Network.h"
+#include "NumUI.h"
 #include "d3dApp.h"
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize, bool isWarrior)
@@ -76,71 +81,25 @@ HRESULT CTestScene::Initialize()
 	pObject->SetPosition(0, 0, 15);
 	Ready_GameObject(L"Layer_Dragon", pObject);
 
-	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
-
-//	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-//	pObject->SetCamera(Get_MainCam());
-//	pObject->SetPosition(0,0,0);
-////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z +	pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-//	
-//	Ready_GameObject(L"Layer_Spider", pObject);
-//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-//	
-//	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-//	pObject->SetCamera(Get_MainCam());
-//	pObject->SetPosition(20,0,0);
-////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z +	pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-//	
-//	Ready_GameObject(L"Layer_Spider", pObject);
-//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-//	
-////	pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-////	pObject->SetCamera(Get_MainCam());
-////	pObject->SetPosition(-15, 0, 0);
-//////	pObject->SetOOBB(XMFLOAT3(pObject->GetBounds().Center.x + pObject->GetWorld()._41, pObject->GetBounds().Center.y + pObject->GetWorld()._42, pObject->GetBounds().Center.z + pObject->GetWorld()._43), XMFLOAT3(pObject->GetBounds().Extents.x, pObject->GetBounds().Extents.y, pObject->GetBounds().Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-////
-//
-//	Ready_GameObject(L"Layer_Spider", pObject);
-//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
-	
-	/*for (int i = 0; i < 20; ++i)
-	{
-		for (int j = 0; j < 20; ++j)
-		{
-			for (int k = 0; k < 20; ++k)
-			{
-				Ready_GameObject(L"Layer_Spider", pObject);
-				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
-				pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-				pObject->SetCamera(Get_MainCam());
-				pObject->SetPosition(i * 20, j * 20, k * 20);
-
-				Ready_GameObject(L"Layer_Spider", pObject);
-				CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-			}
-		}
-		
-	}*/
-
-	/*pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject = NagaGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(0, 0, -50);
-	Ready_GameObject(L"Layer_Spider", pObject);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);*/
+	pObject->SetPosition(0, 0, 0);
+	Ready_GameObject(L"Layer_NagaGuard", pObject);
 
-	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//pObject->SetCamera(Get_MainCam());
-	//pObject->SetPosition(0,0,15);
-	//Ready_GameObject(L"Layer_Dragon", pObject);
-	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-	
-	//pObject = Barrel::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	//pObject->SetCamera(Get_MainCam());
-	//Ready_GameObject(L"Layer_Barrel", pObject);
-	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	pObject = RockWarrior::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	pObject->SetPosition(20, 0, 0);
+	Ready_GameObject(L"Layer_RockWarrior", pObject);
+
+	pObject = TreeGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	pObject->SetPosition(40, 0, 0);
+	Ready_GameObject(L"Layer_TreeGuard", pObject);
+
+	pObject = Mushroom::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	pObject->SetCamera(Get_MainCam());
+	pObject->SetPosition(60, 0, 0);
+	Ready_GameObject(L"Layer_Mushroom", pObject);
 
 	pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -162,17 +121,14 @@ HRESULT CTestScene::Initialize()
 
 	}
 
-	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
-	//pObject->SetCamera(Get_MainCam());
-	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	//Ready_GameObject(L"Layer_Instance", pObject);
-	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_INSTANCING, pObject);
+
+	if (FAILED(Load_Map()))
+		return E_FAIL;
 
 	UISetting();
 
 	
-	if (FAILED(Load_Map()))
-		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -602,6 +558,10 @@ void CTestScene::UISetting()
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
 //	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+
+
+	// > UINum Setting
+
 }
 
 void CTestScene::Free()

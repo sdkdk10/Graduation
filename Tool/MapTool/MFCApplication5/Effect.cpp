@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "ObjectManager.h"
 #include "Camera.h"
+#include "StaticMesh.h"
 
 CEffect::CEffect(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -24,9 +25,26 @@ CEffect::~CEffect()
 
 HRESULT CEffect::Initialize()
 {
-	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Geometry"));
-	if (nullptr == m_pMesh)
-		return E_FAIL;
+	wstring wstrMesh = wstring(m_tInfo.strMeshName.begin(), m_tInfo.strMeshName.end());
+	string geoName;
+
+	if (m_tInfo.strMeshName == "Com_Geometry")
+	{
+		m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Geometry"));
+		if (nullptr == m_pMesh)
+			return E_FAIL;
+		m_tInfo.strTexName = "eye_moo_t_sun014";
+		geoName = "grid";
+	}
+		
+	else
+	{
+		m_pMesh = dynamic_cast<StaticMesh*>(CComponent_Manager::GetInstance()->Clone_Component(const_cast<wchar_t*>(wstrMesh.c_str())));
+		if (nullptr == m_pMesh)
+			return E_FAIL;
+		m_tInfo.strTexName = dynamic_cast<StaticMesh*>(m_pMesh)->GetTexName();
+		geoName = "Barrel";
+	}
 
 	//m_tFrame.f2maxFrame = XMFLOAT2(5.f, 6.f);
 	//m_tFrame.f2FrameSize = XMFLOAT2(128.f, 171.f);
@@ -60,11 +78,14 @@ HRESULT CEffect::Initialize()
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 
-	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
+	if (m_tInfo.strMeshName == "Com_Geometry")
+		Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
+	else
+		Geo = dynamic_cast<StaticMesh*>(m_pMesh)->m_Geometry[0].get();
 	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs["grid"].IndexCount;
-	StartIndexLocation = Geo->DrawArgs["grid"].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs["grid"].BaseVertexLocation;
+	IndexCount = Geo->DrawArgs[geoName].IndexCount;
+	StartIndexLocation = Geo->DrawArgs[geoName].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs[geoName].BaseVertexLocation;
 
 	Mat->MatTransform(3, 0) = 1;
 	Mat->MatTransform(3, 1) = 1;
@@ -314,7 +335,6 @@ void CEffect::Update_Billboard(const GameTimer & gt)
 	m_pTransCom->GetWorld()._43 = m_pTransCom->GetPosition().z;
 }
 
-<<<<<<< HEAD
 void CEffect::SetMesh(wchar_t* meshName)
 {
 	string geoName;
@@ -362,8 +382,6 @@ void CEffect::SetMesh(wchar_t* meshName)
 
 }
 
-=======
->>>>>>> 1198ed394a6def8e3d52a27f512b159f6bc31a4d
 void CEffect::SetTexture(Texture * tex)
 {
 	Mat->DiffuseSrvHeapIndex = tex->Num;

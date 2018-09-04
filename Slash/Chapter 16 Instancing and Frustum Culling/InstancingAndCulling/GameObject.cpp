@@ -312,6 +312,12 @@ void AnimateStateMachine::SetTimerTrueFalse()
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Ultimate;
 	}
 
+	if (m_iAnimState == RollState)
+	{
+		bTimerRoll = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Roll;
+	}
+
 }
 
 void AnimateStateMachine::Free()
