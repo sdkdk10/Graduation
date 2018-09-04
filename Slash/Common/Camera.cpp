@@ -519,11 +519,11 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 				XMFLOAT3 movePos;
 
 				float Length = Vector3::Length(Vector3::Subtract(pos, SaveUltimateCameraPos));
-				if (Length > 1.25f && Length < LastLength)
+				if (Length > 5.25f && Length < LastLength)
 				{
-					SaveUltimateCameraPos.x += Direction.x;
-					SaveUltimateCameraPos.y += Direction.y;
-					SaveUltimateCameraPos.z += Direction.z;
+					SaveUltimateCameraPos.x += Direction.x * 0.01f;
+					SaveUltimateCameraPos.y += Direction.y* 0.01f;
+					SaveUltimateCameraPos.z += Direction.z* 0.01f;
 
 				}
 		
