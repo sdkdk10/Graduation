@@ -820,11 +820,12 @@ void InstancingAndCullingApp::LoadMeshes()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_RockWarrior", pComponentSingle);
 
 	path.clear();
-	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Walk.ASE"));
-	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Walk.ASE"));
-	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Attack1.ASE"));
-	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Hit.ASE"));
-	path.push_back(make_pair("Idle", "Assets/Models/Mushroom/Mushroom_Die.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Idle.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Die.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Hit.ASE"));
+
 
 	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mushroom", pComponentSingle);

@@ -138,6 +138,7 @@ void RockWarrior::Render(ID3D12GraphicsCommandList * cmdList)
 		int iTest = AnimStateMachine->GetCurAnimFrame();
 		int AnimaState = AnimStateMachine->GetAnimState();
 
+
 		cmdList->DrawIndexedInstanced(pMesh->Indexoffset[1], 1,
 			pMesh->Indexoffset[iTest] + pMesh->IndexAnimoffset[AnimaState] /*+ pMesh->IndexAnimoffset[0]*/,
 			pMesh->Vertexoffset[iTest] + pMesh->VertexAnimoffset[AnimaState]/*+ pMesh->VertexAnimoffset[0]*/, 0);

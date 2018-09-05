@@ -136,6 +136,7 @@ HRESULT CTestScene::Initialize()
 bool CTestScene::Update(const GameTimer & gt)
 {
 	
+
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();

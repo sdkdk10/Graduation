@@ -651,6 +651,24 @@ void Player::KeyInput(const GameTimer & gt)
 		//cout << GetHp() << endl;
 
 	}
+	if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
+	{
+		auto * m_pPNagaGuard= CManagement::GetInstance()->Find_Object(L"Layer_NagaGuard");
+		auto * m_pPRockWarrior = CManagement::GetInstance()->Find_Object(L"Layer_RockWarrior");
+		auto * m_pTreeGuard = CManagement::GetInstance()->Find_Object(L"Layer_TreeGuard");
+		auto * m_pMushroom = CManagement::GetInstance()->Find_Object(L"Layer_Mushroom");
+
+		m_pPNagaGuard->SetObjectAnimState(AnimationtTest);
+		m_pPRockWarrior->SetObjectAnimState(AnimationtTest);
+		m_pTreeGuard->SetObjectAnimState(AnimationtTest);
+		m_pMushroom->SetObjectAnimState(AnimationtTest);
+
+		AnimationtTest++;
+
+		if (AnimationtTest > 5)
+			AnimationtTest = 0;
+	}
+
 }
 
 //void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
@@ -878,7 +896,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerUltimate == true)
 	{
 
-	
+		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;

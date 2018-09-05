@@ -6,6 +6,7 @@ class CBoundingBox;
 
 class Player : public CGameObject
 {
+	int AnimationtTest = 0;
 public:
 	bool bIsUltimateState = false;
 	float m_fUltimateTime = 20.0f;

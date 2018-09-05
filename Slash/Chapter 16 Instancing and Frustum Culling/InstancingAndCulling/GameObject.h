@@ -38,6 +38,8 @@ public:
 	bool bTimerAttack2 = false;
 	bool bTimerAttack3 = false;
 	bool bTimerDead = false;
+	bool bTimerHit = false;
+
 	bool bTimerUltimate = false;
 	bool bTimerRoll = false;
 

@@ -8,7 +8,7 @@ class Player;
 class Mushroom : public CGameObject
 {
 private:
-	const float m_fScale = 0.02f;
+	const float m_fScale = 0.05f;
 private:
 	Mushroom(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 public:
