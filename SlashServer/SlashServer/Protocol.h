@@ -48,7 +48,7 @@ static const int EVT_RESPOWN = 7;
 #define MAX_USER 1000
 
 #define NPC_START  2000
-#define NUM_OF_NPC  2001
+#define NUM_OF_NPC  2100
 
 #define MY_SERVER_PORT  4000
 
