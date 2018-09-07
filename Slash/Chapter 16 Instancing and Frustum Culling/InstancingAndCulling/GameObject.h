@@ -1,5 +1,6 @@
 #pragma once
 #include "Base.h"
+#include "../../SlashServer/SlashServer/Protocol.h"
 
 class Camera;
 class Mesh;
@@ -26,8 +27,7 @@ struct CB_ObjectConstants
 class AnimateStateMachine
 	: public CBase
 {
-public:
-	enum ANIM_STATE { STATE_IDLE, STATE_WALK, STATE_ATTACK1, STATE_ATTACK2, STATE_ATTACK3, STATE_DEAD, STATE_END,STATE_ULTIMATE, STATE_ROLL};
+
 public:
 	bool m_bIsLife = true;
 
@@ -61,16 +61,6 @@ protected:
 public:
 	vector<int> * vecAnimFrame;
 
-public: //애니메이션 상태
-
-	const int IdleState = 0;
-	const int WalkState = 1;
-	const int Attack1State = 2;
-	const int Attack2State = 3;
-	const int Attack3State = 4;
-	const int DeadState = 5;
-	const int UltimateState = 6;
-	const int RollState = 7;
 protected:
 	int m_iAnimState = 0; // 현재 애니메이션 상태
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지

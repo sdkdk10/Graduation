@@ -188,7 +188,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(my_packet->state);
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(200);
 		}
-		else if (id < NPC_START)
+		else if (id < NPC_ID_START_NUM)
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = true;
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
@@ -197,10 +197,10 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else
 		{
-			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = true;
-			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->Rotation(0.f, my_packet->lookDegree, 0.0f);
-			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetObjectAnimState(my_packet->state);
+			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->m_bIsConnected = true;
+			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->Rotation(0.f, my_packet->lookDegree, 0.0f);
+			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->SetObjectAnimState(my_packet->state);
 		}
 		break;
 	}
@@ -211,17 +211,17 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetObjectAnimState(WALK);
+			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetObjectAnimState(STATE_WALK);
 		}
-		else if (id < NPC_START)
+		else if (id < NPC_ID_START_NUM)
 		{
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetObjectAnimState(WALK);
+			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetObjectAnimState(STATE_WALK);
 		}
 		else
 		{
-			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->SetObjectAnimState(WALK);
+			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM))->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM))->SetObjectAnimState(STATE_WALK);
 		}
 		break;
 	}
@@ -234,11 +234,11 @@ void CNetwork::ProcessPacket(char * ptr)
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->Rotation(0.f, 0.f, my_packet->lookDegree);
 			//cout <<  int(my_packet->lookDegree) << endl;
 		}
-		else if (id < NPC_START)
+		else if (id < NPC_ID_START_NUM)
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->Rotation(0.f, 0.f, my_packet->lookDegree);
 		else
 		{
-			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->Rotation(0.f, my_packet->lookDegree, 0.f);
+			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM))->Rotation(0.f, my_packet->lookDegree, 0.f);
 		}
 		break;
 	}
@@ -250,13 +250,13 @@ void CNetwork::ProcessPacket(char * ptr)
 		{
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetObjectAnimState(my_packet->state);
 		}
-		else if (id < NPC_START)
+		else if (id < NPC_ID_START_NUM)
 		{
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetObjectAnimState(my_packet->state);
 		}
 		else
 		{
-			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->SetObjectAnimState(my_packet->state);
+			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM))->SetObjectAnimState(my_packet->state);
 		}
 		break;
 	}
@@ -266,11 +266,11 @@ void CNetwork::ProcessPacket(char * ptr)
 		int id = my_packet->id;
 		if (myid == id)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
-		else if (id < NPC_START)
+		else if (id < NPC_ID_START_NUM)
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
 		else
 		{
-			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
+			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->m_bIsConnected = false;
 		}
 		break;
 	}
@@ -281,11 +281,11 @@ void CNetwork::ProcessPacket(char * ptr)
 		unsigned short hp = my_packet->hp;
 		if (myid == id)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(hp);
-		//else if (id < NPC_START)
+		//else if (id < NPC_ID_START_NUM)
 		//	CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
 		//else
 		//{
-		//	CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = false;
+		//	CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->m_bIsConnected = false;
 		//}
 		break;
 	}
@@ -293,13 +293,13 @@ void CNetwork::ProcessPacket(char * ptr)
 	{
 		sc_packet_put_monster *my_packet = reinterpret_cast<sc_packet_put_monster *>(ptr);
 		int id = my_packet->id;
-		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->m_bIsConnected = true;
-		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->Rotation(0.f, my_packet->lookDegree, 0.0f);
-		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetObjectAnimState(my_packet->state);
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->m_bIsConnected = true;
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->Rotation(0.f, my_packet->lookDegree, 0.0f);
+		CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_ID_START_NUM)->SetObjectAnimState(my_packet->state);
 		//if (my_packet->monsterType == 2)
 		//	my_packet->monsterType = 3;
-		dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider",id - NPC_START))->SetTexture((SpiderTex)my_packet->monsterType);
+		dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider",id - NPC_ID_START_NUM))->SetTexture((SpiderType)my_packet->monsterType);
 	}
 	}
 }

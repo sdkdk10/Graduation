@@ -26,8 +26,7 @@ RockWarrior::~RockWarrior()
 
 bool RockWarrior::Update(const GameTimer & gt)
 {
-
-
+	
 
 	if (!m_pPlayer)
 		m_pPlayer = dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player"));
@@ -187,7 +186,7 @@ HRESULT RockWarrior::Initialize()
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+	AnimStateMachine->SetAnimState(State::STATE_IDLE);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";

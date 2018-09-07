@@ -57,7 +57,7 @@ HRESULT CTestScene::Initialize()
 	Ready_GameObject(L"Layer_Player", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
-	for(int i = 0; i < MAX_USER; ++i)
+	for(int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage", false);
 		pObject->SetCamera(Get_MainCam());
@@ -65,7 +65,7 @@ HRESULT CTestScene::Initialize()
 		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 	
-	for (int i = NPC_START; i < NUM_OF_NPC; ++i)
+	for (int i = 0; i < NUM_OF_NPC; ++i)
 	{
 		pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 		pObject->SetCamera(Get_MainCam());

@@ -274,45 +274,45 @@ void AnimateStateMachine::SetTimerTrueFalse()
 
 	//
 
-	if (m_iAnimState == IdleState)
+	if (m_iAnimState == State::STATE_IDLE)
 	{
 		bTimerIdle = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
 	}
-	if (m_iAnimState == WalkState)
+	if (m_iAnimState == State::STATE_WALK)
 	{
 		bTimerWalk = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
 	}
-	if (m_iAnimState == Attack1State)
+	if (m_iAnimState == State::STATE_ATTACK1)
 	{
 		bTimerAttack1 = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 	}
-	if (m_iAnimState == Attack2State)
+	if (m_iAnimState == State::STATE_ATTACK2)
 	{
 		bTimerAttack2 = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
 	}
-	if (m_iAnimState == Attack3State)
+	if (m_iAnimState == State::STATE_ATTACK3)
 	{
 		bTimerAttack3 = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 	}
 
-	if (m_iAnimState == DeadState)
+	if (m_iAnimState == State::STATE_DEAD)
 	{
 		bTimerDead = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
 	}
 
-	if (m_iAnimState == UltimateState)
+	if (m_iAnimState == State::STATE_ULTIMATE)
 	{
 		bTimerUltimate = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Ultimate;
 	}
 
-	if (m_iAnimState == RollState)
+	if (m_iAnimState == State::STATE_ROLL)
 	{
 		bTimerRoll = true;
 		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Roll;

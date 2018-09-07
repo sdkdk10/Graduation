@@ -353,7 +353,7 @@ void Camera::CameraEffect_Shaking()
 	if (bCameraEffect_Shaking)
 	{
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
-		cout << dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState<< endl;
+		cout << dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState << endl;
 
 		if (this != NULL)
 		{

@@ -22,7 +22,7 @@ public:
 	virtual void			SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
 
 public:
-	void SetTexture(SpiderTex _tex);
+	void SetTexture(SpiderType _tex);
 
 private:
 	Player * m_pPlayer = nullptr;

@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{438C6CC1-16D9-4133-BA1C-E8FDFAC60A7A}</ProjectGuid>
     <RootNamespace>SlashServer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -77,6 +77,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\thelo\OneDrive\Desktop\졸작\SlashServer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\thelo\OneDrive\Desktop\졸작\SlashServer;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -89,6 +91,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\thelo\OneDrive\Desktop\졸작\SlashServer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\thelo\OneDrive\Desktop\졸작\SlashServer;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -103,6 +107,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\thelo\OneDrive\Desktop\졸작\SlashServer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -119,6 +125,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\thelo\OneDrive\Desktop\졸작\SlashServer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -128,17 +136,46 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Slash\Common\MathHelper.cpp" />
+    <ClCompile Include="AcceptThread.cpp" />
+    <ClCompile Include="ExceptionUtil.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectManager.cpp" />
+    <ClCompile Include="MapObject.cpp" />
+    <ClCompile Include="MiniDump.cpp" />
+    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SendManager.cpp" />
     <ClCompile Include="ServerMain.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
+    <ClCompile Include="TimerThread.cpp" />
+    <ClCompile Include="WorkerThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Slash\Common\MathHelper.h" />
+    <ClInclude Include="AcceptThread.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="ExceptionUtil.h" />
     <ClInclude Include="Functor.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="include\lauxlib.h" />
     <ClInclude Include="include\lua.h" />
     <ClInclude Include="include\lua.hpp" />
     <ClInclude Include="include\luaconf.h" />
     <ClInclude Include="include\lualib.h" />
+    <ClInclude Include="MapObject.h" />
+    <ClInclude Include="MathUtil.h" />
+    <ClInclude Include="MiniDump.h" />
+    <ClInclude Include="NPC.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Protocol.h" />
+    <ClInclude Include="SendManager.h" />
+    <ClInclude Include="SingleTone.h" />
+    <ClInclude Include="Thread.h" />
+    <ClInclude Include="ThreadManager.h" />
+    <ClInclude Include="TimerThread.h" />
+    <ClInclude Include="WorkerThread.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="monster.lua" />

@@ -11,11 +11,50 @@
     <Filter Include="99.Headers">
       <UniqueIdentifier>{3883c7d4-d3d8-4b00-a58a-3e60fc6a7fb4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="98.DirectHelper">
-      <UniqueIdentifier>{4baa54d2-d7fe-4e81-9d01-7aa96c5f7d53}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98.Lua">
       <UniqueIdentifier>{873c3f7f-3671-4bbd-9c2f-4aa2edc51d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Thread">
+      <UniqueIdentifier>{b479996d-629b-42ab-9204-a8d90a5a61e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Thread\00.AcceptThread">
+      <UniqueIdentifier>{0c0f68a6-1ed2-40d3-890e-6b14b70e56af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Thread\01.WorkerThread">
+      <UniqueIdentifier>{a70c1fec-7bc5-4092-81cc-bda3ea443239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Thread\02.TimerThread">
+      <UniqueIdentifier>{a0728d7e-115f-49c9-aca2-8d388303f8f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject">
+      <UniqueIdentifier>{d9ee37de-224a-4646-b8c1-66f8d25a60f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\00.Player">
+      <UniqueIdentifier>{f61d5638-a3dd-472e-943e-270fbee71bb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\01.NPC">
+      <UniqueIdentifier>{27fb87b8-d051-4d42-ad86-9c1c70dbdd0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\02.MapObject">
+      <UniqueIdentifier>{085a7cbe-d48a-4eba-8e46-de18333de240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.SendManager">
+      <UniqueIdentifier>{32807c7c-a5a6-451c-8412-29f679acc35f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Util">
+      <UniqueIdentifier>{d13abf60-e4fe-4312-8e12-bee7303fb721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Util\00.DirectHelper">
+      <UniqueIdentifier>{4baa54d2-d7fe-4e81-9d01-7aa96c5f7d53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Util\01.ExceptionUtil">
+      <UniqueIdentifier>{4d0ba8b1-a870-4676-be8c-aed2071a3049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Util\02.MiniDump">
+      <UniqueIdentifier>{b85596b3-4ae8-4e39-bc21-b8afec4058df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Util\03.SingleTone">
+      <UniqueIdentifier>{891ff209-ced8-44e8-a53e-727532d9c1ca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -23,7 +62,46 @@
       <Filter>00.ServerMain</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Slash\Common\MathHelper.cpp">
-      <Filter>98.DirectHelper</Filter>
+      <Filter>97.Util\00.DirectHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadManager.cpp">
+      <Filter>01.Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>01.Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="AcceptThread.cpp">
+      <Filter>01.Thread\00.AcceptThread</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkerThread.cpp">
+      <Filter>01.Thread\01.WorkerThread</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>02.GameObject\00.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>02.GameObject\01.NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerThread.cpp">
+      <Filter>01.Thread\02.TimerThread</Filter>
+    </ClCompile>
+    <ClCompile Include="MapObject.cpp">
+      <Filter>02.GameObject\02.MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SendManager.cpp">
+      <Filter>96.SendManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionUtil.cpp">
+      <Filter>97.Util\01.ExceptionUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniDump.cpp">
+      <Filter>97.Util\02.MiniDump</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -34,7 +112,7 @@
       <Filter>99.Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Slash\Common\MathHelper.h">
-      <Filter>98.DirectHelper</Filter>
+      <Filter>97.Util\00.DirectHelper</Filter>
     </ClInclude>
     <ClInclude Include="include\lauxlib.h">
       <Filter>98.Lua</Filter>
@@ -50,6 +128,54 @@
     </ClInclude>
     <ClInclude Include="include\lualib.h">
       <Filter>98.Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager.h">
+      <Filter>01.Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>01.Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="AcceptThread.h">
+      <Filter>01.Thread\00.AcceptThread</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerThread.h">
+      <Filter>01.Thread\01.WorkerThread</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>02.GameObject\00.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>02.GameObject\01.NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerThread.h">
+      <Filter>01.Thread\02.TimerThread</Filter>
+    </ClInclude>
+    <ClInclude Include="MapObject.h">
+      <Filter>02.GameObject\02.MapObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SendManager.h">
+      <Filter>96.SendManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionUtil.h">
+      <Filter>97.Util\01.ExceptionUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtil.h">
+      <Filter>97.Util</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniDump.h">
+      <Filter>97.Util\02.MiniDump</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleTone.h">
+      <Filter>97.Util\03.SingleTone</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

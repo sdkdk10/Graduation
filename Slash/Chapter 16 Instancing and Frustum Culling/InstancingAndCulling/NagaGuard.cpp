@@ -186,7 +186,7 @@ HRESULT NagaGuard::Initialize()
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+	AnimStateMachine->SetAnimState(State::STATE_IDLE);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";

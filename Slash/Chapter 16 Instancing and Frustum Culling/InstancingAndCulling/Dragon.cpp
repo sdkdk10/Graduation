@@ -155,14 +155,14 @@ HRESULT Dragon::Initialize()
 		return E_FAIL;
 
 	// > 테스트용으로 넣어둠
-	int test[AnimateStateMachine::STATE_END] = { 0, };
+	int test[State::STATE_END] = { 0, };
 	AnimStateMachine = AnimateStateMachine_Dragon::Create(this, L"Dragon", test, test);
 	if (AnimStateMachine == nullptr)
 		return E_FAIL;
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->Attack2State);
+	AnimStateMachine->SetAnimState(State::STATE_ATTACK2);
 
 
 
@@ -236,16 +236,16 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 15;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
-		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK1])
+		if (!m_IsSoundPlay[State::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[State::STATE_ATTACK1])
 		{
-			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = true;
+			m_IsSoundPlay[State::STATE_ATTACK1] = true;
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
-			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK1]);
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
 		}
 
-		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK1])
+		if (!m_IsEffectPlay[State::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[State::STATE_ATTACK1])
 		{
-			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = true;
+			m_IsEffectPlay[State::STATE_ATTACK1] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
 			//cout << "스킬!" << endl;
@@ -258,8 +258,8 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			bTimerAttack1 = false;
 			m_fAnimationKeyFrameIndex_Attack1 = 0.f;
 
-			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK1] = false;
-			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK1] = false;
+			m_IsSoundPlay[State::STATE_ATTACK1] = false;
+			m_IsEffectPlay[State::STATE_ATTACK1] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
 			CNetwork::GetInstance()->SendStopPacket();
@@ -274,16 +274,16 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 		m_fAnimationKeyFrameIndex_Attack2 += gt.DeltaTime() * 10;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
 
-		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK2])
+		if (!m_IsSoundPlay[State::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_SoundFrame[State::STATE_ATTACK2])
 		{
-			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] = true;
+			m_IsSoundPlay[State::STATE_ATTACK2] = true;
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
-			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK2]);
 		}
 
-		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK2])
+		if (!m_IsEffectPlay[State::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_EffectFrame[State::STATE_ATTACK2])
 		{
-			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = true;
+			m_IsEffectPlay[State::STATE_ATTACK2] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
 			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
@@ -294,8 +294,8 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			bTimerAttack2 = false;
 			m_fAnimationKeyFrameIndex_Attack2 = 0;
 
-			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK2] = false;
-			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = false;
+			m_IsSoundPlay[State::STATE_ATTACK2] = false;
+			m_IsEffectPlay[State::STATE_ATTACK2] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
 			CNetwork::GetInstance()->SendStopPacket();
@@ -310,16 +310,16 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 		m_fAnimationKeyFrameIndex_Attack3 += gt.DeltaTime() * 30;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
-		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_SoundFrame[AnimateStateMachine::STATE_ATTACK3])
+		if (!m_IsSoundPlay[State::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_SoundFrame[State::STATE_ATTACK3])
 		{
-			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] = true;
-			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			m_IsSoundPlay[State::STATE_ATTACK3] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 		}
 
-		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_EffectFrame[AnimateStateMachine::STATE_ATTACK3])
+		if (!m_IsEffectPlay[State::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_EffectFrame[State::STATE_ATTACK3])
 		{
-			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = true;
+			m_IsEffectPlay[State::STATE_ATTACK3] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
 			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
@@ -330,8 +330,8 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			bTimerAttack3 = false;
 			m_fAnimationKeyFrameIndex_Attack3 = 0;
 
-			m_IsSoundPlay[AnimateStateMachine::STATE_ATTACK3] = false;
-			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = false;
+			m_IsSoundPlay[State::STATE_ATTACK3] = false;
+			m_IsEffectPlay[State::STATE_ATTACK3] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
 			CNetwork::GetInstance()->SendStopPacket();
@@ -360,16 +360,16 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
 
-		if (!m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[AnimateStateMachine::STATE_ULTIMATE])
+		if (!m_IsSoundPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[State::STATE_ULTIMATE])
 		{
-			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			m_IsSoundPlay[State::STATE_ULTIMATE] = true;
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
-			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[AnimateStateMachine::STATE_ATTACK2]);
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK2]);
 		}
 
-		if (!m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[AnimateStateMachine::STATE_ULTIMATE])
+		if (!m_IsEffectPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[State::STATE_ULTIMATE])
 		{
-			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = true;
+			m_IsEffectPlay[State::STATE_ULTIMATE] = true;
 			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
 		}
 
@@ -379,8 +379,8 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 
 			m_fAnimationKeyFrameIndex_Ultimate = 0;
 
-			m_IsSoundPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
-			m_IsEffectPlay[AnimateStateMachine::STATE_ULTIMATE] = false;
+			m_IsSoundPlay[State::STATE_ULTIMATE] = false;
+			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
 			CNetwork::GetInstance()->SendStopPacket();
@@ -413,11 +413,11 @@ Dragon * Dragon::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 
 //--------------------------------------- AnimateStateMachine-----------------------------------------
 
-AnimateStateMachine_Dragon::AnimateStateMachine_Dragon(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
+AnimateStateMachine_Dragon::AnimateStateMachine_Dragon(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])
 	: m_pMachineName(pMachineName)
 	, m_pObject(pObj)
 {
-	for (int i = 0; i < AnimateStateMachine::STATE_END; ++i)
+	for (int i = 0; i < State::STATE_END; ++i)
 	{
 		m_SoundFrame[i] = SoundFrame[i];
 		m_EffectFrame[i] = EffectFrame[i];
@@ -435,7 +435,7 @@ HRESULT AnimateStateMachine_Dragon::Initialize()
 	return S_OK;
 }
 
-AnimateStateMachine_Dragon * AnimateStateMachine_Dragon::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[AnimateStateMachine::STATE_END], int EffectFrame[AnimateStateMachine::STATE_END])
+AnimateStateMachine_Dragon * AnimateStateMachine_Dragon::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])
 {
 	AnimateStateMachine_Dragon* pInstance = new AnimateStateMachine_Dragon(pObj, pMachineName, SoundFrame, EffectFrame);
 
