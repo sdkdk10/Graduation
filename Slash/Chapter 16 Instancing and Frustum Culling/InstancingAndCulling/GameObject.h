@@ -89,7 +89,7 @@ public:
 public:
 	AnimateStateMachine * GetAnimateMachine() { return AnimStateMachine; }
 public:
-	void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
+	virtual void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
 protected:
 	AnimateStateMachine * AnimStateMachine = nullptr;
 public:

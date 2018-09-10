@@ -813,6 +813,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Idle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Walk.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Hit.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Die.ASE"));
 
@@ -823,8 +824,10 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Idle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Walk.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Die.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Hit.ASE"));
+
 
 
 	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
@@ -833,6 +836,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Idle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Hit.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Die.ASE"));
