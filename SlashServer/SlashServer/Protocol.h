@@ -25,7 +25,7 @@ enum NPCType
 	NPC_NAGA_GUARD,
 	NPC_ROCK_WARRIOR,
 	NPC_TREE_GUARD,
-	NPC_MUSHROOM,
+	NPC_TURTLE,
 	NPC_DRAGON
 };
 enum SpiderType
@@ -48,6 +48,7 @@ static const int EVT_PLAYER_DAMAGED = 6;
 static const int EVT_ATTACKMOVE = 7;
 static const int EVT_MONSTER_RESPOWN = 8;
 static const int EVT_PLAYER_RESPOWN = 9;
+static const int EVT_PLAYER_ROLL = 10;
 
 #define MY_SERVER_PORT  4000
 
@@ -62,32 +63,47 @@ static const int EVT_PLAYER_RESPOWN = 9;
 #define CLOSE_RADIUS	4
 
 #define NUM_OF_PLAYER 1000
-#define NUM_OF_NPC  1
 #define NUM_OF_MAPOBJECT 100
 
-#define NPC_ID_START_NUM 5000
+
+#define NUM_OF_NPC_SPIDER			5
+#define NUM_OF_NPC_NAGAGUARD		5
+#define NUM_OF_NPC_ROCKWARRIOR		5
+#define NUM_OF_NPC_TREEGUARD		5
+#define NUM_OF_NPC_TURTLE			5
+#define NUM_OF_NPC_TOTAL			NUM_OF_NPC_SPIDER + NUM_OF_NPC_NAGAGUARD + NUM_OF_NPC_ROCKWARRIOR + NUM_OF_NPC_TREEGUARD + NUM_OF_NPC_TURTLE
+
+#define NPC_ID_START				NUM_OF_PLAYER
+#define SPIDER_ID_START				0
+#define NAGAGUARD_ID_START			SPIDER_ID_START + NUM_OF_NPC_SPIDER
+#define ROCKWARRIOR_ID_START		NAGAGUARD_ID_START + NUM_OF_NPC_NAGAGUARD
+#define TREEGUARD_ID_START			ROCKWARRIOR_ID_START + NUM_OF_NPC_ROCKWARRIOR
+#define TURTLE_ID_START				TREEGUARD_ID_START + NUM_OF_NPC_TREEGUARD
+
 
 #define CS_DIR_FORWARD					0x01
 #define CS_DIR_BACKWARD					0x02
 #define CS_DIR_LEFT						0x04
 #define CS_DIR_RIGHT					0x08
-#define CS_STOP							0x10
-#define CS_ATTACK1						0x11
-#define CS_ATTACK2						0x12
-#define CS_ATTACK3						0x13
-#define CS_MAP_INIT_DATA				0x14
+#define CS_ROLL							0x10
+#define CS_STOP							0x20
+#define CS_ATTACK1						0x21
+#define CS_ATTACK2						0x22
+#define CS_ATTACK3						0x23
+#define CS_MAP_INIT_DATA				0x24
 
-#define SC_POS   1
-#define SC_PUT_PLAYER    2
-#define SC_REMOVE_OBJECT 3
-#define SC_CHAT			4
-#define SC_ROTATE		5
-#define SC_STATE		6
-#define SC_HP			7
-#define SC_PUT_MONSTER    8
+#define SC_WALK_MOVE   1
+#define SC_ROLL_MOVE   2
+#define SC_PUT_PLAYER    3
+#define SC_REMOVE_OBJECT 4
+#define SC_CHAT			5
+#define SC_ROTATE		6
+#define SC_STATE		7
+#define SC_HP			8
+#define SC_PUT_MONSTER   9
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
-static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT;
+static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
 
 using BYTE = unsigned char;
 using WORD = unsigned short;
@@ -123,7 +139,7 @@ struct cs_packet_mapinitdata {
 	DirectX::BoundingBox bounds;
 };
 
-struct sc_packet_pos {
+struct sc_packet_move {
 	BYTE size;
 	BYTE type;
 	WORD id;

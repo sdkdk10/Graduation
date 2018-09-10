@@ -22,4 +22,6 @@ public:
 	int packetSize_;
 	int prevSize_;
 	char prevPacket_[MAX_PACKET_SIZE];
+	unsigned char rollDir;
+	unsigned char rollCurFrame;
 };

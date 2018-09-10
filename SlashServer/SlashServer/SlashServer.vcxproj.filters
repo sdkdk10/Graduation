@@ -168,14 +168,14 @@
     <ClInclude Include="ExceptionUtil.h">
       <Filter>97.Util\01.ExceptionUtil</Filter>
     </ClInclude>
-    <ClInclude Include="MathUtil.h">
-      <Filter>97.Util</Filter>
-    </ClInclude>
     <ClInclude Include="MiniDump.h">
       <Filter>97.Util\02.MiniDump</Filter>
     </ClInclude>
     <ClInclude Include="SingleTone.h">
       <Filter>97.Util\03.SingleTone</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionUtil.h">
+      <Filter>97.Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

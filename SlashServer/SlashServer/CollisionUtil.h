@@ -1,13 +1,14 @@
 #pragma once
+#pragma once
 #include "Functor.h" 
 #include "MapObject.h"
 
-class MathUtil
+class CollisionUtil
 {
 public:
 
-	explicit MathUtil() {};
-	virtual ~MathUtil() {};
+	explicit CollisionUtil() {};
+	virtual ~CollisionUtil() {};
 
 public:
 	static XMFLOAT3 GetSlideVector(GameObject* obj, GameObject* collObject)
@@ -104,5 +105,46 @@ public:
 
 		return MovingRefletVector;
 
+	}
+
+	static bool ProcessMapObjectColl(GameObject* mapObject, GameObject* player, XMFLOAT3& xmf3Shift)
+	{
+		XMMATRIX world = XMLoadFloat4x4(&mapObject->world_);
+		XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+		BoundingOrientedBox mLocalPlayerBounds;
+		player->xmOOBB_.Transform(mLocalPlayerBounds, invWorld);
+
+		if (mLocalPlayerBounds.Contains(dynamic_cast<MapObject*>(mapObject)->Bounds) != DirectX::DISJOINT)
+		{
+
+			XMFLOAT3 SlideVector = CollisionUtil::GetMapSlideVector(player, mapObject);
+			float cosCeta = Vector3::DotProduct(SlideVector, xmf3Shift);
+			if (cosCeta < 0)
+			{
+				auto result = Vector3::MultiplyScalr(SlideVector, Vector3::DotProduct(xmf3Shift, SlideVector));
+				XMFLOAT3 sub_xmf3Shift = Vector3::Subtract(xmf3Shift, result);
+
+				player->world_._41 += sub_xmf3Shift.x, player->world_._42 += sub_xmf3Shift.y, player->world_._43 += sub_xmf3Shift.z;
+				return true;
+			}
+		}
+		return false;
+	}
+	static bool ProcessObjectColl(GameObject* object, GameObject* player, XMFLOAT3& xmf3Shift)
+	{
+		if (player->xmOOBB_.Contains(object->xmOOBB_))
+		{
+			XMFLOAT3 SlideVector = CollisionUtil::GetSlideVector(player, object);
+			float cosCeta = Vector3::DotProduct(SlideVector, xmf3Shift);
+			if (cosCeta < 0)
+			{
+				auto result = Vector3::MultiplyScalr(SlideVector, Vector3::DotProduct(xmf3Shift, SlideVector));
+				XMFLOAT3 sub_xmf3Shift = Vector3::Subtract(xmf3Shift, result);
+
+				player->world_._41 += sub_xmf3Shift.x, player->world_._42 += sub_xmf3Shift.y, player->world_._43 += sub_xmf3Shift.z;
+				return true;
+			}
+		}
+		return false;
 	}
 };

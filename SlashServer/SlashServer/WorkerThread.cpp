@@ -118,6 +118,12 @@ void WorkerThread::Run()
 			objectManager_->PlayerRespown(object);
 			delete o;
 		}
+		else if (EVT_PLAYER_ROLL == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			objectManager_->ProcessMove(object, dynamic_cast<Player*>(object)->rollDir, SC_ROLL_MOVE);
+			delete o;
+		}
 		else {
 
 		}

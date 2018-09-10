@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Slash\Common\MathHelper.h" />
     <ClInclude Include="AcceptThread.h" />
+    <ClInclude Include="CollisionUtil.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="ExceptionUtil.h" />
     <ClInclude Include="Functor.h" />
@@ -165,7 +166,6 @@
     <ClInclude Include="include\luaconf.h" />
     <ClInclude Include="include\lualib.h" />
     <ClInclude Include="MapObject.h" />
-    <ClInclude Include="MathUtil.h" />
     <ClInclude Include="MiniDump.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />

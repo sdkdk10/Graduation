@@ -10,7 +10,8 @@ public:
 public:
 
 	static void SendPacket(GameObject* player, void *packet);
-	static void SendObjectPos(GameObject* player, GameObject* object);
+	static void SendObjectWalk(GameObject* player, GameObject* object);
+	static void SendObjectRoll(GameObject* player, GameObject* object);
 	static void SendObjectLook(GameObject* player, GameObject* object);
 	static void SendObjectState(GameObject* player, GameObject* object);
 	static void SendRemoveObject(GameObject* player, GameObject* object);

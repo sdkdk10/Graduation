@@ -21,7 +21,7 @@ public:
 	XMFLOAT4X4 world_;
 	BoundingOrientedBox xmOOBB_;
 	BoundingOrientedBox xmOOBBTransformed_;
-	float lookDegree_;
+	double lookDegree_;
 	bool isActive_;
 	BYTE state_;
 	BYTE objectType_;

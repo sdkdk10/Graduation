@@ -22,23 +22,41 @@ void SendManager::SendPacket(GameObject* player, void *packet) {
 	//printf("SendPacket to Client [ %d ] Type [ %d ] Size [ %d ]\n", cl, (int)p[1], (int)p[0]);
 }
 
-void SendManager::SendObjectPos(GameObject* player, GameObject* object)
+void SendManager::SendObjectWalk(GameObject* player, GameObject* object)
 {
 
-	sc_packet_pos pos_p;
+	sc_packet_move move_p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		pos_p.id = object->ID_ + NPC_ID_START_NUM;
+		move_p.id = object->ID_ + NPC_ID_START;
 	else
-		pos_p.id = object->ID_;
+		move_p.id = object->ID_;
 
-	pos_p.size = sizeof(sc_packet_pos);
-	pos_p.type = SC_POS;
-	pos_p.posX = object->world_._41;
-	pos_p.posY = object->world_._42;
-	pos_p.posZ = object->world_._43;
+	move_p.size = sizeof(sc_packet_move);
+	move_p.type = SC_WALK_MOVE;
+	move_p.posX = object->world_._41;
+	move_p.posY = object->world_._42;
+	move_p.posZ = object->world_._43;
 
-	SendPacket(player, &pos_p);
+	SendPacket(player, &move_p);
+}
+
+void SendManager::SendObjectRoll(GameObject * player, GameObject * object)
+{
+	sc_packet_move roll_p;
+
+	if (TYPE_MONSTER == object->objectType_)
+		roll_p.id = object->ID_ + NPC_ID_START;
+	else
+		roll_p.id = object->ID_;
+
+	roll_p.size = sizeof(sc_packet_move);
+	roll_p.type = SC_ROLL_MOVE;
+	roll_p.posX = object->world_._41;
+	roll_p.posY = object->world_._42;
+	roll_p.posZ = object->world_._43;
+
+	SendPacket(player, &roll_p);
 }
 
 void SendManager::SendObjectLook(GameObject* player, GameObject* object)
@@ -46,7 +64,7 @@ void SendManager::SendObjectLook(GameObject* player, GameObject* object)
 	sc_packet_look_degree degree_p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		degree_p.id = object->ID_ + NPC_ID_START_NUM;
+		degree_p.id = object->ID_ + NPC_ID_START;
 	else
 		degree_p.id = object->ID_;
 
@@ -62,7 +80,7 @@ void SendManager::SendObjectState(GameObject* player, GameObject* object)
 	sc_packet_state state_p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		state_p.id = object->ID_ + NPC_ID_START_NUM;
+		state_p.id = object->ID_ + NPC_ID_START;
 	else
 		state_p.id = object->ID_;
 
@@ -78,7 +96,7 @@ void SendManager::SendPutObject(GameObject* player, GameObject* object)
 	sc_packet_put_player put_p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		put_p.id = object->ID_ + NPC_ID_START_NUM;
+		put_p.id = object->ID_ + NPC_ID_START;
 	else
 		put_p.id = object->ID_;
 
@@ -98,7 +116,7 @@ void SendManager::SendPutMonster(GameObject* player, GameObject* object)
 	sc_packet_put_monster put_p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		put_p.id = object->ID_ + NPC_ID_START_NUM;
+		put_p.id = object->ID_ + NPC_ID_START;
 	else
 		put_p.id = object->ID_;
 
@@ -119,7 +137,7 @@ void SendManager::SendRemoveObject(GameObject* player, GameObject* object)
 	sc_packet_remove_object p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		p.id = object->ID_ + NPC_ID_START_NUM;
+		p.id = object->ID_ + NPC_ID_START;
 	else
 		p.id = object->ID_;
 
@@ -134,7 +152,7 @@ void SendManager::SendObjectHp(GameObject* player, GameObject* object)
 	sc_packet_hp p;
 
 	if (TYPE_MONSTER == object->objectType_)
-		p.id = object->ID_ + NPC_ID_START_NUM;
+		p.id = object->ID_ + NPC_ID_START;
 	else
 		p.id = object->ID_;
 

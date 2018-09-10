@@ -280,7 +280,7 @@ void Spider::Animate(const GameTimer & gt)
 	////Normal = Vector3::Normalize(Normal);
 
 	//////다른애들 찾기
-	////auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	////auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Monster");
 	////if (pLayer != nullptr)
 	////{
 	////	auto objList = pLayer->Get_ObjectList();
@@ -302,7 +302,7 @@ void Spider::Animate(const GameTimer & gt)
 
 	//}
 
-	//auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	//auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Monster");
 	//if (pLayer != nullptr)
 	//{
 	//	auto objList = pLayer->Get_ObjectList();

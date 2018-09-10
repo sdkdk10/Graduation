@@ -101,7 +101,7 @@ bool TreeGuard::Update(const GameTimer & gt)
 
 void TreeGuard::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	if (m_bIsVisiable /*&& m_bIsConnected*/)
+	if (m_bIsVisiable && m_bIsConnected)
 	{
 		AnimStateMachine->SetTimerTrueFalse();
 
@@ -212,8 +212,8 @@ HRESULT TreeGuard::Initialize()
 
 
 
-	m_xmf3Scale = XMFLOAT3(2.0f, 2.0f, 2.0f);
-	m_xmf3Rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_xmf3Scale = XMFLOAT3(0.07f, 0.07f, 0.07f);
+	m_xmf3Rot = XMFLOAT3(1.7f, 0.f, 3.14f);
 
 	return S_OK;
 }

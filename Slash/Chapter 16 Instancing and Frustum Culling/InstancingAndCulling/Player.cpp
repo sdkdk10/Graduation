@@ -474,18 +474,6 @@ void Player::CheckUltimate(const GameTimer & gt)
 	}
 }
 
-void Player::SetPosition(float x, float y, float z)
-{
-	World._41 = x;
-	World._42 = y;
-	World._43 = z;
-
-	//cout << World._11 << " " << World._12 << " " << World._13 << " " << World._14 << endl;
-	//cout << World._21 << " " << World._22 << " " << World._23 << " " << World._24 << endl;
-	//cout << World._31 << " " << World._32 << " " << World._33 << " " << World._34 << endl;
-	//cout << World._41 << " " << World._42 << " " << World._43 << " " << World._44 << endl << endl;
-}
-
 void Player::SetPosition(XMFLOAT3 xmf3Position)
 {
 	Move(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
@@ -545,6 +533,7 @@ void Player::KeyInput(const GameTimer & gt)
 	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK1) return;
 	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK2) return;
 	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK3) return;
+	if (AnimStateMachine->GetAnimState() == State::STATE_ROLL) return;
 	if (bIsUltimateState) return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
@@ -576,6 +565,7 @@ void Player::KeyInput(const GameTimer & gt)
 			if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
 			if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
 			if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+			if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
 		}
 
 	}
@@ -588,13 +578,17 @@ void Player::KeyInput(const GameTimer & gt)
 		{
 			if (IsPlayerMoved)
 			{
-				CNetwork::GetInstance()->SendStopPacket();
-				IsPlayerMoved = false;
+				if (AnimStateMachine->GetAnimState() != State::STATE_ROLL)
+				{
+					AnimStateMachine->SetAnimState(STATE_IDLE);
+					CNetwork::GetInstance()->SendStopPacket();
+					IsPlayerMoved = false;
+				}
 			}
 		}
 		else
 		{
-			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection, World);
+			CNetwork::GetInstance()->SendDirKeyPacket(dwDirection);
 			IsPlayerMoved = true;
 		}
 		//m_preKeyInputTime = gt.TotalTime();
@@ -618,15 +612,11 @@ void Player::KeyInput(const GameTimer & gt)
 			bIsUltimateState = true; //궁상태로
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 
-			SetObjectAnimState(6);
+			SetObjectAnimState(State::STATE_ULTIMATE);
 		}
 		else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
 		{
 			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
-		}
-		if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN)
-		{
-			SetObjectAnimState(7);
 		}
 	}
 
@@ -649,23 +639,23 @@ void Player::KeyInput(const GameTimer & gt)
 		//cout << GetHp() << endl;
 
 	}
-	if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
-	{
-		auto * m_pPNagaGuard= CManagement::GetInstance()->Find_Object(L"Layer_NagaGuard");
-		auto * m_pPRockWarrior = CManagement::GetInstance()->Find_Object(L"Layer_RockWarrior");
-		auto * m_pTreeGuard = CManagement::GetInstance()->Find_Object(L"Layer_TreeGuard");
-		auto * m_pMushroom = CManagement::GetInstance()->Find_Object(L"Layer_Mushroom");
+	//if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
+	//{
+	//	auto * m_pPNagaGuard= CManagement::GetInstance()->Find_Object(L"Layer_NagaGuard");
+	//	auto * m_pPRockWarrior = CManagement::GetInstance()->Find_Object(L"Layer_RockWarrior");
+	//	auto * m_pTreeGuard = CManagement::GetInstance()->Find_Object(L"Layer_TreeGuard");
+	//	auto * m_pMushroom = CManagement::GetInstance()->Find_Object(L"Layer_Mushroom");
 
-		m_pPNagaGuard->SetObjectAnimState(AnimationtTest);
-		m_pPRockWarrior->SetObjectAnimState(AnimationtTest);
-		m_pTreeGuard->SetObjectAnimState(AnimationtTest);
-		m_pMushroom->SetObjectAnimState(AnimationtTest);
+	//	m_pPNagaGuard->SetObjectAnimState(AnimationtTest);
+	//	m_pPRockWarrior->SetObjectAnimState(AnimationtTest);
+	//	m_pTreeGuard->SetObjectAnimState(AnimationtTest);
+	//	m_pMushroom->SetObjectAnimState(AnimationtTest);
 
-		AnimationtTest++;
+	//	AnimationtTest++;
 
-		if (AnimationtTest > 5)
-			AnimationtTest = 0;
-	}
+	//	if (AnimationtTest > 5)
+	//		AnimationtTest = 0;
+	//}
 
 }
 
@@ -932,7 +922,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
-		m_pPlayer->MoveForward(10.0f);
+		//m_pPlayer->MoveForward(10.0f);
 		m_fAnimationKeyFrameIndex_Roll+= gt.DeltaTime() * 30;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 

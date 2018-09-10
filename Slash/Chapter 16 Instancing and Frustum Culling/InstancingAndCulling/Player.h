@@ -24,8 +24,6 @@ public:
 	bool IsSoundChange = false;
 	bool IsSoundIn = false;
 //////////////////////////////////////////////
-
-	virtual void SetPosition(float x, float y, float z);
 	virtual void SetPosition(XMFLOAT3 xmf3Position);
 
 	virtual void MoveStrafe(float fDistance = 1.0f);

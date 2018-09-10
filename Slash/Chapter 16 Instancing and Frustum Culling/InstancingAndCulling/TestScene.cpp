@@ -65,15 +65,21 @@ HRESULT CTestScene::Initialize()
 		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 	}
 	
-	for (int i = 0; i < NUM_OF_NPC; ++i)
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
 	{
-		pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		if (i < NAGAGUARD_ID_START)
+			pObject = Spider::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		else if (i < ROCKWARRIOR_ID_START)
+			pObject = NagaGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		else if (i < TREEGUARD_ID_START)
+			pObject = RockWarrior::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		else if (i < TURTLE_ID_START)
+			pObject = TreeGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+		else
+			pObject = Mushroom::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 		pObject->SetCamera(Get_MainCam());
-		//pObject->SetPosition(i * 20 /*+ 100*/ -1000, 0, k * 20  + 200/*+ 100*/);
-		pObject->SetPosition(0, 0, 5 + i);
-
-		Ready_GameObject(L"Layer_Spider", pObject);
-		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+		pObject->SetPosition(0, 0, 0);
+		Ready_GameObject(L"Layer_Monster", pObject);
 	}
 
 	pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -81,25 +87,25 @@ HRESULT CTestScene::Initialize()
 	pObject->SetPosition(0, 0, 15);
 	Ready_GameObject(L"Layer_Dragon", pObject);
 
-	pObject = NagaGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(0, 0, 0);
-	Ready_GameObject(L"Layer_NagaGuard", pObject);
+	//pObject = NagaGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(0, 0, 0);
+	//Ready_GameObject(L"Layer_NagaGuard", pObject);
 
-	pObject = RockWarrior::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(20, 0, 0);
-	Ready_GameObject(L"Layer_RockWarrior", pObject);
+	//pObject = RockWarrior::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(20, 0, 0);
+	//Ready_GameObject(L"Layer_RockWarrior", pObject);
 
-	pObject = TreeGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(40, 0, 0);
-	Ready_GameObject(L"Layer_TreeGuard", pObject);
+	//pObject = TreeGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(40, 0, 0);
+	//Ready_GameObject(L"Layer_TreeGuard", pObject);
 
-	pObject = Mushroom::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(60, 0, 0);
-	Ready_GameObject(L"Layer_Mushroom", pObject);
+	//pObject = Mushroom::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(60, 0, 0);
+	//Ready_GameObject(L"Layer_Mushroom", pObject);
 
 	pObject = Terrain::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	pObject->SetCamera(Get_MainCam());
@@ -154,14 +160,13 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	}
 
-	auto spiderList = CManagement::GetInstance()->Get_Layer(L"Layer_Spider")->Get_ObjectList();
+	auto monsterList = CManagement::GetInstance()->Get_Layer(L"Layer_Monster")->Get_ObjectList();
 	m_pPlayer->m_pCollider = NULL;
 
 
-
-	for (int i = 0; i < spiderList.size(); ++i)
+	for (int i = 0; i < monsterList.size(); ++i)
 	{
-		spiderList[i]->m_pCollider = NULL;
+		monsterList[i]->m_pCollider = NULL;
 	}
 	CScene::Update(gt);
 
@@ -184,15 +189,15 @@ bool CTestScene::Update(const GameTimer & gt)
 	}
 
 
-	for (int i = 0; i < spiderList.size(); ++i)
+	for (int i = 0; i < monsterList.size(); ++i)
 	{
-		if (spiderList[i]->m_pCollider == NULL)
+		if (monsterList[i]->m_pCollider == NULL)
 		{
-			spiderList[i]->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
+			monsterList[i]->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
 		}
 		else
 		{
-			spiderList[i]->m_pCollider->SaveSlidingVector(spiderList[i], spiderList[i]->m_pCollider);
+			monsterList[i]->m_pCollider->SaveSlidingVector(monsterList[i], monsterList[i]->m_pCollider);
 
 		}
 	}
@@ -202,7 +207,7 @@ bool CTestScene::Update(const GameTimer & gt)
 void CTestScene::UpdateOOBB()
 {
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
-	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
+	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Monster");
 
 	/*cout << " ------------------------------" << endl;
 	cout << "플레이어" << m_pPlayer->m_xmOOBB.Orientation.x << "\t" << m_pPlayer->m_xmOOBB.Orientation.y << "\t" << m_pPlayer->m_xmOOBB.Orientation.z << "\t" << m_pPlayer->m_xmOOBB.Orientation.w << endl;
@@ -220,8 +225,8 @@ void CTestScene::UpdateOOBB()
 	/*auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 	auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 	auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
-	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
-	auto * m_pSpider2 = CManagement::GetInstance()->Find_Object(L"Layer_Spider",1);*/
+	auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Monster");
+	auto * m_pSpider2 = CManagement::GetInstance()->Find_Object(L"Layer_Monster",1);*/
 	//auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
 
 	//플레이어 없는 관계로 주석
@@ -269,12 +274,12 @@ void CTestScene::CollisionProcess()
 	//auto * m_pBarrel = CManagement::GetInstance()->Find_Object(L"Layer_Barrel");
 
 	//auto * m_pInstance = CManagement::GetInstance()->Find_Object(L"Layer_Map");
-	////auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Spider");
+	////auto * m_pSpider = CManagement::GetInstance()->Find_Object(L"Layer_Monster");
 
 	//vector<CGameObject *> m_pSpider;
 	//for (int i = 0; i < 2; ++i)
 	//{
-	//	m_pSpider.push_back(CManagement::GetInstance()->Find_Object(L"Layer_Spider", i));
+	//	m_pSpider.push_back(CManagement::GetInstance()->Find_Object(L"Layer_Monster", i));
 	//}
 
 	////auto * m_pDragon = CManagement::GetInstance()->Find_Object(L"Layer_Dragon");
