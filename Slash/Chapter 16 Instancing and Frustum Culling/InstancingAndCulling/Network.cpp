@@ -214,7 +214,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", id)->SetObjectAnimState(State::STATE_WALK);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_WALK);
 		}
 		else if (id < NPC_ID_START)
 		{
@@ -235,7 +235,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", id)->SetObjectAnimState(State::STATE_ROLL);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_ROLL);
 		}
 		else if (id < NPC_ID_START)
 		{

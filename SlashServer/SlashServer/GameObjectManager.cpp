@@ -544,10 +544,10 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 
 	XMFLOAT3 xmf3Shift{ 0.0f, 0.0f, 0.0f };
 
-	if (CS_DIR_FORWARD == dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_Z), moveSpeed);
-	else if (CS_DIR_BACKWARD == dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_Z), -moveSpeed);
-	else if (CS_DIR_RIGHT == dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_X), moveSpeed);
-	else if (CS_DIR_LEFT == dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_X), -moveSpeed);
+	if (CS_DIR_FORWARD & dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_Z), moveSpeed);
+	if (CS_DIR_BACKWARD & dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_Z), -moveSpeed);
+	if (CS_DIR_RIGHT & dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_X), moveSpeed);
+	if (CS_DIR_LEFT & dirType) xmf3Shift = Vector3::Add(xmf3Shift, const_cast<XMFLOAT3&>(DIR_VECTOR_X), -moveSpeed);
 
 	XMFLOAT3 SlideVector{};
 
@@ -686,7 +686,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 				SendManager::SendPutObject(player, object);
 
 		}
-		else // 수정해야함
+		else
 		{
 			if (TYPE_MONSTER == object->objectType_)
 				SendManager::SendPutMonster(player, object);
@@ -770,10 +770,10 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 
 		cs_packet_dir *p = reinterpret_cast<cs_packet_dir *>(packet);
 
-		if (p->type & CS_DIR_FORWARD) dirType = CS_DIR_FORWARD;
-		if (p->type & CS_DIR_BACKWARD) dirType = CS_DIR_BACKWARD;
-		if (p->type & CS_DIR_RIGHT) dirType = CS_DIR_RIGHT;
-		if (p->type & CS_DIR_LEFT) dirType = CS_DIR_LEFT;
+		if (p->type & CS_DIR_FORWARD) dirType |= CS_DIR_FORWARD;
+		if (p->type & CS_DIR_BACKWARD) dirType |= CS_DIR_BACKWARD;
+		if (p->type & CS_DIR_RIGHT) dirType |= CS_DIR_RIGHT;
+		if (p->type & CS_DIR_LEFT) dirType |= CS_DIR_LEFT;
 
 		if (p->type & CS_ROLL)
 			moveType = SC_ROLL_MOVE;
@@ -784,7 +784,6 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 	}
 	else if (packet[1] == CS_STOP)
 	{
-		//cout << cl << player.LookVector.x << " " << player.LookVector.y << " " << player.LookVector.z << endl;
 
 		player->state_ = STATE_IDLE;
 		sc_packet_state sp;
