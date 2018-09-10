@@ -652,6 +652,16 @@ void Player::KeyInput(const GameTimer & gt)
 		//cout << GetHp() << endl;
 
 	}
+
+
+	if (KeyBoard_Input(DIK_F7) == CInputDevice::INPUT_DOWN)
+	{
+		XMFLOAT3 pos;
+		memcpy(&pos, &World._41, sizeof(XMFLOAT3));
+		pos.y += 0.4f;
+		CManagement::GetInstance()->Add_NumUI(213, pos);
+		cout << "F7들어옴" << endl;
+	}
 }
 
 //void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
@@ -771,7 +781,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
 			//cout << "스킬!" << endl;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Warrior_Turn", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Hit5", &m_pObject->GetWorld());
 			//cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
 		}
 
@@ -808,7 +818,11 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK2] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("orbAttack", &m_pObject->GetWorld());
+			XMFLOAT4X4 matWorld = Matrix4x4::Identity();
+			matWorld._41 = m_pObject->GetWorld()._41;
+			matWorld._42 = m_pObject->GetWorld()._42;
+			matWorld._43 = m_pObject->GetWorld()._43;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("orbAttack", &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])
@@ -844,7 +858,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[AnimateStateMachine::STATE_ATTACK3] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Heal_00", &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[4])

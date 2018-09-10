@@ -29,6 +29,9 @@ private:
 	vector<tagNumUI>			m_vNum;
 
 	unsigned long				m_iMyInstObject;
+	std::vector<InstanceData>	vecInstances;
+
+	XMFLOAT4X4					m_f4x4InitWorld;
 
 private:
 	virtual void Free();

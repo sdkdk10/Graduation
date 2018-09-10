@@ -232,13 +232,18 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->Rotation(0.f, 0.f, my_packet->lookDegree);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetNetRotAngle(my_packet->lookDegree);
 			//cout <<  int(my_packet->lookDegree) << endl;
 		}
 		else if (id < NPC_START)
+		{
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->Rotation(0.f, 0.f, my_packet->lookDegree);
+			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetNetRotAngle(my_packet->lookDegree);
+		}
 		else
 		{
 			dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START))->Rotation(0.f, my_packet->lookDegree, 0.f);
+			CManagement::GetInstance()->Find_Object(L"Layer_Spider", id - NPC_START)->SetNetRotAngle(my_packet->lookDegree);
 		}
 		break;
 	}

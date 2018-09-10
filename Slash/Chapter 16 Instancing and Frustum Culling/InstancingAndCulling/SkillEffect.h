@@ -23,6 +23,7 @@ public:
 	void					SetPlay(bool _isPlay);
 	void					Set_Enable(bool isEnable);
 	void					Set_ParentMatrix(XMFLOAT4X4* f4x4Parent);
+	void					Set_RotParentMatirx(XMFLOAT4X4* f4x4Parent, float fRot);
 	void					Set_Parent(CGameObject* pObj);
 
 private:

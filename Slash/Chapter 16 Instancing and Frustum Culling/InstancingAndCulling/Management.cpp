@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "Management.h"
 #include "Renderer.h"
+#include "NumUI.h"
 
 IMPLEMENT_SINGLETON(CManagement)
 
 CManagement::CManagement()
 	: m_pRenderer(nullptr)
 	, m_pCurScene(nullptr)
+	, m_pNumUI(nullptr)
 {
 
 }
@@ -26,10 +28,23 @@ CGameObject * CManagement::Find_Object(wchar_t * LayerTag, unsigned int iIdx)
 	return m_pCurScene->Find_Object(LayerTag, iIdx);
 }
 
-
-void CManagement::Init_Management(CRenderer* pRenderer)
+HRESULT CManagement::Add_NumUI(int iNum, XMFLOAT3 f3Pos, bool isCritical)
 {
+	m_pNumUI->Add(iNum, f3Pos, isCritical);
+
+	return S_OK;
+}
+
+
+HRESULT CManagement::Init_Management(CRenderer* pRenderer, NumUI* pNumUI)
+{
+	if (pRenderer == nullptr || pNumUI == nullptr)
+		return E_FAIL;
+
 	m_pRenderer = pRenderer;
+	m_pNumUI = pNumUI;
+
+	return S_OK;
 }
 
 bool CManagement::Update(const GameTimer & gt, const FrameResource* pCruRrc)
@@ -38,6 +53,8 @@ bool CManagement::Update(const GameTimer & gt, const FrameResource* pCruRrc)
 
 	if (false == m_pCurScene->Update(gt))
 		return false;
+
+	m_pNumUI->Update(gt);
 
 	return true;
 

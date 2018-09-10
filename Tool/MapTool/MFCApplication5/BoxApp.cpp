@@ -396,10 +396,10 @@ void InstancingAndCullingApp::LoadMesh()
 	//vector<pair<const string, const string>> path;
 	//path.push_back(make_pair("Attack", "Assets/Models/Warrior/Warrior_Attack_Turn.ASE"));
 	path.clear();
-	path.push_back(make_pair("Idle", "../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Models/Warrior/Warrior_Idle.ASE"));
+	//path.push_back(make_pair("Idle", "../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Models/Warrior/Warrior_Idle.ASE"));
 	//path.push_back(make_pair("Walk", "Assets/Models/Warrior/Warrior_Walk.ASE"));
 	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack1.ASE"));
-	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack2.ASE"));
+	path.push_back(make_pair("Back", "../../../Slash/Chapter 16 Instancing and Frustum Culling/InstancingAndCulling/Assets/Models/Warrior/Warrior_Attack2.ASE"));
 	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack3.ASE"));
 	//path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
 

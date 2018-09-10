@@ -76,7 +76,7 @@ HRESULT CTestScene::Initialize()
 	pObject->SetCamera(Get_MainCam());
 	pObject->SetPosition(0, 0, 15);
 	Ready_GameObject(L"Layer_Dragon", pObject);
-
+	
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 
@@ -147,7 +147,6 @@ HRESULT CTestScene::Initialize()
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Terrain", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-
 	for (int i = 0; i < 30; ++i)
 	{
 		
@@ -162,7 +161,6 @@ HRESULT CTestScene::Initialize()
 		
 
 	}
-
 	//pObject = CInstancingObject::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvDescriptorSize, L"Com_Mesh_Barrel", 5);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	//pObject->SetCamera(Get_MainCam());
 	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
@@ -599,7 +597,7 @@ void CTestScene::UISetting()
 
 	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
 
-	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerHPState", tex->Num);
 	pObject->SetCamera(Get_MainCam());
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
@@ -608,7 +606,7 @@ void CTestScene::UISetting()
 
 
 	// > UINum Setting
-
+	CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(0.f, 0.f, 0.f));
 }
 
 void CTestScene::Free()

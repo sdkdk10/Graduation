@@ -647,6 +647,9 @@ void CEffect::Update_Default(const GameTimer & gt)
 void CEffect::Update_Play(const GameTimer & gt)
 {
 	//cout << m_tInfo.strName << "  :  " << endl;
+	if (!m_IsEnable)
+		return;
+
 	float deltaTime = gt.DeltaTime();
 	m_fTimeDeltaAcc += deltaTime;
 
@@ -655,12 +658,18 @@ void CEffect::Update_Play(const GameTimer & gt)
 
 	m_fLifeTimeAcc += deltaTime;
 
+	if (!m_IsFrame && m_fLifeTimeAcc > m_tInfo.LifeTime)
+	{
+		m_IsEnable = false;
+		return;
+	}
+
 	if (m_IsFrame)
 		MoveFrame(gt);
 
 	//if(!m_IsFrame || !m_tFrame.isEndbyCnt)
-	if (m_fLifeTimeAcc > m_tInfo.LifeTime)				// > 이펙트 라이프타임이 끝나면 지움 현재는 다시 처음으로 돌림
-		m_IsEnable = false;
+
+		
 	//SetPlay(true);
 
 	CGameObject::Update(gt);
@@ -769,7 +778,6 @@ void CEffect::Update_Play(const GameTimer & gt)
 		if (m_IsFrame)
 		{
 			CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_ALPHA_SPRITE, this);
-			cout << "프레임!!!" << endl;
 		}
 			
 		
@@ -813,11 +821,14 @@ void CEffect::Update_Billboard(const GameTimer & gt)
 	XMFLOAT4X4 f4x4World;
 	XMStoreFloat4x4(&f4x4World, matScale * matRot);
 
+	XMFLOAT3 pos;
+	memcpy(&pos, &m_pTransCom->GetWorld()._41, sizeof(float) * 3);
+
 	m_pTransCom->GetWorld() = Matrix4x4::Multiply(f4x4World, f4x4View);
 
-	m_pTransCom->GetWorld()._41 = m_pTransCom->GetPosition().x;
-	m_pTransCom->GetWorld()._42 = m_pTransCom->GetPosition().y;
-	m_pTransCom->GetWorld()._43 = m_pTransCom->GetPosition().z;
+	m_pTransCom->GetWorld()._41 = pos.x;
+	m_pTransCom->GetWorld()._42 = pos.y;
+	m_pTransCom->GetWorld()._43 = pos.z;
 }
 
 void CEffect::SetTexture(Texture * tex)
@@ -871,8 +882,8 @@ void CEffect::MoveFrame(const GameTimer& gt)
 			m_tFrame.f2curFrame.y += 1.f;
 			if (m_tFrame.f2curFrame.y >= m_tFrame.f2maxFrame.y)
 			{
-				m_tFrame.f2curFrame.x = 0.f;
-				m_tFrame.f2curFrame.y = 0.f;
+				m_tFrame.f2curFrame.x = m_tFrame.f2maxFrame.x-1;
+				m_tFrame.f2curFrame.y = m_tFrame.f2maxFrame.y-1;
 
 				if (m_tFrame.isEndbyCnt)
 				{
