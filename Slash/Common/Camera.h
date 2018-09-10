@@ -203,7 +203,7 @@ private:
 	bool					m_IsDynamic;
 	bool bSaveUltimateCameraPosTest = false;
 
-	float LastLength = 0.0f;
+	float LastLength = 10000.0f;
 };
 
 #endif // CAMERA_H
