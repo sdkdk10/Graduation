@@ -1,53 +1,18 @@
 #pragma once
+#define _WINSOCKAPI_
 
-// Windows 헤더 파일:
-#include <windows.h>
-
-// C 런타임 헤더 파일입니다.
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>
-#include <string> 
-#include <wrl.h> 
-#include <shellapi.h>
 #include <d3d12.h>
-#include <dxgi1_4.h>
-#include <D3Dcompiler.h>
-#include <DirectXMath.h>
-#include <DirectXPackedVector.h> 
-#include <DirectXColors.h>
 #include <DirectXCollision.h>
 #include <iostream>
-#include <random>
-#include <time.h>
+
 using namespace std;
 using namespace DirectX;
-using namespace DirectX::PackedVector;
-using Microsoft::WRL::ComPtr;
 
-#pragma comment(lib, "d3dcompiler.lib") 
 #pragma comment(lib, "d3d12.lib") 
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "winmm.lib") //이거하면 getTime함수 오류 안뜨던데
 
-//#ifdef _DEBUG
-//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
-//#endif
-//#pragma comment(lib, "d3d12.lib")
-
-#define FRAME_BUFFER_WIDTH 640
-#define FRAME_BUFFER_HEIGHT 480
 
 #define EPSILON 1.0e-9f
-#define BULLETSIZE 5
-#define LIVE true
-#define SPHERESIZE 10
 inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
-
-
-
-// TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 
 //3차원 벡터의 연산
 namespace Vector3 {

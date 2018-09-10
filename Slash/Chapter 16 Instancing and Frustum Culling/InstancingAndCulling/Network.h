@@ -25,7 +25,7 @@ public:
 	virtual ~CNetwork();
 	void InitSock(HWND MainWnd);
 	void ReadPacket(SOCKET sock);
-	void SendDirKeyPacket(DWORD& keyInput, XMFLOAT4X4& world);
+	void SendDirKeyPacket(DWORD& keyInput);
 	void SendAttack1Packet(void);
 	void SendAttack2Packet(void);
 	void SendAttack3Packet(void);

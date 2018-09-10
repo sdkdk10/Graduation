@@ -192,7 +192,7 @@ HRESULT Spider::Initialize()
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(AnimStateMachine->IdleState);
+	AnimStateMachine->SetAnimState(State::STATE_IDLE);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
@@ -245,7 +245,7 @@ void Spider::Animate(const GameTimer & gt)
 	//}
 	//if (GetHp() < 0)
 	//{
-	//	SetObjectAnimState(AnimStateMachine->DeadState);
+	//	SetObjectAnimState(State::STATE_DEAD);
 	//	AnimStateMachine->AnimationStateUpdate(gt);
 	//	return;
 	//}
@@ -280,7 +280,7 @@ void Spider::Animate(const GameTimer & gt)
 	////Normal = Vector3::Normalize(Normal);
 
 	//////다른애들 찾기
-	////auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	////auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Monster");
 	////if (pLayer != nullptr)
 	////{
 	////	auto objList = pLayer->Get_ObjectList();
@@ -302,7 +302,7 @@ void Spider::Animate(const GameTimer & gt)
 
 	//}
 
-	//auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Spider");
+	//auto pLayer = CManagement::GetInstance()->Get_Layer(L"Layer_Monster");
 	//if (pLayer != nullptr)
 	//{
 	//	auto objList = pLayer->Get_ObjectList();
@@ -340,7 +340,7 @@ void Spider::Animate(const GameTimer & gt)
 
 	//	if (m_pPlayer->m_xmOOBB.Contains(m_xmOOBB)) //충돌할 정도로 가까워 졌으면
 	//	{
-	//		if (m_pPlayer->GetAnimateMachine()->GetAnimState() == m_pPlayer->GetAnimateMachine()->Attack1State)
+	//		if (m_pPlayer->GetAnimateMachine()->GetAnimState() == m_pPlayer->GetAnimateMachine()->State::STATE_ATTACK1)
 	//		{
 	//			if (m_pPlayer->GetAnimateMachine()->GetCurAnimFrame() == 8)
 	//			{
@@ -352,8 +352,8 @@ void Spider::Animate(const GameTimer & gt)
 	//		//cout << "거미 충돌 " << endl;
 
 	//		m_pPlayer->m_pCollider = this;
-	//		//SetObjectAnimState(AnimStateMachine->Attack1State);
-	//		SetObjectAnimState(AnimStateMachine->Attack1State);
+	//		//SetObjectAnimState(State::STATE_ATTACK1);
+	//		SetObjectAnimState(State::STATE_ATTACK1);
 
 	//		//cout << m_pPlayer->GetHp() - 1.0f << endl;
 	//		if (AnimStateMachine->GetCurAnimFrame() == 13)
@@ -392,7 +392,7 @@ void Spider::Animate(const GameTimer & gt)
 	//		Move(XMFLOAT3(moveingVector.x, moveingVector.y, moveingVector.z), true);
 
 	//		//cout << "이동하자" << endl;
-	//		SetObjectAnimState(AnimStateMachine->WalkState);
+	//		SetObjectAnimState(State::STATE_WALK);
 
 	//	}
 
@@ -406,7 +406,7 @@ void Spider::Animate(const GameTimer & gt)
 	//	m_pPlayer->m_MovingRefletVector = XMFLOAT3(0, 0, 0);
 
 	//	}*/
-	//	SetObjectAnimState(AnimStateMachine->IdleState);
+	//	SetObjectAnimState(State::STATE_IDLE);
 
 
 	//}
@@ -499,7 +499,7 @@ void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 	}
 }
 
-void Spider::SetTexture(SpiderTex _tex)
+void Spider::SetTexture(SpiderType _tex)
 {
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(m_strTexName[_tex], CTexture_Manager::TEX_DEFAULT_2D);
 	if (nullptr == tex)
