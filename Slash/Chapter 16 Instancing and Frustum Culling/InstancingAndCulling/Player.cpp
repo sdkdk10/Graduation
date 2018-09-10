@@ -534,7 +534,7 @@ void Player::KeyInput(const GameTimer & gt)
 	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK2) return;
 	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK3) return;
 	if (AnimStateMachine->GetAnimState() == State::STATE_ROLL) return;
-	if (bIsUltimateState) return;
+	if (AnimStateMachine->GetAnimState() == State::STATE_ULTIMATE ) return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
 		return;

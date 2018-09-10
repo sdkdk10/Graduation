@@ -191,8 +191,8 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 
 	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, monsterPos);   // 객체에서 플레이어로 가는 벡터
 
+	//auto n_dirVector = Vector3::Normalize(dirVector);
 	dirVector = Vector3::Normalize(dirVector);
-
 	XMFLOAT3 crossVector = Vector3::CrossProduct(shift, dirVector, true);
 
 	float dotproduct = Vector3::DotProduct(shift, dirVector);
@@ -255,37 +255,64 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 				oldVL.insert(playerArray_[id]);
 			}
 
+	bool IsNPCColl = false;
+	bool IsMapObjectColl = false;
 
 	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
 	{
 		if (false == npcArray_[i]->isActive_) continue;
 		if (false == npcArray_[i]->IsClose(npc)) continue;
+		if (i == npc->ID_) continue;
 
-		if (npc->xmOOBB_.Contains(npcArray_[i]->xmOOBB_))
-		{
-			movingReflectVector = CollisionUtil::GetSlideVector(npc, npcArray_[i]);
+		IsNPCColl = CollisionUtil::ProcessObjectColl(npcArray_[i], npc, movingVector);
+		if (IsNPCColl)
 			break;
-		}
 	}
 
-	for (auto d : mapObjectArray_)
+	for (auto& mapObject : mapObjectArray_)
 	{
-		if (false == npc->IsClose(d)) continue;
+		if (false == mapObject->isActive_) continue;
+		if (false == npc->CanSeeMapObject(mapObject)) continue;
 
-		if (npc->xmOOBB_.Contains(d->xmOOBB_))
-		{
-			movingReflectVector = CollisionUtil::GetMapSlideVector(npc, d);
+		IsMapObjectColl = CollisionUtil::ProcessMapObjectColl(mapObject, npc, movingVector);
+		if (IsMapObjectColl)
 			break;
-		}
 	}
 
-	auto result = Vector3::MultiplyScalr(movingReflectVector, Vector3::DotProduct(movingVector, movingReflectVector)); 
-	movingVector = Vector3::Subtract(movingVector, result);
+	if (!IsNPCColl && !IsMapObjectColl)
+		npc->world_._41 += movingVector.x, npc->world_._42 += movingVector.y, npc->world_._43 += movingVector.z;
 
-	XMFLOAT3 xmf3Position = Vector3::Add(monsterPos, movingVector);
-	npc->world_._41 = xmf3Position.x;
-	npc->world_._42 = xmf3Position.y;
-	npc->world_._43 = xmf3Position.z;
+	//for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	//{
+	//	if (false == npcArray_[i]->isActive_) continue;
+	//	if (false == npcArray_[i]->IsClose(npc)) continue;
+
+	//	if (npc->xmOOBB_.Contains(npcArray_[i]->xmOOBB_))
+	//	{
+	//		movingReflectVector = CollisionUtil::GetSlideVector(npc, npcArray_[i]);
+	//		break;
+	//	}
+	//}
+
+	//for (auto d : mapObjectArray_)
+	//{
+	//	if (false == d->isActive_) continue;
+	//	if (false == npc->CanSeeMapObject(d)) continue;
+
+	//	if (npc->xmOOBB_.Contains(d->xmOOBB_))
+	//	{
+	//		movingReflectVector = CollisionUtil::GetMapSlideVector(npc, d);
+	//		break;
+	//	}
+	//}
+
+	//auto result = Vector3::MultiplyScalr(movingReflectVector, Vector3::DotProduct(movingVector, movingReflectVector)); 
+	//movingVector = Vector3::Subtract(movingVector, result);
+
+	//XMFLOAT3 xmf3Position = Vector3::Add(monsterPos, movingVector);
+	//npc->world_._41 = xmf3Position.x;
+	//npc->world_._42 = xmf3Position.y;
+	//npc->world_._43 = xmf3Position.z;
 
 
 	npc->xmOOBBTransformed_.Transform(npc->xmOOBB_, XMLoadFloat4x4(&npc->world_));
@@ -597,7 +624,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 
 	bool IsPlayerColl = false;
 	bool IsNPCColl = false;
-	bool IsMapObejctColl = false;
+	bool IsMapObjectColl = false;
 
 	// 플레이어 이동시 충돌체크
 
@@ -627,12 +654,12 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 		if (false == mapObject->isActive_) continue;
 		if (false == player->CanSeeMapObject(mapObject)) continue;
 
-		IsMapObejctColl = CollisionUtil::ProcessMapObjectColl(mapObject, player, xmf3Shift);
-		if (IsMapObejctColl)
+		IsMapObjectColl = CollisionUtil::ProcessMapObjectColl(mapObject, player, xmf3Shift);
+		if (IsMapObjectColl)
 			break;
 	}
 
-	if (!IsPlayerColl && !IsNPCColl && !IsMapObejctColl)
+	if (!IsPlayerColl && !IsNPCColl && !IsMapObjectColl)
 		player->world_._41 += xmf3Shift.x, player->world_._42 += xmf3Shift.y, player->world_._43 += xmf3Shift.z;
 
 	sc_packet_move sp_pos;
