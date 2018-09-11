@@ -114,6 +114,55 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent)
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent, float fRot)
+{
+	auto effect = Find_SkillEffect(name);
+	if (effect == nullptr)
+		return E_FAIL;
+
+	//CSkillEffect* play = CSkillEffect::Create(CManagement::GetInstance()->Getdev)
+
+
+	//auto play = CSkillEffect::Create(*effect);
+	auto play = CSkillEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
+	//list<CEffect*> Desclist = effect->GetEffectList();
+	//list<CEffect*> Srclist;
+	//for (auto elem : Desclist)
+	//{
+	//	CEffect* pInst = CEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, elem->Get_EffectInfo());
+	//	Srclist.push_back(pInst);
+	//}
+	//play->GetEffectList() = Srclist;
+
+
+
+	list<CEffect*> DescList = effect->GetEffectList();
+
+	for (auto elem : DescList)
+	{
+		CEffect* finder = Find_Effect(elem->Get_EffectInfo().strName);
+		CEffect* pInst = CEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, finder->Get_EffectInfo());
+		if (finder->Get_IsFrame())
+		{
+			pInst->SetIsFrame(true);
+			pInst->Get_FrameInfo() = finder->Get_FrameInfo();
+		}
+		play->GetEffectList().push_back(pInst);
+	}
+
+
+	play->SetPlay(true);
+	if (Parent != nullptr)
+	{
+		play->Set_RotParentMatirx(Parent, fRot);
+		cout << "fRot : " << fRot << endl;
+	}
+
+	CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Effect", dynamic_cast<CGameObject*>(play));
+
+	return S_OK;
+}
+
 HRESULT CEffect_Manager::Stop_SkillEffect(string name)
 {
 	auto effect = Find_SkillEffect(name);

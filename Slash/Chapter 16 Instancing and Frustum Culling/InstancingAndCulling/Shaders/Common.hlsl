@@ -133,6 +133,19 @@ struct VertexOut
 	nointerpolation uint MatIndex  : MATINDEX;
 };
 
+struct VertexOut_InstUI
+{
+	float4 PosH    : SV_POSITION;
+	float3 PosW    : POSITION;
+	float3 NormalW : NORMAL;
+	float2 TexC    : TEXCOORD;
+	uint   InstNum : SV_InstanceID;
+
+	// nointerpolation is used so the index is not interpolated 
+	// across the triangle.
+	nointerpolation uint MatIndex  : MATINDEX;
+};
+
 ////////////////////////////////////////////////
 
 struct VertexIn_Sky

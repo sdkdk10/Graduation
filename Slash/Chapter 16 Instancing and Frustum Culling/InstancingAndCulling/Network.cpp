@@ -277,10 +277,14 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->Rotation(0.f, 0.f, my_packet->lookDegree);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetNetRotAngle(my_packet->lookDegree);
 			//cout <<  int(my_packet->lookDegree) << endl;
 		}
 		else if (id < NPC_ID_START)
+		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->Rotation(0.f, 0.f, my_packet->lookDegree);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetNetRotAngle(my_packet->lookDegree);
+		}
 		else
 		{
 			if (id < NAGAGUARD_ID_START + NPC_ID_START)

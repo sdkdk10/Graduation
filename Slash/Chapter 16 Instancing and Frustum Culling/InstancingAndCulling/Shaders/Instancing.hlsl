@@ -32,6 +32,7 @@ VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 	// Output vertex attributes for interpolation across triangle.
 	float4 texC = mul(float4(vin.TexC, 0.0f, 1.0f), texTransform);
 	vout.TexC = mul(texC, matData.MatTransform).xy;
+	vout.TexC = vin.TexC;
 	
     return vout;
 }
@@ -45,6 +46,16 @@ float4 PS(VertexOut pin) : SV_Target
     float  roughness = matData.Roughness;
 	uint diffuseTexIndex = matData.DiffuseMapIndex;
 	
+	//float2 texC = pin.TexC;
+
+	//texC.x *= matData.MatTransform[3][0];
+	//texC.y *= matData.MatTransform[3][1];
+
+	//texC.x += matData.MatTransform[2][0];
+	//texC.y += matData.MatTransform[2][1];
+
+	//pin.TexC = texC;
+
 	// Dynamically look up the texture in the array.
     diffuseAlbedo *= gDiffuseMap_Instancing[diffuseTexIndex].Sample(gsamLinearWrap, pin.TexC);
 	
@@ -85,3 +96,74 @@ float4 PS(VertexOut pin) : SV_Target
 }
 
 
+
+VertexOut_InstUI VS_UI(VertexIn vin, uint instanceID : SV_InstanceID)
+{
+	VertexOut_InstUI vout = (VertexOut_InstUI)0.0f;
+
+	// Fetch the instance data.
+	InstanceData instData = gInstanceData[instanceID];
+	float4x4 world = instData.World;
+	float4x4 texTransform = instData.TexTransform;
+	uint matIndex = instData.MaterialIndex;
+
+	vout.MatIndex = matIndex;
+	//vout.MatIndex = instanceID;
+
+	// Fetch the material data.
+	MaterialData matData = gMaterialData_Instance[matIndex];
+
+	// Transform to world space.
+	float4 posW = mul(float4(vin.PosL, 1.0f), world);
+	vout.PosW = posW.xyz;
+
+	// Assumes nonuniform scaling; otherwise, need to use inverse-transpose of world matrix.
+	vout.NormalW = mul(vin.NormalL, (float3x3)world);
+
+	// Transform to homogeneous clip space.
+	vout.PosH = mul(posW, gViewProj);
+
+	// Output vertex attributes for interpolation across triangle.
+	/*float4 texC = mul(float4(vin.TexC, 0.0f, 1.0f), texTransform);
+	vout.TexC = mul(texC, matData.MatTransform).xy;*/
+	vout.TexC = vin.TexC;
+	vout.InstNum = instanceID;
+
+	return vout;
+}
+
+float4 PS_UI(VertexOut_InstUI pin) : SV_Target
+{
+	// Fetch the material data.
+	MaterialData matData = gMaterialData_Instance[pin.MatIndex];
+	float4 diffuseAlbedo = matData.DiffuseAlbedo;
+	float3 fresnelR0 = matData.FresnelR0;
+	float  roughness = matData.Roughness;
+	uint diffuseTexIndex = matData.DiffuseMapIndex;
+
+	InstanceData instData = gInstanceData[pin.InstNum];
+
+	float2 texC = pin.TexC;
+
+	texC.x *= matData.MatTransform[3][0];
+	texC.y *= matData.MatTransform[3][1];
+
+	texC.x += instData.TexTransform[3][0];
+	texC.y += matData.MatTransform[2][1];
+
+	pin.TexC = texC;
+
+	// Dynamically look up the texture in the array.
+	diffuseAlbedo *= gDiffuseMap_Instancing[diffuseTexIndex].Sample(gsamLinearWrap, pin.TexC);
+
+
+#ifdef ALPHA_TEST
+	clip(diffuseAlbedo.a - 0.1f);
+	float4 alphaColor = diffuseAlbedo;
+	return alphaColor;
+#endif
+
+
+
+	return diffuseAlbedo;
+}

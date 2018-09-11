@@ -46,9 +46,6 @@
     <Filter Include="02. GameObject\01. StaticObject">
       <UniqueIdentifier>{be34a58e-69f4-4483-b53c-109d7665fc1d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\02. Camera">
-      <UniqueIdentifier>{4d802681-e5ae-4657-87b7-2bdb58a7e3a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Mesh\00. DynamicMesh">
       <UniqueIdentifier>{4586375e-61e5-405b-bc11-18bc268a150d}</UniqueIdentifier>
     </Filter>
@@ -208,6 +205,9 @@
     <Filter Include="02. GameObject\13. Mushroom">
       <UniqueIdentifier>{f271224a-92c3-4762-a04f-517fefb6f354}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\01. StaticObject\02. Camera">
+      <UniqueIdentifier>{4d802681-e5ae-4657-87b7-2bdb58a7e3a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -229,7 +229,7 @@
       <Filter>97. DirectHelper\04. d3dUtil</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\Camera.cpp">
-      <Filter>02. GameObject\02. Camera</Filter>
+      <Filter>02. GameObject\01. StaticObject\02. Camera</Filter>
     </ClCompile>
     <ClCompile Include="Barrel.cpp">
       <Filter>02. GameObject\01. StaticObject</Filter>
@@ -421,7 +421,7 @@
       <Filter>97. DirectHelper\04. d3dUtil</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Camera.h">
-      <Filter>02. GameObject\02. Camera</Filter>
+      <Filter>02. GameObject\01. StaticObject\02. Camera</Filter>
     </ClInclude>
     <ClInclude Include="Barrel.h">
       <Filter>02. GameObject\01. StaticObject</Filter>

@@ -89,7 +89,7 @@ public:
 public:
 	AnimateStateMachine * GetAnimateMachine() { return AnimStateMachine; }
 public:
-	void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
+	virtual void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
 protected:
 	AnimateStateMachine * AnimStateMachine = nullptr;
 public:
@@ -152,6 +152,10 @@ public:
 	virtual void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
 	virtual void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity);
 
+
+	virtual void SetNetRotAngle(float angle) { m_fNetRot = angle; XMConvertToRadians(m_fNetRot); }
+	virtual float GetNetRotAngle() { return m_fNetRot; }
+
 	virtual void Animate(const GameTimer & gt); //애니메이션 상태 설정, 객체 이동, 회전 여기서 하면 됨
 
 	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -164,10 +168,12 @@ public:
 	XMFLOAT3					m_xmf3Scale;
 	XMFLOAT3					m_xmf3Rot;
 
+
 	float           			m_fPitch = 0.0f;
 	float           			m_fYaw = 0.0f;
 	float           			m_fRoll = 0.0f;
 	////////////////////////////////////////////////////
+	
 public:
 	CGameObject(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 	virtual ~CGameObject();
@@ -218,6 +224,8 @@ protected:
 
 	unsigned long         m_iMyObjectID;
 
+
+	float				m_fNetRot = 0.f;
 public:
 	Mesh * m_pMesh = nullptr;
 	CTransform*			m_pTransCom = nullptr;

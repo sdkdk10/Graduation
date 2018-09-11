@@ -21,6 +21,7 @@ public:
 	CSkillEffect*			Find_SkillEffect(string name);
 	CEffect*				Find_Effect(string name);
 	HRESULT					Play_SkillEffect(string name, XMFLOAT4X4* Parent = nullptr);
+	HRESULT					Play_SkillEffect(string name, XMFLOAT4X4* Parent, float fRot);
 	HRESULT					Stop_SkillEffect(string name);
 
 private:

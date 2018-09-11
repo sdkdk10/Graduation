@@ -496,7 +496,6 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 
 	if (bCameraEffect_ZoomIn_RoundUltimate)
 	{
-	
 		if (this != NULL && !bFirstPersonView )
 		{
 			m_IsDynamic = true;
@@ -504,6 +503,7 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 			XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x, Target->GetPosition().y, Target->GetPosition().z);
 			XMFLOAT3 movePos = XMFLOAT3(10.0f * cos(testnum) + Target->GetPosition().x, Target->GetPosition().y + 5.0f + Target->GetPosition().y, 10.0f * sin(testnum) + Target->GetPosition().z);
 			LookAt(movePos, Target->GetPosition(), XMFLOAT3(0, 1, 0));
+
 		}
 
 		if (m_pPlayer->GetAnimateMachine()->bTimerUltimate) //180µµ È¸Àü
@@ -524,9 +524,9 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 				float Length = Vector3::Length(Vector3::Subtract(pos, SaveUltimateCameraPos));
 				if (Length > 5.25f && Length < LastLength)
 				{
-					SaveUltimateCameraPos.x += Direction.x * 0.01f;
-					SaveUltimateCameraPos.y += Direction.y* 0.01f;
-					SaveUltimateCameraPos.z += Direction.z* 0.01f;
+					SaveUltimateCameraPos.x += Direction.x * 1.01f;
+					SaveUltimateCameraPos.y += Direction.y* 1.01f;
+					SaveUltimateCameraPos.z += Direction.z* 1.01f;
 
 				}
 		

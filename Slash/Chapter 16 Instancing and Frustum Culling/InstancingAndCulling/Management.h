@@ -8,6 +8,7 @@
 #include "Sound.h"
 
 class CRenderer;
+class NumUI;
 
 class CManagement
 	: public CBase
@@ -39,10 +40,15 @@ public:
 	CLayer*			Get_Layer(wchar_t* pLayerTag);
 	CGameObject*	Find_Object(wchar_t* LayerTag, unsigned int iIdx = 0);
 
+
+	HRESULT			Add_NumUI(int iNum, XMFLOAT3 f3Pos, bool isCritical = false);
+
 private:
 	CScene*				m_pCurScene;
 	CRenderer*			m_pRenderer;
 	CSound*				m_pSound;
+
+	NumUI*				m_pNumUI;
 
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;
@@ -51,7 +57,7 @@ private:
 
 	bool				m_IsStop = false;
 public:
-	void		Init_Management(CRenderer* pRenderer);
+	HRESULT		Init_Management(CRenderer* pRenderer, NumUI* pNumUI);
 	bool		Update(const GameTimer& gt, const FrameResource* pCruRrc);
 	void		Render(ID3D12GraphicsCommandList* cmdList);
 

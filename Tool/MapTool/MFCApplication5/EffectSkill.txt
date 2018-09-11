@@ -1,2 +1,2 @@
 1
-orbAttack		5	orb_01	orb_02	orb_03	orb_04
+Slash_00	2	slash00	slash01	

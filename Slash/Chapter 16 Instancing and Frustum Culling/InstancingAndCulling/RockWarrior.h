@@ -22,6 +22,7 @@ public:
 
 public:
 	void SetTexture(SpiderType _tex);
+	
 
 private:
 	Player * m_pPlayer = nullptr;

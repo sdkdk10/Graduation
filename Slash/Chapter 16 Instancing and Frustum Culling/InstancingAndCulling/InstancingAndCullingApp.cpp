@@ -29,6 +29,7 @@
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
 #include "DescriptorHeap.h"
+#include "NumUI.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -152,9 +153,11 @@ bool InstancingAndCullingApp::Initialize()
 	CSound* pSound = CSound::Create();
 	pSound->SoundFileLoadFromPath(L"Assets/Sound");
 
+	NumUI* pNumUI = NumUI::Create(md3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvUavDescriptorSize);
+	
 
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
-	CManagement::GetInstance()->Init_Management(pRenderer);
+	CManagement::GetInstance()->Init_Management(pRenderer, pNumUI);
 	CManagement::GetInstance()->Set_Sound(pSound);
 
 	//CNetwork::GetInstance()->InitSock(mhMainWnd);
@@ -766,7 +769,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
-
+	
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/Mage/Mage_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Mage/Mage_Walk.ASE"));
@@ -778,7 +781,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Mage", pComponent);
-
+	
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/Spider/Spider_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Spider/Spider_Walk.ASE"));
@@ -789,7 +792,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	CComponent* pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Spider", pComponentSingle);
-
+	
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyIdle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/Dragon/Dragon_FlyForward.ASE"));
@@ -813,6 +816,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Idle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Walk.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Hit.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/RockWarrior/RockWarrior_Die.ASE"));
 
@@ -823,8 +827,10 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Idle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Walk.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Attack1.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Die.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/ForestTurtle/ForestTurtle_Hit.ASE"));
+
 
 
 	pComponentSingle = DynamicMeshSingle::Create(md3dDevice, path);
@@ -833,6 +839,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Idle.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Walk.ASE"));
+	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Attack1.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Hit.ASE"));
 	path.push_back(make_pair("Idle", "Assets/Models/TreeGuard/TreeGuard_Die.ASE"));
@@ -1262,6 +1269,9 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["InstancingVS"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["InstancingPS"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", nullptr, "PS", "ps_5_1");
 
+	mShaders["InstancingUI_VS"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", nullptr, "VS_UI", "vs_5_1");
+	mShaders["InstancingUI_PS"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", alphaTestDefines, "PS_UI", "ps_5_1");
+
 	mShaders["ObjectVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["ObjectPS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "PS", "ps_5_1");
 
@@ -1354,6 +1364,9 @@ void InstancingAndCullingApp::BuildPSOs()
 	//
 	// PSO for UI objects.
 	//
+
+
+
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
 	UIPsoDesc.VS =
@@ -1453,6 +1466,23 @@ void InstancingAndCullingApp::BuildPSOs()
 	};
 	alphaTestedPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaTestedPsoDesc, IID_PPV_ARGS(&mPSOs["alphaTested_Inst"])));
+
+
+	// > Instancing UI(NumUI)
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC InstancingUIPsoDesc = opaquePsoDesc;
+	InstancingUIPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["InstancingUI_VS"]->GetBufferPointer()),
+		mShaders["InstancingUI_VS"]->GetBufferSize()
+	};
+	InstancingUIPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["InstancingUI_PS"]->GetBufferPointer()),
+		mShaders["InstancingUI_PS"]->GetBufferSize()
+	};
+
+	InstancingUIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingUIPsoDesc, IID_PPV_ARGS(&mPSOs["InstancingUI"])));
 
 	//
 	// PSO for Alpha Blending objects

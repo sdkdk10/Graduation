@@ -147,6 +147,24 @@ void CSkillEffect::Set_ParentMatrix(XMFLOAT4X4* f4x4Parent)
 	}
 }
 
+void CSkillEffect::Set_RotParentMatirx(XMFLOAT4X4 * f4x4Parent, float fRot)
+{
+	if (f4x4Parent == nullptr)
+		return;
+
+	XMFLOAT3 pos;
+	memcpy(&pos, &f4x4Parent->_41, sizeof(float) * 3);
+
+	m_pTransCom->Translation(pos);
+	m_pTransCom->Rotation(0.f, fRot, 0.f);
+	m_pTransCom->Update_Component();
+
+	for (auto& elem : m_EffectList)
+	{
+		elem->GetTransform()->SetParentMatrix(&m_pTransCom->GetWorld());
+	}
+}
+
 void CSkillEffect::Set_Parent(CGameObject* pObj)
 {
 	if (pObj == nullptr)

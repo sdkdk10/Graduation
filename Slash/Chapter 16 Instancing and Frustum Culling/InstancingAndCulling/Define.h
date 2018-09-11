@@ -44,7 +44,7 @@ struct UV_FRAME_INFO
 	XMFLOAT2		f2FrameSize = XMFLOAT2(1.f, 1.f);					// > 한 프레임 당 x, y 픽셀 크기
 	float			fFrameAcc = 0.f;									// > 진행된 정도, 한프레임의 픽셀 크기보다 커지면 다음 프레임으로 넘어간다.
 	float			fSpeed = 1.f;
-	int				iPlayCnt = 1;
+	int				iPlayCnt = 0;
 	int				iCurCnt = 0;
 	bool			isEndbyCnt = true;
 

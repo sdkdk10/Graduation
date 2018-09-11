@@ -48,7 +48,7 @@ HRESULT NumUI::Initialize()
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = m_iMyInstObject;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
-	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
+	Mat->DiffuseAlbedo = XMFLOAT4(0.916f, 0.4f, 0.2f, 1.f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 	Mat->MatTransform(3, 0) = 0.1f;
@@ -57,7 +57,9 @@ HRESULT NumUI::Initialize()
 	/* CB(World,TextureTranform...) Build */
 
 	//XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));// *XMMatrixRotationY(20.f));
-	World = MathHelper::Identity4x4();
+	//World = MathHelper::Identity4x4();
+	XMStoreFloat4x4(&World, XMMatrixScaling(0.15f, 0.15f, 0.15f) *XMMatrixRotationX(-90.f));
+	m_f4x4InitWorld = World;
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 
@@ -84,7 +86,19 @@ bool NumUI::Update(const GameTimer & gt)
 
 	m_pCamera = CManagement::GetInstance()->Get_MainCam();
 	XMMATRIX view = m_pCamera->GetView();
+
+	XMFLOAT4X4  f4x4View;
+	XMStoreFloat4x4(&f4x4View, view);
+	f4x4View._41 = 0.f;
+	f4x4View._42 = 0.f;
+	f4x4View._43 = 0.f;
+	view = XMLoadFloat4x4(&f4x4View);
+
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
+
+	XMStoreFloat4x4(&f4x4View, invView);
+
+	XMFLOAT4X4 matBillboard = Matrix4x4::Multiply(m_f4x4InitWorld, f4x4View);
 
 	auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
 	//auto& instanceData = vecInstances;
@@ -97,12 +111,19 @@ bool NumUI::Update(const GameTimer & gt)
 	for (size_t i = 0; i < iSize; ++i)
 	{
 		static int num = 0;
+		m_vNum[i].fStayTime += gt.DeltaTime() * 5.f;
+		if (m_vNum[i].fStayTime > 1.5f)
+			Erase_Vector_Element(m_vNum, i);
 
 		//XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
 
 		//XMMATRIX world = XMLoadFloat4x4(&m_vecTransCom[i]->GetWorld());
 		//XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
-		XMMATRIX world = XMLoadFloat4x4(&m_vNum[i].instData.World);
+		matBillboard._41 = m_vNum[i].instData.World._41;
+		matBillboard._42 = m_vNum[i].instData.World._42 + m_vNum[i].fStayTime;
+		matBillboard._43 = m_vNum[i].instData.World._43;
+		//XMMATRIX world = XMLoadFloat4x4(&m_vNum[i].instData.World);
+		XMMATRIX world = XMLoadFloat4x4(&matBillboard);
 		XMMATRIX texTransform = XMLoadFloat4x4(&m_vNum[i].instData.TexTransform);
 		
 
@@ -118,7 +139,7 @@ bool NumUI::Update(const GameTimer & gt)
 
 
 		// Perform the box/frustum intersection test in local space.
-		if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+	//	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 		{
 			//cout << " 보인당" << endl;
 			auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
@@ -129,14 +150,12 @@ bool NumUI::Update(const GameTimer & gt)
 			XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
 			//data.MaterialIndex = m_vNum[i].instData.MaterialIndex;
 			data.MaterialIndex = m_iMyInstObject;
+			//data.MaterialIndex = objIdx;
 
 			// Write the instance data to structured buffer for the visible objects.
+			//currInstanceBuffer->CopyData(objIdx++, data);
 			currInstanceBuffer->CopyData(objIdx++, data);
 			visibleInstanceCount++;
-		}
-		else
-		{
-			//cout << " 안보인당 " << endl;
 		}
 	}
 
@@ -152,7 +171,7 @@ bool NumUI::Update(const GameTimer & gt)
 
 	/* Material */
 	auto currMaterialBuffer = m_pFrameResource->MaterialBuffer.get();
-
+	objIdx = m_iMyInstObject;
 
 	for (int i = 0; i < iSize; ++i)
 	{
@@ -160,17 +179,21 @@ bool NumUI::Update(const GameTimer & gt)
 
 		if (Mat->NumFramesDirty > 0)
 		{
+			//Mat->MatTransform._31 = m_vNum[i].instData.TexTransform._41;
 			XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
 
 			MaterialData matData;
 			matData.DiffuseAlbedo = Mat->DiffuseAlbedo;
 			matData.FresnelR0 = Mat->FresnelR0;
 			matData.Roughness = Mat->Roughness;
+
+			
 			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
 			matData.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
 			//currMaterialBuffer->CopyData(Mat->MatCBIndex, matData);
 			
+			//currMaterialBuffer->CopyData(m_iMyInstObject, matData);
 			currMaterialBuffer->CopyData(m_iMyInstObject, matData);
 
 			// Next FrameResource need to be updated too.
@@ -240,6 +263,7 @@ void NumUI::Add(int iNum, XMFLOAT3 f3Pos, bool isCritical)
 	f3Pos.y += 2.f;
 	float fNext = 1.f;
 	float fX = f3Pos.x;
+	float fZ = 0.001f;
 	for (int i = 0; i < iCnt; ++i)
 	{
 		tagNumUI tNum;
@@ -254,8 +278,11 @@ void NumUI::Add(int iNum, XMFLOAT3 f3Pos, bool isCritical)
 		tNum.instData.World._41 = fX;
 		fX += fNext;
 		tNum.instData.World._42 = f3Pos.y;
-		tNum.instData.World._43 = f3Pos.z;
+		tNum.instData.World._43 = f3Pos.z + (fZ*i);
+
+		m_vNum.push_back(tNum);
 	}
+	
 }
 
 void NumUI::Free()
