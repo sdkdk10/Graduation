@@ -45,6 +45,7 @@ public:
 	DWORD      in_packet_size = 0;
 	int      saved_packet_size = 0;
 	int      myid;
+	BYTE playerType_[NUM_OF_PLAYER];
 private:
 	virtual void Free();
 };

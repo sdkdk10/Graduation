@@ -49,7 +49,6 @@ HRESULT CSkeleton::Initialize()
 		strTexName = "MageTex";
 	}
 
-
 	if (nullptr == m_pMesh)
 		return E_FAIL;
 

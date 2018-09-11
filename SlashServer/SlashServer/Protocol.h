@@ -183,6 +183,7 @@ struct sc_packet_put_player {
 	float posY;
 	float posZ;
 	float lookDegree;
+	BYTE playerType;
 };
 
 struct sc_packet_put_monster {
@@ -194,7 +195,6 @@ struct sc_packet_put_monster {
 	float posY;
 	float posZ;
 	float lookDegree;
-	BYTE monsterType;
 };
 
 struct sc_packet_remove_object {
@@ -216,5 +216,4 @@ struct sc_packet_chat {
 	WORD id;
 	WCHAR message[MAX_STR_SIZE];
 };
-
 #pragma pack (pop)
