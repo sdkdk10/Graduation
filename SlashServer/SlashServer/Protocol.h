@@ -36,6 +36,11 @@ enum SpiderType
 	SPIDER_ICE,
 	SPIDER_END
 };
+enum PlayerType
+{
+	PLAYER_WARRIOR,
+	PLAYER_MAGE
+};
 
 const float CS_SEND_PACKET_DELAY = 10;
 static const int EVT_RECV = 0;
@@ -91,6 +96,7 @@ static const int EVT_PLAYER_ROLL = 10;
 #define CS_ATTACK2						0x22
 #define CS_ATTACK3						0x23
 #define CS_MAP_INIT_DATA				0x24
+#define CS_PLAYER_TYPE					0x25
 
 #define SC_WALK_MOVE   1
 #define SC_ROLL_MOVE   2
@@ -137,6 +143,12 @@ struct cs_packet_mapinitdata {
 	BYTE type;
 	DirectX::XMFLOAT4X4 world;
 	DirectX::BoundingBox bounds;
+};
+
+struct cs_packet_player_type {
+	BYTE size;
+	BYTE type;
+	BYTE playerType;
 };
 
 struct sc_packet_move {

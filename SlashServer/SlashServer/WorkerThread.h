@@ -11,6 +11,9 @@ public:
 	virtual ~WorkerThread();
 
 public:
+	virtual void Init() {
+		thread_ = std::thread([&]() { WorkerThread::Run(); });
+	}
 	virtual void Run();
 
 private:

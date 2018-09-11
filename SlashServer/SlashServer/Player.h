@@ -24,4 +24,5 @@ public:
 	char prevPacket_[MAX_PACKET_SIZE];
 	unsigned char rollDir;
 	unsigned char rollCurFrame;
+	unsigned char playerType;
 };

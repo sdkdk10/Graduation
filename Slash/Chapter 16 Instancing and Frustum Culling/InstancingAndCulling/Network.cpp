@@ -52,6 +52,8 @@ void CNetwork::InitSock(HWND MainWnd)
 	recv_wsabuf.buf = recv_buffer;
 	recv_wsabuf.len = MAX_BUFF_SIZE;
 
+
+
 }
 
 void CNetwork::ReadPacket(SOCKET sock)
@@ -166,6 +168,25 @@ void CNetwork::SendStopPacket(void)
 		printf("Error while sending packet [%d]", error_code);
 	}
 }
+
+void CNetwork::SendPlayerInitData(BYTE& playerType)
+{
+	cs_packet_player_type *my_packet = reinterpret_cast<cs_packet_player_type *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_player_type);
+	send_wsabuf.len = sizeof(cs_packet_player_type);
+	DWORD iobyte;
+
+	my_packet->type = CS_PLAYER_TYPE;
+	my_packet->playerType = playerType;
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+
 
 void CNetwork::ProcessPacket(char * ptr)
 {

@@ -30,6 +30,9 @@ public:
 	virtual ~TimerThread();
 
 public:
+	virtual void Init() {
+		thread_ = std::thread([&]() { TimerThread::Run(); });
+	}
 	virtual void Run();
 	void AddTimer(GameObject * id, int type, unsigned int time, GameObject * target);
 
