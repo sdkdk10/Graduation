@@ -11,6 +11,9 @@ public:
 	virtual ~AcceptThread();
 
 public:
+	virtual void Init() {
+		thread_ = std::thread([&]() { AcceptThread::Run(); });
+	}
 	virtual void Run();
 
 private:

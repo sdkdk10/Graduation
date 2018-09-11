@@ -871,6 +871,13 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 
 		return;
 	}
+	else if (packet[1] == CS_PLAYER_TYPE)
+	{
+		cs_packet_player_type *p = reinterpret_cast<cs_packet_player_type *>(packet);
+		dynamic_cast<Player*>(player)->playerType = p->playerType;
+
+		return;
+	}
 	else
 	{
 		//cout << cl << " ProcessPacket Error" << endl;
