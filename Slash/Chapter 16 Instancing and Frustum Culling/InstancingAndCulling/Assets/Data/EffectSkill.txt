@@ -4,4 +4,5 @@ Drop	5	light0	light1	light2	light3	light4
 Hit5	1	Hit05
 orbAttack		4	orb_01	orb_02	orb_03	orb_04
 Heal_00	1	heal00	
-Slash_00	2	slash00	slash01	
+Slash_00	2	slash00	slash01
+Regen_00	1	regen00	

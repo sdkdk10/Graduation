@@ -3,6 +3,7 @@
 #include "GameObject.h"
 
 class CBoundingBox;
+class HPBar;
 
 class Player : public CGameObject
 {
@@ -99,6 +100,10 @@ private:
 	int m_PreState;
 
 	bool m_IsWarrior;
+
+	HPBar*		m_HpBar;
+	HPBar*		m_ExpBar;
+	HPBar*		m_GageBar;
 };
 
 

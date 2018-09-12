@@ -208,6 +208,9 @@
     <Filter Include="02. GameObject\01. StaticObject\02. Camera">
       <UniqueIdentifier>{4d802681-e5ae-4657-87b7-2bdb58a7e3a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\07. UI\05. BarUI">
+      <UniqueIdentifier>{ea1d3d1a-f115-4e10-ab85-62114953964a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
