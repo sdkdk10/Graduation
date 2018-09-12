@@ -12,6 +12,8 @@ IMPLEMENT_SINGLETON(CNetwork)
 
 CNetwork::CNetwork()
 {
+	for (auto& d : playerType_)
+		d = PlayerType::PLAYER_WARRIOR;
 }
 
 CNetwork::~CNetwork()
@@ -51,6 +53,8 @@ void CNetwork::InitSock(HWND MainWnd)
 	send_wsabuf.len = MAX_BUFF_SIZE;
 	recv_wsabuf.buf = recv_buffer;
 	recv_wsabuf.len = MAX_BUFF_SIZE;
+
+
 
 }
 
@@ -167,6 +171,25 @@ void CNetwork::SendStopPacket(void)
 	}
 }
 
+void CNetwork::SendPlayerInitData(BYTE& playerType)
+{
+	cs_packet_player_type *my_packet = reinterpret_cast<cs_packet_player_type *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_player_type);
+	send_wsabuf.len = sizeof(cs_packet_player_type);
+	DWORD iobyte;
+
+	my_packet->type = CS_PLAYER_TYPE;
+	my_packet->playerType = playerType;
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+
+
 void CNetwork::ProcessPacket(char * ptr)
 {
 	switch (ptr[1])
@@ -190,10 +213,16 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
+			playerType_[id] = my_packet->playerType;
+
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = true;
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->Rotation(0.f, 0.f, my_packet->lookDegree);
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(my_packet->state);
+			
 		}
 		else
 		{
@@ -218,6 +247,9 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_WALK);
 		}
@@ -239,6 +271,9 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_ROLL);
 		}
@@ -261,8 +296,11 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->Rotation(0.f, 0.f, my_packet->lookDegree);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetNetRotAngle(my_packet->lookDegree);
+			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetNetRotAngle(my_packet->lookDegree);
 		}
 		else
 		{
@@ -283,6 +321,9 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(my_packet->state);
 		}
 		else
@@ -298,7 +339,12 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
 		else if (id < NPC_ID_START)
+		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
+		}
 		else
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->m_bIsConnected = false;

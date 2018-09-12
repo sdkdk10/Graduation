@@ -28,7 +28,6 @@
 #include "Transform.h"
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
-#include "Network.h"
 #include "NumUI.h"
 #include "d3dApp.h"
 
@@ -44,8 +43,15 @@ CTestScene::~CTestScene()
 
 HRESULT CTestScene::Initialize()
 {
+	BYTE playerType{};
+	if (m_IsWarrior)
+		playerType = PlayerType::PLAYER_WARRIOR;
+	else
+		playerType = PlayerType::PLAYER_MAGE;
+
 	CNetwork::GetInstance()->InitSock(D3DApp::GetApp()->MainWnd());
-	
+	CNetwork::GetInstance()->SendPlayerInitData(playerType);
+
 	CManagement::GetInstance()->GetSound()->PlayBGM(L"Sound", L"village");
 
 	CGameObject* pObject = SkyBox::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
@@ -55,9 +61,15 @@ HRESULT CTestScene::Initialize()
 	pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, m_IsWarrior);
 	pObject->SetCamera(Get_MainCam());
 	Ready_GameObject(L"Layer_Player", pObject);
-	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
 
 	for(int i = 0; i < NUM_OF_PLAYER; ++i)
+	{
+		pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Warrior", true);
+		pObject->SetCamera(Get_MainCam());
+		Ready_GameObject(L"Layer_Skeleton", pObject);
+		//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
+	}
+	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		pObject = CSkeleton::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Mage", false);
 		pObject->SetCamera(Get_MainCam());

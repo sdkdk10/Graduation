@@ -30,6 +30,7 @@ public:
 	void SendAttack2Packet(void);
 	void SendAttack3Packet(void);
 	void SendStopPacket(void);
+	void SendPlayerInitData(BYTE & playerType);
 	void ProcessPacket(char* ptr);
 	int GetMyID() {
 		return myid;
@@ -44,6 +45,7 @@ public:
 	DWORD      in_packet_size = 0;
 	int      saved_packet_size = 0;
 	int      myid;
+	BYTE playerType_[NUM_OF_PLAYER];
 private:
 	virtual void Free();
 };

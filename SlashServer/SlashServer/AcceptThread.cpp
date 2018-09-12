@@ -74,7 +74,5 @@ void AcceptThread::Run()
 			if (WSA_IO_PENDING != errNum)
 				ExceptionUtil::ErrDisplay("Recv in AcceptThread", errNum);
 		}
-
-		objectManager_->PutNewPlayer(newKey);
 	}
 }

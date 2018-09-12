@@ -91,7 +91,7 @@ void SendManager::SendObjectState(GameObject* player, GameObject* object)
 	SendPacket(player, &state_p);
 }
 
-void SendManager::SendPutObject(GameObject* player, GameObject* object)
+void SendManager::SendPutPlayer(GameObject* player, GameObject* object)
 {
 	sc_packet_put_player put_p;
 
@@ -107,6 +107,7 @@ void SendManager::SendPutObject(GameObject* player, GameObject* object)
 	put_p.posZ = object->world_._43;
 	put_p.lookDegree = object->lookDegree_;
 	put_p.state = object->state_;
+	put_p.playerType = dynamic_cast<Player*>(object)->playerType;
 
 	SendPacket(player, &put_p);
 }
@@ -127,7 +128,6 @@ void SendManager::SendPutMonster(GameObject* player, GameObject* object)
 	put_p.posZ = object->world_._43;
 	put_p.lookDegree = object->lookDegree_;
 	put_p.state = object->state_;
-	put_p.monsterType = dynamic_cast<NPC*>(object)->objectType_;
 
 	SendPacket(player, &put_p);
 }

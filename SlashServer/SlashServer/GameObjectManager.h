@@ -15,7 +15,7 @@ public:
 	virtual ~GameObjectManager();
 public:
 	void InitGameObjects();
-	void PutNewPlayer(int cl);
+	void PutNewPlayer(GameObject* player);
 	void DisconnectPlayer(GameObject* player);
 	void WakeUpNPC(GameObject * npc, GameObject * target);
 	void ChasingPlayer(GameObject* npc, GameObject* player);

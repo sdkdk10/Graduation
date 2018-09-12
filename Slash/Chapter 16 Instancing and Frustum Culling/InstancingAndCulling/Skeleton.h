@@ -61,10 +61,10 @@ public:
 	int GetPreState() {
 		return m_PreState;
 	}
+
 private:
 	int m_CurState;
 	int m_PreState;
-
 private:
 	virtual void Free();
 

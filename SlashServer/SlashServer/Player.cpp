@@ -25,5 +25,6 @@ void Player::Initialize()
 	hp_ = 200;
 	dmg_ = 10;
 	objectType_ = TYPE_PLAYER;
+	playerType = PLAYER_WARRIOR;
 	SetOOBB(XMFLOAT3(-7.5388f, -5.98235f, 28.8367f), XMFLOAT3(23.1505f, 16.4752f, 28.5554f), XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 }
