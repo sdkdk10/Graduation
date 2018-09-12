@@ -260,7 +260,7 @@ void NumUI::Add(int iNum, XMFLOAT3 f3Pos, bool isCritical)
 			break;
 		}
 	}
-	f3Pos.y += 2.f;
+	f3Pos.y += 5.f;
 	float fNext = 1.f;
 	float fX = f3Pos.x;
 	float fZ = 0.001f;

@@ -358,6 +358,7 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 
 	if (player->isActive_ == false)
 		return;
+
 	if (monster->state_ == STATE_DEAD)
 		return;
 
@@ -421,6 +422,13 @@ void GameObjectManager::PlayerAttack(GameObject* player) {
 
 void GameObjectManager::PlayerDamaged(GameObject* monster, GameObject* player) {
 
+	for (int i = 0; i < NUM_OF_PLAYER; ++i)
+	{
+		if (false == playerArray_[i]->isActive_) continue;
+		if (false == playerArray_[i]->CanSee(player)) continue;
+		SendManager::SendObjectDamage(playerArray_[i], player, monster);
+	}
+
 	if (player->state_ == STATE_DEAD)
 		return;
 
@@ -447,6 +455,13 @@ void GameObjectManager::PlayerDamaged(GameObject* monster, GameObject* player) {
 }
 
 void GameObjectManager::MonsterDamaged(GameObject* player, GameObject* monster) {
+
+	for (int i = 0; i < NUM_OF_PLAYER; ++i)
+	{
+		if (false == playerArray_[i]->isActive_) continue;
+		if (false == playerArray_[i]->CanSee(monster)) continue;
+		SendManager::SendObjectDamage(playerArray_[i], monster, player);
+	}
 
 	if (monster->state_ == STATE_DEAD)
 		return;

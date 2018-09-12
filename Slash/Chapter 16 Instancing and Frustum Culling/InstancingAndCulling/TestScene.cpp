@@ -577,7 +577,7 @@ void CTestScene::UISetting()
 
 
 	// > UINum Setting
-	CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(0.f, 0.f, 0.f));
+	//CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(0.f, 0.f, 0.f));
 }
 
 void CTestScene::Free()

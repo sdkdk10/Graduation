@@ -106,7 +106,8 @@ static const int EVT_PLAYER_ROLL = 10;
 #define SC_ROTATE		6
 #define SC_STATE		7
 #define SC_HP			8
-#define SC_PUT_MONSTER   9
+#define SC_PUT_MONSTER  9
+#define SC_DAMAGE		10
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
 static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
@@ -208,6 +209,13 @@ struct sc_packet_hp {
 	BYTE type;
 	WORD id;
 	WORD hp;
+};
+
+struct sc_packet_damage {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	WORD dmg;
 };
 
 struct sc_packet_chat {
