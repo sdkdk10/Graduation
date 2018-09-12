@@ -766,6 +766,8 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Death.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Ultimate.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Roll.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Hit.ASE"));
+
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
@@ -777,6 +779,11 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell1.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell2.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE"));
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE")); // Ultimate
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE")); // Roll
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Hit.ASE"));
+
+
 
 
 	pComponent = DynamicMesh::Create(md3dDevice, path);

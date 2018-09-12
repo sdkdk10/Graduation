@@ -11,6 +11,7 @@ enum State
 	STATE_DEAD,
 	STATE_ULTIMATE,
 	STATE_ROLL,
+	STATE_HIT,
 	STATE_END,
 };
 enum MonsterZone

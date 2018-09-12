@@ -38,10 +38,11 @@ public:
 	bool bTimerAttack2 = false;
 	bool bTimerAttack3 = false;
 	bool bTimerDead = false;
-	bool bTimerHit = false;
 
 	bool bTimerUltimate = false;
 	bool bTimerRoll = false;
+	bool bTimerHit = false;
+
 
 private:
 
@@ -56,6 +57,7 @@ protected:
 	float			m_fAnimationKeyFrameIndex_Dead = 0.f;		// 애니메이션 인덱스
 	float			m_fAnimationKeyFrameIndex_Ultimate = 0.f;
 	float			m_fAnimationKeyFrameIndex_Roll = 0.f;
+	float			m_fAnimationKeyFrameIndex_Hit = 0.f;
 
 
 public:
