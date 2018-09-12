@@ -162,3 +162,19 @@ void SendManager::SendObjectHp(GameObject* player, GameObject* object)
 
 	SendPacket(player, &p);
 }
+
+void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, GameObject* attackObj)
+{
+	sc_packet_damage p;
+
+	if (TYPE_MONSTER == damagedObj->objectType_)
+		p.id = damagedObj->ID_ + NPC_ID_START;
+	else
+		p.id = damagedObj->ID_;
+
+	p.size = sizeof(sc_packet_damage);
+	p.type = SC_DAMAGE;
+	p.dmg = attackObj->dmg_;
+
+	SendPacket(player, &p);
+}

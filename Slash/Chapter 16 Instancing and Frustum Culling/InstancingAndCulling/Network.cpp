@@ -380,6 +380,32 @@ void CNetwork::ProcessPacket(char * ptr)
 		//if (my_packet->monsterType == 2)
 		//	my_packet->monsterType = 3;
 		//dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Monster",id - NPC_ID_START))->SetTexture((SpiderType)my_packet->monsterType);
+
+		break;
+	}
+	case SC_DAMAGE:
+	{
+		sc_packet_damage *my_packet = reinterpret_cast<sc_packet_damage *>(ptr);
+		int id = my_packet->id;
+		if (myid == id)
+		{
+			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->GetPosition();
+			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
+		}
+		else if (id < NPC_ID_START)
+		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
+			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Skeletion", id)->GetPosition();
+			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
+		}
+		else
+		{
+			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetPosition();
+			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
+		}
+		break;
 	}
 	}
 }
