@@ -10,10 +10,14 @@
 #include "Management.h"
 #include "Renderer.h"
 #include "Camera.h"
+#include "HPBar.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior)
 	: CGameObject(d3dDevice, srv, srvSize)
 	, m_IsWarrior(isWarrior)
+	, m_HpBar(nullptr)
+	, m_ExpBar(nullptr)
+	, m_GageBar(nullptr)
 {
 	m_preKeyInputTime = 0;
 	m_curKeyInputTime = 0;
@@ -97,7 +101,8 @@ bool Player::Update(const GameTimer & gt)
 	CGameObject::Update(gt);
 
 	Animate(gt);
-
+	//m_HPBar->SetHp(m_pPlayer->GetHp());
+	m_HpBar->SetHp(GetHp());
 	if (!IsSoundIn)
 	{
 		float X = World._41;
@@ -168,6 +173,8 @@ bool Player::Update(const GameTimer & gt)
 	//mat->NumFramesDirty--;
 
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
+
+	m_HpBar->Update(gt);
 
 	return true;
 }
@@ -250,6 +257,27 @@ HRESULT Player::Initialize()
 
 	m_xmf3Scale = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	m_xmf3Rot = XMFLOAT3(1.7f, 0.f, 3.14f);
+
+
+	// > Hp, Exp, Gage Bar UI Setting
+	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
+
+	move.x = -0.3f;
+	move.y = 7.3f;
+
+	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
+	scale.x = 1.2f;
+	scale.y = 0.125f;
+	float size = 0.25f;
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
+
+	// > Hp Bar
+	m_HpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	m_HpBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
+	//CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Layer_HPBar", m_HpBar);
+
+	// > Exp Bar
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 

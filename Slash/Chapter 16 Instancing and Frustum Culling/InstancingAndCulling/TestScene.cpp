@@ -182,7 +182,8 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	CollisionProcess();
 	UpdateOOBB();
-	UpdateUI();
+	// > Player 관련 UI는 Player.cpp에서 실행
+	//UpdateUI();
 
 	m_pPlayer->m_pCollider;
 
@@ -536,9 +537,9 @@ void CTestScene::UISetting()
 
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
 
-	CGameObject* pObject = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	CGameObject* pObject;/* = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	pObject->SetCamera(Get_MainCam());
-	Ready_GameObject(L"Layer_HPBar", pObject);
+	Ready_GameObject(L"Layer_HPBar", pObject);*/
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
 
 	move.x = -0.82f;
