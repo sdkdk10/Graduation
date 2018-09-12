@@ -691,6 +691,56 @@ void InstancingAndCullingApp::LoadTextures()
 		MSG_BOX(L"PressEnter Ready Failed");
 
 	Tex = new Texture;
+	Tex->Name = "BarUI";
+	Tex->Filename = L"Assets/Textures/BarUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"BarUI Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "HPUI";
+	Tex->Filename = L"Assets/Textures/HPUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"HPUI Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "GageUI";
+	Tex->Filename = L"Assets/Textures/GageUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"GageUI Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "ExpUI";
+	Tex->Filename = L"Assets/Textures/ExpUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"ExpUI Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "LevelUpUI";
+	Tex->Filename = L"Assets/Textures/LevelUpUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"LevelUpUI Ready Failed");
+
+	Tex = new Texture;
 	Tex->Name = "Aura0";
 	Tex->Filename = L"Assets/Textures/Aura0.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
@@ -863,24 +913,24 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
-	move.x = -0.82f;
-	move.y = 0.75f;
+	move.x = -0.885f;
+	move.y = 0.785f;
 
 	scale.x = 1.0f;
 	scale.y = 1.0f;
 
-	float size = 0.125f;
+	float size = 0.08f;
 
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_WarriorUI", pComponent);
 
-	move.x = -0.5f;
-	move.y = 1.45f;
+	move.x = -0.94f;
+	move.y = 5.2f;
 
-	scale.x = 1.0f;
-	scale.y = 0.5f;
+	scale.x = 0.65f;
+	scale.y = 0.15f;
 
-	size = 0.5f;
+	size = 1.f;
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerHPState", pComponent);
 
@@ -1382,19 +1432,6 @@ void InstancingAndCullingApp::BuildPSOs()
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
-	//
-	// PSO for UIChange objects.
-	//
-
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIChangePsoDesc = UIPsoDesc;
-
-	UIChangePsoDesc.PS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["UIChangePS"]->GetBufferPointer()),
-		mShaders["UIChangePS"]->GetBufferSize()
-	};
-
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIChangePsoDesc, IID_PPV_ARGS(&mPSOs["UIChange"])));
 
 
 
@@ -1468,21 +1505,7 @@ void InstancingAndCullingApp::BuildPSOs()
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaTestedPsoDesc, IID_PPV_ARGS(&mPSOs["alphaTested_Inst"])));
 
 
-	// > Instancing UI(NumUI)
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC InstancingUIPsoDesc = opaquePsoDesc;
-	InstancingUIPsoDesc.VS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["InstancingUI_VS"]->GetBufferPointer()),
-		mShaders["InstancingUI_VS"]->GetBufferSize()
-	};
-	InstancingUIPsoDesc.PS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["InstancingUI_PS"]->GetBufferPointer()),
-		mShaders["InstancingUI_PS"]->GetBufferSize()
-	};
 
-	InstancingUIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingUIPsoDesc, IID_PPV_ARGS(&mPSOs["InstancingUI"])));
 
 	//
 	// PSO for Alpha Blending objects
@@ -1544,6 +1567,39 @@ void InstancingAndCullingApp::BuildPSOs()
 
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaBlend_EffectPsoDesc, IID_PPV_ARGS(&mPSOs["alphaBelnd_Object"])));
+
+	// > Instancing UI(NumUI)
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC InstancingUIPsoDesc = opaquePsoDesc;
+	InstancingUIPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["InstancingUI_VS"]->GetBufferPointer()),
+		mShaders["InstancingUI_VS"]->GetBufferSize()
+	};
+	InstancingUIPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["InstancingUI_PS"]->GetBufferPointer()),
+		mShaders["InstancingUI_PS"]->GetBufferSize()
+	};
+
+	InstancingUIPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc_effect;
+
+	InstancingUIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingUIPsoDesc, IID_PPV_ARGS(&mPSOs["InstancingUI"])));
+
+	//
+	// PSO for UIChange objects.
+	//
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIChangePsoDesc = UIPsoDesc;
+
+	UIChangePsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["UIChangePS"]->GetBufferPointer()),
+		mShaders["UIChangePS"]->GetBufferSize()
+	};
+
+	UIChangePsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc_effect;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIChangePsoDesc, IID_PPV_ARGS(&mPSOs["UIChange"])));
 
 	//
 	// PSO for tree sprites

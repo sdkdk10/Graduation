@@ -2,6 +2,8 @@
 #include "Management.h"
 #include "Renderer.h"
 #include "NumUI.h"
+#include "Player.h"
+#include "ChangeUI.h"
 
 IMPLEMENT_SINGLETON(CManagement)
 
@@ -35,6 +37,34 @@ HRESULT CManagement::Add_NumUI(int iNum, XMFLOAT3 f3Pos, bool isCritical)
 	return S_OK;
 }
 
+void CManagement::SetExp(CGameObject * pObj, float _exp)
+{
+	if (pObj == nullptr)
+		return;
+	pObj->SetExp(_exp);
+}
+
+void CManagement::AddExp(CGameObject * pObj, float _exp)
+{
+	if (pObj == nullptr || !dynamic_cast<Player*>(pObj))
+		return;
+	dynamic_cast<Player*>(pObj)->AddExp(_exp);
+}
+
+void CManagement::PlayLevelUP()
+{
+	size_t iSize = m_pLevelUP.size();
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		m_pLevelUP[i]->SetPlay(true);
+	}
+}
+
+void CManagement::SetLevelUPUI(vector<ChangeUI*> vec)
+{
+	m_pLevelUP = vec;
+}
+
 
 HRESULT CManagement::Init_Management(CRenderer* pRenderer, NumUI* pNumUI)
 {
@@ -56,6 +86,11 @@ bool CManagement::Update(const GameTimer & gt, const FrameResource* pCruRrc)
 
 	m_pNumUI->Update(gt);
 
+	size_t iSize = m_pLevelUP.size();
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		m_pLevelUP[i]->Update(gt);
+	}
 	return true;
 
 }

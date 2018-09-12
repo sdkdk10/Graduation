@@ -102,7 +102,9 @@ bool Player::Update(const GameTimer & gt)
 
 	Animate(gt);
 	//m_HPBar->SetHp(m_pPlayer->GetHp());
-	m_HpBar->SetHp(GetHp());
+	m_HpBar->GetCur() = GetHp();
+	cout << "Player HP : " << GetHp() << endl;
+	cout << "HP Bar : " << m_HpBar->GetHp() << endl;
 	if (!IsSoundIn)
 	{
 		float X = World._41;
@@ -175,6 +177,8 @@ bool Player::Update(const GameTimer & gt)
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
 	m_HpBar->Update(gt);
+	m_GageBar->Update(gt);
+	m_ExpBar->Update(gt);
 
 	return true;
 }
@@ -262,22 +266,36 @@ HRESULT Player::Initialize()
 	// > Hp, Exp, Gage Bar UI Setting
 	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 
-	move.x = -0.3f;
-	move.y = 7.3f;
+	move.x = -0.545f;
+	move.y = 6.31003f;
 
 	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
-	scale.x = 1.2f;
-	scale.y = 0.125f;
-	float size = 0.25f;
+	scale.x = 5.f;
+	scale.y = 0.138001f;
+	float size = 0.214f;
 
-	tex = CTexture_Manager::GetInstance()->Find_Texture("BloodTex", CTexture_Manager::TEX_DEFAULT_2D);
 
 	// > Hp Bar
+	tex = CTexture_Manager::GetInstance()->Find_Texture("HPUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_HpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	m_HpBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
-	//CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Layer_HPBar", m_HpBar);
-
+	m_HpBar->GetCur() = 200.f;
+	m_HpBar->GetMax() = 200.f;
 	// > Exp Bar
+	move.y = 5.64208f;
+	tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUI", CTexture_Manager::TEX_DEFAULT_2D);
+	m_ExpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	m_ExpBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
+	m_ExpBar->GetCur() = 30.f;
+	m_ExpBar->GetMax() = 100.f;
+
+	// > Gage Bar
+	move.y = 4.98612f;
+	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
+	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	m_GageBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
+	m_GageBar->GetCur() = 70.f;
+	m_GageBar->GetMax() = 100.f;
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -451,6 +469,25 @@ Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 	}
 
 	return pInstance;
+}
+
+void Player::AddExp(float exp)
+{
+	m_Exp += exp;
+	m_ExpBar->GetCur() += exp;
+
+	if (m_Exp > m_fMaxExp)
+	{
+		float fAdd = m_Exp - m_fMaxExp;
+		m_Exp = fAdd;
+		++m_iLevel;
+		m_fMaxExp += 50;
+		m_ExpBar->GetCur() = fAdd;
+		m_ExpBar->GetMax() = m_fMaxExp;
+		cout << "Level UP" << endl;
+		// >
+		CManagement::GetInstance()->PlayLevelUP();
+	}
 }
 
 //void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)

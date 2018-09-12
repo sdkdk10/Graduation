@@ -29,6 +29,8 @@
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
 #include "NumUI.h"
+#include "Define.h"
+#include "InputDevice.h"
 #include "d3dApp.h"
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize, bool isWarrior)
@@ -151,11 +153,15 @@ HRESULT CTestScene::Initialize()
 
 bool CTestScene::Update(const GameTimer & gt)
 {
-	
 
 	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
+
+	if (KeyBoard_Input(DIK_F7) == CInputDevice::INPUT_PRESS)
+	{
+		CManagement::GetInstance()->AddExp(m_pPlayer, 20);
+	}
 
 	if (m_pCamera != NULL)
 	{
@@ -567,7 +573,7 @@ void CTestScene::UISetting()
 
 	size = 0.5f;
 
-	tex = CTexture_Manager::GetInstance()->Find_Texture("HeartTex", CTexture_Manager::TEX_DEFAULT_2D);
+	tex = CTexture_Manager::GetInstance()->Find_Texture("BarUI", CTexture_Manager::TEX_DEFAULT_2D);
 
 	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerHPState", tex->Num);

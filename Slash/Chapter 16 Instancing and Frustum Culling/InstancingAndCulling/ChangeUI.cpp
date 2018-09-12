@@ -7,7 +7,7 @@
 #include "Renderer.h"
 #include "Define.h"
 
-ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex, float fZ)
+ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex, bool isCon, float fZ, float fStartTime)
 	:UI(d3dDevice, srv, srvSize)
 {
 	move = _move;
@@ -15,6 +15,8 @@ ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12
 	size = _size;
 	m_fZ = fZ;
 	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+	m_fStartTime = fStartTime;
+	m_IsContinue = isCon;
 }
 
 
@@ -22,9 +24,9 @@ ChangeUI::~ChangeUI()
 {
 }
 
-ChangeUI * ChangeUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size, int diffuseSrvHeapIndex, float fZ)
+ChangeUI * ChangeUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size, int diffuseSrvHeapIndex, bool isCon, float fZ, float fStartTime)
 {
-	ChangeUI* pInstance = new ChangeUI(d3dDevice, srv, srvSize, move, scale, size, diffuseSrvHeapIndex, fZ);
+	ChangeUI* pInstance = new ChangeUI(d3dDevice, srv, srvSize, move, scale, size, diffuseSrvHeapIndex, isCon, fZ, fStartTime);
 
 	if (FAILED(pInstance->Initialize(move, scale, size)))
 	{
@@ -38,9 +40,15 @@ ChangeUI * ChangeUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 
 bool ChangeUI::Update(const GameTimer & gt)
 {
+	if (!m_isPlay)
+		return true;
+
+	m_fAccTime += gt.DeltaTime();
+	if (m_fStartTime > m_fAccTime)
+		return true;
+
 	CGameObject::Update(gt);
 
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UICHANGE, this);
 
 	//XMMATRIX world = XMLoadFloat4x4(&f4x4View);
 
@@ -66,7 +74,6 @@ bool ChangeUI::Update(const GameTimer & gt)
 	if (m_IsChange)
 	{
 
-
 		float fDivTime = m_fChangeTime / gt.DeltaTime();
 
 		m_ChangeColor = Vector4::Divide(Vector4::Subtract(m_xmf4ColorChange, XMFLOAT4(1, 1, 1, 1)), fDivTime);
@@ -84,10 +91,26 @@ bool ChangeUI::Update(const GameTimer & gt)
 
 		if (m_fTimeAccc > m_fChangeTime)
 		{
-			m_ChangeValue = !m_ChangeValue;
+			if (!m_IsContinue)
+			{
+				m_isPlay = false;
+				Mat->DiffuseAlbedo = XMFLOAT4(1, 1, 1, 1);
+				m_fAccTime = 0.f;
+				m_fTimeAccc = 0.f;
+				return true;
+			}
+			else
+			{
+				m_ChangeValue = !m_ChangeValue;
+			}
+
 			m_fTimeAccc = 0.f;
 		}
 	}
+
+	if (m_isFrame)
+		MoveFrame(gt);
+
 	matConstants.DiffuseAlbedo = Mat->DiffuseAlbedo;// Mat->DiffuseAlbedo;
 	matConstants.FresnelR0 = Mat->FresnelR0;
 	matConstants.Roughness = Mat->Roughness;
@@ -98,6 +121,7 @@ bool ChangeUI::Update(const GameTimer & gt)
 	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
 
 
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UICHANGE, this);
 
 	return true;
 }
@@ -147,6 +171,7 @@ HRESULT ChangeUI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
+	Mat->MatTransform = MathHelper::Identity4x4();
 
 	/* CB(World,TextureTranform...) Build */
 
@@ -174,6 +199,54 @@ void ChangeUI::SetisChange(bool _isChange)
 
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_fTimeAccc = 0.f;
+}
+
+void ChangeUI::SetFrameInfo(UV_FRAME_INFO info)
+{
+	m_isFrame = true;
+	m_tFrame = info;
+}
+
+void ChangeUI::MoveFrame(const GameTimer& gt)
+{
+	m_tFrame.fFrameAcc += gt.DeltaTime() * m_tFrame.fSpeed;
+	//if (m_tFrame.fFrameAcc > m_tFrame.f2FrameSize.x)
+	if (m_tFrame.fFrameAcc > 1.f)
+	{
+		m_tFrame.f2curFrame.x += 1.f;
+		m_tFrame.fFrameAcc = 0.f;
+		if (m_tFrame.f2curFrame.x >= m_tFrame.f2maxFrame.x)
+		{
+			m_tFrame.f2curFrame.x = 0.f;
+			m_tFrame.f2curFrame.y += 1.f;
+			if (m_tFrame.f2curFrame.y >= m_tFrame.f2maxFrame.y)
+			{
+				m_tFrame.f2curFrame.x = m_tFrame.f2maxFrame.x - 1;
+				m_tFrame.f2curFrame.y = m_tFrame.f2maxFrame.y - 1;
+
+				if (m_tFrame.isEndbyCnt)
+				{
+					++m_tFrame.iCurCnt;
+					if (m_tFrame.iCurCnt > m_tFrame.iPlayCnt)
+					{
+						m_tFrame.f2curFrame.x = 0.f;
+						m_tFrame.f2curFrame.y = 0.f;
+						m_tFrame.fFrameAcc = 0.f;
+						m_tFrame.iCurCnt = 0;
+						m_fAccTime = 0.f;
+						//m_IsEnable = false;			// > ³¡³»±â
+						m_isPlay = false;
+					}
+						
+				}
+			}
+		}
+	}
+	Mat->MatTransform._41 = m_tFrame.f2curFrame.x / m_tFrame.f2maxFrame.x;
+	Mat->MatTransform._42 = m_tFrame.f2curFrame.y / m_tFrame.f2maxFrame.y;
+
+	Mat->MatTransform(0, 0) = 1 / m_tFrame.f2maxFrame.x;
+	Mat->MatTransform(1, 1) = 1 / m_tFrame.f2maxFrame.y;
 }
 
 void ChangeUI::Free()

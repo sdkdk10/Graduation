@@ -6,6 +6,8 @@
 #include "Renderer.h"
 #include "Define.h"
 
+unsigned long HPBar::m_iAllBarUIIndex = 0;
+
 HPBar::HPBar(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
 	:UI(d3dDevice, srv, srvSize)
 {
@@ -13,6 +15,8 @@ HPBar::HPBar(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12Descri
 	scale = _scale;
 	size = _size;
 	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+	m_iMyUIID = m_iAllBarUIIndex;
+	m_iAllBarUIIndex += 6;
 }
 
 
@@ -50,35 +54,36 @@ bool HPBar::Update(const GameTimer & gt)
 	v.Pos = XMFLOAT3((-size + move.x), (size + move.y) * scale.y, 0.0f); // 0 
 	v.TexC = XMFLOAT2(0.0f, 0.0f);
 
-	currVB->CopyData(0, v);
+	//currVB->CopyData(0, v);
+	currVB->CopyData(m_iMyUIID, v);
 
-	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * GetHp()/200.0f, (-size + move.y) * scale.y, 0.0f); //1
-	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (GetHp() / (float)200), 1.0f);
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur/m_fMax, (-size + move.y) * scale.y, 0.0f); //1
+	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
 
-	currVB->CopyData(1, v);
+	currVB->CopyData(m_iMyUIID + 1, v);
 
 	v.Pos = XMFLOAT3((-size + move.x), (-size + move.y) * scale.y, 0.0f); //2
 	v.TexC = XMFLOAT2(0.0f, 1.0f);
 
-	currVB->CopyData(2, v);
+	currVB->CopyData(m_iMyUIID + 2, v);
 
 
 	v.Pos = XMFLOAT3((-size + move.x), (size + move.y) * scale.y, 0.0f); //3
 	v.TexC = XMFLOAT2(0.0f, 0.0f);
 
-	currVB->CopyData(3, v);
+	currVB->CopyData(m_iMyUIID + 3, v);
 
-	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * GetHp() / 200.0f, (size + move.y) * scale.y, 0.0f); //4
-	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (GetHp() / (float)200) + 0.05, 0.0f);
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (size + move.y) * scale.y, 0.0f); //4
+	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax) + 0.05, 0.0f);
 
 
-	currVB->CopyData(4, v);
+	currVB->CopyData(m_iMyUIID + 4, v);
 
-	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * GetHp() / 200.0f, (-size + move.y) * scale.y, 0.0f); //5
-	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (GetHp() / (float)200), 1.0f);
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (-size + move.y) * scale.y, 0.0f); //5
+	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
 
 	
-	currVB->CopyData(5, v);
+	currVB->CopyData(m_iMyUIID + 5, v);
 
 	
 	Geo->VertexBufferGPU = currVB->Resource();
@@ -88,19 +93,28 @@ bool HPBar::Update(const GameTimer & gt)
 	return true;
 }
 
-void HPBar::SetUI(float size, float moveX, float moveY, float scaleX, float scaleY)
+void HPBar::SetUI(float _size, float _moveX, float _moveY, float _scaleX, float _scaleY)
 {
+	size = _size;
+	move.x = _moveX;
+	move.y = _moveY;
+	scale.x = _scaleX;
+	scale.y = _scaleY;
 }
 
 void HPBar::Render(ID3D12GraphicsCommandList * cmdList)
 {
 	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
-	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
+	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants)); 
+	UINT VBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(Vertex));
 
 	auto objectCB = m_pFrameResource->ObjectCB->Resource();
 	auto matCB = m_pFrameResource->MaterialCB->Resource();
 
-	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
+	D3D12_VERTEX_BUFFER_VIEW* pView = &Geo->VertexBufferView();
+	pView->BufferLocation += m_iMyUIID * sizeof(Vertex);
+	//cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
+	cmdList->IASetVertexBuffers(0, 1, pView);
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
@@ -150,6 +164,15 @@ HRESULT HPBar::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
 
 	return S_OK;
+}
+
+void HPBar::GetUIValue(float * _size, float * _moveX, float * _moveY, float * _scaleX, float * _scaleY)
+{
+	*_size	= size;
+	*_moveX = move.x;
+	*_moveY = move.y;
+	*_scaleX = scale.x;
+	*_scaleY = scale.y;
 }
 
 

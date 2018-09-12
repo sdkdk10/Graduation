@@ -8,6 +8,7 @@
 #include "Sound.h"
 
 class CRenderer;
+class ChangeUI;
 class NumUI;
 
 class CManagement
@@ -43,12 +44,20 @@ public:
 
 	HRESULT			Add_NumUI(int iNum, XMFLOAT3 f3Pos, bool isCritical = false);
 
+	void			SetExp(CGameObject* pObj, float _exp);
+	void			AddExp(CGameObject* pObj, float _exp);
+
+	void			PlayLevelUP();
+	void			SetLevelUPUI(vector<ChangeUI*> vec);
+
 private:
 	CScene*				m_pCurScene;
 	CRenderer*			m_pRenderer;
 	CSound*				m_pSound;
 
 	NumUI*				m_pNumUI;
+
+	vector<ChangeUI*>	m_pLevelUP;
 
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;

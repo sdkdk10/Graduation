@@ -13,7 +13,7 @@ FrameResource::FrameResource(ID3D12Device* device, UINT passCount, UINT maxInsta
 	MaterialCB = std::make_unique<UploadBuffer<MaterialConstants>>(device, materialCount, true);
 	ObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(device, maxInstanceCount, true);
 
-	VB = std::make_unique<UploadBuffer<Vertex>>(device, 6, false); // UI를 위한 VB Frame Resource
+	VB = std::make_unique<UploadBuffer<Vertex>>(device, 100, false); // UI를 위한 VB Frame Resource
 
 }
 

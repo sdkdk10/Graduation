@@ -92,6 +92,8 @@ public:
 	int GetPreState() {
 		return m_PreState;
 	}
+
+	virtual void	AddExp(float exp);
 private:
 	float m_preKeyInputTime;
 	float m_curKeyInputTime;
@@ -104,6 +106,13 @@ private:
 	HPBar*		m_HpBar;
 	HPBar*		m_ExpBar;
 	HPBar*		m_GageBar;
+
+	float		m_fMaxHp = 100.f;
+	float		m_fMaxExp = 100.f;
+	float		m_fCurGage = 0.f;
+	float		m_fMaxGage = 100.f;
+
+	int			m_iLevel = 1;
 };
 
 

@@ -99,9 +99,14 @@ public:
 
 private:
 	float hp = 100;
+protected:
+	float m_Exp = 0.f;
 public:
 	float GetHp() { return hp; }
 	void SetHp(float _hp) { hp = _hp; }
+
+	virtual float	GetExp() { return m_Exp; }
+	virtual void	SetExp(float exp) { m_Exp = exp; }
 public:
 	bool m_bIsVisiable = true;
 

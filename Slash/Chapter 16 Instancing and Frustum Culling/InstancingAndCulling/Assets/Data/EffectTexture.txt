@@ -1,4 +1,4 @@
-60
+64
 blood_hit_04	Assets/Textures/Effect/blood_hit_04.dds
 aurora01	Assets/Textures/Effect/aurora01.dds
 blood_hit_01	Assets/Textures/Effect/blood_hit_01.dds
@@ -60,3 +60,6 @@ magic_002	Assets/Textures/Effect/magic_002.dds
 orb_128x171(5x6)	Assets/Textures/Effect/orb_128x171(5x6).dds
 Ring_2	Assets/Textures/Effect/Ring_2.dds
 wind_002	Assets/Textures/Effect/wind_002.dds
+wing_001	Assets/Textures/Effect/wing_001.dds
+magic_003	Assets/Textures/Effect/magic_003.dds
+effect_008	Assets/Textures/Effect/effect_008.dds

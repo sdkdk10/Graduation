@@ -33,9 +33,22 @@ float4 PS_Change(VertexOut_UI pin) : SV_Target
 	MaterialData matData = gMaterialData_Default[0];
 	float4 diffuseAlbedo = matData.DiffuseAlbedo;
 
+	float2 texC = pin.TexC;
+
+	texC.x *= matData.MatTransform[0][0];
+	texC.y *= matData.MatTransform[1][1];
+
+
+	//float2 move = mul(float4(pin.TexC, 0.f, 1.f), gTexTransform).xy;
+	texC.x += matData.MatTransform[3][0];
+	texC.y += matData.MatTransform[3][1];
+
+
+	pin.TexC = texC;
+
 	diffuseAlbedo *= gDiffuseMap_Default[0].Sample(gsamAnisotropicWrap, pin.TexC);
 
-	if (diffuseAlbedo.a < 0.2)
+	if (diffuseAlbedo.a < 0.3)
 		discard;
 	//litColor = ceil(litColor * 5) / 5.0f;
 	return diffuseAlbedo;
