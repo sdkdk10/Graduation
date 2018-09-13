@@ -11,6 +11,7 @@
 #include "Renderer.h"
 #include "Camera.h"
 #include "HPBar.h"
+#include "../../SlashServer/SlashServer/Protocol.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior)
 	: CGameObject(d3dDevice, srv, srvSize)
@@ -103,8 +104,8 @@ bool Player::Update(const GameTimer & gt)
 	Animate(gt);
 	//m_HPBar->SetHp(m_pPlayer->GetHp());
 	m_HpBar->GetCur() = GetHp();
-	cout << "Player HP : " << GetHp() << endl;
-	cout << "HP Bar : " << m_HpBar->GetHp() << endl;
+	//cout << "Player HP : " << GetHp() << endl;
+	//cout << "HP Bar : " << m_HpBar->GetHp() << endl;
 	if (!IsSoundIn)
 	{
 		float X = World._41;
@@ -337,7 +338,7 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (bIsUltimateState)
+	if (bIsUltimateState && m_IsWarrior)
 	{
 		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
 		if (WarriorUltimateTex == nullptr)
@@ -385,7 +386,7 @@ void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (bIsUltimateState)
+	if (bIsUltimateState && m_IsWarrior)
 	{
 		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
 		if (WarriorUltimateTex == nullptr)
@@ -430,7 +431,7 @@ void Player::Render_Right(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	if (bIsUltimateState)
+	if (bIsUltimateState && m_IsWarrior)
 	{
 		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
 		if (WarriorUltimateTex == nullptr)
@@ -487,7 +488,7 @@ void Player::AddExp(float exp)
 		m_fMaxExp += 50;
 		m_ExpBar->GetCur() = fAdd;
 		m_ExpBar->GetMax() = m_fMaxExp;
-		cout << "Level UP" << endl;
+		//cout << "Level UP" << endl;
 		// >
 		CManagement::GetInstance()->PlayLevelUP();
 	}
@@ -538,6 +539,7 @@ void Player::CheckUltimate(const GameTimer & gt)
 		{
 			m_fUltimateTime = 20.0f;
 			bIsUltimateState = false;
+			CNetwork::GetInstance()->SendUltimateOffPacket();
 		}
 	}
 }
@@ -612,7 +614,7 @@ void Player::KeyInput(const GameTimer & gt)
 
 	if (CManagement::GetInstance()->Get_MainCam() != NULL)
 	{
-		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && !bIsUltimateState)
+		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && !bIsUltimateState) // 여기 수정
 		{
 			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
 			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
@@ -681,16 +683,15 @@ void Player::KeyInput(const GameTimer & gt)
 		}
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
-		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
-		{
-			bIsUltimateState = true; //궁상태로
-			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
-
-			SetObjectAnimState(State::STATE_ULTIMATE);
-		}
 		else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
 		{
 			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
+		}
+		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
+		{
+			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
+			SetObjectAnimState(State::STATE_ULTIMATE);
+			CNetwork::GetInstance()->SendUltimateStartPacket();
 		}
 	}
 
@@ -718,70 +719,9 @@ void Player::KeyInput(const GameTimer & gt)
 		SetObjectAnimState(State::STATE_HIT);
 
 	}
-	//if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
-	//{
-	//	auto * m_pPNagaGuard= CManagement::GetInstance()->Find_Object(L"Layer_NagaGuard");
-	//	auto * m_pPRockWarrior = CManagement::GetInstance()->Find_Object(L"Layer_RockWarrior");
-	//	auto * m_pTreeGuard = CManagement::GetInstance()->Find_Object(L"Layer_TreeGuard");
-	//	auto * m_pMushroom = CManagement::GetInstance()->Find_Object(L"Layer_Mushroom");
 
-	//	m_pPNagaGuard->SetObjectAnimState(AnimationtTest);
-	//	m_pPRockWarrior->SetObjectAnimState(AnimationtTest);
-	//	m_pTreeGuard->SetObjectAnimState(AnimationtTest);
-	//	m_pMushroom->SetObjectAnimState(AnimationtTest);
-
-	//	AnimationtTest++;
-
-	//	if (AnimationtTest > 5)
-	//		AnimationtTest = 0;
-	//}
 }
 
-//void Player::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity, const GameTimer & gt)
-//{
-//	
-//
-//	
-//		if (dwDirection)
-//		{
-//			XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-//			if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, fDistance);
-//			if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Height, -fDistance);
-//			if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, fDistance);
-//			if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Width, -fDistance);
-//
-//			//	xmf3Shift = Vector3::Normalize(xmf3Shift);
-//			//xmf3Shift += m_MovingRefletVector;
-//			//xmf3Shift = Vector3::Normalize(xmf3Shift);
-//
-//			// S = xmf3Shift
-//			// n = m_MovingRfelctVector
-//			// P = xmf3Shift
-//
-//			// S = P - n(P·n)
-//
-//			/*cout << " ---------------------" << endl;
-//			cout << "Shift : " << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
-//			cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
-//			cout << " ---------------------" << endl;*/
-//
-//			float cosCeta = Vector3::DotProduct(m_MovingRefletVector, xmf3Shift);
-//			if (cosCeta < 0)
-//				//if(!Vector3::IsEqual(Vector3::Normalize(m_MovingRefletVector), Vector3::Normalize(xmf3Shift)))
-//				xmf3Shift = Vector3::Subtract(xmf3Shift, Vector3::MultiplyScalr(m_MovingRefletVector, Vector3::DotProduct(xmf3Shift, m_MovingRefletVector)));
-//
-//			//cout << xmf3Shift.x << "\t" << xmf3Shift.y << "\t" << xmf3Shift.z << endl;
-//			//cout << "m_MovingRefletVector : " << m_MovingRefletVector.x << "\t" << m_MovingRefletVector.y << "\t" << m_MovingRefletVector.z << endl;
-//
-//		
-//
-//			Move(xmf3Shift, bUpdateVelocity);
-//
-//
-//		}
-//
-//	
-//}
 
 //--------------------------------------- AnimateStateMachine-----------------------------------------
 
@@ -982,8 +922,6 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerUltimate == true)
 	{
 
-		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
-
 		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
 
@@ -1009,7 +947,8 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
+			dynamic_cast<Player*>(m_pObject)->bIsUltimateState = true;
+			CNetwork::GetInstance()->SendUltimateOnPacket(); // 진짜로 넘어간다
 		}
 
 

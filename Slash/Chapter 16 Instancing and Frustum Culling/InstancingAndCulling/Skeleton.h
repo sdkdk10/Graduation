@@ -31,6 +31,7 @@ private:
 
 	bool		m_IsWarrior;
 
+
 public:
 	virtual HRESULT			Initialize();
 	virtual bool			Update(const GameTimer& gt);
@@ -62,6 +63,7 @@ public:
 		return m_PreState;
 	}
 
+	bool bIsUltimateState = false;
 private:
 	int m_CurState;
 	int m_PreState;

@@ -353,7 +353,7 @@ void Camera::CameraEffect_Shaking()
 	if (bCameraEffect_Shaking)
 	{
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
-		cout << dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState << endl;
+		//cout << dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState << endl;
 
 		if (this != NULL)
 		{
@@ -538,7 +538,7 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 				movePos.z += SaveUltimateCameraPos.z + Direction.z;*/
 
 		
-				cout << Length << endl;
+				//cout << Length << endl;
 				LastLength = Length;
 				if (!bCameraEffect_Shaking)
 				{

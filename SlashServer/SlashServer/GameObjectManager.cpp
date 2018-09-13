@@ -830,10 +830,59 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 	{
 		cs_packet_player_type *p = reinterpret_cast<cs_packet_player_type *>(packet);
 
-		dynamic_cast<Player*>(player)->playerType = p->playerType;
-
 		PutNewPlayer(player);
 
+		return;
+	}
+	else if (packet[1] == CS_ULTIMATE_START)
+	{
+		player->state_ = STATE_ULTIMATE;
+		sc_packet_state sp;
+		sp.id = player->ID_;
+		sp.size = sizeof(sc_packet_state);
+		sp.type = SC_STATE;
+		sp.state = player->state_;
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->CanSee(player)) continue;
+			if (player == playerArray_[i]) continue;
+			SendManager::SendPacket(playerArray_[i], &sp);
+		}
+
+		return;
+	}
+	else if (packet[1] == CS_ULTIMATE_ON)
+	{
+		player->state_ = State::STATE_IDLE;
+		dynamic_cast<Player*>(player)->isUltimateMode = true;
+		sc_packet_ultimate_on su;
+		su.id = player->ID_;
+		su.size = sizeof(sc_packet_ultimate_on);
+		su.type = SC_ULTIMATE_ON;
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->CanSee(player)) continue;
+			if (player == playerArray_[i]) continue;
+			SendManager::SendPacket(playerArray_[i], &su);
+		}
+		return;
+	}
+	else if (packet[1] == CS_ULTIMATE_OFF)
+	{
+		dynamic_cast<Player*>(player)->isUltimateMode = false;
+		sc_packet_ultimate_off su;
+		su.id = player->ID_;
+		su.size = sizeof(sc_packet_ultimate_off);
+		su.type = SC_ULTIMATE_OFF;
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->CanSee(player)) continue;
+			if (player == playerArray_[i]) continue;
+			SendManager::SendPacket(playerArray_[i], &su);
+		}
 		return;
 	}
 	else

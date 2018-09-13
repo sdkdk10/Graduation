@@ -19,6 +19,7 @@ void Player::Initialize()
 	prevSize_ = 0;
 	rollDir = 0;
 	rollCurFrame = 0;
+	isUltimateMode = false;
 
 	XMStoreFloat4x4(&world_, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	world_._41 = 15, world_._42 = 0, world_._43 = 0;

@@ -30,6 +30,7 @@
 #include "SpriteBatch.h"
 #include "DescriptorHeap.h"
 #include "NumUI.h"
+#include "Minidump.h"
 
 const int gNumFrameResources = 3;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
@@ -83,6 +84,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+	MiniDump::Begin();
+
 	try
 	{
 		InstancingAndCullingApp theApp(hInstance);
@@ -96,6 +99,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 		MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
 		return 0;
 	}
+
+	MiniDump::End();
 }
 
 InstancingAndCullingApp::InstancingAndCullingApp(HINSTANCE hInstance)
