@@ -30,6 +30,9 @@ public:
 	void SendAttack2Packet(void);
 	void SendAttack3Packet(void);
 	void SendStopPacket(void);
+	void SendUltimateStartPacket(void);
+	void SendUltimateOnPacket(void);
+	void SendUltimateOffPacket(void);
 	void SendPlayerInitData(BYTE & playerType);
 	void ProcessPacket(char* ptr);
 	int GetMyID() {

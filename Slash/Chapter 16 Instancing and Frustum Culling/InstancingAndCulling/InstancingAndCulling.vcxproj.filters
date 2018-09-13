@@ -211,6 +211,9 @@
     <Filter Include="02. GameObject\07. UI\05. BarUI">
       <UniqueIdentifier>{ea1d3d1a-f115-4e10-ab85-62114953964a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="90.MiniDump">
+      <UniqueIdentifier>{a3cc8302-7b7f-4ccc-bb18-f84d1d9106d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -396,6 +399,9 @@
     </ClCompile>
     <ClCompile Include="Mushroom.cpp">
       <Filter>02. GameObject\13. Mushroom</Filter>
+    </ClCompile>
+    <ClCompile Include="Minidump.cpp">
+      <Filter>90.MiniDump</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -612,6 +618,9 @@
     </ClInclude>
     <ClInclude Include="Mushroom.h">
       <Filter>02. GameObject\13. Mushroom</Filter>
+    </ClInclude>
+    <ClInclude Include="Minidump.h">
+      <Filter>90.MiniDump</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

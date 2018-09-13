@@ -98,17 +98,22 @@ static const int EVT_PLAYER_ROLL = 10;
 #define CS_ATTACK3						0x23
 #define CS_MAP_INIT_DATA				0x24
 #define CS_PLAYER_TYPE					0x25
+#define CS_ULTIMATE_START				0x26
+#define CS_ULTIMATE_ON					0x27
+#define CS_ULTIMATE_OFF					0x28
 
-#define SC_WALK_MOVE   1
-#define SC_ROLL_MOVE   2
-#define SC_PUT_PLAYER    3
-#define SC_REMOVE_OBJECT 4
-#define SC_CHAT			5
-#define SC_ROTATE		6
-#define SC_STATE		7
-#define SC_HP			8
-#define SC_PUT_MONSTER  9
-#define SC_DAMAGE		10
+#define SC_WALK_MOVE					0x01
+#define SC_ROLL_MOVE					0x02
+#define SC_PUT_PLAYER					0x03
+#define SC_REMOVE_OBJECT				0x04
+#define SC_CHAT							0x05
+#define SC_ROTATE						0x06
+#define SC_STATE						0x07
+#define SC_HP							0x08
+#define SC_PUT_MONSTER					0x09
+#define SC_DAMAGE						0x0a
+#define SC_ULTIMATE_ON					0x0b
+#define SC_ULTIMATE_OFF					0x0c
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
 static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
@@ -151,6 +156,19 @@ struct cs_packet_player_type {
 	BYTE size;
 	BYTE type;
 	BYTE playerType;
+};
+
+struct cs_packet_ultimate_start {
+	BYTE size;
+	BYTE type;
+};
+struct cs_packet_ultimate_on {
+	BYTE size;
+	BYTE type;
+};
+struct cs_packet_ultimate_off {
+	BYTE size;
+	BYTE type;
 };
 
 struct sc_packet_move {
@@ -224,5 +242,18 @@ struct sc_packet_chat {
 	BYTE type;
 	WORD id;
 	WCHAR message[MAX_STR_SIZE];
+};
+
+struct sc_packet_ultimate_on {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	BYTE state;
+};
+
+struct sc_packet_ultimate_off {
+	BYTE size;
+	BYTE type;
+	WORD id;
 };
 #pragma pack (pop)

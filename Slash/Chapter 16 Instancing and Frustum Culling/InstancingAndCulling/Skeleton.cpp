@@ -220,7 +220,15 @@ void CSkeleton::Render_Head(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (bIsUltimateState && m_IsWarrior)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -260,7 +268,15 @@ void CSkeleton::Render_Body(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (bIsUltimateState && m_IsWarrior)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -300,7 +316,15 @@ void CSkeleton::Render_Right(ID3D12GraphicsCommandList * cmdList)
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+	if (bIsUltimateState && m_IsWarrior)
+	{
+		Texture* WarriorUltimateTex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUltimateTex", CTexture_Manager::TEX_DEFAULT_2D);
+		if (WarriorUltimateTex == nullptr)
+			return;
+		tex.Offset(WarriorUltimateTex->Num, mCbvSrvDescriptorSize);
+	}
+	else
+		tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
 	Mat->DiffuseSrvHeapIndex;
 	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
@@ -452,7 +476,6 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK1] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 	}
@@ -488,7 +511,6 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK2] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 
@@ -524,7 +546,6 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK3] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 	}
@@ -545,6 +566,104 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 
 	}
 
+	if (bTimerUltimate == true) // 여기서부터 수정
+	{
+
+		m_fAnimationKeyFrameIndex_Ultimate += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[State::STATE_ULTIMATE])
+		{
+			m_IsSoundPlay[State::STATE_ULTIMATE] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[State::STATE_ULTIMATE])
+		{
+			m_IsEffectPlay[State::STATE_ULTIMATE] = true;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Ultimate > (*vecAnimFrame)[State::STATE_ULTIMATE])
+		{
+			bTimerUltimate = false;
+			m_fAnimationKeyFrameIndex_Ultimate = 0;
+
+			m_IsSoundPlay[State::STATE_ULTIMATE] = false;
+			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
+		}
+
+	}
+
+	if (bTimerRoll == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Roll += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[State::STATE_ROLL] && m_fAnimationKeyFrameIndex_Roll > m_SoundFrame[State::STATE_ROLL])
+		{
+			m_IsSoundPlay[State::STATE_ROLL] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+		}
+
+		if (!m_IsEffectPlay[State::STATE_ROLL] && m_fAnimationKeyFrameIndex_Roll > m_EffectFrame[State::STATE_ROLL])
+		{
+			m_IsEffectPlay[State::STATE_ROLL] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Roll > (*vecAnimFrame)[State::STATE_ROLL])
+		{
+			bTimerRoll = false;
+			m_fAnimationKeyFrameIndex_Roll = 0;
+
+			m_IsSoundPlay[State::STATE_ROLL] = false;
+			m_IsEffectPlay[State::STATE_ROLL] = false;
+
+		}
+
+
+	}
+
+	if (bTimerHit == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[State::STATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[State::STATE_HIT])
+		{
+			m_IsSoundPlay[State::STATE_HIT] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+		}
+
+		if (!m_IsEffectPlay[State::STATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_EffectFrame[State::STATE_HIT])
+		{
+			m_IsEffectPlay[State::STATE_HIT] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Hit > (*vecAnimFrame)[State::STATE_HIT])
+		{
+			bTimerHit = false;
+			m_fAnimationKeyFrameIndex_Hit = 0;
+
+			m_IsSoundPlay[State::STATE_HIT] = false;
+			m_IsEffectPlay[State::STATE_HIT] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+		}
+
+
+	}
 }
 
 AnimateStateMachine_Skeleton * AnimateStateMachine_Skeleton::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])

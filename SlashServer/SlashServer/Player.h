@@ -25,4 +25,5 @@ public:
 	unsigned char rollDir;
 	unsigned char rollCurFrame;
 	unsigned char playerType;
+	bool isUltimateMode;
 };

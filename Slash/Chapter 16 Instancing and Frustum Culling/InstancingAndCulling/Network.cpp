@@ -171,6 +171,55 @@ void CNetwork::SendStopPacket(void)
 	}
 }
 
+void CNetwork::SendUltimateStartPacket(void)
+{
+	cs_packet_ultimate_start *my_packet = reinterpret_cast<cs_packet_ultimate_start *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_ultimate_start);
+	send_wsabuf.len = sizeof(cs_packet_ultimate_start);
+	DWORD iobyte;
+
+	my_packet->type = CS_ULTIMATE_START;
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+void CNetwork::SendUltimateOnPacket(void)
+{
+	cs_packet_ultimate_on *my_packet = reinterpret_cast<cs_packet_ultimate_on *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_ultimate_on);
+	send_wsabuf.len = sizeof(cs_packet_ultimate_on);
+	DWORD iobyte;
+
+	my_packet->type = CS_ULTIMATE_ON;
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+void CNetwork::SendUltimateOffPacket(void)
+{
+	cs_packet_ultimate_off *my_packet = reinterpret_cast<cs_packet_ultimate_off *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_ultimate_off);
+	send_wsabuf.len = sizeof(cs_packet_ultimate_off);
+	DWORD iobyte;
+
+	my_packet->type = CS_ULTIMATE_OFF;
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
+
 void CNetwork::SendPlayerInitData(BYTE& playerType)
 {
 	cs_packet_player_type *my_packet = reinterpret_cast<cs_packet_player_type *>(send_buffer);
@@ -397,13 +446,49 @@ void CNetwork::ProcessPacket(char * ptr)
 			if (PlayerType::PLAYER_MAGE == playerType_[id])
 				id += NUM_OF_PLAYER;
 
-			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Skeletion", id)->GetPosition();
+			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->GetPosition();
 			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
 		}
 		else
 		{
 			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetPosition();
 			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
+		}
+		break;
+	}
+	case SC_ULTIMATE_ON:
+	{
+		sc_packet_ultimate_on * my_packet = reinterpret_cast<sc_packet_ultimate_on *>(ptr);
+		int id = my_packet->id;
+		if (myid == id)
+		{
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_IDLE);
+			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->bIsUltimateState = true;
+		}
+		else if (id < NPC_ID_START)
+		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
+			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_IDLE);
+			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->bIsUltimateState = true;
+		}
+		break;
+	}
+	case SC_ULTIMATE_OFF:
+	{
+		sc_packet_ultimate_off * my_packet = reinterpret_cast<sc_packet_ultimate_off *>(ptr);
+		int id = my_packet->id;
+		if (myid == id)
+		{
+			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->bIsUltimateState = false;
+		}
+		else if (id < NPC_ID_START)
+		{
+			if (PlayerType::PLAYER_MAGE == playerType_[id])
+				id += NUM_OF_PLAYER;
+
+			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->bIsUltimateState = false;
 		}
 		break;
 	}
