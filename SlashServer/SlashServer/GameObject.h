@@ -8,8 +8,9 @@ public:
 	virtual ~GameObject();
 
 public:
-	void SetOOBB(const XMFLOAT3& xmCenter, const XMFLOAT3& xmExtents, const XMFLOAT4& xmOrientation);
 	virtual void Initialize();
+
+	void SetOOBB(const XMFLOAT3& xmCenter, const XMFLOAT3& xmExtents, const XMFLOAT4& xmOrientation);
 
 	bool CanSeeMapObject(GameObject * b);
 	bool CanSee(GameObject * b);

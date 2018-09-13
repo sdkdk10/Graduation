@@ -55,7 +55,7 @@ void AcceptThread::Run()
 			continue;
 		}
 		GameObject* newPlayer = objectManager_->GetPlayer(newKey);
-		auto pNewPlayer = dynamic_cast<Player*>(objectManager_->GetPlayer(newKey));
+		auto pNewPlayer = dynamic_cast<Player*>(newPlayer);
 
 		printf("%d번 플레이어 접속.\n", newKey);
 		pNewPlayer->s_ = newSocket;

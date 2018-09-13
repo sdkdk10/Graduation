@@ -34,6 +34,7 @@ public:
 	void SendUltimateOnPacket(void);
 	void SendUltimateOffPacket(void);
 	void SendPlayerInitData(BYTE & playerType);
+	void SendMapObjectNumPacket(WORD num);
 	void ProcessPacket(char* ptr);
 	int GetMyID() {
 		return myid;

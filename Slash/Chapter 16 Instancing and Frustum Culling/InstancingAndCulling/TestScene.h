@@ -27,7 +27,7 @@ public:
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 	virtual void	CollisionProcess();
 public:
-	int         GetObjectCount() { return m_iObjectCount; }
+	WORD         GetObjectCount() { return m_ObjectCount; }
 
 private:
 	HRESULT Load_Map();
@@ -42,5 +42,5 @@ private:
 	vector<pair<const string, const string>> path;
 	bool				m_IsWarrior = true;
 private:
-	int            m_iObjectCount = 0;
+	WORD            m_ObjectCount = 0;
 };

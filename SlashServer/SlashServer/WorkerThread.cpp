@@ -12,14 +12,18 @@ WorkerThread::~WorkerThread()
 void WorkerThread::Run()
 {
 	while (true) {
-		unsigned long dataSize;
+		unsigned long dataSize{};
+		ULONG_PTR compKey{};
 		GameObject* object = nullptr; // 64비트 모드에서는 long long으로 32비트에서는 long으로
 		WSAOVERLAPPED *pOver;
 
 		BOOL isSuccess = GetQueuedCompletionStatus(Thread::GetIocp(),
-			&dataSize, reinterpret_cast<PULONG_PTR>(&object), &pOver, INFINITE);
+			&dataSize, reinterpret_cast<ULONG_PTR*>(&object), &pOver, INFINITE);
 
 		//printf("GQCS from client [ %d ] with size [ %d ]\n", key, data_size);
+
+		//cout << object << endl;
+		//cout << object->ID_ << endl;
 
 		// 접속종료 처리
 		if (0 == dataSize) {
@@ -37,7 +41,7 @@ void WorkerThread::Run()
 		EXOver *o = reinterpret_cast<EXOver *>(pOver);
 		if (EVT_RECV == o->eventType) {
 
-			auto player = dynamic_cast<Player*>(object);
+			Player* player = static_cast<Player*>(object);
 
 			int rSize = dataSize;
 			char *ptr = o->ioBuf;

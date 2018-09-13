@@ -10,6 +10,7 @@
 #include "Layer.h"
 #include "TestScene.h"
 //#include "Renderer.h"
+#include "Network.h"
 
 CInstancingObject* CInstancingObject::m_pAllInstObject[MAXINSTOBJECTID] = { nullptr };
 unsigned long CInstancingObject::m_iAllInstObjectIndex = 0;
@@ -178,6 +179,14 @@ bool CInstancingObject::Update(const GameTimer & gt)
 	CTestScene* pScene = dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene());
 	if (pScene == nullptr)
 		return false;
+
+	static bool firstTime = true;
+
+	if (firstTime)
+	{
+		CNetwork::GetInstance()->SendMapObjectNumPacket(pScene->GetObjectCount());
+		firstTime = false;
+	}
 
 	CGameObject::Update(gt);
 
