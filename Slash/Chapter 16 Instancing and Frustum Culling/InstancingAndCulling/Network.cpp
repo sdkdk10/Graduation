@@ -397,7 +397,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			if (PlayerType::PLAYER_MAGE == playerType_[id])
 				id += NUM_OF_PLAYER;
 
-			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Skeletion", id)->GetPosition();
+			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->GetPosition();
 			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
 		}
 		else

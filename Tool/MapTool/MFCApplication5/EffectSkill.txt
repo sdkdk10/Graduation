@@ -1,2 +1,2 @@
 1
-Slash_00	2	slash00	slash01	
+LightBall_00	1	lightball00	

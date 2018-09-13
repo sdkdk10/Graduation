@@ -196,16 +196,19 @@ void Player::Render(ID3D12GraphicsCommandList * cmdList)
 HRESULT Player::Initialize()
 {
 	string strTexName;
+	wchar_t* machineName;
 	if (m_IsWarrior)
 	{
 		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
 		strTexName = "VillagerTex";
+		machineName = L"Warrior";
 	}
 
 	else
 	{
 		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Mage"));
 		strTexName = "MageTex";
+		machineName = L"Mage";
 	}
 
 	if (nullptr == m_pMesh)
@@ -213,7 +216,7 @@ HRESULT Player::Initialize()
 
 	// > 테스트용으로 넣어둠
 	int test[State::STATE_END] = { 0, };
-	AnimStateMachine = AnimateStateMachine_Player::Create(this, L"Warrior", test, test);
+	AnimStateMachine = AnimateStateMachine_Player::Create(this, machineName, test, test);
 	if (AnimStateMachine == nullptr)
 		return E_FAIL;
 
@@ -801,6 +804,19 @@ AnimateStateMachine_Player::~AnimateStateMachine_Player()
 
 HRESULT AnimateStateMachine_Player::Initialize()
 {
+	if(!wcscmp(m_pMachineName, L"Warrior"))
+	{
+		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+	}
+	else
+	{
+		m_mapEffectName.emplace(State::STATE_ATTACK1, "LightBall_00");
+		m_mapEffectName.emplace(State::STATE_ATTACK2, "orbAttack");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Heal_00");
+	}
+	
 	return S_OK;
 }
 
@@ -850,9 +866,12 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK1] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			//cout << "스킬!" << endl;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Hit5", &m_pObject->GetWorld());
-			//cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
+			//cout << "스킬!" << endl;			XMFLOAT4X4 matWorld = Matrix4x4::Identity();
+			XMFLOAT4X4 matWorld = Matrix4x4::Identity();
+			matWorld._41 = m_pObject->GetWorld()._41;
+			matWorld._42 = m_pObject->GetWorld()._42;
+			matWorld._43 = m_pObject->GetWorld()._43;
+			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK1], &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[State::STATE_ATTACK1])
@@ -892,7 +911,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			matWorld._41 = m_pObject->GetWorld()._41;
 			matWorld._42 = m_pObject->GetWorld()._42;
 			matWorld._43 = m_pObject->GetWorld()._43;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("orbAttack", &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
+			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK2], &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[State::STATE_ATTACK2])
@@ -928,7 +947,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK3] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Heal_00", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[State::STATE_ATTACK3])

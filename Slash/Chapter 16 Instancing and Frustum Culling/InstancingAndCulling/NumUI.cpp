@@ -48,7 +48,7 @@ HRESULT NumUI::Initialize()
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = m_iMyInstObject;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
-	Mat->DiffuseAlbedo = XMFLOAT4(0.916f, 0.4f, 0.2f, 1.f);
+	Mat->DiffuseAlbedo = XMFLOAT4(1.f, 0.4f, 0.2f, 1.f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 	Mat->MatTransform(3, 0) = 0.1f;
@@ -58,7 +58,7 @@ HRESULT NumUI::Initialize()
 
 	//XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));// *XMMatrixRotationY(20.f));
 	//World = MathHelper::Identity4x4();
-	XMStoreFloat4x4(&World, XMMatrixScaling(0.15f, 0.15f, 0.15f) *XMMatrixRotationX(-90.f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(0.2f, 0.2f, 0.2f) *XMMatrixRotationX(-90.f));
 	m_f4x4InitWorld = World;
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;

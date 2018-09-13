@@ -689,20 +689,6 @@ void CEffect::Update_Play(const GameTimer & gt)
 	m_pTransCom->GetRotation() += m_ChangeRot;
 
 	m_pTransCom->Update_Component(gt);
-	static bool first = false;
-	static int ifir = 0;
-	++ifir;
-	if (ifir > 50)
-	{
-		first = false;
-		ifir = 0;
-	}
-
-	if (!first)
-	{
-		//cout << m_tInfo.strName << "  :  " << m_pTransCom->GetWorld()._41 << ", " << m_pTransCom->GetWorld()._42 << ", " << m_pTransCom->GetWorld()._43 << endl;
-		first = true;
-	}
 
 	auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
@@ -820,6 +806,9 @@ void CEffect::Update_Billboard(const GameTimer & gt)
 
 	XMFLOAT4X4 f4x4World;
 	XMStoreFloat4x4(&f4x4World, matScale * matRot);
+
+	if (m_pTransCom->GetParentMatrix() != nullptr)
+		f4x4World *= *m_pTransCom->GetParentMatrix();
 
 	XMFLOAT3 pos;
 	memcpy(&pos, &m_pTransCom->GetWorld()._41, sizeof(float) * 3);

@@ -120,7 +120,7 @@ class AnimateStateMachine_Player
 	: public AnimateStateMachine
 {
 public:
-
+	
 public:
 	explicit AnimateStateMachine_Player(CGameObject* pObj, wchar_t* pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END]);
 	virtual ~AnimateStateMachine_Player();
@@ -137,6 +137,8 @@ private:
 	int				m_SoundFrame[State::STATE_END];			// > 해당 애니메이션의 몇번째 프레임에서 사운드가 나와야하는지 저장하고 있는 변수
 	bool			m_IsEffectPlay[State::STATE_END];			// > 해당 애니메이션의 이펙트가 실행됐는지 확인하는 변수, 애니메이션이 바뀌거나 끝났을 경우 false로 바뀜
 	int				m_EffectFrame[State::STATE_END];			// > 해당 애니메이션의 몇번째 프레임에서 이펙트가 나와야하는지 저장하고 있는 변수
+
+	unordered_map<State, string>	m_mapEffectName;
 
 public:
 	static AnimateStateMachine_Player* Create(CGameObject* pObj, wchar_t* pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END]);

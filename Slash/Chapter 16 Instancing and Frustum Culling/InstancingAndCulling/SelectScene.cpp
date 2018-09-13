@@ -118,6 +118,7 @@ HRESULT CSelectScene::Initialize()
 	scale.y = 0.5f;
 	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, true);
 	pObject->SetCamera(Get_MainCam());
+	dynamic_cast<ChangeUI*>(pObject)->SetPlay(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetisChange(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(0.f, 0.4f, 1.0f, 1.f), 1.5f);
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
