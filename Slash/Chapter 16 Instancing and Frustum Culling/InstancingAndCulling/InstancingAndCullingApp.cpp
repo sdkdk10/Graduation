@@ -669,16 +669,36 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(MageUITex->Name, MageUITex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"MageUITex Ready Failed"); 
 
-
 	auto Tex = new Texture;
-	Tex->Name = "SelectUI";
-	Tex->Filename = L"Assets/Textures/SelectUI.dds";
+	Tex->Name = "SelectBackground";
+	Tex->Filename = L"Assets/Textures/SelectBackground.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
 		mCommandList.Get(), Tex->Filename.c_str(),
 		Tex->Resource, Tex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
-		MSG_BOX(L"SelectUI Ready Failed");
+		MSG_BOX(L"SelectBackground Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "SelectWarrior";
+	Tex->Filename = L"Assets/Textures/SelectWarrior.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SelectWarrior Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "SelectWizard";
+	Tex->Filename = L"Assets/Textures/SelectWizard.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SelectWizard Ready Failed");
 
 	Tex = new Texture;
 	Tex->Name = "PressEnter";
@@ -689,6 +709,16 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"PressEnter Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "SelectCharacter";
+	Tex->Filename = L"Assets/Textures/SelectCharacter.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SelectCharacter Ready Failed");
 
 	Tex = new Texture;
 	Tex->Name = "BarUI";
