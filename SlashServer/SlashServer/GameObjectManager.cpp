@@ -3,6 +3,7 @@
 #include "CollisionUtil.h"
 
 GameObjectManager::GameObjectManager()
+	:mapObjectNum_(0)
 {
 	threadManager_ = ThreadManager::GET_INSTANCE();
 }
@@ -13,7 +14,7 @@ GameObjectManager::~GameObjectManager()
 
 void GameObjectManager::InitGameObjects()
 {
-	for (auto& d : playerArray_)
+	for (GameObject*& d : playerArray_)
 	{
 		d = new Player;
 		d->Initialize();
@@ -36,7 +37,7 @@ void GameObjectManager::InitGameObjects()
 
 		npcArray_[i]->Initialize();
 	}
-	for (auto& d : mapObjectArray_)
+	for (GameObject*& d : mapObjectArray_)
 	{
 		d = new MapObject;
 		d->Initialize();
@@ -101,7 +102,7 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 
 void GameObjectManager::DisconnectPlayer(GameObject* player) {
 
-	auto pPlayer = dynamic_cast<Player*>(player);
+	Player* pPlayer = dynamic_cast<Player*>(player);
 
 	closesocket(pPlayer->s_); // closesocket 먼저 해야함 // 멀티 쓰레드라서 
 	pPlayer->isActive_ = false;
@@ -357,8 +358,10 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 
 	if (player->isActive_ == false)
+	{
+		monster->state_ = STATE_IDLE;
 		return;
-
+	}
 	if (monster->state_ == STATE_DEAD)
 		return;
 
@@ -808,21 +811,22 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 	else if (packet[1] == CS_MAP_INIT_DATA)
 	{
 		static int first_client = player->ID_;
+		static int num = 0;
 
 		if (first_client != player->ID_)
 			return;
 
+		if (mapObjectNum_ <= num)
+			return;
 		cs_packet_mapinitdata *p = reinterpret_cast<cs_packet_mapinitdata *>(packet);
 
-		static int id = 0;
+		mapObjectArray_[num] = new MapObject;
+		mapObjectArray_[num]->isActive_ = true;
+		mapObjectArray_[num]->ID_ = num;
+		mapObjectArray_[num]->world_ = p->world;
+		dynamic_cast<MapObject*>(mapObjectArray_[num])->Bounds = p->bounds;
 
-		mapObjectArray_[id] = new MapObject;
-		mapObjectArray_[id]->isActive_ = true;
-		mapObjectArray_[id]->ID_ = id;
-		mapObjectArray_[id]->world_ = p->world;
-		dynamic_cast<MapObject*>(mapObjectArray_[id])->Bounds = p->bounds;
-
-		++id;
+		++num;
 
 		return;
 	}
@@ -883,6 +887,12 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			if (player == playerArray_[i]) continue;
 			SendManager::SendPacket(playerArray_[i], &su);
 		}
+		return;
+	}
+	else if (packet[1] == CS_MAPOBJECT_NUM)
+	{
+		cs_packet_mapobject_num* p = reinterpret_cast<cs_packet_mapobject_num *>(packet);
+		mapObjectNum_ = p->mapObjectNum;
 		return;
 	}
 	else

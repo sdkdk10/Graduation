@@ -237,6 +237,23 @@ void CNetwork::SendPlayerInitData(BYTE& playerType)
 	}
 }
 
+void CNetwork::SendMapObjectNumPacket(WORD num)
+{
+	cs_packet_mapobject_num *my_packet = reinterpret_cast<cs_packet_mapobject_num *>(send_buffer);
+	my_packet->size = sizeof(cs_packet_mapobject_num);
+	send_wsabuf.len = sizeof(cs_packet_mapobject_num);
+	DWORD iobyte;
+
+	my_packet->type = CS_MAPOBJECT_NUM;
+	my_packet->mapObjectNum = num;
+	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+
+	if (ret) {
+		int error_code = WSAGetLastError();
+		printf("Error while sending packet [%d]", error_code);
+	}
+}
+
 
 
 void CNetwork::ProcessPacket(char * ptr)

@@ -457,8 +457,8 @@ HRESULT CTestScene::Load_Map()
 
 	while (!fin.eof())
 	{
-		if (m_iObjectCount == 0)
-			fin >> m_iObjectCount;
+		if (m_ObjectCount == 0)
+			fin >> m_ObjectCount;
 
 		fin >> ignore;      // > Com_Mesh_ÀÌ¸§
 

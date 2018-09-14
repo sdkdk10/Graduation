@@ -101,6 +101,7 @@ static const int EVT_PLAYER_ROLL = 10;
 #define CS_ULTIMATE_START				0x26
 #define CS_ULTIMATE_ON					0x27
 #define CS_ULTIMATE_OFF					0x28
+#define CS_MAPOBJECT_NUM				0x29
 
 #define SC_WALK_MOVE					0x01
 #define SC_ROLL_MOVE					0x02
@@ -170,6 +171,12 @@ struct cs_packet_ultimate_off {
 	BYTE size;
 	BYTE type;
 };
+struct cs_packet_mapobject_num {
+	BYTE size;
+	BYTE type;
+	WORD mapObjectNum;
+};
+
 
 struct sc_packet_move {
 	BYTE size;

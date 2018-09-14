@@ -28,11 +28,11 @@ public:
 	void ProcessMove(GameObject * player, unsigned char dirType, unsigned char moveType);
 	void ProcessPacket(GameObject* cl, char * packet);
 public:
-	 GameObject*										GetPlayer(unsigned int playerIndex) { if (playerIndex >= playerArray_.size()) return nullptr; return playerArray_[playerIndex]; }
+	inline GameObject*&										GetPlayer(unsigned int playerIndex) { return playerArray_[playerIndex]; }
 	inline std::array<GameObject*, NUM_OF_PLAYER>&				GetPlayerList() { return playerArray_; }
-	inline GameObject*										GetNPC(unsigned int npcIndex) { if (npcIndex >= npcArray_.size()) return nullptr; return npcArray_[npcIndex]; }
+	inline GameObject*&										GetNPC(unsigned int npcIndex) { return npcArray_[npcIndex]; }
 	inline std::array<GameObject*, NUM_OF_NPC_TOTAL>&		GetNPCList() { return npcArray_; }
-	inline GameObject*										GetMapObject(unsigned int mapObjectIndex) { if (mapObjectIndex >= mapObjectArray_.size()) return nullptr; return mapObjectArray_[mapObjectIndex]; }
+	inline GameObject*&										GetMapObject(unsigned int mapObjectIndex) { return mapObjectArray_[mapObjectIndex]; }
 	inline std::array<GameObject*, NUM_OF_MAPOBJECT>&			GetMapObjectList() { return mapObjectArray_; }
 	GameObjectManager*										GetGameObjectManager() { return this; }
 private:
@@ -41,4 +41,6 @@ private:
 	std::array<GameObject*, NUM_OF_PLAYER>			playerArray_;
 	std::array<GameObject*, NUM_OF_NPC_TOTAL>				npcArray_;
 	std::array<GameObject*, NUM_OF_MAPOBJECT>		mapObjectArray_;
+private:
+ 	WORD mapObjectNum_;
 };
