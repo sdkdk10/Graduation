@@ -30,9 +30,11 @@ HRESULT CSelectScene::Initialize()
 {
 	XMFLOAT2 move;
 	XMFLOAT2 scale;
-	float size;
+	float size = 1.f;
 
 
+	//Texture* tex;
+	//CGameObject* pObject;
 	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("SelectBackground", CTexture_Manager::TEX_DEFAULT_2D);
 	move.x = 0.f;
 	move.y = 0.f;
@@ -128,7 +130,14 @@ HRESULT CSelectScene::Initialize()
 	//pObject->SetCamera(Get_MainCam());
 	//Ready_GameObject(L"Layer_Player", pObject);
 	//CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, pObject);
-	CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Combat_Music_06");
+
+	// > Sound
+	//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Combat_Music_06");
+
+	//pObject = Player::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, true);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(XMFLOAT3(0.f, 0.f, 0.f));
+	//Ready_GameObject(L"Layer_SelectPlayer", pObject);
 	
 
 
@@ -158,7 +167,7 @@ HRESULT CSelectScene::Initialize()
 	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, false , 0.003f, 0.8f);
 	pObject->SetCamera(Get_MainCam());
 	//dynamic_cast<ChangeUI*>(pObject)->SetisChange(true);
-	
+
 	info.f2maxFrame = XMFLOAT2(5.f, 3.f);
 	info.fSpeed = 15.f;
 	dynamic_cast<ChangeUI*>(pObject)->SetFrameInfo(info);
@@ -253,22 +262,41 @@ HRESULT CSelectScene::Initialize()
 
 	////XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 
-	//move.x = -0.54f;
-	//move.y = 5.74007f;
-	////move = XMFLOAT2(0.0f, 0.f);
-	////XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
-	//scale.x = 5.f;
-	//scale.y = 0.33f;
-	//size = 0.21f;
+	move.x = 0.f;
+	move.y = -10.1391f;
+	//move = XMFLOAT2(0.0f, 0.f);
+	//XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
+	scale.x = 5.f;
+	scale.y = 0.0631968f;
+	size = 0.543387f;
 
-	//tex = CTexture_Manager::GetInstance()->Find_Texture("HPUI", CTexture_Manager::TEX_DEFAULT_2D);
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("HPUIBase", CTexture_Manager::TEX_DEFAULT_2D);
 
 	//// > Hp Bar
 	//gBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	////pObject->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
 	//Ready_GameObject(L"Layer_PlayerStateUI", gBar);
+	//gBar->GetCur() = 200.f;
+	//gBar->GetMax() = 200.f;
 
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("GageUIBase", CTexture_Manager::TEX_DEFAULT_2D);
 
+	////pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerHPState", tex->Num);
+	//pObject->SetCamera(Get_MainCam());
+	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	//Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
+
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
+
+	//// > Hp Bar
+	//move.y = -12.973f;
+	//scale.y = 0.053f;
+	//gBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	////pObject->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
+	//Ready_GameObject(L"Layer_PlayerStateUI", gBar);
+	//gBar->GetCur() = 200.f;
+	//gBar->GetMax() = 200.f;
 	// > ===================================================================================
 
 	return S_OK;
@@ -309,70 +337,72 @@ bool CSelectScene::Update(const GameTimer & gt)
 		CManagement::GetInstance()->Change_Scene(pScene);
 		CManagement::GetInstance()->GetSound()->StopBGM();
 	}
+
+	static float speed = 1.f;
 	float size, moveX, moveY, scaleX, scaleY;
 	if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveX -= 0.01f;
+		moveX -= speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
 
 	if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveX += 0.01f;
+		moveX += speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
 
 	if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveY += 0.001f;
+		moveY += speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
 	if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveY -= 0.001f;
+		moveY -= speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
-	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_DOWN)
+	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		size += 0.001f;
+		size += speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
-	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_DOWN)
+	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		size -= 0.001f;
+		size -= speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
 	if (KeyBoard_Input(DIK_C) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		scaleY -= 0.001f;
+		scaleY -= speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
 	}
 	if (KeyBoard_Input(DIK_V) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		scaleY += 0.001f;
+		scaleY += speed * gt.DeltaTime();
 		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
+	}
+	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_DOWN)
+	{
+		speed -= 0.1f;
+	}
+	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_DOWN)
+	{
+		speed += 0.1f;
 	}
 	if (KeyBoard_Input(DIK_I) == CInputDevice::INPUT_PRESS)
 	{
-		// > 여기가 워리어
 		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
 		cout << "move : " << moveX << ", " << moveY << " Scale : " << size << ", " << scaleY << endl;
+		cout << "speed : " << speed << endl;
 	}
 	return true;
 }

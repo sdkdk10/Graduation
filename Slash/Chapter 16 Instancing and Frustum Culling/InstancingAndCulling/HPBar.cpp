@@ -58,7 +58,8 @@ bool HPBar::Update(const GameTimer & gt)
 	currVB->CopyData(m_iMyUIID, v);
 
 	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur/m_fMax, (-size + move.y) * scale.y, 0.0f); //1
-	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
+	//v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
+	v.TexC = XMFLOAT2(m_fCur / m_fMax, 1.f);
 
 	currVB->CopyData(m_iMyUIID + 1, v);
 
@@ -74,13 +75,15 @@ bool HPBar::Update(const GameTimer & gt)
 	currVB->CopyData(m_iMyUIID + 3, v);
 
 	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (size + move.y) * scale.y, 0.0f); //4
-	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax) + 0.05, 0.0f);
+	//v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax) + 0.05, 0.0f);
+	v.TexC = XMFLOAT2(m_fCur / m_fMax, 0.f);
 
 
 	currVB->CopyData(m_iMyUIID + 4, v);
 
 	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (-size + move.y) * scale.y, 0.0f); //5
-	v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
+	//v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
+	v.TexC = XMFLOAT2(m_fCur / m_fMax, 1.f);
 
 	
 	currVB->CopyData(m_iMyUIID + 5, v);

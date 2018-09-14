@@ -423,12 +423,14 @@ HRESULT AnimateStateMachine_Skeleton::Initialize()
 		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
 		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
 	}
 	else
 	{
 		m_mapEffectName.emplace(State::STATE_ATTACK1, "LightBall_00");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "orbAttack");
 		m_mapEffectName.emplace(State::STATE_ATTACK3, "Heal_00");
+		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Cast_00");
 	}
 
 	return S_OK;
@@ -599,7 +601,7 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsEffectPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[State::STATE_ULTIMATE])
 		{
 			m_IsEffectPlay[State::STATE_ULTIMATE] = true;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ULTIMATE], &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Ultimate > (*vecAnimFrame)[State::STATE_ULTIMATE])

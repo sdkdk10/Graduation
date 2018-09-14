@@ -19,7 +19,8 @@ public:
 	virtual HRESULT			Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size);
 	HRESULT					Initialize(wchar_t* uiName);
 
-
+	void					SetColor(float r, float g, float b, float a);
+	XMFLOAT4				GetColor() { return Mat->DiffuseAlbedo; }
 private:
 	virtual void Free();
 };

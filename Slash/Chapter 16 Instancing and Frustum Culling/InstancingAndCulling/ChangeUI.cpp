@@ -17,6 +17,9 @@ ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12
 	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
 	m_fStartTime = fStartTime;
 	m_IsContinue = isCon;
+	m_xmf3Scale.x = 1.f;
+	m_xmf3Scale.y = 1.f;
+	m_xmf3Scale.z = 1.f;
 }
 
 
@@ -247,6 +250,22 @@ void ChangeUI::MoveFrame(const GameTimer& gt)
 
 	Mat->MatTransform(0, 0) = 1 / m_tFrame.f2maxFrame.x;
 	Mat->MatTransform(1, 1) = 1 / m_tFrame.f2maxFrame.y;
+}
+
+void ChangeUI::Scaling(float x, float y)
+{
+	scale.x += x;
+	scale.y += y;
+
+	XMMATRIX matScale = XMMatrixScaling(scale.x, scale.y, 1.f);
+	XMStoreFloat4x4(&World, matScale);
+	World._41;
+}
+
+void ChangeUI::GetScale(float * x, float * y)
+{
+	x = &scale.x;
+	y = &scale.y;
 }
 
 void ChangeUI::Free()

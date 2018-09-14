@@ -9,6 +9,7 @@
 #include "Texture_Manager.h"
 #include "Player.h"
 #include "Layer.h"
+#include "Effect_Manager.h"
 
 
 Spider::Spider(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
@@ -506,6 +507,11 @@ void Spider::SetTexture(SpiderType _tex)
 		return;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
 	
+}
+
+void Spider::MageHitEffectPlay()
+{
+	CEffect_Manager::GetInstance()->Play_SkillEffect("Thunder_00", &World);
 }
 
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)

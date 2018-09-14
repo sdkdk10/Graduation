@@ -25,6 +25,10 @@ public:
 	void		MoveFrame(const GameTimer& gt);
 
 	void		SetPlay(bool _end) { m_isPlay = _end; }
+
+	void		Scaling(float x, float y);
+	void		GetScale(float* x, float* y);
+
 private:
 	bool				m_IsContinue = false;
 	bool				m_IsChange = false;

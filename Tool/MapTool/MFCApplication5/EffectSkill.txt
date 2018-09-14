@@ -1,2 +1,2 @@
 1
-LightBall_00	1	lightball00	
+Trans_00	1	trans_00

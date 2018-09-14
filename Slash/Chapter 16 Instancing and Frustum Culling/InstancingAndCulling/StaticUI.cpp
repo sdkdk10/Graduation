@@ -59,7 +59,36 @@ StaticUI * StaticUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 bool StaticUI::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+	auto currObjectCB = m_pFrameResource->ObjectCB.get();
+
+	XMMATRIX world = XMLoadFloat4x4(&World);
+	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
+
+	ObjectConstants objConstants;
+	XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+	XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
+	objConstants.MaterialIndex = Mat->MatCBIndex;
+
+	currObjectCB->CopyData(ObjCBIndex, objConstants);
+
+
+	auto currMaterialCB = m_pFrameResource->MaterialCB.get();
+
+	XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
+
+	MaterialConstants matConstants;
+	matConstants.DiffuseAlbedo = Mat->DiffuseAlbedo;
+	matConstants.FresnelR0 = Mat->FresnelR0;
+	matConstants.Roughness = Mat->Roughness;
+	XMStoreFloat4x4(&matConstants.MatTransform, XMMatrixTranspose(matTransform));
+
+
+	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
+
+	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UICHANGE, this);
 	return true;
 }
 
@@ -107,7 +136,7 @@ HRESULT StaticUI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
-	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.7f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
@@ -151,6 +180,14 @@ HRESULT StaticUI::Initialize(wchar_t* uiName)
 	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
 
 	return S_OK;
+}
+
+void StaticUI::SetColor(float r, float g, float b, float a)
+{
+	Mat->DiffuseAlbedo.x = r;
+	Mat->DiffuseAlbedo.y = g;
+	Mat->DiffuseAlbedo.z = b;
+	Mat->DiffuseAlbedo.w = a;
 }
 
 void StaticUI::Free()

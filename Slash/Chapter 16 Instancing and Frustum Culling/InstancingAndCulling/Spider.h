@@ -23,6 +23,10 @@ public:
 public:
 	void SetTexture(SpiderType _tex);
 
+
+public:
+	void MageHitEffectPlay();
+
 private:
 	Player *				m_pPlayer = nullptr;
 	string					m_strTexName[SPIDER_END];

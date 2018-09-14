@@ -734,17 +734,6 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"BarUI Ready Failed");
-
-	Tex = new Texture;
-	Tex->Name = "HPUI";
-	Tex->Filename = L"Assets/Textures/HPUI.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), Tex->Filename.c_str(),
-		Tex->Resource, Tex->UploadHeap));
-
-	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
-		MSG_BOX(L"HPUI Ready Failed");
-
 	Tex = new Texture;
 	Tex->Name = "GageUI";
 	Tex->Filename = L"Assets/Textures/GageUI.dds";
@@ -764,6 +753,47 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"ExpUI Ready Failed");
+	Tex = new Texture;
+	Tex->Name = "HPUI";
+	Tex->Filename = L"Assets/Textures/HPUI.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"HPUI Ready Failed");
+
+
+
+	Tex = new Texture;
+	Tex->Name = "HPUIBase";
+	Tex->Filename = L"Assets/Textures/HPUIBase.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"HPUIBase Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "GageUIBase";
+	Tex->Filename = L"Assets/Textures/GageUIBase.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"GageUIBase Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "ExpUIBase";
+	Tex->Filename = L"Assets/Textures/ExpUIBase.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"ExpUIBase Ready Failed");
 
 	Tex = new Texture;
 	Tex->Name = "LevelUpUI";
@@ -843,6 +873,8 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	vector<pair<const string, const string>> path;
 	//path.push_back(make_pair("Attack", "Assets/Models/Warrior/Warrior_Attack_Turn.ASE"));
+	//==
+//	CComponent* pComponent;
 	path.push_back(make_pair("Idle", "Assets/Models/Warrior/Warrior_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Warrior/Warrior_Walk.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack1.ASE"));
@@ -973,8 +1005,32 @@ void InstancingAndCullingApp::LoadMeshes()
 	scale.y = 0.15f;
 
 	size = 1.f;
+
+	// HP
+	move.x = 0.f;
+	move.y = -17.3f;
+	scale.x = 0.545f;
+	scale.y = 0.037f;
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerHPState", pComponent);
+
+	// Exp
+	move.x = 0.f;
+	move.y = -19.5f;
+	scale.x = 0.545f;
+	scale.y = 0.029f;
+
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerExpState", pComponent);
+
+	// Gage
+	move.x = 0.f;
+	move.y = -21.5f;
+	scale.x = 0.545f;
+	scale.y = 0.032f;
+
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerGageState", pComponent);
 
 
 
@@ -1167,14 +1223,14 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	auto mapDefaultBill = CTexture_Manager::GetInstance()->Get_TextureMap(CTexture_Manager::TEX_DEFAULT_BILLBOARD);
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc2 = {}; //Default Texture
-	srvHeapDesc2.NumDescriptors = mapDefault2D.size() + mapDefaultCube.size() + mapDefaultBill.size();
+	srvHeapDesc2.NumDescriptors = UINT(mapDefault2D.size()) + UINT(mapDefaultCube.size()) + UINT(mapDefaultBill.size());
 	srvHeapDesc2.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc2.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc2, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_DEFAULT])));
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {}; //Instancing Texture
-	srvHeapDesc.NumDescriptors = mapInst2D.size();
+	srvHeapDesc.NumDescriptors = (UINT)mapInst2D.size();
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap[HEAP_INSTANCING])));
@@ -1484,7 +1540,7 @@ void InstancingAndCullingApp::BuildPSOs()
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC skyPsoDesc = opaquePsoDesc;
 
 	// The camera is inside the sky sphere, so just turn off culling.
-	skyPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; //카메라가 구 내부에 있음으로 후면선별을 끔 
+	skyPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; //카메라가 구 내부에 있음으로 후면선별을 끔
 
 
 																// Make sure the depth function is LESS_EQUAL and not just LESS.  

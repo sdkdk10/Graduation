@@ -573,15 +573,29 @@ void CTestScene::UISetting()
 
 	size = 0.5f;
 
-	tex = CTexture_Manager::GetInstance()->Find_Texture("BarUI", CTexture_Manager::TEX_DEFAULT_2D);
+	tex = CTexture_Manager::GetInstance()->Find_Texture("HPUIBase", CTexture_Manager::TEX_DEFAULT_2D);
 
 	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerHPState", tex->Num);
 	pObject->SetCamera(Get_MainCam());
-	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
-//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
+	dynamic_cast<StaticUI*>(pObject)->SetColor(1.f, 1.f, 1.f, 0.7f);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 
+	tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUIBase", CTexture_Manager::TEX_DEFAULT_2D);
+
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerExpState", tex->Num);
+	pObject->SetCamera(Get_MainCam());
+	dynamic_cast<StaticUI*>(pObject)->SetColor(1.f, 1.f, 1.f, 0.7f);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUIBase", CTexture_Manager::TEX_DEFAULT_2D);
+
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerGageState", tex->Num);
+	pObject->SetCamera(Get_MainCam());
+	dynamic_cast<StaticUI*>(pObject)->SetColor(1.f, 1.f, 1.f, 0.7f);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 
 	// > UINum Setting
 	//CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(0.f, 0.f, 0.f));

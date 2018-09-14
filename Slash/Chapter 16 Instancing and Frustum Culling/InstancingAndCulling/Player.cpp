@@ -270,34 +270,34 @@ HRESULT Player::Initialize()
 	// > Hp, Exp, Gage Bar UI Setting
 	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 
-	move.x = -0.545f;
-	move.y = 6.31003f;
+	move.x = 0.f;
+	move.y = -10.1391f;
 
 	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
 	scale.x = 5.f;
-	scale.y = 0.138001f;
-	float size = 0.214f;
+	scale.y = 0.0631968f;
+	float size = 0.543387f;
 
 
 	// > Hp Bar
 	tex = CTexture_Manager::GetInstance()->Find_Texture("HPUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_HpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_HpBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
 	m_HpBar->GetCur() = 200.f;
 	m_HpBar->GetMax() = 200.f;
+
 	// > Exp Bar
-	move.y = 5.64208f;
+	move.y = -12.1353f;
+	scale.y = 0.0465798f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_ExpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_ExpBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
 	m_ExpBar->GetCur() = 30.f;
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
-	move.y = 4.98612f;
+	move.y = -12.973f;
+	scale.y = 0.053f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_GageBar->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
 	m_GageBar->GetCur() = 70.f;
 	m_GageBar->GetMax() = 100.f;
 
@@ -749,12 +749,14 @@ HRESULT AnimateStateMachine_Player::Initialize()
 		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
 		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
 	}
 	else
 	{
 		m_mapEffectName.emplace(State::STATE_ATTACK1, "LightBall_00");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "orbAttack");
 		m_mapEffectName.emplace(State::STATE_ATTACK3, "Heal_00");
+		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Cast_00");
 	}
 	
 	return S_OK;
@@ -935,7 +937,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsEffectPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_EffectFrame[State::STATE_ULTIMATE])
 		{
 			m_IsEffectPlay[State::STATE_ULTIMATE] = true;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Drop", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ULTIMATE], &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Ultimate > (*vecAnimFrame)[State::STATE_ULTIMATE])
