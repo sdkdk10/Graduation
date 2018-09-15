@@ -473,7 +473,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		break;
 	}
-	case SC_ULTIMATE_ON:
+	case SC_ULTIMATE_WARRIOR:
 	{
 		sc_packet_ultimate_on * my_packet = reinterpret_cast<sc_packet_ultimate_on *>(ptr);
 		int id = my_packet->id;
@@ -489,6 +489,17 @@ void CNetwork::ProcessPacket(char * ptr)
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_IDLE);
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->bIsUltimateState = true;
+		}
+		break;
+	}
+	case SC_ULTIMATE_WIZARD:
+	{
+		sc_packet_ultimate_on * my_packet = reinterpret_cast<sc_packet_ultimate_on *>(ptr);
+		int id = my_packet->id;
+
+		if(id >= NPC_ID_START)
+		{
+			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->MageHitEffectPlay();
 		}
 		break;
 	}

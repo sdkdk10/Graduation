@@ -509,11 +509,6 @@ void Spider::SetTexture(SpiderType _tex)
 	
 }
 
-void Spider::MageHitEffectPlay()
-{
-	CEffect_Manager::GetInstance()->Play_SkillEffect("Thunder_00", &World);
-}
-
 Spider * Spider::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
 {
 	Spider* pInstance = new Spider(d3dDevice, srv, srvSize);

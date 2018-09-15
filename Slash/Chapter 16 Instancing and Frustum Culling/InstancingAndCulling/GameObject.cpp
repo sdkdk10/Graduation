@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "Effect_Manager.h"
 
 CGameObject* CGameObject::m_pAllObject[MAXOBJECTID] = { nullptr };
 unsigned long CGameObject::m_iAllObjectIndex = 0;
@@ -168,6 +169,11 @@ void CGameObject::Animate(const GameTimer & gt)
 {
 	// Animate
 
+}
+
+void CGameObject::MageHitEffectPlay()
+{
+	CEffect_Manager::GetInstance()->Play_SkillEffect("Thunder_00", &World);
 }
 
 

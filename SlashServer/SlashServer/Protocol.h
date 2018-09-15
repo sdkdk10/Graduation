@@ -113,8 +113,9 @@ static const int EVT_PLAYER_ROLL = 10;
 #define SC_HP							0x08
 #define SC_PUT_MONSTER					0x09
 #define SC_DAMAGE						0x0a
-#define SC_ULTIMATE_ON					0x0b
-#define SC_ULTIMATE_OFF					0x0c
+#define SC_ULTIMATE_WARRIOR				0x0b
+#define SC_ULTIMATE_WIZARD				0x0c
+#define SC_ULTIMATE_OFF					0x0d
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
 static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
@@ -255,7 +256,6 @@ struct sc_packet_ultimate_on {
 	BYTE size;
 	BYTE type;
 	WORD id;
-	BYTE state;
 };
 
 struct sc_packet_ultimate_off {

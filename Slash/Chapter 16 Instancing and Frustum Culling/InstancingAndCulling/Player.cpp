@@ -599,12 +599,9 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 void Player::KeyInput(const GameTimer & gt)
 {
 	if (GetHp() <= 0) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_DEAD) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK1) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK2) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK3) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ROLL) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ULTIMATE ) return;
+	if ((AnimStateMachine->GetAnimState() == State::STATE_IDLE ||
+		AnimStateMachine->GetAnimState() == State::STATE_WALK) == false)
+		return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
 		return;
@@ -948,8 +945,11 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[State::STATE_ULTIMATE] = false;
 			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
 
+			auto pPlayer = dynamic_cast<Player*>(m_pObject);
+
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			dynamic_cast<Player*>(m_pObject)->bIsUltimateState = true;
+			if(pPlayer->GetIsWarrior())
+				pPlayer->bIsUltimateState = true;
 			CNetwork::GetInstance()->SendUltimateOnPacket(); // 진짜로 넘어간다
 		}
 

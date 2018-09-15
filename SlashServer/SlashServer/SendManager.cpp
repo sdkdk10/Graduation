@@ -107,7 +107,7 @@ void SendManager::SendPutPlayer(GameObject* player, GameObject* object)
 	put_p.posZ = object->world_._43;
 	put_p.lookDegree = object->lookDegree_;
 	put_p.state = object->state_;
-	put_p.playerType = dynamic_cast<Player*>(object)->playerType;
+	put_p.playerType = dynamic_cast<Player*>(object)->playerType_;
 
 	SendPacket(player, &put_p);
 }
@@ -163,7 +163,7 @@ void SendManager::SendObjectHp(GameObject* player, GameObject* object)
 	SendPacket(player, &p);
 }
 
-void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, GameObject* attackObj)
+void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, int damage)
 {
 	sc_packet_damage p;
 
@@ -174,7 +174,7 @@ void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, G
 
 	p.size = sizeof(sc_packet_damage);
 	p.type = SC_DAMAGE;
-	p.dmg = attackObj->dmg_;
+	p.dmg = damage;
 
 	SendPacket(player, &p);
 }

@@ -100,14 +100,14 @@ void WorkerThread::Run()
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			GameObject* target = o->eventTarget;
-			objectManager_->MonsterDamaged(object, target);
+			objectManager_->MonsterDamaged(object, target->dmg_);
 			delete o;
 		}
 		else if (EVT_PLAYER_DAMAGED == o->eventType)
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			GameObject* target = o->eventTarget;
-			objectManager_->PlayerDamaged(object, target);
+			objectManager_->PlayerDamaged(object, target->dmg_);
 			delete o;
 		}
 		else if (EVT_MONSTER_RESPOWN == o->eventType)
