@@ -48,8 +48,10 @@ void NPC::Initialize()
 
 	//타입별로 OOBB 노가다 해야함
 	//SetOOBB(XMFLOAT3(Bounds.Center.x , Bounds.Center.y , Bounds.Center.z ), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-
-	SetOOBB(XMFLOAT3(0.f, 0.3232f, 0.7277f), XMFLOAT3(1.0345f, 0.7848f, 1.0931f), XMFLOAT4(0.f, 0.f, 0.f, 1.f));
+	if (NPC_SPIDER == npcType_)
+		SetOOBB(XMFLOAT3(0.f, 0.3232f, 0.7277f), XMFLOAT3(1.0345f, 0.7848f, 1.0931f), XMFLOAT4(0.f, 0.f, 0.f, 1.f));
+	else
+		SetOOBB(XMFLOAT3(-7.5388f, -5.98235f, 28.8367f), XMFLOAT3(23.1505f, 16.4752f, 28.5554f * 4.f), XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
 	xmOOBBTransformed_.Transform(xmOOBB_, XMLoadFloat4x4(&world_));
 	XMStoreFloat4(&xmOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&xmOOBBTransformed_.Orientation)));

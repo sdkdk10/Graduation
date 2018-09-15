@@ -372,18 +372,87 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 	}
 }
 
-void GameObjectManager::PlayerAttack(GameObject* player) {
+void GameObjectManager::ProcessWarriorAttack1(GameObject* player) {
 
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i) // 뷰리스트에 있는 애들 쓰는게 더 나으려나..
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
 	{
 		if (false == npcArray_[i]->isActive_) continue;
-		if (false == npcArray_[i]->IsAttackRange(player)) continue;
-
-		// 몬스터가 앞에 있는가 여기에서 판단
+		if (false == npcArray_[i]->InWarriorAttack1Range(player)) continue;
 
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 50, player);
 	}
+}
+void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 
+	player->skillMoveRange += WARRIOR_SKILL2_SPEED;
+
+	// -bound.center.y == playerlook방향 
+	//	bound.extents.x == 가로길이
+	//	bound.extents.y == 세로길이
+	player->SetSkillOOBB(XMFLOAT3(-7.5388f, -5.98235f - player->skillMoveRange, 28.8367f),
+		XMFLOAT3(23.1505f * WARRIOR_SKILL2_WIDTH, 16.4752f * WARRIOR_SKILL2_DEPTH, 28.5554f),
+		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
+
+	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
+	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
+
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	{
+		if (false == npcArray_[i]->isActive_) continue;
+		if (false == npcArray_[i]->CanSee(player)) continue;
+		if (player->skillOOBB_.Contains(npcArray_[i]->xmOOBB_))
+		{
+			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount(), player);
+			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 150, player);
+		}
+	}
+
+	if (player->skillMoveRange >= WARRIOR_SKILL2_MAX_RANGE)
+	{
+		player->skillMoveRange = 0;
+	}
+	else
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK2, GetTickCount() + 10, nullptr);
+}
+void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
+
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	{
+		if (false == npcArray_[i]->isActive_) continue;
+		if (false == npcArray_[i]->InWarriorAttack1Range(player)) continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 50, player);
+	}
+}
+void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
+
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	{
+		if (false == npcArray_[i]->isActive_) continue;
+		if (false == npcArray_[i]->InWarriorAttack1Range(player)) continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 50, player);
+	}
+}
+void GameObjectManager::ProcessWizardAttack2(GameObject* player) {
+
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	{
+		if (false == npcArray_[i]->isActive_) continue;
+		if (false == npcArray_[i]->InWarriorAttack1Range(player)) continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 50, player);
+	}
+}
+void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
+
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	{
+		if (false == npcArray_[i]->isActive_) continue;
+		if (false == npcArray_[i]->InWarriorAttack1Range(player)) continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 50, player);
+	}
 }
 
 void GameObjectManager::PlayerDamaged(GameObject* player, int damage) {
@@ -583,8 +652,6 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	bool IsNPCColl = false;
 	bool IsMapObjectColl = false;
 
-	// 플레이어 이동시 충돌체크
-
 	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
@@ -776,12 +843,32 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 	}
 	else if ((packet[1] == CS_ATTACK1) || (packet[1] == CS_ATTACK2) || (packet[1] == CS_ATTACK3))
 	{
+		auto pPlayer = dynamic_cast<Player*>(player);
+
 		if (packet[1] == CS_ATTACK1)
+		{
 			player->state_ = STATE_ATTACK1;
+			if(PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK1, GetTickCount() + ATTACK_DELAY, nullptr);
+			else
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK1, GetTickCount() + ATTACK_DELAY, nullptr);
+		}
 		else if (packet[1] == CS_ATTACK2)
+		{
 			player->state_ = STATE_ATTACK2;
+			if (PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK2, GetTickCount() + ATTACK_DELAY, nullptr);
+			else
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK2, GetTickCount() + ATTACK_DELAY, nullptr);
+		}
 		else if (packet[1] == CS_ATTACK3)
+		{
 			player->state_ = STATE_ATTACK3;
+			if (PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK3, GetTickCount() + ATTACK_DELAY, nullptr);
+			else
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK3, GetTickCount() + ATTACK_DELAY, nullptr);
+		}
 
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
@@ -792,7 +879,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 
 		}
 
-		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_ATTACK, GetTickCount() + ATTACK_DELAY, nullptr);
+
 
 		return;
 	}

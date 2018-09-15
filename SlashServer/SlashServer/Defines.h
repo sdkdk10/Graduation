@@ -19,6 +19,11 @@ const double	RADIAN_TO_DEGREE		{ 57.3248 };
 const int ATTACK_DELAY				{ 500 };
 const int ROLL_DELAY				{ 30 };
 
+const float WARRIOR_SKILL2_SPEED{ 60 };
+const float WARRIOR_SKILL2_MAX_RANGE{ 180 };
+const float WARRIOR_SKILL2_WIDTH{ 2.f };
+const float WARRIOR_SKILL2_DEPTH{ 0.1f };
+
 const int MAGE_ULTIMATE_DMG{ 50 };
 const int INIT_PLAYER_DMG{ 10 };
 

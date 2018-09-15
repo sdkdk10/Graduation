@@ -90,10 +90,40 @@ void WorkerThread::Run()
 			objectManager_->MonsterAttack(object, target);
 			delete o;
 		}
-		else if (EVT_PLAYER_ATTACK == o->eventType)
+		else if (EVT_WARRIOR_ATTACK1 == o->eventType)
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
-			objectManager_->PlayerAttack(object);
+			objectManager_->ProcessWarriorAttack1(object);
+			delete o;
+		}
+		else if (EVT_WARRIOR_ATTACK2 == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			objectManager_->ProcessWarriorAttack2(object);
+			delete o;
+		}
+		else if (EVT_WARRIOR_ATTACK3 == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			objectManager_->ProcessWarriorAttack3(object);
+			delete o;
+		}
+		else if (EVT_WIZARD_ATTACK1 == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			objectManager_->ProcessWizardAttack1(object);
+			delete o;
+		}
+		else if (EVT_WIZARD_ATTACK2 == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			objectManager_->ProcessWizardAttack2(object);
+			delete o;
+		}
+		else if (EVT_WIZARD_ATTACK3 == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			objectManager_->ProcessWizardAttack3(object);
 			delete o;
 		}
 		else if (EVT_MONSTER_DAMAGED == o->eventType)

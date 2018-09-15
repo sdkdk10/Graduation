@@ -668,23 +668,20 @@ void Player::KeyInput(const GameTimer & gt)
 	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
 		{
-			//CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(GetPosition().x, GetPosition().y +3, GetPosition().z));
-
 			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
 		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
 		{
-			//CManagement::GetInstance()->Add_NumUI(210, XMFLOAT3(GetPosition().x, GetPosition().y + 3, GetPosition().z));
 			CNetwork::GetInstance()->SendAttack2Packet();
 
 		}
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
-		else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
-		{
-			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
-		}
+		//else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
+		//{
+		//	m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
+		//}
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
@@ -1000,7 +997,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	}
 
-	if (bTimerHit == true)
+	if (bTimerHit)
 	{
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");

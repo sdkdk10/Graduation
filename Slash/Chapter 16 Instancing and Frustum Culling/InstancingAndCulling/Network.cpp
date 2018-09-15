@@ -394,6 +394,9 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else
 		{
+			if (my_packet->state == State::STATE_HIT)
+				my_packet->state = MonsterState::MSTATE_HIT;
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetObjectAnimState(my_packet->state);
 		}
 		break;

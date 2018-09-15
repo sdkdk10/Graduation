@@ -14,6 +14,16 @@ enum State
 	STATE_HIT,
 	STATE_END,
 };
+enum MonsterState
+{
+	MSTATE_IDLE,
+	MSTATE_WALK,
+	MSTATE_ATTACK1,
+	MSTATE_ATTACK2,
+	MSTATE_HIT,
+	MSTATE_DEAD,
+	MSTATE_END,
+};
 enum MonsterZone
 { 
 	MONSTER_ZONE1, 
@@ -49,13 +59,17 @@ static const int EVT_RECV = 0;
 static const int EVT_SEND = 1;
 static const int EVT_CHASE = 2;
 static const int EVT_MONSTER_ATTACK = 3;
-static const int EVT_PLAYER_ATTACK = 4;
-static const int EVT_MONSTER_DAMAGED = 5;
-static const int EVT_PLAYER_DAMAGED = 6;
-static const int EVT_ATTACKMOVE = 7;
-static const int EVT_MONSTER_RESPOWN = 8;
-static const int EVT_PLAYER_RESPOWN = 9;
-static const int EVT_PLAYER_ROLL = 10;
+static const int EVT_WARRIOR_ATTACK1 = 4;
+static const int EVT_WARRIOR_ATTACK2 = 5;
+static const int EVT_WARRIOR_ATTACK3 = 6;
+static const int EVT_WIZARD_ATTACK1 = 7;
+static const int EVT_WIZARD_ATTACK2 = 8;
+static const int EVT_WIZARD_ATTACK3 = 9;
+static const int EVT_MONSTER_DAMAGED = 10;
+static const int EVT_PLAYER_DAMAGED = 11;
+static const int EVT_MONSTER_RESPOWN = 12;
+static const int EVT_PLAYER_RESPOWN = 13;
+static const int EVT_PLAYER_ROLL = 14;
 
 #define MY_SERVER_PORT  4000
 

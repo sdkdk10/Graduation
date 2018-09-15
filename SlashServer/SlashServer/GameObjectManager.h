@@ -20,7 +20,12 @@ public:
 	void WakeUpNPC(GameObject * npc, GameObject * target);
 	void ChasingPlayer(GameObject* npc, GameObject* player);
 	void MonsterAttack(GameObject* monster, GameObject* player);
-	void PlayerAttack(GameObject* player);
+	void ProcessWarriorAttack1(GameObject* player);
+	void ProcessWarriorAttack2(GameObject * player);
+	void ProcessWarriorAttack3(GameObject * player);
+	void ProcessWizardAttack1(GameObject * player);
+	void ProcessWizardAttack2(GameObject * player);
+	void ProcessWizardAttack3(GameObject * player);
 	void PlayerDamaged(GameObject* player, int damage);
 	void MonsterDamaged(GameObject * monster, int damage);
 	void PlayerRespown(GameObject* player);

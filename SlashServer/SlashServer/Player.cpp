@@ -22,7 +22,7 @@ void Player::Initialize()
 	isWarriorUltimateMode = false;
 
 	XMStoreFloat4x4(&world_, XMMatrixScaling(0.05f, 0.05f, 0.05f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
-	world_._41 = 15, world_._42 = 0, world_._43 = 0;
+	world_._41 = INIT_PLAYER_POS.x, world_._42 = INIT_PLAYER_POS.y, world_._43 = INIT_PLAYER_POS.z;
 	hp_ = INIT_PLAYER_HP;
 	dmg_ = INIT_PLAYER_DMG;
 	objectType_ = TYPE_PLAYER;

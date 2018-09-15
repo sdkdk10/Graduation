@@ -14,6 +14,11 @@ void GameObject::SetOOBB(const XMFLOAT3 & xmCenter, const XMFLOAT3 & xmExtents, 
 	xmOOBBTransformed_ = xmOOBB_ = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
 }
 
+void GameObject::SetSkillOOBB(const XMFLOAT3 & xmCenter, const XMFLOAT3 & xmExtents, const XMFLOAT4 & xmOrientation)
+{
+	skillOOBBTransformed_ = skillOOBB_ = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
+}
+
 void GameObject::Initialize()
 {
 	lookDegree_ = 0;
@@ -24,7 +29,6 @@ void GameObject::Initialize()
 bool GameObject::CanSeeMapObject(GameObject* b)
 {
 	float dist_sq = (world_._41 - b->world_._41) * (world_._41 - b->world_._41)
-		+ (world_._42 - b->world_._42) * (world_._42 - b->world_._42)
 		+ (world_._43 - b->world_._43) * (world_._43 - b->world_._43);
 	return (dist_sq <= MAPOBJECT_RADIUS * MAPOBJECT_RADIUS);
 }
@@ -32,7 +36,6 @@ bool GameObject::CanSeeMapObject(GameObject* b)
 bool GameObject::CanSee(GameObject* b)
 {
 	float dist_sq = (world_._41 - b->world_._41) * (world_._41 - b->world_._41)
-		+ (world_._42 - b->world_._42) * (world_._42 - b->world_._42)
 		+ (world_._43 - b->world_._43) * (world_._43 - b->world_._43);
 	return (dist_sq <= VIEW_RADIUS * VIEW_RADIUS);
 }
@@ -40,22 +43,19 @@ bool GameObject::CanSee(GameObject* b)
 bool GameObject::IsClose(GameObject* b)
 {
 	float dist_sq = (world_._41 - b->world_._41) * (world_._41 - b->world_._41)
-		+ (world_._42 - b->world_._42) * (world_._42 - b->world_._42)
 		+ (world_._43 - b->world_._43) * (world_._43 - b->world_._43);
 	return (dist_sq <= CLOSE_RADIUS * CLOSE_RADIUS);
 }
 
-bool GameObject::IsAttackRange(GameObject* b)
+bool GameObject::InWarriorAttack1Range(GameObject* b)
 {
 	float dist_sq = (world_._41 - b->world_._41) * (world_._41 - b->world_._41)
-		+ (world_._42 - b->world_._42) * (world_._42 - b->world_._42)
 		+ (world_._43 - b->world_._43) * (world_._43 - b->world_._43);
 	return (dist_sq <= PLAYER_ATTACK_RADIUS * PLAYER_ATTACK_RADIUS);
 }
 bool GameObject::IsInAgroRange(GameObject* b)
 {
 	float dist_sq = (world_._41 - b->world_._41) * (world_._41 - b->world_._41)
-		+ (world_._42 - b->world_._42) * (world_._42 - b->world_._42)
 		+ (world_._43 - b->world_._43) * (world_._43 - b->world_._43);
 	return (dist_sq <= AGRO_RADIUS * AGRO_RADIUS);
 }
