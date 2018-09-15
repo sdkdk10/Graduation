@@ -130,6 +130,10 @@ void WorkerThread::Run()
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			GameObject* target = o->eventTarget;
+
+			if (dynamic_cast<Player*>(target)->isWarriorUltimateMode)
+				target->dmg_ *= 2;
+
 			objectManager_->MonsterDamaged(object, target->dmg_);
 			delete o;
 		}

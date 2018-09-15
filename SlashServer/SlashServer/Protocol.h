@@ -53,7 +53,7 @@ enum PlayerType
 	PLAYER_MAGE
 };
 
-const int INIT_PLAYER_HP = 2000;
+const int INIT_PLAYER_HP = 300;
 const float CS_SEND_PACKET_DELAY = 10;
 static const int EVT_RECV = 0;
 static const int EVT_SEND = 1;
