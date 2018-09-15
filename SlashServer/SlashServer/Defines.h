@@ -19,10 +19,14 @@ const double	RADIAN_TO_DEGREE		{ 57.3248 };
 const int ATTACK_DELAY				{ 500 };
 const int ROLL_DELAY				{ 30 };
 
-const int MAGE_ULTIMATE_DAMAGE{ 50 };
+const int MAGE_ULTIMATE_DMG{ 50 };
+const int INIT_PLAYER_DMG{ 10 };
 
 const DirectX::XMFLOAT3	DIR_VECTOR_Z{ 0.0f, 0.0f, 1.0f };
 const DirectX::XMFLOAT3	DIR_VECTOR_X{ 1.0f, 0.0f, 0.0f };
+
+const DirectX::XMFLOAT3	INIT_PLAYER_POS{ -11.0f, 0.0f, -3.0f };
+
 
 class GameObject;
 

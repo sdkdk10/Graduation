@@ -282,8 +282,8 @@ HRESULT Player::Initialize()
 	// > Hp Bar
 	tex = CTexture_Manager::GetInstance()->Find_Texture("HPUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_HpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_HpBar->GetCur() = 200.f;
-	m_HpBar->GetMax() = 200.f;
+	m_HpBar->GetCur() = INIT_PLAYER_HP;
+	m_HpBar->GetMax() = INIT_PLAYER_HP;
 
 	// > Exp Bar
 	move.y = -12.1353f;
@@ -600,7 +600,8 @@ void Player::KeyInput(const GameTimer & gt)
 {
 	if (GetHp() <= 0) return;
 	if ((AnimStateMachine->GetAnimState() == State::STATE_IDLE ||
-		AnimStateMachine->GetAnimState() == State::STATE_WALK) == false)
+		AnimStateMachine->GetAnimState() == State::STATE_WALK ||
+		AnimStateMachine->GetAnimState() == State::STATE_HIT) == false)
 		return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
@@ -692,9 +693,13 @@ void Player::KeyInput(const GameTimer & gt)
 		}
 	}
 
-	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
+	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
-		//KeyInputTest = 2;
+		cout << "x : " << World._41 << "	z : " << World._43 << endl;
+	}
+	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_DOWN)
+	{
+		cout << "================================================" << World._43 << endl;
 	}
 
 

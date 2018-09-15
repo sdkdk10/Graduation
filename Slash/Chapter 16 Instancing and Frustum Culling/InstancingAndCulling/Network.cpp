@@ -275,7 +275,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->Rotation(0.f, 0.f, my_packet->lookDegree);
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(my_packet->state);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(200);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(INIT_PLAYER_HP);
 		}
 		else if (id < NPC_ID_START)
 		{

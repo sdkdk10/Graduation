@@ -24,7 +24,7 @@ public:
 	void SetTexture(SpiderType _tex);
 	virtual void SetObjectAnimState(int _animState)
 	{
-		cout << _animState << endl;
+		//cout << _animState << endl;
 		/*if (_animState == 5)
 		{
 			AnimStateMachine->SetAnimState(_animState - 1);

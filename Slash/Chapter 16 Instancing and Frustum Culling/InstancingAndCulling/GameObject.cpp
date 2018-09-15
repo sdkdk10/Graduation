@@ -267,7 +267,17 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 
 	}
 
+	if (bTimerHit == true)
+	{
+		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+		if (m_fAnimationKeyFrameIndex_Hit > (*vecAnimFrame)[9])
+		{
+			bTimerHit = false;
+			m_fAnimationKeyFrameIndex_Hit = 0;
+		}
 
+	}
 
 }
 

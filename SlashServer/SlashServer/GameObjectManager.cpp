@@ -48,10 +48,10 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 {
 	auto pPlayer = dynamic_cast<Player*>(player);
 
-	pPlayer->hp_ = 200;
-	pPlayer->world_._41 = 15;
-	pPlayer->world_._42 = 0;
-	pPlayer->world_._43 = 0;
+	pPlayer->hp_ = INIT_PLAYER_HP;
+	pPlayer->world_._41 = INIT_PLAYER_POS.x;
+	pPlayer->world_._42 = INIT_PLAYER_POS.y;
+	pPlayer->world_._43 = INIT_PLAYER_POS.z;
 
 	pPlayer->vlm_.lock();
 	pPlayer->viewList_.clear();
@@ -335,7 +335,8 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 
 void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 
-	if (player->isActive_ == false)
+	if (player->isActive_ == false || 
+		player->state_ == STATE_DEAD)
 	{
 		SearchNewTargetPlayer(monster);
 		return;
@@ -417,6 +418,17 @@ void GameObjectManager::PlayerDamaged(GameObject* player, int damage) {
 
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_RESPOWN, GetTickCount() + 5000, nullptr);
 	}
+	else
+	{
+		player->state_ = STATE_HIT;
+
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->CanSee(player)) continue;
+			SendManager::SendObjectState(playerArray_[i], player);
+		}
+	}
 }
 
 void GameObjectManager::MonsterDamaged(GameObject* monster, int damage) {
@@ -449,6 +461,16 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, int damage) {
 		}
 
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPOWN, GetTickCount() + 50000, nullptr);
+	}
+	else
+	{
+		monster->state_ = STATE_HIT;
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->CanSee(monster)) continue;
+			SendManager::SendObjectState(playerArray_[i], monster);
+		}
 	}
 }
 
@@ -865,7 +887,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 					su.id = npcArray_[i]->ID_ + NPC_ID_START;
 					SendManager::SendPacket(playerArray_[j], &su);
 				}
-				MonsterDamaged(npcArray_[i], MAGE_ULTIMATE_DAMAGE);
+				MonsterDamaged(npcArray_[i], MAGE_ULTIMATE_DMG);
 			}
 		}
 
