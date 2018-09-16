@@ -306,9 +306,6 @@ bool CSelectScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
-	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_DOWN)
-		CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"sfx_alice_death_fall01");
-
 	if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS)
 	{
 		// พ๊ดย นýป็
@@ -338,72 +335,6 @@ bool CSelectScene::Update(const GameTimer & gt)
 		CManagement::GetInstance()->GetSound()->StopBGM();
 	}
 
-	static float speed = 1.f;
-	float size, moveX, moveY, scaleX, scaleY;
-	if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveX -= speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-
-	if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveX += speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-
-	if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveY += speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-	if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		moveY -= speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		size += speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		size -= speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-	if (KeyBoard_Input(DIK_C) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		scaleY -= speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-	if (KeyBoard_Input(DIK_V) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		scaleY += speed * gt.DeltaTime();
-		gBar->SetUI(size, moveX, moveY, scaleX, scaleY);
-	}
-	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_DOWN)
-	{
-		speed -= 0.1f;
-	}
-	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_DOWN)
-	{
-		speed += 0.1f;
-	}
-	if (KeyBoard_Input(DIK_I) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &moveX, &moveY, &scaleX, &scaleY);
-		cout << "move : " << moveX << ", " << moveY << " Scale : " << size << ", " << scaleY << endl;
-		cout << "speed : " << speed << endl;
-	}
 	return true;
 }
 

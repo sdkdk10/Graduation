@@ -511,65 +511,16 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 		{
 				testnum += 0.06f;
 		}
-		else //180도 다 돌았으면
+		else
 		{
-			if (m_pPlayer->bIsUltimateState) //궁 상태에서 카메라
-			{
-				XMFLOAT3 offset = XMFLOAT3((m_pPlayer->GetUp().x) * 10, (m_pPlayer->GetUp().y) * 5, (m_pPlayer->GetUp().z) * 10);
-				XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x + offset.x, Target->GetPosition().y + 10, Target->GetPosition().z + offset.z); //최종목표
-				XMFLOAT3 Direction = Vector3::Subtract(pos, SaveUltimateCameraPos); // 현재카메라에서 최종목표까지 방향벡터
-				Direction = Vector3::Normalize(Direction);
-				//cout << Length << endl;
-				//cout << mPosition.x << "\t" << mPosition.y << "\t" << mPosition.z << endl;
-			
-				XMFLOAT3 movePos;
-
-				float Length = Vector3::Length(Vector3::Subtract(pos, SaveUltimateCameraPos));
-				if (Length > 5.25f && Length < LastLength)
-				{
-					SaveUltimateCameraPos.x += Direction.x * 1.01f;
-					SaveUltimateCameraPos.y += Direction.y* 1.01f;
-					SaveUltimateCameraPos.z += Direction.z* 1.01f;
-
-				}
-		
-
-				movePos = SaveUltimateCameraPos;
-
-			/*	movePos.x += SaveUltimateCameraPos.x + Direction.x;
-				movePos.y += SaveUltimateCameraPos.y + Direction.y;
-				movePos.z += SaveUltimateCameraPos.z + Direction.z;*/
-
-		
-				//cout << Length << endl;
-				LastLength = Length;
-				if (!bCameraEffect_Shaking)
-				{
-					LookAt(movePos, Target->GetPosition(), XMFLOAT3(0, 1, 0));
-					if (bSaveUltimateCameraPosTest == false)
-					{
-						SaveUltimateCameraPos = GetPosition3f();
-						bSaveUltimateCameraPosTest = true;
-					}
-				}
-			}
-			else //궁 끝나면
-			{
-				Target = NULL;
-				bCameraEffect_ZoomIn_RoundUltimate = false;
-				testnum = 0.0f;
-				m_IsDynamic = false;
-				timeLag = 0.0f;
-				bSaveUltimateCameraPosTest = false;
-				LastLength = 0.0f;
-			}
-
-		
-
+			Target = NULL;
+			bCameraEffect_ZoomIn_RoundUltimate = false;
+			testnum = 0.0f;
+			m_IsDynamic = false;
+			timeLag = 0.0f;
+			bSaveUltimateCameraPosTest = false;
+			LastLength = 0.0f;
 		}
-
-
-
 	}
 }
 
