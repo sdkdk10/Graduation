@@ -411,8 +411,6 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 	}
@@ -446,7 +444,6 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK2] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = false;
 
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 
@@ -483,8 +480,6 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_HIT] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_HIT] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 

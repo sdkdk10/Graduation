@@ -147,6 +147,13 @@ void GameObjectManager::WakeUpNPC(GameObject* npc, GameObject* target)
 
 void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 
+	if (npc->state_ == STATE_HIT)
+	{
+		npc->state_ = STATE_WALK;
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount() + 100, player);
+		return;
+	}
+
 	if (npc->state_ == STATE_DEAD)
 		return;
 
@@ -334,6 +341,13 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 }
 
 void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
+
+	if (monster->state_ == STATE_HIT)
+	{
+		monster->state_ = STATE_ATTACK1;
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_ATTACK, GetTickCount() + 100, player);
+		return;
+	}
 
 	if (player->isActive_ == false || 
 		player->state_ == STATE_DEAD)

@@ -405,8 +405,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 	}
@@ -440,8 +438,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK2] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 
@@ -459,7 +455,7 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 		//m_pPlayer->MoveForward(10.0f);
-		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
+		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
@@ -485,7 +481,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[MonsterState::MSTATE_HIT] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_HIT] = false;
 
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 
@@ -505,7 +500,7 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
 		{
-			cout << (*vecAnimFrame)[MonsterState::MSTATE_DEAD] << endl; // 여기 수정
+			//cout << (*vecAnimFrame)[MonsterState::MSTATE_DEAD] << endl; // 여기 수정
 			m_bIsLife = false;
 			bTimerDead = false;
 			//m_fAnimationKeyFrameIndex_Dead = 0;
@@ -518,7 +513,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 
 void AnimateStateMachine_RockWarrior::SetTimerTrueFalse()
 {
-
 	if (m_iAnimState == MonsterState::MSTATE_IDLE)
 	{
 		bTimerIdle = true;

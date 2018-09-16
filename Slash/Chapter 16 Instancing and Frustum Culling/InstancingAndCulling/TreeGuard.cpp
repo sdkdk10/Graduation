@@ -413,8 +413,6 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 	}
@@ -448,8 +446,6 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK2] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 
@@ -467,7 +463,7 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 		//m_pPlayer->MoveForward(10.0f);
-		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
+		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
@@ -492,8 +488,6 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[MonsterState::MSTATE_HIT] = false;
 			m_IsEffectPlay[MonsterState::MSTATE_HIT] = false;
-
-			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
 		}
 
 
