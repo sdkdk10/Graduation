@@ -141,6 +141,9 @@ public:
 				auto result = Vector3::MultiplyScalr(SlideVector, Vector3::DotProduct(xmf3Shift, SlideVector));
 				XMFLOAT3 sub_xmf3Shift = Vector3::Subtract(xmf3Shift, result);
 
+				if(ObjectType::TYPE_MONSTER == object->objectType_)
+					sub_xmf3Shift.x *= 1.5, sub_xmf3Shift.y *= 1,5, sub_xmf3Shift.z *= 1.5;
+
 				player->world_._41 += sub_xmf3Shift.x, player->world_._42 += sub_xmf3Shift.y, player->world_._43 += sub_xmf3Shift.z;
 				return true;
 			}

@@ -665,7 +665,6 @@ void Player::KeyInput(const GameTimer & gt)
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{	
 			if (bIsUltimateState) return;
-			if (State::STATE_ULTIMATE == AnimStateMachine->GetAnimState()) return;
 
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 			SetObjectAnimState(State::STATE_ULTIMATE);

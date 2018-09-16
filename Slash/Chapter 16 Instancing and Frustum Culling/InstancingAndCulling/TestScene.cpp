@@ -96,10 +96,10 @@ HRESULT CTestScene::Initialize()
 		Ready_GameObject(L"Layer_Monster", pObject);
 	}
 
-	pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
-	pObject->SetCamera(Get_MainCam());
-	pObject->SetPosition(0, 0, 15);
-	Ready_GameObject(L"Layer_Dragon", pObject);
+	//pObject = Dragon::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
+	//pObject->SetCamera(Get_MainCam());
+	//pObject->SetPosition(0, 0, 15);
+	//Ready_GameObject(L"Layer_Dragon", pObject);
 
 	//pObject = NagaGuard::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize);
 	//pObject->SetCamera(Get_MainCam());

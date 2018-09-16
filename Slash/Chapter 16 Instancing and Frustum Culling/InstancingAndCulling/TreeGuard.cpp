@@ -536,9 +536,6 @@ void AnimateStateMachine_TreeGuard::SetTimerTrueFalse()
 	}
 
 
-
-
-
 }
 
 AnimateStateMachine_TreeGuard * AnimateStateMachine_TreeGuard::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])

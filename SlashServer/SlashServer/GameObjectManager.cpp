@@ -572,7 +572,7 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 
-		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPAWN, GetTickCount() + 50000, nullptr);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPAWN, GetTickCount() + 50000, nullptr); // 여기 수정
 	}
 	else
 	{
@@ -598,22 +598,20 @@ void GameObjectManager::PlayerRespown(GameObject* player)
 
 void GameObjectManager::MonsterRespown(GameObject* monster)
 {
+	auto npcType = dynamic_cast<NPC*>(monster)->npcType_;
 
-	monster->state_ = STATE_IDLE;
+	if (NPCType::NPC_TURTLE == npcType)
+		monster->hp_ = MonsterInitHP::TURTLE_HP;
+	else if (NPCType::NPC_SPIDER == npcType)
+		monster->hp_ = MonsterInitHP::SPIDER_HP;
+	else if (NPCType::NPC_NAGA_GUARD == npcType)
+		monster->hp_ = MonsterInitHP::NAGAGUARD_HP;
+	else if (NPCType::NPC_TREE_GUARD == npcType)
+		monster->hp_ = MonsterInitHP::TREEGUARD_HP;
+	else if (NPCType::NPC_ROCK_WARRIOR == npcType)
+		monster->hp_ = MonsterInitHP::ROCKWARRIOR_HP;
 
-	monster->hp_ = 5;
-
-	for (int i = 0; i < NUM_OF_PLAYER; ++i)
-	{
-		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->CanSee(monster)) continue;
-
-		SendManager::SendObjectState(playerArray_[i], monster);
-
-		if (false == playerArray_[i]->IsInAgroRange(monster)) continue;
-		ChasingPlayer(monster, playerArray_[i]);
-		break;
-	}
+	SearchNewTargetPlayer(monster);
 }
 
 void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, unsigned char moveType)
@@ -1071,12 +1069,14 @@ void GameObjectManager::SearchNewTargetPlayer(GameObject * monster)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(monster)) continue;
-		if (State::STATE_DEAD == playerArray_[i]->state_) continue;
 
 		SendManager::SendObjectState(playerArray_[i], monster);
 
+		if (State::STATE_DEAD == playerArray_[i]->state_) continue;
+
 		if (playerArray_[i]->IsInAgroRange(monster))
 		{
+			monster->isActive_ = true;
 			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_CHASE, GetTickCount() + 50, playerArray_[i]);
 			return;
 		}

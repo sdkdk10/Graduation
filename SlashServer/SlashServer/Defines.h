@@ -22,7 +22,7 @@ const int ROLL_DELAY				{ 30 };
 const float SKILL_MOVE_DISTANCE{ 50 };
 
 const int WARRIOR_SKILL1_DMG{ 10 };
-const float WARRIOR_SKILL1_DELAY{ 500.f };
+const float WARRIOR_SKILL1_DELAY{ 100.f };
 
 const int WARRIOR_SKILL2_DMG{ 15 };
 const float WARRIOR_SKILL2_DELAY{ 30.f };
@@ -53,7 +53,14 @@ const int WIZARD_SKILL3_DMG{ 50 };
 const int MAGE_ULTIMATE_DMG{ 100 };
 const int INIT_PLAYER_DMG{ 10 };
 
-
+enum MonsterInitHP 
+{
+	TURTLE_HP = 10,
+	SPIDER_HP = 20,
+	NAGAGUARD_HP = 50,
+	TREEGUARD_HP = 100,
+	ROCKWARRIOR_HP = 200
+};
 
 const DirectX::XMFLOAT3	DIR_VECTOR_Z{ 0.0f, 0.0f, 1.0f };
 const DirectX::XMFLOAT3	DIR_VECTOR_X{ 1.0f, 0.0f, 0.0f };

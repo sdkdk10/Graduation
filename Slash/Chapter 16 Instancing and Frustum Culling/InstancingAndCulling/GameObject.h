@@ -72,6 +72,12 @@ public:
 	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
 	int GetCurAnimFrame() { return m_iCurAnimFrame; }
+	void ResetDeadAnimFrame() { 
+		m_fAnimationKeyFrameIndex_Dead = 0.f;
+		m_bIsLife = true;
+		bTimerDead = false;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
+	}
 
 private:
 	virtual void Free();
