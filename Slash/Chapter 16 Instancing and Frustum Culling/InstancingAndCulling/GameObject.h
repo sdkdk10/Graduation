@@ -95,7 +95,8 @@ public:
 		if (State::STATE_HIT == _animState)
 		{
 			if (State::STATE_IDLE == AnimStateMachine->GetAnimState() ||
-			(State::STATE_WALK == AnimStateMachine->GetAnimState())== false) 
+			(State::STATE_WALK == AnimStateMachine->GetAnimState() ||
+			State::STATE_HIT == AnimStateMachine->GetAnimState())== false) 
 				return;
 		}
 		AnimStateMachine->SetAnimState(_animState);

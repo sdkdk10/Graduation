@@ -394,8 +394,27 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else
 		{
-			if (my_packet->state == State::STATE_HIT)
+			if (my_packet->state == State::STATE_IDLE)
+				my_packet->state = MonsterState::MSTATE_IDLE;
+			else if (my_packet->state == State::STATE_WALK)
+				my_packet->state = MonsterState::MSTATE_WALK;
+			else if (my_packet->state == State::STATE_ATTACK1)
+				my_packet->state = MonsterState::MSTATE_ATTACK1;
+			else if (my_packet->state == State::STATE_ATTACK2)
+				my_packet->state = MonsterState::MSTATE_ATTACK2;
+			else if (my_packet->state == State::STATE_DEAD)
+				my_packet->state = MonsterState::MSTATE_DEAD;
+			else if (my_packet->state == State::STATE_HIT)
 				my_packet->state = MonsterState::MSTATE_HIT;
+
+
+			if ((id - NPC_ID_START) >= TURTLE_ID_START)
+			{
+				//if (MonsterState::MSTATE_HIT == my_packet->state)
+				//	my_packet->state = MonsterState::MSTATE_DEAD;
+				//else if (MonsterState::MSTATE_DEAD == my_packet->state)
+				//	my_packet->state = MonsterState::MSTATE_HIT;
+			}
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetObjectAnimState(my_packet->state);
 		}
@@ -445,10 +464,30 @@ void CNetwork::ProcessPacket(char * ptr)
 			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->Rotation(0.f, my_packet->lookDegree, 0.0f);
 		else
 			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->Rotation(0.f, 0.f, my_packet->lookDegree);
+
+		if (my_packet->state == State::STATE_IDLE)
+			my_packet->state = MonsterState::MSTATE_IDLE;
+		else if (my_packet->state == State::STATE_WALK)
+			my_packet->state = MonsterState::MSTATE_WALK;
+		else if (my_packet->state == State::STATE_ATTACK1)
+			my_packet->state = MonsterState::MSTATE_ATTACK1;
+		else if (my_packet->state == State::STATE_ATTACK2)
+			my_packet->state = MonsterState::MSTATE_ATTACK2;
+		else if (my_packet->state == State::STATE_DEAD)
+			my_packet->state = MonsterState::MSTATE_DEAD;
+		else if (my_packet->state == State::STATE_HIT)
+			my_packet->state = MonsterState::MSTATE_HIT;
+
+
+		if ((id - NPC_ID_START) >= TURTLE_ID_START)
+		{
+			//if (MonsterState::MSTATE_HIT == my_packet->state)
+			//	my_packet->state = MonsterState::MSTATE_DEAD;
+			//else if (MonsterState::MSTATE_DEAD == my_packet->state)
+			//	my_packet->state = MonsterState::MSTATE_HIT;
+		}
+
 		CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetObjectAnimState(my_packet->state);
-		//if (my_packet->monsterType == 2)
-		//	my_packet->monsterType = 3;
-		//dynamic_cast<Spider*>(CManagement::GetInstance()->Find_Object(L"Layer_Monster",id - NPC_ID_START))->SetTexture((SpiderType)my_packet->monsterType);
 
 		break;
 	}

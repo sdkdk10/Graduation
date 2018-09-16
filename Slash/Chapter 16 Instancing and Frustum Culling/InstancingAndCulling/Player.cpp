@@ -603,42 +603,23 @@ void Player::KeyInput(const GameTimer & gt)
 {
 	if (GetHp() <= 0) return;
 	if ((AnimStateMachine->GetAnimState() == State::STATE_IDLE ||
-		AnimStateMachine->GetAnimState() == State::STATE_WALK ||
-		AnimStateMachine->GetAnimState() == State::STATE_HIT) == false)
+		AnimStateMachine->GetAnimState() == State::STATE_WALK) == false)
 		return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
 		return;
+
 	DWORD dwDirection = 0;
 	static bool IsPlayerMoved = false;
 
 
 	if (CManagement::GetInstance()->Get_MainCam() != NULL)
 	{
-		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && !bIsUltimateState) // 여기 수정
-		{
-			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
-		}
-		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && bIsUltimateState)
-		{
-			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
-			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-		}
-
-		else
-		{
-			if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
-			if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-			if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-			if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-			if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
-		}
-
+		if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+		if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+		if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+		if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+		if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
 	}
 
 
@@ -681,47 +662,16 @@ void Player::KeyInput(const GameTimer & gt)
 		}
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
-		//else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
-		//{
-		//	m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
-		//}
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
-		{
+		{	
+			if (bIsUltimateState) return;
+			if (State::STATE_ULTIMATE == AnimStateMachine->GetAnimState()) return;
+
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 			SetObjectAnimState(State::STATE_ULTIMATE);
 			CNetwork::GetInstance()->SendUltimateStartPacket();
 		}
 	}
-
-	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-	{
-		cout << "x : " << World._41 << "	z : " << World._43 << endl;
-	}
-	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_DOWN)
-	{
-		cout << "================================================" << World._43 << endl;
-	}
-
-
-	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
-	{
-
-		SetHp(GetHp() - 1.0f);
-
-		//cout << GetHp() << endl;
-	}
-	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
-	{
-		SetHp(GetHp() + 1.0f);
-		//cout << GetHp() << endl;
-
-	}
-	if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
-	{
-		SetObjectAnimState(State::STATE_HIT);
-
-	}
-
 }
 
 
@@ -1032,7 +982,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[State::STATE_HIT] = false;
 			m_IsEffectPlay[State::STATE_HIT] = false;
 
-			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			m_pObject->GetAnimateMachine()->SetAnimState(State::STATE_IDLE);
 			CNetwork::GetInstance()->SendStopPacket();
 		}
 
