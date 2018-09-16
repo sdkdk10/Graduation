@@ -652,8 +652,6 @@ void Player::KeyInput(const GameTimer & gt)
 	if (m_bIsConnected)
 	{
 		auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
-		
-	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
 		{
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
@@ -690,7 +688,6 @@ void Player::KeyInput(const GameTimer & gt)
 		}
 	}
 }
-
 
 //--------------------------------------- AnimateStateMachine-----------------------------------------
 
