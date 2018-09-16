@@ -896,7 +896,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell1.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Spell2.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE"));
-	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE")); // Ultimate
+	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Ultimate.ASE")); // Ultimate
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Death.ASE")); // Roll
 	path.push_back(make_pair("Back", "Assets/Models/Mage/Mage_Hit.ASE"));
 
