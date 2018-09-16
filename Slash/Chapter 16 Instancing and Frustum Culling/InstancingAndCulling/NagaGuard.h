@@ -24,13 +24,16 @@ public:
 	void SetTexture(SpiderType _tex);
 	virtual void SetObjectAnimState(int _animState)
 	{
-		//cout << _animState << endl;
-		/*if (_animState == 5)
-		{
-			AnimStateMachine->SetAnimState(_animState - 1);
-
-		}*/
 		AnimStateMachine->SetAnimState(_animState);
+
+		/*cout << " Naga Guard Anim State : " << _animState << endl;
+		if (_animState == 5)
+		{
+			AnimStateMachine->SetAnimState(4);
+
+		}
+		else
+			AnimStateMachine->SetAnimState(_animState);*/
 	}
 private:
 	Player * m_pPlayer = nullptr;
@@ -54,6 +57,7 @@ public:
 private:
 	HRESULT			Initialize();
 	virtual void	AnimationStateUpdate(const GameTimer & gt);
+	virtual void SetTimerTrueFalse();
 
 private:
 	CGameObject * m_pObject;

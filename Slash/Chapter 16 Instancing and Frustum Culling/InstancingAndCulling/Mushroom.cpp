@@ -9,6 +9,8 @@
 #include "Texture_Manager.h"
 #include "Player.h"
 #include "Layer.h"
+#include "Network.h"
+#include "Effect_Manager.h"
 
 
 Mushroom::Mushroom(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize)
@@ -324,4 +326,238 @@ Mushroom * Mushroom::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 	}
 
 	return pInstance;
+}
+
+
+// > ---------------------------- StateMachine_NagaGuard -----------------------------------
+
+AnimateStateMachine_Mushroom::AnimateStateMachine_Mushroom(CGameObject * pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])
+{
+}
+
+AnimateStateMachine_Mushroom::~AnimateStateMachine_Mushroom()
+{
+}
+
+HRESULT AnimateStateMachine_Mushroom::Initialize()
+{
+	return E_NOTIMPL;
+}
+
+void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
+{
+	if (bTimerIdle == true)
+	{
+		m_fAnimationKeyFrameIndex += gt.DeltaTime() * 25;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
+		if (m_fAnimationKeyFrameIndex > (*vecAnimFrame)[MonsterState::MSTATE_IDLE])
+		{
+			bTimerIdle = false;
+
+			m_fAnimationKeyFrameIndex = 0;
+		}
+	}
+
+
+	if (bTimerWalk == true)
+	{
+		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 45;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+		if (m_fAnimationKeyFrameIndex_Walk > (*vecAnimFrame)[MonsterState::MSTATE_WALK])
+		{
+			bTimerWalk = false;
+			m_fAnimationKeyFrameIndex_Walk = 0;
+		}
+
+	}
+
+
+	if (bTimerAttack1 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
+		}
+
+		if (!m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[MonsterState::MSTATE_ATTACK1])
+		{
+			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			//cout << "스킬!" << endl;
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Warrior_Turn", &m_pObject->GetWorld());
+			//cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[MonsterState::MSTATE_ATTACK1])
+		{
+			bTimerAttack1 = false;
+			m_fAnimationKeyFrameIndex_Attack1 = 0.f;
+
+			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = false;
+			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+	}
+
+
+	if (bTimerAttack2 == true)
+	{
+
+		m_fAnimationKeyFrameIndex_Attack2 += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_SoundFrame[MonsterState::MSTATE_ATTACK2])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_ATTACK2] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK2]);
+		}
+
+		if (!m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_EffectFrame[MonsterState::MSTATE_ATTACK2])
+		{
+			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("orbAttack", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])
+		{
+			bTimerAttack2 = false;
+			m_fAnimationKeyFrameIndex_Attack2 = 0;
+
+			m_IsSoundPlay[MonsterState::MSTATE_ATTACK2] = false;
+			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+
+	}
+
+	if (bTimerHit)
+	{
+
+		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+
+		//m_pPlayer->MoveForward(10.0f);
+		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
+		{
+			m_IsSoundPlay[State::STATE_HIT] = true;
+			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+		}
+
+		if (!m_IsEffectPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_EffectFrame[MonsterState::MSTATE_HIT])
+		{
+			m_IsEffectPlay[MonsterState::MSTATE_HIT] = true;
+			// > 스킬넣어주기
+			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
+			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+		}
+
+		if (m_fAnimationKeyFrameIndex_Hit > (*vecAnimFrame)[MonsterState::MSTATE_HIT])
+		{
+			bTimerHit = false;
+			m_fAnimationKeyFrameIndex_Hit = 0;
+
+			m_IsSoundPlay[MonsterState::MSTATE_HIT] = false;
+			m_IsEffectPlay[MonsterState::MSTATE_HIT] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
+			CNetwork::GetInstance()->SendStopPacket();
+		}
+
+
+	}
+
+	if (bTimerDead == true)
+	{
+		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
+		if (m_bIsLife == true)
+			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
+		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
+		{
+			m_bIsLife = false;
+			bTimerDead = false;
+			//m_fAnimationKeyFrameIndex_Dead = 0;
+		}
+
+	}
+
+
+}
+
+void AnimateStateMachine_Mushroom::SetTimerTrueFalse()
+{
+
+	if (m_iAnimState == MonsterState::MSTATE_IDLE)
+	{
+		bTimerIdle = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex;
+	}
+	if (m_iAnimState == MonsterState::MSTATE_WALK)
+	{
+		bTimerWalk = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
+	}
+	if (m_iAnimState == MonsterState::MSTATE_ATTACK1)
+	{
+		bTimerAttack1 = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+	}
+	if (m_iAnimState == MonsterState::MSTATE_ATTACK2)
+	{
+		bTimerAttack2 = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack2;
+	}
+
+	if (m_iAnimState == MonsterState::MSTATE_HIT)
+	{
+		bTimerHit = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Hit;
+	}
+
+	if (m_iAnimState == MonsterState::MSTATE_DEAD)
+	{
+		bTimerDead = true;
+		m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Dead;
+	}
+
+
+
+
+
+}
+
+AnimateStateMachine_Mushroom * AnimateStateMachine_Mushroom::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])
+{
+	AnimateStateMachine_Mushroom* pInstance = new AnimateStateMachine_Mushroom(pObj, pMachineName, SoundFrame, EffectFrame);
+
+	if (FAILED(pInstance->Initialize()))
+	{
+		MSG_BOX(L"AnimateStateMachine_Mushroom Created Failed");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void AnimateStateMachine_Mushroom::Free()
+{
 }
