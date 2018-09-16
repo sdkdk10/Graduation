@@ -1074,7 +1074,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 
 	move.x = -1.3f;
-	move.y = 3.f;
+	move.y = 2.7f;
 	scale.x = 0.5f;
 	scale.y = 0.3f;
 
@@ -1084,10 +1084,14 @@ void InstancingAndCullingApp::LoadMeshes()
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerJobState", pComponent);
 
-	move.x = -9.f;
-	move.y = 17.f;
-	scale.x = 0.05f;
-	scale.y = 0.05f;
+	move.x = -6.7f;
+	move.y = 12.5f;
+	scale.x = 0.06f;
+	scale.y = 0.06f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Num1", pComponent);
+
+	move.x -= 1.f;
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Num", pComponent);
 

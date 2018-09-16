@@ -11,6 +11,7 @@
 #include "Renderer.h"
 #include "Camera.h"
 #include "HPBar.h"
+#include "NumUI.h"
 #include "../../SlashServer/SlashServer/Protocol.h"
 
 Player::Player(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, bool isWarrior)
@@ -301,6 +302,9 @@ HRESULT Player::Initialize()
 	m_GageBar->GetCur() = 70.f;
 	m_GageBar->GetMax() = 100.f;
 
+	// > Lv UI
+	tex = CTexture_Manager::GetInstance()->Find_Texture("Num_LV", CTexture_Manager::TEX_DEFAULT_2D);
+	m_LvUI = NumUI::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, L"Com_Mesh_Num", tex->Num);
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	cout << "Bounds.Center " << "x : " << Bounds.Center.x << " y : " << Bounds.Center.y << " z : " << Bounds.Center.z << endl;
