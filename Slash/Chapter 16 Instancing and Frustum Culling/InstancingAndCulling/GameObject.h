@@ -69,7 +69,7 @@ protected:
 public:
 	virtual void AnimationStateUpdate(const GameTimer & gt);
 	virtual void SetTimerTrueFalse();
-	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
+	virtual void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
 	int GetCurAnimFrame() { return m_iCurAnimFrame; }
 	void ResetDeadAnimFrame() { 

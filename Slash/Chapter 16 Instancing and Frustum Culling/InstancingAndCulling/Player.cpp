@@ -50,14 +50,6 @@ void Player::Animate(const GameTimer & gt)
 		{
 			m_bAttackMotionForSound = true;
 		}
-// > =======================Test===========================
-		//if (GetAnimateMachine()->GetCurAnimFrame() == 8)
-		//{
-		//	AnimStateMachine->SetAnimState(State::STATE_IDLE);
-		//	CNetwork::GetInstance()->SendStopPacket();
-		//}
-// > ===========================================================
-
 	}
 	//if (GetHp() < 0)
 	//{
@@ -294,7 +286,7 @@ HRESULT Player::Initialize()
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
-	move.y = -12.973f;
+	move.y = -13.5f;
 	scale.y = 0.053f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
@@ -488,13 +480,25 @@ void Player::AddExp(float exp)
 		float fAdd = m_Exp - m_fMaxExp;
 		m_Exp = fAdd;
 		++m_iLevel;
-		m_fMaxExp += 50;
+		m_fMaxExp += 20;
 		m_ExpBar->GetCur() = fAdd;
 		m_ExpBar->GetMax() = m_fMaxExp;
 		//cout << "Level UP" << endl;
 		// >
 		CManagement::GetInstance()->PlayLevelUP();
 	}
+}
+
+void Player::SetExp(float exp)
+{
+	m_Exp = exp;
+	m_ExpBar->GetCur() = exp;
+}
+
+void Player::SetLevel(int iLv)
+{
+	m_iLevel = iLv;
+	// > Level UI 바꾸기
 }
 
 //void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)
@@ -652,19 +656,33 @@ void Player::KeyInput(const GameTimer & gt)
 	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
 		{
+			if (!m_IsWarrior)//법사일때 이펙트 사운드
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack1_Sound");
+
 			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
 		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
 		{
+			if (!m_IsWarrior)//법사일때 이펙트 사운드
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack2_Sound");
 			CNetwork::GetInstance()->SendAttack2Packet();
 
 		}
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
+		{
+			if (!m_IsWarrior)//법사일때 이펙트 사운드
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack3_Sound");
 			CNetwork::GetInstance()->SendAttack3Packet();
+		}
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
-		{	
+		{
 			if (bIsUltimateState) return;
+
+			if (!m_IsWarrior)//법사일때 이펙트 사운드
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_UltimateSound");
+
+
 
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 			SetObjectAnimState(State::STATE_ULTIMATE);
@@ -750,7 +768,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsSoundPlay[State::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[State::STATE_ATTACK1])
 		{
 			m_IsSoundPlay[State::STATE_ATTACK1] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
 		}
 
@@ -791,7 +809,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsSoundPlay[State::STATE_ATTACK2] && m_fAnimationKeyFrameIndex_Attack2 > m_SoundFrame[State::STATE_ATTACK2])
 		{
 			m_IsSoundPlay[State::STATE_ATTACK2] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK2]);
 		}
 
@@ -832,7 +850,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		{
 			m_IsSoundPlay[State::STATE_ATTACK3] = true;
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 		}
 
 		if (!m_IsEffectPlay[State::STATE_ATTACK3] && m_fAnimationKeyFrameIndex_Attack3 > m_EffectFrame[State::STATE_ATTACK3])
@@ -881,7 +899,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsSoundPlay[State::STATE_ULTIMATE] && m_fAnimationKeyFrameIndex_Ultimate > m_SoundFrame[State::STATE_ULTIMATE])
 		{
 			m_IsSoundPlay[State::STATE_ULTIMATE] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK2]);
 		}
 
@@ -923,7 +941,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		{
 			m_IsSoundPlay[State::STATE_ROLL] = true;
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 		}
 
 		if (!m_IsEffectPlay[State::STATE_ROLL] && m_fAnimationKeyFrameIndex_Roll > m_EffectFrame[State::STATE_ROLL])
@@ -962,7 +980,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 		{
 			m_IsSoundPlay[State::STATE_HIT] = true;
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 		}
 
 		if (!m_IsEffectPlay[State::STATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_EffectFrame[State::STATE_HIT])

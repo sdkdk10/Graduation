@@ -178,6 +178,7 @@
     <ClCompile Include="Minidump.cpp" />
     <ClCompile Include="NagaGuard.cpp" />
     <ClCompile Include="NumUI.cpp" />
+    <ClCompile Include="NumUI_Inst.cpp" />
     <ClCompile Include="LinearAllocator.cpp" />
     <ClCompile Include="ResourceUploadBatch.cpp" />
     <ClCompile Include="RockWarrior.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="Minidump.h" />
     <ClInclude Include="NagaGuard.h" />
     <ClInclude Include="NumUI.h" />
+    <ClInclude Include="NumUI_Inst.h" />
     <ClInclude Include="LinearAllocator.h" />
     <ClInclude Include="LoaderHelpers.h" />
     <ClInclude Include="PlatformHelpers.h" />

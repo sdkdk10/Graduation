@@ -9,7 +9,7 @@
 
 class CRenderer;
 class ChangeUI;
-class NumUI;
+class NumUI_Inst;
 
 class CManagement
 	: public CBase
@@ -47,6 +47,8 @@ public:
 	void			SetExp(CGameObject* pObj, float _exp);
 	void			AddExp(CGameObject* pObj, float _exp);
 
+	void			SetLevel(CGameObject* pObj, int iLv);
+
 	void			PlayLevelUP();
 	void			SetLevelUPUI(vector<ChangeUI*> vec);
 
@@ -55,7 +57,7 @@ private:
 	CRenderer*			m_pRenderer;
 	CSound*				m_pSound;
 
-	NumUI*				m_pNumUI;
+	NumUI_Inst*			m_pNumUI;
 
 	vector<ChangeUI*>	m_pLevelUP;
 
@@ -66,7 +68,7 @@ private:
 
 	bool				m_IsStop = false;
 public:
-	HRESULT		Init_Management(CRenderer* pRenderer, NumUI* pNumUI);
+	HRESULT		Init_Management(CRenderer* pRenderer, NumUI_Inst* pNumUI);
 	bool		Update(const GameTimer& gt, const FrameResource* pCruRrc);
 	void		Render(ID3D12GraphicsCommandList* cmdList);
 

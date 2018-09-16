@@ -183,8 +183,12 @@ HRESULT Mushroom::Initialize()
 	m_strTexName[SPIDER_TILE] = "tileTex";
 	m_strTexName[SPIDER_ICE] = "iceTex";
 
-
-	AnimStateMachine = new AnimateStateMachine;
+	wchar_t* machineName;
+	machineName = L"Mushroom";
+	int test[State::STATE_END] = { 0, };
+	AnimStateMachine = AnimateStateMachine_Mushroom::Create(this, machineName, test, test);
+	if (AnimStateMachine == nullptr)
+		return E_FAIL;
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
@@ -329,9 +333,11 @@ Mushroom * Mushroom::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 }
 
 
-// > ---------------------------- StateMachine_NagaGuard -----------------------------------
+// > ---------------------------- StateMachine_MushrRoom -----------------------------------
 
 AnimateStateMachine_Mushroom::AnimateStateMachine_Mushroom(CGameObject * pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])
+	: m_pMachineName(pMachineName)
+	, m_pObject(pObj)
 {
 }
 
@@ -341,11 +347,14 @@ AnimateStateMachine_Mushroom::~AnimateStateMachine_Mushroom()
 
 HRESULT AnimateStateMachine_Mushroom::Initialize()
 {
-	return E_NOTIMPL;
+	return S_OK;
+
 }
 
 void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 {
+
+
 	if (bTimerIdle == true)
 	{
 		m_fAnimationKeyFrameIndex += gt.DeltaTime() * 25;
@@ -375,23 +384,24 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerAttack1 == true)
 	{
 
+		if ((int)m_fAnimationKeyFrameIndex_Attack1 == 1)
+		{
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Attack_Sound");
+		}
+
+
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+
 		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
 		}
 
 		if (!m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[MonsterState::MSTATE_ATTACK1])
 		{
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = true;
-			// > 스킬넣어주기
-			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			//cout << "스킬!" << endl;
-			CEffect_Manager::GetInstance()->Play_SkillEffect("Warrior_Turn", &m_pObject->GetWorld());
-			//cout << "Player Pos : " << m_pObject->GetPosition().x << ", " << m_pObject->GetPosition().y << ", " << m_pObject->GetPosition().z << endl;
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack1 > (*vecAnimFrame)[MonsterState::MSTATE_ATTACK1])
@@ -426,7 +436,6 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("orbAttack", &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[3])
@@ -445,6 +454,7 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerHit)
 	{
+		//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Hit_Sound");
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
@@ -464,7 +474,6 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[MonsterState::MSTATE_HIT] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Hit > (*vecAnimFrame)[MonsterState::MSTATE_HIT])
@@ -483,6 +492,11 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerDead == true)
 	{
+		if ((int)m_fAnimationKeyFrameIndex_Dead == 1)
+		{
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Dead_Sound");
+		}
+
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
 		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
@@ -490,6 +504,9 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
 		{
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Dead_Sound");
+
+
 			m_bIsLife = false;
 			bTimerDead = false;
 			m_fAnimationKeyFrameIndex_Dead = 0;
@@ -539,6 +556,14 @@ void AnimateStateMachine_Mushroom::SetTimerTrueFalse()
 
 
 
+
+}
+
+void AnimateStateMachine_Mushroom::SetAnimState(int _animstate)
+{
+
+
+	m_iAnimState = _animstate;
 
 }
 
