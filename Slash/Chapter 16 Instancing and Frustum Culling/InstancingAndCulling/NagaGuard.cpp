@@ -463,7 +463,6 @@ void AnimateStateMachine_NagaGuard::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerHit)
 	{
 
-<<<<<<< HEAD
 		if ((int)m_fAnimationKeyFrameIndex_Hit == 1)
 		{
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"NagaGuard_Hit_Sound");
@@ -472,8 +471,6 @@ void AnimateStateMachine_NagaGuard::AnimationStateUpdate(const GameTimer & gt)
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
-=======
->>>>>>> 6cedcf0a39341edf4bee6a94182cf174b02c9141
 		//m_pPlayer->MoveForward(10.0f);
 		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;

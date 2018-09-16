@@ -660,8 +660,8 @@ void Player::KeyInput(const GameTimer & gt)
 	if (m_bIsConnected)
 	{
 		auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
-		
-	
+
+
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
 		{
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
@@ -682,66 +682,61 @@ void Player::KeyInput(const GameTimer & gt)
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack3_Sound");
 			CNetwork::GetInstance()->SendAttack3Packet();
-<<<<<<< HEAD
 
 		}
 		//else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
 		//{
 		//	m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
 		//}
+
+
+
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_UltimateSound");
-
-=======
-		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
-		{	
 			if (bIsUltimateState) return;
 			if (State::STATE_ULTIMATE == AnimStateMachine->GetAnimState()) return;
->>>>>>> 6cedcf0a39341edf4bee6a94182cf174b02c9141
 
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 			SetObjectAnimState(State::STATE_ULTIMATE);
 			CNetwork::GetInstance()->SendUltimateStartPacket();
 		}
+
+
+		if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
+		{
+			cout << "x : " << World._41 << "	z : " << World._43 << endl;
+		}
+		if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_DOWN)
+		{
+
+			cout << "================================================" << World._43 << endl;
+		}
+
+
+		if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
+		{
+
+			SetHp(GetHp() - 1.0f);
+
+			//cout << GetHp() << endl;
+		}
+		if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
+		{
+			SetHp(GetHp() + 1.0f);
+			//cout << GetHp() << endl;
+
+		}
+		if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
+		{
+			SetObjectAnimState(State::STATE_HIT);
+
+		}
+
+
 	}
-<<<<<<< HEAD
-
-	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
-	{
-		cout << "x : " << World._41 << "	z : " << World._43 << endl;
-	}
-	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_DOWN)
-	{
-
-		cout << "================================================" << World._43 << endl;
-	}
-
-
-	if (KeyBoard_Input(DIK_L) == CInputDevice::INPUT_PRESS)
-	{
-
-		SetHp(GetHp() - 1.0f);
-
-		//cout << GetHp() << endl;
-	}
-	if (KeyBoard_Input(DIK_K) == CInputDevice::INPUT_PRESS)
-	{
-		SetHp(GetHp() + 1.0f);
-		//cout << GetHp() << endl;
-
-	}
-	if (KeyBoard_Input(DIK_T) == CInputDevice::INPUT_DOWN)
-	{
-		SetObjectAnimState(State::STATE_HIT);
-
-	}
-
-=======
->>>>>>> 6cedcf0a39341edf4bee6a94182cf174b02c9141
 }
-
 
 //--------------------------------------- AnimateStateMachine-----------------------------------------
 

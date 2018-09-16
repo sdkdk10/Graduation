@@ -513,7 +513,6 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 		}
 		else
 		{
-<<<<<<< HEAD
 			if (m_pPlayer->bIsUltimateState) //궁 상태에서 카메라
 			{
 				XMFLOAT3 offset = XMFLOAT3((m_pPlayer->GetUp().x) * 10, (m_pPlayer->GetUp().y) * 5, (m_pPlayer->GetUp().z) * 10);
@@ -564,15 +563,7 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 				bSaveUltimateCameraPosTest = false;
 				LastLength = 0.0f;
 			}
-=======
-			Target = NULL;
-			bCameraEffect_ZoomIn_RoundUltimate = false;
-			testnum = 0.0f;
-			m_IsDynamic = false;
-			timeLag = 0.0f;
-			bSaveUltimateCameraPosTest = false;
-			LastLength = 0.0f;
->>>>>>> 6cedcf0a39341edf4bee6a94182cf174b02c9141
+		
 		}
 	}
 }
