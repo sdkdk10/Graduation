@@ -22,6 +22,7 @@ public:
 
 public:
 	void SetTexture(SpiderType _tex);
+
 private:
 	Player * m_pPlayer = nullptr;
 	string					m_strTexName[SPIDER_END];
@@ -44,6 +45,7 @@ public:
 private:
 	HRESULT			Initialize();
 	virtual void	AnimationStateUpdate(const GameTimer & gt);
+	virtual void SetTimerTrueFalse();
 
 private:
 	CGameObject * m_pObject;

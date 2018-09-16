@@ -395,7 +395,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 	}
@@ -431,7 +430,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[MonsterState::MSTATE_ATTACK2] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 
@@ -470,7 +468,6 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[MonsterState::MSTATE_HIT] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(MonsterState::MSTATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 

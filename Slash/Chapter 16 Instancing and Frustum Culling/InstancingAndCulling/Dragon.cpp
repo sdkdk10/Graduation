@@ -262,7 +262,6 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK1] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 	}
@@ -298,7 +297,6 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK2] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 
@@ -334,7 +332,6 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK3] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 	}
@@ -383,7 +380,6 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			CNetwork::GetInstance()->SendStopPacket();
 		}
 
 
