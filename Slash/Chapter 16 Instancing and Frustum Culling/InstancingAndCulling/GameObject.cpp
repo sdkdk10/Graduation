@@ -253,6 +253,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerDead == true)
 	{
+
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
 		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
@@ -260,6 +261,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
 		{
+
 			m_bIsLife = false;
 			bTimerDead = false;
 			//m_fAnimationKeyFrameIndex_Dead = 0;

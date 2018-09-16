@@ -291,16 +291,6 @@ void CNetwork::ProcessPacket(char * ptr)
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(my_packet->state);
 			
 		}
-		else
-		{
-			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->m_bIsConnected = true;
-			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			if (id < NAGAGUARD_ID_START + NPC_ID_START)
-				CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->Rotation(0.f, my_packet->lookDegree, 0.f);
-			else
-				CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->Rotation(0.f, 0.f, my_packet->lookDegree);
-			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetObjectAnimState(my_packet->state);
-		}
 		break;
 	}
 	case SC_WALK_MOVE:
@@ -309,6 +299,8 @@ void CNetwork::ProcessPacket(char * ptr)
 		int id = my_packet->id;
 		if (myid == id)
 		{
+			if (State::STATE_ULTIMATE == (CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->GetAnimateMachine())->GetAnimState())
+				return;
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_WALK);
 		}
@@ -417,6 +409,10 @@ void CNetwork::ProcessPacket(char * ptr)
 				//	my_packet->state = MonsterState::MSTATE_HIT;
 			}
 
+			if (MonsterState::MSTATE_DEAD == (CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetAnimateMachine())->GetAnimState())
+				if (MonsterState::MSTATE_DEAD != my_packet->state)
+					(CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetAnimateMachine())->ResetDeadAnimFrame();
+
 			CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetObjectAnimState(my_packet->state);
 		}
 		break;
@@ -479,14 +475,18 @@ void CNetwork::ProcessPacket(char * ptr)
 		else if (my_packet->state == State::STATE_HIT)
 			my_packet->state = MonsterState::MSTATE_HIT;
 
-
-		if ((id - NPC_ID_START) >= TURTLE_ID_START)
+		if ((id - NPC_ID_START) >= TURTLE_ID_START) // 터틀은 HIT, DEAD 반대로 되어있음
 		{
 			//if (MonsterState::MSTATE_HIT == my_packet->state)
 			//	my_packet->state = MonsterState::MSTATE_DEAD;
 			//else if (MonsterState::MSTATE_DEAD == my_packet->state)
 			//	my_packet->state = MonsterState::MSTATE_HIT;
 		}
+
+		if (MonsterState::MSTATE_DEAD == (CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetAnimateMachine())->GetAnimState())
+			if (MonsterState::MSTATE_DEAD != my_packet->state)
+				CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetAnimateMachine()->ResetDeadAnimFrame();
+	
 
 		CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->SetObjectAnimState(my_packet->state);
 

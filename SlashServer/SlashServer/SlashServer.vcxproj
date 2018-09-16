@@ -22,7 +22,10 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{438C6CC1-16D9-4133-BA1C-E8FDFAC60A7A}</ProjectGuid>
     <RootNamespace>SlashServer</RootNamespace>
+<<<<<<< HEAD
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+=======
+>>>>>>> 97c260bb5e500015689fe7b220fca6c7be630c28
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

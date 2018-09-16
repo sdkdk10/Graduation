@@ -509,7 +509,7 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 			m_bIsLife = false;
 			bTimerDead = false;
-			//m_fAnimationKeyFrameIndex_Dead = 0;
+			m_fAnimationKeyFrameIndex_Dead = 0;
 		}
 
 	}

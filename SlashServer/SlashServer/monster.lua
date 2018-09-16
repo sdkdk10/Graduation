@@ -13,7 +13,7 @@ end
 
 function LoadMonsterData(npcType)
 if(npcType == NPC_SPIDER) then
-my_x = math.random(80,95)
+my_x = math.random(85,95)
 my_z = math.random(20,50)
 my_hp = 20;
 my_dmg = 2;
@@ -23,8 +23,8 @@ my_z = math.random(62,80)
 my_hp = 50;
 my_dmg = 3;
 elseif(npcType == NPC_ROCK_WARRIOR) then
-my_x = math.random(143,143)
-my_z = math.random(363,363)
+my_x = math.random(8,8)
+my_z = math.random(0,0)
 my_hp = 200;
 my_dmg = 10;
 elseif(npcType == NPC_TREE_GUARD) then
