@@ -306,6 +306,11 @@ void NagaGuard::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 	}
 }
 
+void NagaGuard::Hit(float fDamage)
+{
+	CEffect_Manager::GetInstance()->Play_SkillEffect("Hit");
+}
+
 //void NagaGuard::SetTexture(SpiderTex _tex)
 //{
 //	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture(m_strTexName[_tex], CTexture_Manager::TEX_DEFAULT_2D);
