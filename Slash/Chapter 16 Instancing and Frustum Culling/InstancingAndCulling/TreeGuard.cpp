@@ -186,7 +186,7 @@ HRESULT TreeGuard::Initialize()
 
 	wchar_t* machineName;
 	machineName = L"TreeGuard";
-	int test[State::STATE_END] = { 0, };
+	int test[MonsterState::MSTATE_END] = { 0, };
 	AnimStateMachine = AnimateStateMachine_TreeGuard::Create(this, machineName, test, test);
 	if (AnimStateMachine == nullptr)
 		return E_FAIL;
@@ -194,7 +194,7 @@ HRESULT TreeGuard::Initialize()
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(State::STATE_IDLE);
+	AnimStateMachine->SetAnimState(MonsterState::MSTATE_IDLE);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
@@ -382,17 +382,14 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerAttack1 == true)
 	{
 
-		if ((int)m_fAnimationKeyFrameIndex_Attack1 == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Attack1_Sound");
-		}
+		
 
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Attack1_Sound");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
 		}
 
@@ -454,10 +451,6 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerHit)
 	{
 
-		if ((int)m_fAnimationKeyFrameIndex_Hit == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Hit_Sound");
-		}
 
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
@@ -468,9 +461,9 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
 		{
-			m_IsSoundPlay[State::STATE_HIT] = true;
+			m_IsSoundPlay[MonsterState::MSTATE_HIT] = true;
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Hit_Sound");
 		}
 
 		if (!m_IsEffectPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_EffectFrame[MonsterState::MSTATE_HIT])
@@ -495,14 +488,16 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerDead == true)
 	{
-		if ((int)m_fAnimationKeyFrameIndex_Dead == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Dead_Sound");
-		}
-
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
 		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_DEAD] && m_fAnimationKeyFrameIndex_Dead > m_SoundFrame[MonsterState::MSTATE_DEAD])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_DEAD] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Dead_Sound");
+		}
+
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
