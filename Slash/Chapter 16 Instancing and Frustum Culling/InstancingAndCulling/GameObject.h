@@ -104,6 +104,8 @@ private:
 protected:
 	float m_Exp = 0.f;
 public:
+	virtual void	Hit(float fDamage) {}
+
 	float GetHp() { return hp; }
 	void SetHp(float _hp) { hp = _hp; }
 

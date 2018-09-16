@@ -20,6 +20,8 @@ public:
 	virtual void			Animate(const GameTimer & gt);
 	virtual void			SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj);
 
+	virtual void			Hit(float fDamage);
+
 public:
 	void SetTexture(SpiderType _tex);
 	virtual void SetObjectAnimState(int _animState)

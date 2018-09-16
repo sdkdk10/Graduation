@@ -496,8 +496,12 @@ void Spider::SaveSlidingVector(CGameObject * pobj, CGameObject * pCollobj)
 		//cout << "오른쪽 충돌" << endl;
 		//pobj->m_MovingRefletVector = XMFLOAT3(-1, 0, 0);
 		pobj->m_MovingRefletVector = XMFLOAT3(1, 0, 0);
-
 	}
+}
+
+void Spider::Hit(float fDamage)
+{
+	CEffect_Manager::GetInstance()->Play_SkillEffect("Hit5", &World);
 }
 
 void Spider::SetTexture(SpiderType _tex)
@@ -506,7 +510,7 @@ void Spider::SetTexture(SpiderType _tex)
 	if (nullptr == tex)
 		return;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
-	
+		
 }
 
 void Spider::MageHitEffectPlay()

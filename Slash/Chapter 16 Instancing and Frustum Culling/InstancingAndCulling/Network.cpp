@@ -7,6 +7,7 @@
 #include "Skeleton.h"
 #include "Spider.h"
 #include "GameTimer_Manager.h"
+#include "Effect_Manager.h"
 
 IMPLEMENT_SINGLETON(CNetwork)
 
@@ -470,6 +471,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		{
 			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetPosition();
 			CManagement::GetInstance()->Add_NumUI(my_packet->dmg, position);
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Hit5", &(CManagement::GetInstance()->Find_Object(L"Layer_Monster", id - NPC_ID_START)->GetWorld()));
 		}
 		break;
 	}

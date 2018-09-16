@@ -1,4 +1,4 @@
-73
+74
 aurora01	Assets/Textures/Effect/aurora01.dds
 blood_hit_04	Assets/Textures/Effect/blood_hit_04.dds
 eye_moo_t_mul_gray_11	Assets/Textures/Effect/eye_moo_t_mul_gray_11.dds
@@ -41,6 +41,7 @@ eye_fxl_ground_003	Assets/Textures/Effect/eye_fxl_ground_003.dds
 eye_fxl_lightning_00007	Assets/Textures/Effect/eye_fxl_lightning_00007.dds
 eye_moo_t_sun_0012	Assets/Textures/Effect/eye_moo_t_sun_0012.dds
 eye_fxl_line_009	Assets/Textures/Effect/eye_fxl_line_009.dds
+LevelUpUI	Assets/Textures/Effect/LevelUpUI.dds
 eye_fxl_shockwave_002	Assets/Textures/Effect/eye_fxl_shockwave_002.dds
 eye_fxl_shockwave_010	Assets/Textures/Effect/eye_fxl_shockwave_010.dds
 light04_2	Assets/Textures/Effect/light04_2.dds
