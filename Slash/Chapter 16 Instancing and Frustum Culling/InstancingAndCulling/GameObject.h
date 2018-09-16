@@ -91,7 +91,15 @@ public:
 public:
 	AnimateStateMachine * GetAnimateMachine() { return AnimStateMachine; }
 public:
-	virtual void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
+	virtual void SetObjectAnimState(int _animState) {
+		if (State::STATE_HIT == _animState)
+		{
+			if (State::STATE_IDLE == AnimStateMachine->GetAnimState() ||
+			(State::STATE_WALK == AnimStateMachine->GetAnimState())== false) 
+				return;
+		}
+		AnimStateMachine->SetAnimState(_animState);
+	}
 protected:
 	AnimateStateMachine * AnimStateMachine = nullptr;
 public:

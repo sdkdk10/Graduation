@@ -303,6 +303,9 @@ HRESULT Player::Initialize()
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
+	cout << "Bounds.Center " << "x : " << Bounds.Center.x << " y : " << Bounds.Center.y << " z : " << Bounds.Center.z << endl;
+	cout << "Bounds.Extents " << "x : " << Bounds.Extents.x << " y : " << Bounds.Extents.y << " z : " << Bounds.Extents.z << endl;
+
 	//Geo_Left = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[3].get();
 	//PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	//Element_Left.IndexCount = Geo_Left->DrawArgs["mage_Left"].IndexCount;

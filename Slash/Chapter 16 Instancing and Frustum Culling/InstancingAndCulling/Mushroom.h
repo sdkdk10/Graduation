@@ -22,25 +22,6 @@ public:
 
 public:
 	void SetTexture(SpiderType _tex);
-	virtual void SetObjectAnimState(int _animState)
-	{
-	/*	if (_animState == 5)
-		{
-			AnimStateMachine->SetAnimState(4);
-
-		}
-		else if (_animState == 4)
-		{
-			AnimStateMachine->SetAnimState(5);
-
-		}
-		else
-		{
-
-		}*/
-		AnimStateMachine->SetAnimState(_animState);
-
-	}
 private:
 	Player * m_pPlayer = nullptr;
 	string					m_strTexName[SPIDER_END];
