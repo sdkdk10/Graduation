@@ -390,6 +390,14 @@ void CSkeleton::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 
 }
 
+void CSkeleton::SetUltimateEffect(bool isUltimate)
+{
+	if (!m_IsWarrior)
+		return;
+
+	dynamic_cast<AnimateStateMachine_Skeleton*>(AnimStateMachine)->SetUltimateEffect(isUltimate);
+}
+
 void CSkeleton::Free()
 {
 	CGameObject::Free();
@@ -683,6 +691,30 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 
 
 	}
+}
+
+void AnimateStateMachine_Skeleton::SetUltimateEffect(bool isUltimate)
+{
+		m_mapEffectName.clear();
+		if (!isUltimate)
+		{
+			m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+			m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
+			m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+			m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
+			cout << m_mapEffectName.size();
+			cout << "Warrirorrrrrrrr" << endl;
+		}
+		else
+		{
+			m_mapEffectName.emplace(State::STATE_ATTACK1, "UtimateAttack_2");
+			m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
+			m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+			m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
+			cout << m_mapEffectName.size() << endl;
+			cout << "Ultimate»óÅÂ·Î" << endl;
+		}
+
 }
 
 AnimateStateMachine_Skeleton * AnimateStateMachine_Skeleton::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])

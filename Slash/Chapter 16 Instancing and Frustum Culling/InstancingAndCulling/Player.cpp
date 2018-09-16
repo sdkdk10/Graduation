@@ -297,7 +297,7 @@ HRESULT Player::Initialize()
 	m_LvUI->SetNum(1);
 
 	// > Skill UI
-	size = -0.0700449f;
+	/*size = -0.0700449f;
 	scale.y = 1.3972f;
 	move.x = -0.00333446f;
 	move.y = -0.553653f;
@@ -306,7 +306,7 @@ HRESULT Player::Initialize()
 	m_SkillUI[0].fResetTime = 2.f;
 	m_SkillUI[0].pUI->GetCur() = 2.f;
 	m_SkillUI[0].pUI->GetMax() = 2.f;
-	m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.6f);
+	m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.6f);*/
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -511,8 +511,8 @@ void Player::UIUpdate(const GameTimer & gt)
 	m_ExpBar->Update(gt);
 	m_LvUI->Update(gt);
 
-	for (int i = 0; i < 1; ++i)
-		m_SkillUI[i].pUI->Update(gt);
+	//for (int i = 0; i < 1; ++i)
+	//	m_SkillUI[i].pUI->Update(gt);
 }
 
 void Player::AddExp(float exp)
@@ -594,6 +594,7 @@ void Player::CheckUltimate(const GameTimer & gt)
 		{
 			m_fUltimateTime = 20.0f;
 			bIsUltimateState = false;
+			m_GageFull = false;
 			CNetwork::GetInstance()->SendUltimateOffPacket();
 		}
 	}
@@ -735,7 +736,6 @@ void Player::KeyInput(const GameTimer & gt)
 			CNetwork::GetInstance()->SendUltimateStartPacket();
 
 			m_GageBar->GetCur() = 0.f;
-			m_GageFull = false;
 		}
 	}
 }
@@ -765,7 +765,7 @@ HRESULT AnimateStateMachine_Player::Initialize()
 	{
 		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
-		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Ax_00");
 		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
 	}
 	else

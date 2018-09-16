@@ -66,6 +66,8 @@ public:
 		return m_IsWarrior;
 	}
 
+	void SetUltimateEffect(bool isUltimate);
+
 	bool bIsUltimateState = false;
 private:
 	int m_CurState;
@@ -85,6 +87,9 @@ public:
 private:
 	HRESULT			Initialize();
 	virtual void	AnimationStateUpdate(const GameTimer & gt);
+
+public:
+	void			SetUltimateEffect(bool isUltimate);
 
 private:
 	CGameObject*	m_pObject;
