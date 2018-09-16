@@ -48,7 +48,7 @@ HRESULT NumUI_Inst::Initialize()
 	Mat->Name = "TerrainMat";
 	Mat->MatCBIndex = m_iMyInstObject;
 	Mat->DiffuseSrvHeapIndex = tex->Num;
-	Mat->DiffuseAlbedo = XMFLOAT4(1.f, 0.f, 0.f, 1.f);
+	Mat->DiffuseAlbedo = XMFLOAT4(1.f, 1.f, 0.f, 1.f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 	Mat->MatTransform(3, 0) = 0.1f;

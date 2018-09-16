@@ -115,7 +115,7 @@ public:
 	bool m_bIsCollide = false;
 
 private:
-	float hp = 100;
+	float hp = INIT_PLAYER_HP;
 protected:
 	float m_Exp = 0.f;
 public:

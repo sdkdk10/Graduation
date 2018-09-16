@@ -1106,7 +1106,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerGageState", pComponent);
 
 
-	move.x = -1.3f;
+	move.x = -0.8f;
 	move.y = 2.7f;
 	scale.x = 0.7f;
 	scale.y = 0.3f;
@@ -1117,7 +1117,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerJobState", pComponent);
 
-	move.x = -6.7f;
+	move.x = -3.f;
 	move.y = 12.5f;
 	scale.x = 0.06f;
 	scale.y = 0.06f;
@@ -1782,7 +1782,7 @@ void InstancingAndCullingApp::BuildPSOs()
 
 	InstancingUIPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc_effect;
 
-	InstancingUIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	//InstancingUIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingUIPsoDesc, IID_PPV_ARGS(&mPSOs["InstancingUI"])));
 
 	//

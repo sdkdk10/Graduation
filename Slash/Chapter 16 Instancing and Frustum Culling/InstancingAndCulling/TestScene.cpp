@@ -159,11 +159,6 @@ bool CTestScene::Update(const GameTimer & gt)
 
 	auto m_pCamera = CManagement::GetInstance()->Get_MainCam();
 
-	if (KeyBoard_Input(DIK_F7) == CInputDevice::INPUT_PRESS)
-	{
-		CManagement::GetInstance()->AddExp(m_pPlayer, 20);
-	}
-
 	if (m_pCamera != NULL)
 	{
 		m_pCamera->CameraEffect_Shaking();

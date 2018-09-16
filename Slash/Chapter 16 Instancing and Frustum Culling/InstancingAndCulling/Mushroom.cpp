@@ -192,7 +192,7 @@ HRESULT Mushroom::Initialize()
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
-	AnimStateMachine->SetAnimState(State::STATE_IDLE);
+	AnimStateMachine->SetAnimState(MonsterState::MSTATE_END);
 
 	Mat = new Material;
 	Mat->Name = "SpiderMat";
@@ -383,8 +383,13 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
-
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Attack1_Sound");
+		}
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
@@ -445,12 +450,22 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerHit)
 	{
+
+		
+
 		//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Hit_Sound");
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 		//m_pPlayer->MoveForward(10.0f);
 		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_HIT] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Hit_Sound");
+		}
+
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
@@ -481,13 +496,18 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerDead == true)
 	{
-
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
 		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
-		if (!m_IsSoundPlay[MonsterState::MSTATE_DEAD] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_DEAD])
+		if (!m_IsSoundPlay[MonsterState::MSTATE_DEAD] && m_fAnimationKeyFrameIndex_Dead > m_SoundFrame[MonsterState::MSTATE_DEAD])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_DEAD] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Dead_Sound");
+		}
+
+		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_DEAD] = true;
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Dead_Sound");

@@ -581,18 +581,13 @@ void AnimateStateMachine_Spider::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
-
-		/*if ((int)m_fAnimationKeyFrameIndex_Attack1 == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Attack_Sound");
-		}*/
-
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
+
 		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Attack_Sound");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Attack1_Sound");
 		}
 
 		if (!m_IsEffectPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_EffectFrame[MonsterState::MSTATE_ATTACK1])
@@ -655,32 +650,26 @@ void AnimateStateMachine_Spider::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerHit)
 	{
 
-		/*if ((int)m_fAnimationKeyFrameIndex_Hit == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Hit_Sound");
-		}*/
-
-
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 		//m_pPlayer->MoveForward(10.0f);
 		m_fAnimationKeyFrameIndex_Hit += gt.DeltaTime() * 30;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
 
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_HIT] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Hit_Sound");
+		}
+
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
 		{
 			m_IsSoundPlay[State::STATE_HIT] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Hit_Sound");
-			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
+			CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
 		}
 
-		if (!m_IsEffectPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_EffectFrame[MonsterState::MSTATE_HIT])
-		{
-			m_IsEffectPlay[MonsterState::MSTATE_HIT] = true;
-			// > 스킬넣어주기
-			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
-		}
+
 
 		if (m_fAnimationKeyFrameIndex_Hit > (*vecAnimFrame)[MonsterState::MSTATE_HIT])
 		{
@@ -697,15 +686,17 @@ void AnimateStateMachine_Spider::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerDead == true)
 	{
-		if ((int)m_fAnimationKeyFrameIndex_Dead == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Dead_Sound");
-		}
-
+	
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
 		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack3;
+
+		if (!m_IsSoundPlay[MonsterState::MSTATE_DEAD] && m_fAnimationKeyFrameIndex_Dead > m_SoundFrame[MonsterState::MSTATE_DEAD])
+		{
+			m_IsSoundPlay[MonsterState::MSTATE_DEAD] = true;
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Dead_Sound");
+		}
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
 		{

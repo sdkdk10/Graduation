@@ -52,7 +52,7 @@ bool NumUI::Update(const GameTimer & gt)
 		ObjectConstants objConstants;
 		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
 		XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
-		objConstants.MaterialIndex = Mat->MatCBIndex;
+		objConstants.MaterialIndex = Mat->MatCBIndex + i;
 
 		currObjectCB->CopyData(ObjCBIndex, objConstants);
 
@@ -155,7 +155,7 @@ HRESULT NumUI::Initialize(wchar_t* uiName)
 	StartIndexLocation = Geo[1]->DrawArgs["UI"].StartIndexLocation;
 	BaseVertexLocation = Geo[1]->DrawArgs["UI"].BaseVertexLocation;
 
-	SetNum(1);
+	//SetNum(1);
 
 	return S_OK;
 }

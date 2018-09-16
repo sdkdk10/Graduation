@@ -28,8 +28,8 @@ public:
 	unsigned long			m_iMyUIID;
 
 private:
-	float					m_fMax = 100.f;
-	float					m_fCur = 0.f;
+	float					m_fMax = INIT_PLAYER_HP;
+	float					m_fCur = INIT_PLAYER_HP;
 
 private:
 	virtual void Free();

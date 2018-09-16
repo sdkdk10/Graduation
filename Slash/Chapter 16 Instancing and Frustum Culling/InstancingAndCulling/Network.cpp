@@ -326,15 +326,24 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_ROLL);
+
+			if (dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetIsWarrior())
+				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_ROLL);
+			else
+				CEffect_Manager::GetInstance()->Play_SkillEffect("Trans_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetWorld());
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_WIZARD == playerType_[id])
-				id += NUM_OF_PLAYER;
-
-			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_ROLL);
+			if (PlayerType::PLAYER_WARRIOR == playerType_[id])
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_ROLL);
+			}
+			else
+			{
+				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id + NUM_OF_PLAYER)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
+				CEffect_Manager::GetInstance()->Play_SkillEffect("Trans_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id + NUM_OF_PLAYER))->GetWorld());
+			}
 		}
 		else
 		{
@@ -570,20 +579,21 @@ void CNetwork::ProcessPacket(char * ptr)
 	}
 	case SC_LEVEL_UP:
 	{
-		sc_packet_damage *my_packet = reinterpret_cast<sc_packet_damage *>(ptr);
+		sc_packet_level_up *my_packet = reinterpret_cast<sc_packet_level_up *>(ptr);
 		int id = my_packet->id;
 		if (myid == id)
 		{
-			//CManagement::GetInstance()->SetLevelUPUI();
-			//CManagement::GetInstance()->PlayLevelUP();
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetHp(INIT_PLAYER_HP);
+			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetLevel(my_packet->level);
+			CEffect_Manager::GetInstance()->Play_SkillEffect("LevelUP", &(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetWorld());
+			CManagement::GetInstance()->PlayLevelUP();
 		}
 		else if (id < NPC_ID_START)
 		{
 			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
-			// 레벨업 이펙트
-			CManagement::GetInstance()->PlayLevelUP();
+			CEffect_Manager::GetInstance()->Play_SkillEffect("LevelUP", &(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->GetWorld());
 		}
 		break;
 	}
@@ -593,7 +603,24 @@ void CNetwork::ProcessPacket(char * ptr)
 		int id = my_packet->id;
 		if (myid == id)
 		{
-			CManagement::GetInstance()->SetExp(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0), my_packet->exp);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetExp(my_packet->exp);
+		}
+		break;
+	}
+	case SC_WIZARD_HEAL:
+	{
+		sc_packet_wizard_heal *my_packet = reinterpret_cast<sc_packet_wizard_heal *>(ptr);
+		int id = my_packet->id;
+		if (myid == id)
+		{
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Heal_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetWorld());
+		}
+		else if (id < NPC_ID_START)
+		{
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
+				id += NUM_OF_PLAYER;
+
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Heal_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->GetWorld());
 		}
 		break;
 	}

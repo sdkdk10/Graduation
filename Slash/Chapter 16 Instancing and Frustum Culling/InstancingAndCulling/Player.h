@@ -121,7 +121,7 @@ private:
 	int m_PreState;
 
 	bool m_IsWarrior;
-
+	bool	m_GageFull = false;
 	HPBar*		m_HpBar;
 	HPBar*		m_ExpBar;
 	HPBar*		m_GageBar;

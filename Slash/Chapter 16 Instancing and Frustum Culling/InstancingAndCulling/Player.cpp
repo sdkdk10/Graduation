@@ -280,7 +280,7 @@ HRESULT Player::Initialize()
 	scale.y = 0.0365781f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_ExpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_ExpBar->GetCur() = 30.f;
+	m_ExpBar->GetCur() = 0.f;
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
@@ -288,12 +288,13 @@ HRESULT Player::Initialize()
 	scale.y = 0.043f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_GageBar->GetCur() = 70.f;
+	m_GageBar->GetCur() = 0.f;
 	m_GageBar->GetMax() = 100.f;
 
 	// > Lv UI
 	tex = CTexture_Manager::GetInstance()->Find_Texture("Num_LV", CTexture_Manager::TEX_DEFAULT_2D);
 	m_LvUI = NumUI::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, L"Com_Mesh_Num", tex->Num);
+	m_LvUI->SetNum(1);
 
 	// > Skill UI
 	size = -0.0700449f;
@@ -322,6 +323,11 @@ HRESULT Player::Initialize()
 
 
 	//m_pBoundMesh = CBoundingBox::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, GetPosition(), XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+	m_iLevel = 1;
+	m_ExpBar->GetMax() = 100;
+	m_ExpBar->GetCur() = 0;
+
 	return S_OK;
 }
 void Player::Free()
@@ -495,9 +501,15 @@ void Player::SetUltimateEffect(bool isUltimate)
 
 void Player::UIUpdate(const GameTimer & gt)
 {
+	if (m_GageBar->GetCur() < m_GageBar->GetMax())
+		m_GageBar->GetCur() += gt.DeltaTime() * 10.f;
+	else
+		m_GageFull = true;
+
 	m_HpBar->Update(gt);
 	m_GageBar->Update(gt);
 	m_ExpBar->Update(gt);
+	m_LvUI->Update(gt);
 
 	for (int i = 0; i < 1; ++i)
 		m_SkillUI[i].pUI->Update(gt);
@@ -531,7 +543,9 @@ void Player::SetExp(float exp)
 void Player::SetLevel(int iLv)
 {
 	m_iLevel = iLv;
+	m_ExpBar->GetMax() = 100 + 20 * (m_iLevel - 1);
 	// > Level UI 바꾸기
+	cout << "SetLevel : " << iLv << endl;
 	m_LvUI->SetNum(iLv);
 }
 
@@ -660,7 +674,6 @@ void Player::KeyInput(const GameTimer & gt)
 		if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
 	}
 
-
 	//m_curKeyInputTime = gt.TotalTime();
 	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())
 	{
@@ -710,6 +723,7 @@ void Player::KeyInput(const GameTimer & gt)
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{
 			if (bIsUltimateState) return;
+			if (!m_GageFull)return;
 
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_UltimateSound");
@@ -719,6 +733,9 @@ void Player::KeyInput(const GameTimer & gt)
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 			SetObjectAnimState(State::STATE_ULTIMATE);
 			CNetwork::GetInstance()->SendUltimateStartPacket();
+
+			m_GageBar->GetCur() = 0.f;
+			m_GageFull = false;
 		}
 	}
 }
@@ -890,7 +907,10 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK3] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld());
+			if(dynamic_cast<Player*>(m_pObject)->GetIsWarrior())
+				CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
+			else
+				CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[State::STATE_ATTACK3])

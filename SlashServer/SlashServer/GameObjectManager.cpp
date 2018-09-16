@@ -380,7 +380,7 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 
 void GameObjectManager::ProcessWarriorAttack1(GameObject* player) {
 
-	player->dmg_ = WARRIOR_SKILL1_DMG;
+	player->dmg_ = WARRIOR_SKILL1_DMG * (1 + player->level_ / 10.f);
 
 	// -bound.center.y == playerlook방향 
 	//	bound.extents.x == 가로길이
@@ -395,7 +395,7 @@ void GameObjectManager::ProcessWarriorAttack1(GameObject* player) {
 }
 void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 
-	player->dmg_ = WARRIOR_SKILL2_DMG;
+	player->dmg_ = WARRIOR_SKILL2_DMG * (1 + player->level_ / 10.f);
 
 	player->skillMoveRange += SKILL_MOVE_DISTANCE;
 
@@ -429,7 +429,7 @@ void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 }
 void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
 
-	player->dmg_ = WARRIOR_SKILL3_DMG;
+	player->dmg_ = WARRIOR_SKILL3_DMG * (1 + player->level_ / 10.f);
 
 	player->SetSkillOOBB(XMFLOAT3(-7.5388f, -50.f, 28.8367f),
 		XMFLOAT3(23.1505f * WARRIOR_SKILL3_WIDTH, 16.4752f * WARRIOR_SKILL3_DEPTH, 28.5554f),
@@ -451,7 +451,7 @@ void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
 }
 void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
 
-	player->dmg_ = WIZARD_SKILL1_DMG;
+	player->dmg_ = WIZARD_SKILL1_DMG * (1 + player->level_ / 10.f);
 
 	player->skillMoveRange += SKILL_MOVE_DISTANCE;
 
@@ -482,7 +482,7 @@ void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
 }
 void GameObjectManager::ProcessWizardAttack2(GameObject* player) {
 
-	player->dmg_ = WIZARD_SKILL2_DMG;
+	player->dmg_ = WIZARD_SKILL2_DMG * (1 + player->level_ / 10.f);
 
 	player->SetSkillOOBB(XMFLOAT3(-7.5388f, -200.f, 28.8367f),
 		XMFLOAT3(23.1505f * WIZARD_SKILL2_WIDTH, 16.4752f * WIZARD_SKILL2_DEPTH, 28.5554f),
@@ -507,11 +507,31 @@ void GameObjectManager::ProcessWizardAttack2(GameObject* player) {
 }
 void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
 
-	player->hp_ += WIZARD_SKILL3_DMG;
-	if (player->hp_ > INIT_PLAYER_HP)
-		player->hp_ = INIT_PLAYER_HP;
+	sc_packet_wizard_heal p;
+	p.size = sizeof(sc_packet_wizard_heal);
+	p.type = SC_WIZARD_HEAL;
 
-	SendManager::SendObjectHp(player, player);
+	for (int i = 0; i < NUM_OF_PLAYER; ++i)
+	{
+		if (false == playerArray_[i]->isActive_) continue;
+		if (false == playerArray_[i]->CanSee(player)) continue;
+
+		for (int j = 0; j < NUM_OF_PLAYER; ++j)
+		{
+			if (false == playerArray_[j]->isActive_) continue;
+			if (false == playerArray_[j]->CanSee(playerArray_[i])) continue;
+
+			p.id = playerArray_[i]->ID_;
+			SendManager::SendPacket(playerArray_[j], &p);
+		}
+
+		playerArray_[i]->hp_ += WIZARD_SKILL3_DMG * (1 + player->level_ / 10.f);
+		if (playerArray_[i]->hp_ > INIT_PLAYER_HP)
+			playerArray_[i]->hp_ = INIT_PLAYER_HP;
+		SendManager::SendObjectHp(playerArray_[i], playerArray_[i]);
+	}
+
+	
 }
 
 void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
@@ -586,7 +606,9 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 
-		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPAWN, GetTickCount() + 50000, nullptr); // 여기 수정
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPAWN, GetTickCount() + 50000, nullptr);
+
+		AddExp(player, monster);
 	}
 	else
 	{
@@ -712,25 +734,28 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	bool IsNPCColl = false;
 	bool IsMapObjectColl = false;
 
-	for (int i = 0; i < NUM_OF_PLAYER; ++i)
+	if (SC_WALK_MOVE == moveType || PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
 	{
-		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->IsClose(player)) continue;
-		if (i == player->ID_) continue;
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->IsClose(player)) continue;
+			if (i == player->ID_) continue;
 
-		IsPlayerColl = CollisionUtil::ProcessObjectColl(playerArray_[i], player, xmf3Shift);
-		if (IsPlayerColl)
-			break;
-	}
+			IsPlayerColl = CollisionUtil::ProcessObjectColl(playerArray_[i], player, xmf3Shift);
+			if (IsPlayerColl)
+				break;
+		}
 
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
-	{
-		if (false == npcArray_[i]->isActive_) continue;
-		if (false == npcArray_[i]->IsClose(player)) continue;
+		for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+		{
+			if (false == npcArray_[i]->isActive_) continue;
+			if (false == npcArray_[i]->IsClose(player)) continue;
 
-		IsNPCColl = CollisionUtil::ProcessObjectColl(npcArray_[i], player, xmf3Shift);
-		if (IsNPCColl)
-			break;
+			IsNPCColl = CollisionUtil::ProcessObjectColl(npcArray_[i], player, xmf3Shift);
+			if (IsNPCColl)
+				break;
+		}
 	}
 
 	for (auto& mapObject : mapObjectArray_)
@@ -1095,4 +1120,26 @@ void GameObjectManager::SearchNewTargetPlayer(GameObject * monster)
 			return;
 		}
 	}
+}
+
+void GameObjectManager::AddExp(GameObject * player, GameObject* monster)
+{
+	player->exp_ += monster->exp_;
+
+	int playerMaxExp = 100 + 20 * (player->level_ - 1);
+
+	if (player->exp_ >= playerMaxExp)
+	{
+		player->exp_ -= playerMaxExp;
+		++player->level_;
+		player->hp_ = INIT_PLAYER_HP;
+
+		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		{
+			if (false == playerArray_[i]->isActive_) continue;
+			if (false == playerArray_[i]->CanSee(player)) continue;
+			SendManager::SendObjectLevelup(playerArray_[i], player);
+		}
+	}
+	SendManager::SendObjectExp(player);
 }

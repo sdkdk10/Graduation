@@ -54,9 +54,6 @@ bool CEffectScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
-	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_DOWN)
-		CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"sfx_alice_death_fall01");
-
 	return true;
 }
 
