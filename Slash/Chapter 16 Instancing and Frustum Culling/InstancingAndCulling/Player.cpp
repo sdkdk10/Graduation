@@ -294,7 +294,7 @@ HRESULT Player::Initialize()
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
-	move.y = -12.973f;
+	move.y = -13.5f;
 	scale.y = 0.053f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
@@ -488,13 +488,25 @@ void Player::AddExp(float exp)
 		float fAdd = m_Exp - m_fMaxExp;
 		m_Exp = fAdd;
 		++m_iLevel;
-		m_fMaxExp += 50;
+		m_fMaxExp += 20;
 		m_ExpBar->GetCur() = fAdd;
 		m_ExpBar->GetMax() = m_fMaxExp;
 		//cout << "Level UP" << endl;
 		// >
 		CManagement::GetInstance()->PlayLevelUP();
 	}
+}
+
+void Player::SetExp(float exp)
+{
+	m_Exp = exp;
+	m_ExpBar->GetCur() = exp;
+}
+
+void Player::SetLevel(int iLv)
+{
+	m_iLevel = iLv;
+	// > Level UI 바꾸기
 }
 
 //void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)
@@ -603,42 +615,23 @@ void Player::KeyInput(const GameTimer & gt)
 {
 	if (GetHp() <= 0) return;
 	if ((AnimStateMachine->GetAnimState() == State::STATE_IDLE ||
-		AnimStateMachine->GetAnimState() == State::STATE_WALK ||
-		AnimStateMachine->GetAnimState() == State::STATE_HIT) == false)
+		AnimStateMachine->GetAnimState() == State::STATE_WALK) == false)
 		return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
 		return;
+
 	DWORD dwDirection = 0;
 	static bool IsPlayerMoved = false;
 
 
 	if (CManagement::GetInstance()->Get_MainCam() != NULL)
 	{
-		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && !bIsUltimateState) // 여기 수정
-		{
-			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
-		}
-		if (!CManagement::GetInstance()->Get_MainCam()->bFirstPersonView && bIsUltimateState)
-		{
-			if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
-			if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-			if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-			if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-		}
-
-		else
-		{
-			if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
-			if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
-			if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
-			if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
-			if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
-		}
-
+		if (KeyBoard_Input(DIK_UP) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_FORWARD;
+		if (KeyBoard_Input(DIK_DOWN) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_BACKWARD;
+		if (KeyBoard_Input(DIK_LEFT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_LEFT;
+		if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
+		if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
 	}
 
 
@@ -689,6 +682,7 @@ void Player::KeyInput(const GameTimer & gt)
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack3_Sound");
 			CNetwork::GetInstance()->SendAttack3Packet();
+<<<<<<< HEAD
 
 		}
 		//else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
@@ -700,12 +694,19 @@ void Player::KeyInput(const GameTimer & gt)
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_UltimateSound");
 
+=======
+		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
+		{	
+			if (bIsUltimateState) return;
+			if (State::STATE_ULTIMATE == AnimStateMachine->GetAnimState()) return;
+>>>>>>> 6cedcf0a39341edf4bee6a94182cf174b02c9141
 
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 			SetObjectAnimState(State::STATE_ULTIMATE);
 			CNetwork::GetInstance()->SendUltimateStartPacket();
 		}
 	}
+<<<<<<< HEAD
 
 	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
@@ -737,6 +738,8 @@ void Player::KeyInput(const GameTimer & gt)
 
 	}
 
+=======
+>>>>>>> 6cedcf0a39341edf4bee6a94182cf174b02c9141
 }
 
 
@@ -1047,7 +1050,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[State::STATE_HIT] = false;
 			m_IsEffectPlay[State::STATE_HIT] = false;
 
-			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
+			m_pObject->GetAnimateMachine()->SetAnimState(State::STATE_IDLE);
 			CNetwork::GetInstance()->SendStopPacket();
 		}
 

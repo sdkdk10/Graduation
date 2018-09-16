@@ -360,15 +360,7 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_DAMAGED, GetTickCount() + 300, monster);
-
-		if ((player->hp_ - monster->dmg_) > 0)
-		{
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_ATTACK, GetTickCount() + 1200, player);
-		}
-		else
-		{
-			SearchNewTargetPlayer(monster);
-		}
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_ATTACK, GetTickCount() + 1200, player);
 	}
 }
 
@@ -566,11 +558,10 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 
 	monster->hp_ -= player->dmg_;
 
-	if ((monster->hp_ - player->dmg_) < 0)
-		monster->hp_ = 0;
-
 	if (monster->hp_ <= 0)
 	{
+		monster->hp_ = 0;
+
 		monster->state_ = STATE_DEAD;
 		monster->isActive_ = false;
 
@@ -629,7 +620,8 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 {
 	if ((player->state_ == State::STATE_IDLE ||
 		player->state_ == State::STATE_WALK ||
-		player->state_ == State::STATE_ROLL) == false)
+		player->state_ == State::STATE_ROLL ||
+		player->state_ == State::STATE_HIT) == false)
 		return;
 
 	auto pPlayer = dynamic_cast<Player*>(player);
@@ -1079,6 +1071,7 @@ void GameObjectManager::SearchNewTargetPlayer(GameObject * monster)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(monster)) continue;
+		if (State::STATE_DEAD == playerArray_[i]->state_) continue;
 
 		SendManager::SendObjectState(playerArray_[i], monster);
 

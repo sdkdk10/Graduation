@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Management.h"
 #include "Renderer.h"
-#include "NumUI.h"
+#include "NumUI_Inst.h"
 #include "Player.h"
 #include "ChangeUI.h"
 
@@ -51,6 +51,13 @@ void CManagement::AddExp(CGameObject * pObj, float _exp)
 	dynamic_cast<Player*>(pObj)->AddExp(_exp);
 }
 
+void CManagement::SetLevel(CGameObject* pObj, int iLv)
+{
+	if (pObj == nullptr || !dynamic_cast<Player*>(pObj))
+		return;
+	dynamic_cast<Player*>(pObj)->SetLevel(iLv);
+}
+
 void CManagement::PlayLevelUP()
 {
 	size_t iSize = m_pLevelUP.size();
@@ -66,7 +73,7 @@ void CManagement::SetLevelUPUI(vector<ChangeUI*> vec)
 }
 
 
-HRESULT CManagement::Init_Management(CRenderer* pRenderer, NumUI* pNumUI)
+HRESULT CManagement::Init_Management(CRenderer* pRenderer, NumUI_Inst* pNumUI)
 {
 	if (pRenderer == nullptr || pNumUI == nullptr)
 		return E_FAIL;

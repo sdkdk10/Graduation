@@ -464,7 +464,7 @@ void AnimateStateMachine_Mushroom::AnimationStateUpdate(const GameTimer & gt)
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
 		{
-			m_IsSoundPlay[State::STATE_HIT] = true;
+			m_IsSoundPlay[MonsterState::MSTATE_HIT] = true;
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 		}

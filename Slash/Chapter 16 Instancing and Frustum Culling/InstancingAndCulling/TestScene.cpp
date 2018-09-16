@@ -28,10 +28,11 @@
 #include "Transform.h"
 #include "SkillEffect.h"
 #include "Effect_Manager.h"
-#include "NumUI.h"
+#include "NumUI_Inst.h"
 #include "Define.h"
 #include "InputDevice.h"
 #include "d3dApp.h"
+#include "NumUI.h"
 
 CTestScene::CTestScene(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize, bool isWarrior)
 	: CScene(d3dDevice, srv, srvSize)
@@ -556,15 +557,6 @@ void CTestScene::UISetting()
 
 	size = 0.125f;
 
-	tex = CTexture_Manager::GetInstance()->Find_Texture("WarriorUITex", CTexture_Manager::TEX_DEFAULT_2D);
-
-	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_WarriorUI", tex->Num);
-	pObject->SetCamera(Get_MainCam());
-	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
-	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
-//	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, pObject);
-
 	move.x = -0.5f;
 	move.y = 1.45f;
 
@@ -597,8 +589,24 @@ void CTestScene::UISetting()
 	dynamic_cast<StaticUI*>(pObject)->SetColor(1.f, 1.f, 1.f, 0.7f);
 	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 
-	// > UINum Setting
-	//CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(0.f, 0.f, 0.f));
+	tex = CTexture_Manager::GetInstance()->Find_Texture("PlayerLevelUIBack", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerLevelState", tex->Num);
+	dynamic_cast<StaticUI*>(pObject)->SetColor(1.f, 1.f, 1.f, 0.7f);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+
+	if (m_IsWarrior)
+		tex = CTexture_Manager::GetInstance()->Find_Texture("PlayerLevelUIWarrior", CTexture_Manager::TEX_DEFAULT_2D);
+	else
+		tex = CTexture_Manager::GetInstance()->Find_Texture("PlayerLevelUIWizard", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerJobState", tex->Num);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+
+	tex = CTexture_Manager::GetInstance()->Find_Texture("Num_LV", CTexture_Manager::TEX_DEFAULT_2D);
+
+	pObject = NumUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Num", tex->Num);
+	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 }
 
 void CTestScene::Free()

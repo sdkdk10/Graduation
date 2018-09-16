@@ -29,7 +29,7 @@
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
 #include "DescriptorHeap.h"
-#include "NumUI.h"
+#include "NumUI_Inst.h"
 #include "Minidump.h"
 
 const int gNumFrameResources = 3;
@@ -158,7 +158,7 @@ bool InstancingAndCullingApp::Initialize()
 	CSound* pSound = CSound::Create();
 	pSound->SoundFileLoadFromPath(L"Assets/Sound");
 
-	NumUI* pNumUI = NumUI::Create(md3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvUavDescriptorSize);
+	NumUI_Inst* pNumUI = NumUI_Inst::Create(md3dDevice, mSrvDescriptorHeap[HEAP_INSTANCING], mCbvSrvUavDescriptorSize);
 	
 
 	CInputDevice::GetInstance()->Ready_InputDevice(mhMainWnd, mhAppInst);
@@ -806,6 +806,46 @@ void InstancingAndCullingApp::LoadTextures()
 		MSG_BOX(L"LevelUpUI Ready Failed");
 
 	Tex = new Texture;
+	Tex->Name = "PlayerLevelUIBack";
+	Tex->Filename = L"Assets/Textures/PlayerLevelUIBack.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"PlayerLevelUIBack Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "PlayerLevelUIWizard";
+	Tex->Filename = L"Assets/Textures/PlayerLevelUIWizard.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"PlayerLevelUIWizard Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "PlayerLevelUIWarrior";
+	Tex->Filename = L"Assets/Textures/PlayerLevelUIWarrior.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"PlayerLevelUIWarrior Ready Failed");
+	
+		Tex = new Texture;
+	Tex->Name = "Num_LV";
+	Tex->Filename = L"Assets/Textures/Num_LV.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Num_LV Ready Failed");
+
+	Tex = new Texture;
 	Tex->Name = "Aura0";
 	Tex->Filename = L"Assets/Textures/Aura0.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
@@ -813,7 +853,7 @@ void InstancingAndCullingApp::LoadTextures()
 		Tex->Resource, Tex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
-		MSG_BOX(L"MageUITex Ready Failed");
+		MSG_BOX(L"Aura0 Ready Failed");
 
 	auto treeArrayTex = new Texture;
 	treeArrayTex->Name = "treeArrayTex";
@@ -823,7 +863,7 @@ void InstancingAndCullingApp::LoadTextures()
 		treeArrayTex->Resource, treeArrayTex->UploadHeap));
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(treeArrayTex->Name, treeArrayTex, CTexture_Manager::TEX_DEFAULT_BILLBOARD)))
-		MSG_BOX(L"MageUITex Ready Failed");
+		MSG_BOX(L"treeArrayTex Ready Failed");
 
 	ifstream texIn("Assets/Data/EffectTexture.txt");
 	int iSize = 0;
@@ -1025,7 +1065,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	// Gage
 	move.x = 0.f;
-	move.y = -21.5f;
+	move.y = -22.3f;
 	scale.x = 0.545f;
 	scale.y = 0.032f;
 
@@ -1033,6 +1073,23 @@ void InstancingAndCullingApp::LoadMeshes()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerGageState", pComponent);
 
 
+	move.x = -1.3f;
+	move.y = 3.f;
+	scale.x = 0.5f;
+	scale.y = 0.3f;
+
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.002f);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerLevelState", pComponent);
+
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerJobState", pComponent);
+
+	move.x = -9.f;
+	move.y = 17.f;
+	scale.x = 0.05f;
+	scale.y = 0.05f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Num", pComponent);
 
 	// > Map Object ASE Load
 	fstream in("Assets/Data/ModelList.txt");

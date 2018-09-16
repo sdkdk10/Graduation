@@ -382,9 +382,6 @@
     <ClCompile Include="SelectScene.cpp">
       <Filter>01. Scene\02. SelectScene</Filter>
     </ClCompile>
-    <ClCompile Include="NumUI.cpp">
-      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
-    </ClCompile>
     <ClCompile Include="ChangeUI.cpp">
       <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
     </ClCompile>
@@ -402,6 +399,12 @@
     </ClCompile>
     <ClCompile Include="Minidump.cpp">
       <Filter>90. MiniDump</Filter>
+    </ClCompile>
+    <ClCompile Include="NumUI_Inst.cpp">
+      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
+    </ClCompile>
+    <ClCompile Include="NumUI.cpp">
+      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -601,9 +604,6 @@
     <ClInclude Include="SelectScene.h">
       <Filter>01. Scene\02. SelectScene</Filter>
     </ClInclude>
-    <ClInclude Include="NumUI.h">
-      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
-    </ClInclude>
     <ClInclude Include="ChangeUI.h">
       <Filter>02. GameObject\07. UI\03. ChangeUI</Filter>
     </ClInclude>
@@ -621,6 +621,12 @@
     </ClInclude>
     <ClInclude Include="Minidump.h">
       <Filter>90. MiniDump</Filter>
+    </ClInclude>
+    <ClInclude Include="NumUI_Inst.h">
+      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
+    </ClInclude>
+    <ClInclude Include="NumUI.h">
+      <Filter>02. GameObject\07. UI\04. NumUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
