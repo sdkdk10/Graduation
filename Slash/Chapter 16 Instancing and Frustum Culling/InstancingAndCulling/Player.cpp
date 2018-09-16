@@ -282,8 +282,8 @@ HRESULT Player::Initialize()
 	// > Hp Bar
 	tex = CTexture_Manager::GetInstance()->Find_Texture("HPUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_HpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_HpBar->GetCur() = 200.f;
-	m_HpBar->GetMax() = 200.f;
+	m_HpBar->GetCur() = INIT_PLAYER_HP;
+	m_HpBar->GetMax() = INIT_PLAYER_HP;
 
 	// > Exp Bar
 	move.y = -12.1353f;
@@ -302,6 +302,9 @@ HRESULT Player::Initialize()
 	m_GageBar->GetMax() = 100.f;
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	cout << "Bounds.Center " << "x : " << Bounds.Center.x << " y : " << Bounds.Center.y << " z : " << Bounds.Center.z << endl;
+	cout << "Bounds.Extents " << "x : " << Bounds.Extents.x << " y : " << Bounds.Extents.y << " z : " << Bounds.Extents.z << endl;
 
 	//Geo_Left = dynamic_cast<DynamicMesh*>(m_pMesh)->m_Geometry[3].get();
 	//PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -599,12 +602,10 @@ void Player::Move(const XMFLOAT3 & xmf3Shift, bool bVelocity)
 void Player::KeyInput(const GameTimer & gt)
 {
 	if (GetHp() <= 0) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_DEAD) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK1) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK2) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ATTACK3) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ROLL) return;
-	if (AnimStateMachine->GetAnimState() == State::STATE_ULTIMATE ) return;
+	if ((AnimStateMachine->GetAnimState() == State::STATE_IDLE ||
+		AnimStateMachine->GetAnimState() == State::STATE_WALK ||
+		AnimStateMachine->GetAnimState() == State::STATE_HIT) == false)
+		return;
 
 	if (CManagement::GetInstance()->Get_IsStop() == true)
 		return;
@@ -670,23 +671,20 @@ void Player::KeyInput(const GameTimer & gt)
 	
 		if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_DOWN)
 		{
-			//CManagement::GetInstance()->Add_NumUI(21, XMFLOAT3(GetPosition().x, GetPosition().y +3, GetPosition().z));
-
 			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
 		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
 		{
-			//CManagement::GetInstance()->Add_NumUI(210, XMFLOAT3(GetPosition().x, GetPosition().y + 3, GetPosition().z));
 			CNetwork::GetInstance()->SendAttack2Packet();
 
 		}
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 			CNetwork::GetInstance()->SendAttack3Packet();
-		else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
-		{
-			m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
-		}
+		//else if (KeyBoard_Input(DIK_4) == CInputDevice::INPUT_DOWN)
+		//{
+		//	m_pCamera->SetCameraEffect(Camera::ZOOMIN, CManagement::GetInstance()->Find_Object(L"Layer_Dragon"));
+		//}
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{
 			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
@@ -695,9 +693,13 @@ void Player::KeyInput(const GameTimer & gt)
 		}
 	}
 
-	if (KeyBoard_Input(DIK_O) == CInputDevice::INPUT_DOWN)
+	if (KeyBoard_Input(DIK_SPACE) == CInputDevice::INPUT_DOWN)
 	{
-		//KeyInputTest = 2;
+		cout << "x : " << World._41 << "	z : " << World._43 << endl;
+	}
+	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_DOWN)
+	{
+		cout << "================================================" << World._43 << endl;
 	}
 
 
@@ -948,8 +950,11 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[State::STATE_ULTIMATE] = false;
 			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
 
+			auto pPlayer = dynamic_cast<Player*>(m_pObject);
+
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			dynamic_cast<Player*>(m_pObject)->bIsUltimateState = true;
+			if(pPlayer->GetIsWarrior())
+				pPlayer->bIsUltimateState = true;
 			CNetwork::GetInstance()->SendUltimateOnPacket(); // 진짜로 넘어간다
 		}
 
@@ -995,7 +1000,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	}
 
-	if (bTimerHit == true)
+	if (bTimerHit)
 	{
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");

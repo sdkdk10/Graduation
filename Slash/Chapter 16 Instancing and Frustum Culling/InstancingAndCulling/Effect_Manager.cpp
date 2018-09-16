@@ -155,7 +155,7 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent, floa
 	if (Parent != nullptr)
 	{
 		play->Set_RotParentMatirx(Parent, fRot);
-		cout << "fRot : " << fRot << endl;
+		//cout << "fRot : " << fRot << endl;
 	}
 
 	CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Effect", dynamic_cast<CGameObject*>(play));

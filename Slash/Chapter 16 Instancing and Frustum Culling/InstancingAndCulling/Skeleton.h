@@ -62,6 +62,9 @@ public:
 	int GetPreState() {
 		return m_PreState;
 	}
+	bool GetIsWarrior() {
+		return m_IsWarrior;
+	}
 
 	bool bIsUltimateState = false;
 private:

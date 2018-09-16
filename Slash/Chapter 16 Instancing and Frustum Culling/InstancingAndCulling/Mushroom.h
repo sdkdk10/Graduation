@@ -22,25 +22,6 @@ public:
 
 public:
 	void SetTexture(SpiderType _tex);
-	virtual void SetObjectAnimState(int _animState)
-	{
-	/*	if (_animState == 5)
-		{
-			AnimStateMachine->SetAnimState(4);
-
-		}
-		else if (_animState == 4)
-		{
-			AnimStateMachine->SetAnimState(5);
-
-		}
-		else
-		{
-
-		}*/
-		AnimStateMachine->SetAnimState(_animState);
-
-	}
 private:
 	Player * m_pPlayer = nullptr;
 	string					m_strTexName[SPIDER_END];
@@ -50,3 +31,33 @@ public:
 
 };
 
+
+class AnimateStateMachine_Mushroom
+	: public AnimateStateMachine
+{
+public:
+
+public:
+	explicit AnimateStateMachine_Mushroom(CGameObject* pObj, wchar_t* pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END]);
+	virtual ~AnimateStateMachine_Mushroom();
+private:
+	HRESULT			Initialize();
+	virtual void	AnimationStateUpdate(const GameTimer & gt);
+	virtual void SetTimerTrueFalse();
+
+private:
+	CGameObject * m_pObject;
+	wchar_t*		m_pMachineName;											// > 어떤 객체의 상태머신인지 이름을 저장하는 변수
+	wchar_t*		m_pStateName[State::STATE_END];			// > 각 상태의 이름
+
+	bool			m_IsSoundPlay[State::STATE_END];			// > 해당 애니메이션의 사운드가 실행됐는지 확인하는 변수, 애니메이션이 바뀌거나 끝났을 경우 false로 바뀜
+	int				m_SoundFrame[State::STATE_END];			// > 해당 애니메이션의 몇번째 프레임에서 사운드가 나와야하는지 저장하고 있는 변수
+	bool			m_IsEffectPlay[State::STATE_END];			// > 해당 애니메이션의 이펙트가 실행됐는지 확인하는 변수, 애니메이션이 바뀌거나 끝났을 경우 false로 바뀜
+	int				m_EffectFrame[State::STATE_END];			// > 해당 애니메이션의 몇번째 프레임에서 이펙트가 나와야하는지 저장하고 있는 변수
+
+public:
+	static AnimateStateMachine_Mushroom* Create(CGameObject* pObj, wchar_t* pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END]);
+
+private:
+	virtual void Free();
+};

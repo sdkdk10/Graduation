@@ -492,7 +492,7 @@ void Camera::CameraEffect_ZoomIn_Round()
 
 void Camera::CameraEffect_ZoomIn_RoundUltimate()
 {
-	auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
+	auto * m_pPlayer = dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 
 	if (bCameraEffect_ZoomIn_RoundUltimate)
 	{
@@ -501,16 +501,19 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 			m_IsDynamic = true;
 
 			XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x, Target->GetPosition().y, Target->GetPosition().z);
-			XMFLOAT3 movePos = XMFLOAT3(10.0f * cos(testnum) + Target->GetPosition().x, Target->GetPosition().y + 5.0f + Target->GetPosition().y, 10.0f * sin(testnum) + Target->GetPosition().z);
+			XMFLOAT3 movePos{};
+			movePos = XMFLOAT3(10.0f * cos(testnum) + Target->GetPosition().x, Target->GetPosition().y + 5.0f + Target->GetPosition().y, 10.0f * sin(testnum) + Target->GetPosition().z);
 			LookAt(movePos, Target->GetPosition(), XMFLOAT3(0, 1, 0));
 
 		}
 
 		if (m_pPlayer->GetAnimateMachine()->bTimerUltimate) //180도 회전
-			testnum += 0.06f;
+		{
+				testnum += 0.06f;
+		}
 		else //180도 다 돌았으면
 		{
-			if (dynamic_cast<Player*>(m_pPlayer)->bIsUltimateState) //궁 상태에서 카메라
+			if (m_pPlayer->bIsUltimateState) //궁 상태에서 카메라
 			{
 				XMFLOAT3 offset = XMFLOAT3((m_pPlayer->GetUp().x) * 10, (m_pPlayer->GetUp().y) * 5, (m_pPlayer->GetUp().z) * 10);
 				XMFLOAT3 pos = XMFLOAT3(Target->GetPosition().x + offset.x, Target->GetPosition().y + 10, Target->GetPosition().z + offset.z); //최종목표

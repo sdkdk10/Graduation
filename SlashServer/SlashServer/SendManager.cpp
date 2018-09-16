@@ -107,7 +107,7 @@ void SendManager::SendPutPlayer(GameObject* player, GameObject* object)
 	put_p.posZ = object->world_._43;
 	put_p.lookDegree = object->lookDegree_;
 	put_p.state = object->state_;
-	put_p.playerType = dynamic_cast<Player*>(object)->playerType;
+	put_p.playerType = dynamic_cast<Player*>(object)->playerType_;
 
 	SendPacket(player, &put_p);
 }
@@ -163,7 +163,7 @@ void SendManager::SendObjectHp(GameObject* player, GameObject* object)
 	SendPacket(player, &p);
 }
 
-void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, GameObject* attackObj)
+void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, int damage)
 {
 	sc_packet_damage p;
 
@@ -174,7 +174,39 @@ void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, G
 
 	p.size = sizeof(sc_packet_damage);
 	p.type = SC_DAMAGE;
-	p.dmg = attackObj->dmg_;
+	p.dmg = damage;
+
+	SendPacket(player, &p);
+}
+
+void SendManager::SendObjectLevelup(GameObject* player, GameObject* Obj)
+{
+	sc_packet_level_up p;
+
+	if (TYPE_MONSTER == Obj->objectType_)
+		p.id = Obj->ID_ + NPC_ID_START;
+	else
+		p.id = Obj->ID_;
+
+	p.size = sizeof(sc_packet_level_up);
+	p.type = SC_LEVEL_UP;
+	p.level = Obj->level_;
+
+	SendPacket(player, &p);
+}
+
+void SendManager::SendObjectExp(GameObject* player)
+{
+	sc_packet_exp p;
+
+	if (TYPE_MONSTER == player->objectType_)
+		p.id = player->ID_ + NPC_ID_START;
+	else
+		p.id = player->ID_;
+
+	p.size = sizeof(sc_packet_exp);
+	p.type = SC_EXP;
+	p.exp = player->exp_;
 
 	SendPacket(player, &p);
 }

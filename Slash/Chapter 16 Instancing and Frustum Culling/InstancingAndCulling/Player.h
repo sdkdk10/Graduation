@@ -92,6 +92,9 @@ public:
 	int GetPreState() {
 		return m_PreState;
 	}
+	bool GetIsWarrior() {
+		return m_IsWarrior;
+	}
 
 	virtual void	AddExp(float exp);
 private:

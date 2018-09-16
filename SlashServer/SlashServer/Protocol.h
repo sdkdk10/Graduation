@@ -14,6 +14,16 @@ enum State
 	STATE_HIT,
 	STATE_END,
 };
+enum MonsterState
+{
+	MSTATE_IDLE,
+	MSTATE_WALK,
+	MSTATE_ATTACK1,
+	MSTATE_ATTACK2,
+	MSTATE_HIT,
+	MSTATE_DEAD,
+	MSTATE_END,
+};
 enum MonsterZone
 { 
 	MONSTER_ZONE1, 
@@ -40,21 +50,26 @@ enum SpiderType
 enum PlayerType
 {
 	PLAYER_WARRIOR,
-	PLAYER_MAGE
+	PLAYER_WIZARD
 };
 
+const int INIT_PLAYER_HP = 300;
 const float CS_SEND_PACKET_DELAY = 10;
 static const int EVT_RECV = 0;
 static const int EVT_SEND = 1;
 static const int EVT_CHASE = 2;
 static const int EVT_MONSTER_ATTACK = 3;
-static const int EVT_PLAYER_ATTACK = 4;
-static const int EVT_MONSTER_DAMAGED = 5;
-static const int EVT_PLAYER_DAMAGED = 6;
-static const int EVT_ATTACKMOVE = 7;
-static const int EVT_MONSTER_RESPOWN = 8;
-static const int EVT_PLAYER_RESPOWN = 9;
-static const int EVT_PLAYER_ROLL = 10;
+static const int EVT_WARRIOR_ATTACK1 = 4;
+static const int EVT_WARRIOR_ATTACK2 = 5;
+static const int EVT_WARRIOR_ATTACK3 = 6;
+static const int EVT_WIZARD_ATTACK1 = 7;
+static const int EVT_WIZARD_ATTACK2 = 8;
+static const int EVT_WIZARD_ATTACK3 = 9;
+static const int EVT_MONSTER_DAMAGED = 10;
+static const int EVT_PLAYER_DAMAGED = 11;
+static const int EVT_MONSTER_RESPAWN = 12;
+static const int EVT_PLAYER_RESPAWN = 13;
+static const int EVT_PLAYER_ROLL = 14;
 
 #define MY_SERVER_PORT  4000
 
@@ -72,11 +87,11 @@ static const int EVT_PLAYER_ROLL = 10;
 #define NUM_OF_MAPOBJECT 100
 
 
-#define NUM_OF_NPC_SPIDER			5
-#define NUM_OF_NPC_NAGAGUARD		5
-#define NUM_OF_NPC_ROCKWARRIOR		5
-#define NUM_OF_NPC_TREEGUARD		5
-#define NUM_OF_NPC_TURTLE			5
+#define NUM_OF_NPC_SPIDER			15
+#define NUM_OF_NPC_NAGAGUARD		15
+#define NUM_OF_NPC_ROCKWARRIOR		1
+#define NUM_OF_NPC_TREEGUARD		15
+#define NUM_OF_NPC_TURTLE			15
 #define NUM_OF_NPC_TOTAL			NUM_OF_NPC_SPIDER + NUM_OF_NPC_NAGAGUARD + NUM_OF_NPC_ROCKWARRIOR + NUM_OF_NPC_TREEGUARD + NUM_OF_NPC_TURTLE
 
 #define NPC_ID_START				NUM_OF_PLAYER
@@ -113,8 +128,12 @@ static const int EVT_PLAYER_ROLL = 10;
 #define SC_HP							0x08
 #define SC_PUT_MONSTER					0x09
 #define SC_DAMAGE						0x0a
-#define SC_ULTIMATE_ON					0x0b
-#define SC_ULTIMATE_OFF					0x0c
+#define SC_ULTIMATE_WARRIOR				0x0b
+#define SC_ULTIMATE_WIZARD				0x0c
+#define SC_ULTIMATE_OFF					0x0d
+#define SC_LEVEL_UP						0x0e
+#define SC_EXP							0x0f
+
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
 static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
@@ -244,6 +263,20 @@ struct sc_packet_damage {
 	WORD dmg;
 };
 
+struct sc_packet_level_up {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	WORD level;
+};
+
+struct sc_packet_exp {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	unsigned int exp;
+};
+
 struct sc_packet_chat {
 	BYTE size;
 	BYTE type;
@@ -255,7 +288,6 @@ struct sc_packet_ultimate_on {
 	BYTE size;
 	BYTE type;
 	WORD id;
-	BYTE state;
 };
 
 struct sc_packet_ultimate_off {

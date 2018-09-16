@@ -19,14 +19,20 @@ public:
 	void DisconnectPlayer(GameObject* player);
 	void WakeUpNPC(GameObject * npc, GameObject * target);
 	void ChasingPlayer(GameObject* npc, GameObject* player);
-	void MonsterAttack(GameObject* monsterID, GameObject* playerID);
-	void PlayerAttack(GameObject* playerID);
-	void PlayerDamaged(GameObject* monsterID, GameObject* playerID);
-	void MonsterDamaged(GameObject* playerID, GameObject* monsterID);
-	void PlayerRespown(GameObject* playerID);
-	void MonsterRespown(GameObject* monsterID);
+	void MonsterAttack(GameObject* monster, GameObject* player);
+	void ProcessWarriorAttack1(GameObject* player);
+	void ProcessWarriorAttack2(GameObject * player);
+	void ProcessWarriorAttack3(GameObject * player);
+	void ProcessWizardAttack1(GameObject * player);
+	void ProcessWizardAttack2(GameObject * player);
+	void ProcessWizardAttack3(GameObject * player);
+	void PlayerDamaged(GameObject* player, GameObject* monster);
+	void MonsterDamaged(GameObject * monster, GameObject * player);
+	void PlayerRespown(GameObject* player);
+	void MonsterRespown(GameObject* monster);
 	void ProcessMove(GameObject * player, unsigned char dirType, unsigned char moveType);
 	void ProcessPacket(GameObject* cl, char * packet);
+	void SearchNewTargetPlayer(GameObject* monster);
 public:
 	inline GameObject*&										GetPlayer(unsigned int playerIndex) { return playerArray_[playerIndex]; }
 	inline std::array<GameObject*, NUM_OF_PLAYER>&				GetPlayerList() { return playerArray_; }

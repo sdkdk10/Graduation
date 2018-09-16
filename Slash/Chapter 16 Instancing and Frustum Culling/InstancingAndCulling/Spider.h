@@ -27,7 +27,6 @@ public:
 
 
 public:
-	void MageHitEffectPlay();
 
 private:
 	Player *				m_pPlayer = nullptr;

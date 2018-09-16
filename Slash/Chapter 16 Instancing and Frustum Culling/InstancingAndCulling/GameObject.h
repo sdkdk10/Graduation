@@ -68,7 +68,7 @@ protected:
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지
 public:
 	virtual void AnimationStateUpdate(const GameTimer & gt);
-	void SetTimerTrueFalse();
+	virtual void SetTimerTrueFalse();
 	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
 	int GetCurAnimFrame() { return m_iCurAnimFrame; }
@@ -91,7 +91,15 @@ public:
 public:
 	AnimateStateMachine * GetAnimateMachine() { return AnimStateMachine; }
 public:
-	virtual void SetObjectAnimState(int _animState) { AnimStateMachine->SetAnimState(_animState); }
+	virtual void SetObjectAnimState(int _animState) {
+		if (State::STATE_HIT == _animState)
+		{
+			if (State::STATE_IDLE == AnimStateMachine->GetAnimState() ||
+			(State::STATE_WALK == AnimStateMachine->GetAnimState())== false) 
+				return;
+		}
+		AnimStateMachine->SetAnimState(_animState);
+	}
 protected:
 	AnimateStateMachine * AnimStateMachine = nullptr;
 public:
@@ -166,6 +174,8 @@ public:
 	virtual float GetNetRotAngle() { return m_fNetRot; }
 
 	virtual void Animate(const GameTimer & gt); //애니메이션 상태 설정, 객체 이동, 회전 여기서 하면 됨
+
+	void MageHitEffectPlay();
 
 	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
