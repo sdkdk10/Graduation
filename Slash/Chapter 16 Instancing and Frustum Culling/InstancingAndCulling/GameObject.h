@@ -68,7 +68,7 @@ protected:
 	int m_iCurAnimFrame = 0; // 현재 애니메이션 몇번째 프레임인지
 public:
 	virtual void AnimationStateUpdate(const GameTimer & gt);
-	void SetTimerTrueFalse();
+	virtual void SetTimerTrueFalse();
 	void SetAnimState(int _animstate) { m_iAnimState = _animstate; }
 	int GetAnimState() { return m_iAnimState; }
 	int GetCurAnimFrame() { return m_iCurAnimFrame; }
