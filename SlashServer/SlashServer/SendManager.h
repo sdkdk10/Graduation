@@ -18,5 +18,7 @@ public:
 	static void SendPutPlayer(GameObject* player, GameObject* object);
 	static void SendObjectHp(GameObject* player, GameObject* object);
 	static void SendObjectDamage(GameObject * player, GameObject * damagedObj, int damage);
+	static void SendObjectLevelup(GameObject * player, GameObject * Obj);
+	static void SendObjectExp(GameObject * player);
 	static void SendPutMonster(GameObject* player, GameObject* object);
 };

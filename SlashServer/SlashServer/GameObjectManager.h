@@ -26,8 +26,8 @@ public:
 	void ProcessWizardAttack1(GameObject * player);
 	void ProcessWizardAttack2(GameObject * player);
 	void ProcessWizardAttack3(GameObject * player);
-	void PlayerDamaged(GameObject* player, int damage);
-	void MonsterDamaged(GameObject * monster, int damage);
+	void PlayerDamaged(GameObject* player, GameObject* monster);
+	void MonsterDamaged(GameObject * monster, GameObject * player);
 	void PlayerRespown(GameObject* player);
 	void MonsterRespown(GameObject* monster);
 	void ProcessMove(GameObject * player, unsigned char dirType, unsigned char moveType);

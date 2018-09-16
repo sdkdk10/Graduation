@@ -50,7 +50,7 @@ enum SpiderType
 enum PlayerType
 {
 	PLAYER_WARRIOR,
-	PLAYER_MAGE
+	PLAYER_WIZARD
 };
 
 const int INIT_PLAYER_HP = 300;
@@ -67,8 +67,8 @@ static const int EVT_WIZARD_ATTACK2 = 8;
 static const int EVT_WIZARD_ATTACK3 = 9;
 static const int EVT_MONSTER_DAMAGED = 10;
 static const int EVT_PLAYER_DAMAGED = 11;
-static const int EVT_MONSTER_RESPOWN = 12;
-static const int EVT_PLAYER_RESPOWN = 13;
+static const int EVT_MONSTER_RESPAWN = 12;
+static const int EVT_PLAYER_RESPAWN = 13;
 static const int EVT_PLAYER_ROLL = 14;
 
 #define MY_SERVER_PORT  4000
@@ -131,6 +131,9 @@ static const int EVT_PLAYER_ROLL = 14;
 #define SC_ULTIMATE_WARRIOR				0x0b
 #define SC_ULTIMATE_WIZARD				0x0c
 #define SC_ULTIMATE_OFF					0x0d
+#define SC_LEVEL_UP						0x0e
+#define SC_EXP							0x0f
+
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
 static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
@@ -258,6 +261,20 @@ struct sc_packet_damage {
 	BYTE type;
 	WORD id;
 	WORD dmg;
+};
+
+struct sc_packet_level_up {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	WORD level;
+};
+
+struct sc_packet_exp {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	unsigned int exp;
 };
 
 struct sc_packet_chat {

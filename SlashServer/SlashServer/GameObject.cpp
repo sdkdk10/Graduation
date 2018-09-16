@@ -24,6 +24,8 @@ void GameObject::Initialize()
 	lookDegree_ = 0;
 	state_ = STATE_IDLE;
 	isActive_ = false;
+	level_ = 1;
+	exp_ = 0;
 }
 
 bool GameObject::CanSeeMapObject(GameObject* b)

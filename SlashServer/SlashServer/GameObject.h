@@ -34,4 +34,6 @@ public:
 	int skillMoveRange;
 	BoundingOrientedBox skillOOBB_{};
 	BoundingOrientedBox skillOOBBTransformed_{};
+	unsigned int exp_;
+	unsigned short level_;
 };

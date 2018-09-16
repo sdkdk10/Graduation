@@ -150,7 +150,7 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 	if (npc->state_ == STATE_DEAD)
 		return;
 
-	if (player->isActive_ == false)
+	if (player->isActive_ == false || player->state_ == STATE_DEAD)
 	{
 		SearchNewTargetPlayer(npc);
 		return;
@@ -508,27 +508,24 @@ void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
 	SendManager::SendObjectHp(player, player);
 }
 
-void GameObjectManager::PlayerDamaged(GameObject* player, int damage) {
+void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 
 	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(player)) continue;
-		SendManager::SendObjectDamage(playerArray_[i], player, damage);
+		SendManager::SendObjectDamage(playerArray_[i], player, monster->dmg_);
 	}
 
 	if (player->state_ == STATE_DEAD)
 		return;
 
-	player->hp_ -= damage;
-
-	if ((player->hp_ - damage) < 0)
-		player->hp_ = 0;
-
-	SendManager::SendObjectHp(player, player);
+	player->hp_ -= monster->dmg_;
 
 	if (player->hp_ <= 0)
 	{
+		player->hp_ = 0;
+
 		player->state_ = STATE_DEAD;
 
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
@@ -538,7 +535,7 @@ void GameObjectManager::PlayerDamaged(GameObject* player, int damage) {
 			SendManager::SendObjectState(playerArray_[i], player);
 		}
 
-		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_RESPOWN, GetTickCount() + 5000, nullptr);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_RESPAWN, GetTickCount() + 5000, nullptr);
 	}
 	else
 	{
@@ -551,9 +548,11 @@ void GameObjectManager::PlayerDamaged(GameObject* player, int damage) {
 			SendManager::SendObjectState(playerArray_[i], player);
 		}
 	}
+
+	SendManager::SendObjectHp(player, player);
 }
 
-void GameObjectManager::MonsterDamaged(GameObject* monster, int damage) {
+void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) {
 
 	if (monster->state_ == STATE_DEAD)
 		return;
@@ -562,12 +561,12 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, int damage) {
 	{
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(monster)) continue;
-		SendManager::SendObjectDamage(playerArray_[i], monster, damage);
+		SendManager::SendObjectDamage(playerArray_[i], monster, player->dmg_);
 	}
 
-	monster->hp_ -= damage;
+	monster->hp_ -= player->dmg_;
 
-	if ((monster->hp_ - damage) < 0)
+	if ((monster->hp_ - player->dmg_) < 0)
 		monster->hp_ = 0;
 
 	if (monster->hp_ <= 0)
@@ -582,7 +581,7 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, int damage) {
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 
-		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPOWN, GetTickCount() + 50000, nullptr);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPAWN, GetTickCount() + 50000, nullptr);
 	}
 	else
 	{
@@ -629,7 +628,8 @@ void GameObjectManager::MonsterRespown(GameObject* monster)
 void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, unsigned char moveType)
 {
 	if ((player->state_ == State::STATE_IDLE ||
-		player->state_ == State::STATE_WALK) == false)
+		player->state_ == State::STATE_WALK ||
+		player->state_ == State::STATE_ROLL) == false)
 		return;
 
 	auto pPlayer = dynamic_cast<Player*>(player);
@@ -644,7 +644,10 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	else
 	{
 		player->state_ = STATE_ROLL;
-		moveSpeed = PLAYER_ROLL_SPEED;
+		if(PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
+			moveSpeed = WARRIOR_ROLL_SPEED;
+		else if (PlayerType::PLAYER_WIZARD == pPlayer->playerType_)
+			moveSpeed = WIZARD_TELEPORT_SPEED;
 		pPlayer->rollDir = dirType;
 	}
 
@@ -840,14 +843,17 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 
 	if (SC_ROLL_MOVE == moveType)
 	{
-		if (++(pPlayer->rollCurFrame) >= ROLL_MAX_FRAME)
+		if (PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
 		{
-			pPlayer->rollCurFrame = 0;
-			return;
-		}
-		else
-		{ 
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_ROLL, GetTickCount() + ROLL_DELAY, nullptr);
+			if (++(pPlayer->rollCurFrame) >= ROLL_MAX_FRAME)
+			{
+				pPlayer->rollCurFrame = 0;
+				return;
+			}
+			else
+			{
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_ROLL, GetTickCount() + ROLL_DELAY, nullptr);
+			}
 		}
 	}
 
@@ -1010,9 +1016,10 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 				SendManager::SendPacket(playerArray_[i], &su);
 			}
 		}
-		else if(PlayerType::PLAYER_MAGE == pPlayer->playerType_)
+		else if(PlayerType::PLAYER_WIZARD == pPlayer->playerType_)
 		{
 			su.type = SC_ULTIMATE_WIZARD;
+			player->dmg_ = MAGE_ULTIMATE_DMG;
 
 			for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
 			{
@@ -1027,7 +1034,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 					su.id = npcArray_[i]->ID_ + NPC_ID_START;
 					SendManager::SendPacket(playerArray_[j], &su);
 				}
-				MonsterDamaged(npcArray_[i], MAGE_ULTIMATE_DMG);
+				MonsterDamaged(npcArray_[i], player);
 			}
 		}
 

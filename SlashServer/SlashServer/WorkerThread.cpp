@@ -134,23 +134,23 @@ void WorkerThread::Run()
 			if (dynamic_cast<Player*>(target)->isWarriorUltimateMode)
 				target->dmg_ *= 2;
 
-			objectManager_->MonsterDamaged(object, target->dmg_);
+			objectManager_->MonsterDamaged(object, target);
 			delete o;
 		}
 		else if (EVT_PLAYER_DAMAGED == o->eventType)
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			GameObject* target = o->eventTarget;
-			objectManager_->PlayerDamaged(object, target->dmg_);
+			objectManager_->PlayerDamaged(object, target);
 			delete o;
 		}
-		else if (EVT_MONSTER_RESPOWN == o->eventType)
+		else if (EVT_MONSTER_RESPAWN == o->eventType)
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			objectManager_->MonsterRespown(object);
 			delete o;
 		}
-		else if (EVT_PLAYER_RESPOWN == o->eventType)
+		else if (EVT_PLAYER_RESPAWN == o->eventType)
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			objectManager_->PlayerRespown(object);

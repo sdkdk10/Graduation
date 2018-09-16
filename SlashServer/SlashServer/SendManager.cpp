@@ -178,3 +178,35 @@ void SendManager::SendObjectDamage(GameObject* player, GameObject* damagedObj, i
 
 	SendPacket(player, &p);
 }
+
+void SendManager::SendObjectLevelup(GameObject* player, GameObject* Obj)
+{
+	sc_packet_level_up p;
+
+	if (TYPE_MONSTER == Obj->objectType_)
+		p.id = Obj->ID_ + NPC_ID_START;
+	else
+		p.id = Obj->ID_;
+
+	p.size = sizeof(sc_packet_level_up);
+	p.type = SC_LEVEL_UP;
+	p.level = Obj->level_;
+
+	SendPacket(player, &p);
+}
+
+void SendManager::SendObjectExp(GameObject* player)
+{
+	sc_packet_exp p;
+
+	if (TYPE_MONSTER == player->objectType_)
+		p.id = player->ID_ + NPC_ID_START;
+	else
+		p.id = player->ID_;
+
+	p.size = sizeof(sc_packet_exp);
+	p.type = SC_EXP;
+	p.exp = player->exp_;
+
+	SendPacket(player, &p);
+}

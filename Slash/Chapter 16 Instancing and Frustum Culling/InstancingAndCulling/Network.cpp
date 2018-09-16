@@ -281,7 +281,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		{
 			playerType_[id] = my_packet->playerType;
 
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = true;
@@ -313,7 +313,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
@@ -337,7 +337,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
@@ -362,7 +362,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->Rotation(0.f, 0.f, my_packet->lookDegree);
@@ -387,7 +387,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(my_packet->state);
@@ -409,7 +409,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->m_bIsConnected = false;
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->m_bIsConnected = false;
@@ -463,7 +463,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			XMFLOAT3 position = CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->GetPosition();
@@ -487,7 +487,7 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_IDLE);
@@ -516,13 +516,43 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		else if (id < NPC_ID_START)
 		{
-			if (PlayerType::PLAYER_MAGE == playerType_[id])
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
 				id += NUM_OF_PLAYER;
 
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->bIsUltimateState = false;
 		}
 		break;
 	}
+	case SC_LEVEL_UP:
+	{
+		sc_packet_damage *my_packet = reinterpret_cast<sc_packet_damage *>(ptr);
+		int id = my_packet->id;
+		if (myid == id)
+		{
+			//CManagement::GetInstance()->SetLevelUPUI();
+			//CManagement::GetInstance()->PlayLevelUP();
+		}
+		else if (id < NPC_ID_START)
+		{
+			if (PlayerType::PLAYER_WIZARD == playerType_[id])
+				id += NUM_OF_PLAYER;
+
+			// 레벨업 이펙트
+			CManagement::GetInstance()->PlayLevelUP();
+		}
+		break;
+	}
+	case SC_EXP:
+	{
+		sc_packet_exp *my_packet = reinterpret_cast<sc_packet_exp *>(ptr);
+		int id = my_packet->id;
+		if (myid == id)
+		{
+			CManagement::GetInstance()->SetExp(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0), my_packet->exp);
+		}
+		break;
+	}
+
 	}
 }
 

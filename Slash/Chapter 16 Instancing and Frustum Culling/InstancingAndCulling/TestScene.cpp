@@ -49,7 +49,7 @@ HRESULT CTestScene::Initialize()
 	if (m_IsWarrior)
 		playerType = PlayerType::PLAYER_WARRIOR;
 	else
-		playerType = PlayerType::PLAYER_MAGE;
+		playerType = PlayerType::PLAYER_WIZARD;
 
 	CNetwork::GetInstance()->InitSock(D3DApp::GetApp()->MainWnd());
 	CNetwork::GetInstance()->SendPlayerInitData(playerType);
