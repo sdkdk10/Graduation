@@ -8,6 +8,13 @@ class NumUI;
 
 class Player : public CGameObject
 {
+	struct tSkillUI
+	{
+		HPBar*		pUI = nullptr;
+		float		fResetTime;
+		float		fStayTime = 0.f;
+		bool		isActive = true;
+	};
 	int AnimationtTest = 0;
 public:
 	bool bIsUltimateState = false;
@@ -97,6 +104,10 @@ public:
 		return m_IsWarrior;
 	}
 
+	void SetUltimateEffect(bool isUltimate);
+
+	void			UIUpdate(const GameTimer& gt);
+
 	virtual void	AddExp(float exp);
 	virtual void	SetExp(float exp);
 
@@ -115,6 +126,8 @@ private:
 	HPBar*		m_ExpBar;
 	HPBar*		m_GageBar;
 	NumUI*		m_LvUI;
+	HPBar*		m_GageSkillUI;
+	tSkillUI	m_SkillUI[2];
 
 	float		m_fMaxHp = 100.f;
 	float		m_fMaxExp = 100.f;
@@ -136,6 +149,9 @@ public:
 private:
 	HRESULT			Initialize();
 	virtual void	AnimationStateUpdate(const GameTimer & gt);
+	
+public:
+	void			SetUltimateEffect(bool isUltimate);
 
 private:
 	CGameObject*	m_pObject;

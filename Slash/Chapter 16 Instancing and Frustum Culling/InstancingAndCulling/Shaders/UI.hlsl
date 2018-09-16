@@ -18,12 +18,15 @@ VertexOut_UI VS(VertexIn_UI vin)
 float4 PS(VertexOut_UI pin) : SV_Target
 {
 	//float4 litColor = gCubeMap.Sample(gsamLinearWrap, pin.PosL);
-	float4 litColor = gDiffuseMap_Default[0].Sample(gsamAnisotropicWrap, pin.TexC);
+	MaterialData matData = gMaterialData_Default[0];
+	float4 diffuseAlbedo = matData.DiffuseAlbedo;
 
-	if (litColor.a < 0.2)
+	float4 litColor = gDiffuseMap_Default[0].Sample(gsamAnisotropicWrap, pin.TexC);
+	diffuseAlbedo *= litColor;
+	if (diffuseAlbedo.a < 0.2)
 		discard;
 	//litColor = ceil(litColor * 5) / 5.0f;
-	return litColor;
+	return diffuseAlbedo;
 }
 
 float4 PS_Change(VertexOut_UI pin) : SV_Target

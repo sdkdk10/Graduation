@@ -170,10 +170,7 @@ bool Player::Update(const GameTimer & gt)
 
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 
-	m_HpBar->Update(gt);
-	m_GageBar->Update(gt);
-	m_ExpBar->Update(gt);
-
+	UIUpdate(gt);
 	return true;
 }
 
@@ -264,12 +261,12 @@ HRESULT Player::Initialize()
 	XMFLOAT2 move = XMFLOAT2(-0.3f, 7.3f);
 
 	move.x = 0.f;
-	move.y = -10.1391f;
+	move.y = -11.16980f;
 
 	XMFLOAT2 scale = XMFLOAT2(1.2f, 0.125f);
 	scale.x = 5.f;
-	scale.y = 0.0631968f;
-	float size = 0.543387f;
+	scale.y = 0.049f;
+	float size = 0.695f;
 
 
 	// > Hp Bar
@@ -279,16 +276,16 @@ HRESULT Player::Initialize()
 	m_HpBar->GetMax() = INIT_PLAYER_HP;
 
 	// > Exp Bar
-	move.y = -12.1353f;
-	scale.y = 0.0465798f;
+	move.y = -13.0637f;
+	scale.y = 0.0365781f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_ExpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	m_ExpBar->GetCur() = 30.f;
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
-	move.y = -13.5f;
-	scale.y = 0.053f;
+	move.y = -14.5426f;
+	scale.y = 0.043f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	m_GageBar->GetCur() = 70.f;
@@ -297,6 +294,19 @@ HRESULT Player::Initialize()
 	// > Lv UI
 	tex = CTexture_Manager::GetInstance()->Find_Texture("Num_LV", CTexture_Manager::TEX_DEFAULT_2D);
 	m_LvUI = NumUI::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, L"Com_Mesh_Num", tex->Num);
+
+	// > Skill UI
+	size = -0.0700449f;
+	scale.y = 1.3972f;
+	move.x = -0.00333446f;
+	move.y = -0.553653f;
+	tex = CTexture_Manager::GetInstance()->Find_Texture("SkillNot", CTexture_Manager::TEX_DEFAULT_2D);
+	m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	m_SkillUI[0].fResetTime = 2.f;
+	m_SkillUI[0].pUI->GetCur() = 2.f;
+	m_SkillUI[0].pUI->GetMax() = 2.f;
+	m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.6f);
+
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	cout << "Bounds.Center " << "x : " << Bounds.Center.x << " y : " << Bounds.Center.y << " z : " << Bounds.Center.z << endl;
@@ -370,6 +380,7 @@ void Player::Render_Head(ID3D12GraphicsCommandList * cmdList)
 		dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset[0][iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset[0][KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
 		0);
 }
+
 void Player::Render_Body(ID3D12GraphicsCommandList * cmdList)
 {
 
@@ -474,6 +485,24 @@ Player * Player::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<I
 	return pInstance;
 }
 
+void Player::SetUltimateEffect(bool isUltimate)
+{
+	if (!m_IsWarrior)
+		return;
+
+	dynamic_cast<AnimateStateMachine_Player*>(AnimStateMachine)->SetUltimateEffect(isUltimate);
+}
+
+void Player::UIUpdate(const GameTimer & gt)
+{
+	m_HpBar->Update(gt);
+	m_GageBar->Update(gt);
+	m_ExpBar->Update(gt);
+
+	for (int i = 0; i < 1; ++i)
+		m_SkillUI[i].pUI->Update(gt);
+}
+
 void Player::AddExp(float exp)
 {
 	m_Exp += exp;
@@ -503,6 +532,7 @@ void Player::SetLevel(int iLv)
 {
 	m_iLevel = iLv;
 	// > Level UI 바꾸기
+	m_LvUI->SetNum(iLv);
 }
 
 //void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)
@@ -824,6 +854,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			matWorld._42 = m_pObject->GetWorld()._42;
 			matWorld._43 = m_pObject->GetWorld()._43;
 			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK2], &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
+			
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack2 > (*vecAnimFrame)[State::STATE_ATTACK2])
@@ -1007,6 +1038,29 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 
 	}
 
+}
+
+void AnimateStateMachine_Player::SetUltimateEffect(bool isUltimate)
+{
+	m_mapEffectName.clear();
+	if (!isUltimate)
+	{
+		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
+		cout << m_mapEffectName.size();
+		cout << "Warrirorrrrrrrr" << endl;
+	}
+	else
+	{
+		m_mapEffectName.emplace(State::STATE_ATTACK1, "UtimateAttack_2");
+		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
+		cout << m_mapEffectName.size() << endl;
+		cout << "Ultimate상태로" << endl;
+	}
 }
 
 AnimateStateMachine_Player * AnimateStateMachine_Player::Create(CGameObject* pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])

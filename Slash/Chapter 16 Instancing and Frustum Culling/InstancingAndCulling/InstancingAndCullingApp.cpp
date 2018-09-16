@@ -835,7 +835,7 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"PlayerLevelUIWarrior Ready Failed");
 	
-		Tex = new Texture;
+	Tex = new Texture;
 	Tex->Name = "Num_LV";
 	Tex->Filename = L"Assets/Textures/Num_LV.dds";
 	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
@@ -844,6 +844,39 @@ void InstancingAndCullingApp::LoadTextures()
 
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"Num_LV Ready Failed");
+	
+
+	Tex = new Texture;
+	Tex->Name = "SkillUIWizard";
+	Tex->Filename = L"Assets/Textures/SkillUIWizard.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SkillUIWizard Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "SkillUIWarrior";
+	Tex->Filename = L"Assets/Textures/SkillUIWarrior.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SkillUIWarrior Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "SkillNot";
+	Tex->Filename = L"Assets/Textures/SkillNot.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"SkillNot Ready Failed");
+
 
 	Tex = new Texture;
 	Tex->Name = "Aura0";
@@ -914,7 +947,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	vector<pair<const string, const string>> path;
 	//path.push_back(make_pair("Attack", "Assets/Models/Warrior/Warrior_Attack_Turn.ASE"));
 	//==
-//	CComponent* pComponent;
+	//CComponent* pComponent;
 	path.push_back(make_pair("Idle", "Assets/Models/Warrior/Warrior_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Warrior/Warrior_Walk.ASE"));
 	path.push_back(make_pair("Back", "Assets/Models/Warrior/Warrior_Attack1.ASE"));
@@ -1048,16 +1081,16 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	// HP
 	move.x = 0.f;
-	move.y = -17.3f;
-	scale.x = 0.545f;
+	move.y = -14.8f;
+	scale.x = 0.7f;
 	scale.y = 0.037f;
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerHPState", pComponent);
 
 	// Exp
 	move.x = 0.f;
-	move.y = -19.5f;
-	scale.x = 0.545f;
+	move.y = -16.5f;
+	scale.x = 0.7f;
 	scale.y = 0.029f;
 
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
@@ -1065,8 +1098,8 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	// Gage
 	move.x = 0.f;
-	move.y = -22.3f;
-	scale.x = 0.545f;
+	move.y = -19.5f;
+	scale.x = 0.7f;
 	scale.y = 0.032f;
 
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.01f);
@@ -1075,7 +1108,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	move.x = -1.3f;
 	move.y = 2.7f;
-	scale.x = 0.5f;
+	scale.x = 0.7f;
 	scale.y = 0.3f;
 
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.002f);
@@ -1094,6 +1127,13 @@ void InstancingAndCullingApp::LoadMeshes()
 	move.x -= 1.f;
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Num", pComponent);
+
+	move.x = 0.f;
+	move.y = -4.f;
+	scale.x = 0.6f;
+	scale.y = 0.2f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_SkillUI", pComponent);
 
 	// > Map Object ASE Load
 	fstream in("Assets/Data/ModelList.txt");

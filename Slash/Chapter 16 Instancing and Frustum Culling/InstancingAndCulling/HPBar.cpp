@@ -91,6 +91,22 @@ bool HPBar::Update(const GameTimer & gt)
 	
 	Geo->VertexBufferGPU = currVB->Resource();
 
+
+	auto currMaterialCB = m_pFrameResource->MaterialCB.get();
+
+	XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
+
+	MaterialConstants matConstants;
+	matConstants.DiffuseAlbedo = Mat->DiffuseAlbedo;
+	matConstants.FresnelR0 = Mat->FresnelR0;
+	matConstants.Roughness = Mat->Roughness;
+	XMStoreFloat4x4(&matConstants.MatTransform, XMMatrixTranspose(matTransform));
+
+
+	matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
+
+	currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
+
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 	return true;

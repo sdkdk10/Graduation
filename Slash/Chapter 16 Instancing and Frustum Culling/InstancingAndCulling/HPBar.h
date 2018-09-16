@@ -22,6 +22,8 @@ public:
 	float&	GetMax() { return m_fMax; }
 	float&	GetCur() { return m_fCur; }
 
+	void	SetColor(float r, float g, float b, float a) { Mat->DiffuseAlbedo = XMFLOAT4(r, g, b, a); }
+
 	static unsigned long	m_iAllBarUIIndex;
 	unsigned long			m_iMyUIID;
 

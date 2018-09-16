@@ -279,7 +279,7 @@ HRESULT CSelectScene::Initialize()
 	//gBar->GetCur() = 200.f;
 	//gBar->GetMax() = 200.f;
 
-	//tex = CTexture_Manager::GetInstance()->Find_Texture("GageUIBase", CTexture_Manager::TEX_DEFAULT_2D);
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("HPUIBase", CTexture_Manager::TEX_DEFAULT_2D);
 
 	////pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
 	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerHPState", tex->Num);
@@ -287,16 +287,42 @@ HRESULT CSelectScene::Initialize()
 	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	//Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
 
-	//tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUIBase", CTexture_Manager::TEX_DEFAULT_2D);
 
-	//// > Hp Bar
-	//move.y = -12.973f;
-	//scale.y = 0.053f;
+	////pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerExpState", tex->Num);
+	//pObject->SetCamera(Get_MainCam());
+	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	//Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("SkillNot", CTexture_Manager::TEX_DEFAULT_2D);
+
+	////// > Hp Bar
+	//move.x = 0.f;
+	//move.y = 0.f;
+
+	//scale.x = 0.05f;
+	//scale.y = 2.f;
+	//size = 0.08f;
+
 	//gBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	////pObject->SetCamera(CManagement::GetInstance()->Get_CurScene()->Get_MainCam());
 	//Ready_GameObject(L"Layer_PlayerStateUI", gBar);
 	//gBar->GetCur() = 200.f;
 	//gBar->GetMax() = 200.f;
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("GageUIBase", CTexture_Manager::TEX_DEFAULT_2D);
+
+	////pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerGageState", tex->Num);
+	//pObject->SetCamera(Get_MainCam());
+	//dynamic_cast<StaticUI*>(pObject)->SetColor(1.f, 1.f, 1.f, 0.7f);
+	//Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("SkillUIWarrior", CTexture_Manager::TEX_DEFAULT_2D);
+
+	////pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, s ize, tex->Num);//, "Models/StaticMesh/staticMesh.ASE", 10);
+	//pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_SkillUI", tex->Num);
+	//pObject->SetCamera(Get_MainCam());
+	////dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
+	//Ready_GameObject(L"Layer_PlayerHPStateUI", pObject);
 	// > ===================================================================================
 
 	return S_OK;
@@ -335,6 +361,52 @@ bool CSelectScene::Update(const GameTimer & gt)
 		CManagement::GetInstance()->GetSound()->StopBGM();
 	}
 
+	float mx, my, sy, size,sx;
+	//gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
+	if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS)
+	{
+		my += gt.DeltaTime() * 0.1f;
+	}
+
+	if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS)
+	{
+		my -= gt.DeltaTime() * 0.1f;
+	}
+
+	if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS)
+	{
+		mx += gt.DeltaTime() * 0.1f;
+	}
+
+	if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS)
+	{
+		mx -= gt.DeltaTime() * 0.1f;
+	}
+	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS)
+	{
+		sy += gt.DeltaTime() * 0.1f;
+	}
+
+	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS)
+	{
+		sy -= gt.DeltaTime() * 0.1f;
+	}
+
+	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_PRESS)
+	{
+		size += gt.DeltaTime();
+	}
+
+	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_PRESS)
+	{
+		size -= gt.DeltaTime();
+	}
+
+	if (KeyBoard_Input(DIK_I) == CInputDevice::INPUT_PRESS)
+	{
+		cout << "size : " << size << ", sy : " << sy << ", mx :" << mx << ", my :" << my << endl;
+	}
+	//gBar->SetUI(size, mx, my, sx, sy);
 	return true;
 }
 

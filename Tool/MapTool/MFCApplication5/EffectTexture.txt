@@ -1,4 +1,4 @@
-74
+76
 aurora01	Assets/Textures/Effect/aurora01.dds
 blood_hit_04	Assets/Textures/Effect/blood_hit_04.dds
 eye_moo_t_mul_gray_11	Assets/Textures/Effect/eye_moo_t_mul_gray_11.dds
@@ -63,6 +63,7 @@ ItemCombinationSuccessDialog_I1	Assets/Textures/Effect/ItemCombinationSuccessDia
 fire	Assets/Textures/Effect/fire.dds
 heal_002	Assets/Textures/Effect/heal_002.dds
 ItemCombinationSuccessDialog_IA	Assets/Textures/Effect/ItemCombinationSuccessDialog_IA.dds
+light_002	Assets/Textures/Effect/light_002.dds
 magic_002(alpha)	Assets/Textures/Effect/magic_002(alpha).dds
 magic_002	Assets/Textures/Effect/magic_002.dds
 magic_003	Assets/Textures/Effect/magic_003.dds
@@ -71,5 +72,6 @@ orbpurple_73x73(7x7)	Assets/Textures/Effect/orbpurple_73x73(7x7).dds
 Ring_2	Assets/Textures/Effect/Ring_2.dds
 special_001	Assets/Textures/Effect/special_001.dds
 thunder_003	Assets/Textures/Effect/thunder_003.dds
+water_005	Assets/Textures/Effect/water_005.dds
 wind_002	Assets/Textures/Effect/wind_002.dds
 wing_001	Assets/Textures/Effect/wing_001.dds

@@ -525,6 +525,8 @@ void CNetwork::ProcessPacket(char * ptr)
 		{
 			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_IDLE);
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->bIsUltimateState = true;
+			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetUltimateEffect(true);
+			cout << "Ultimate Start " << endl;
 		}
 		else if (id < NPC_ID_START)
 		{
@@ -554,6 +556,8 @@ void CNetwork::ProcessPacket(char * ptr)
 		if (myid == id)
 		{
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->bIsUltimateState = false;
+			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetUltimateEffect(false);
+			cout << "Ultimate End!!!" << endl;
 		}
 		else if (id < NPC_ID_START)
 		{

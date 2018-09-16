@@ -596,12 +596,29 @@ void CTestScene::UISetting()
 	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 
 	if (m_IsWarrior)
+	{
 		tex = CTexture_Manager::GetInstance()->Find_Texture("PlayerLevelUIWarrior", CTexture_Manager::TEX_DEFAULT_2D);
-	else
-		tex = CTexture_Manager::GetInstance()->Find_Texture("PlayerLevelUIWizard", CTexture_Manager::TEX_DEFAULT_2D);
+		pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerJobState", tex->Num);
+		Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 
-	pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerJobState", tex->Num);
-	Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+		tex = CTexture_Manager::GetInstance()->Find_Texture("SkillUIWarrior", CTexture_Manager::TEX_DEFAULT_2D);
+		pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_SkillUI", tex->Num);
+		Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+	}
+		
+	else
+	{
+		tex = CTexture_Manager::GetInstance()->Find_Texture("PlayerLevelUIWizard", CTexture_Manager::TEX_DEFAULT_2D);
+		pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_PlayerJobState", tex->Num);
+		Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+
+		tex = CTexture_Manager::GetInstance()->Find_Texture("SkillUIWizard", CTexture_Manager::TEX_DEFAULT_2D);
+		pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_SkillUI", tex->Num);
+		Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+	}
+		
+
+
 
 	tex = CTexture_Manager::GetInstance()->Find_Texture("Num_LV", CTexture_Manager::TEX_DEFAULT_2D);
 

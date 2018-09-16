@@ -186,7 +186,7 @@ HRESULT RockWarrior::Initialize()
 
 	wchar_t* machineName;
 	machineName = L"RockWarrior";
-	int test[State::STATE_END] = { 0, };
+	int test[MonsterState::MSTATE_END] = { 0, };
 	AnimStateMachine = AnimateStateMachine_RockWarrior::Create(this, machineName, test, test);
 	if (AnimStateMachine == nullptr)
 		return E_FAIL;
@@ -374,17 +374,17 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerAttack1 == true)
 	{
 
-		if ((int)m_fAnimationKeyFrameIndex_Attack1 == 1)
+		/*if ((int)m_fAnimationKeyFrameIndex_Attack1 == 1)
 		{
 			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"RockWarrior_Attack1_Sound");
-		}
+		}*/
 
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
 		if (!m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[MonsterState::MSTATE_ATTACK1])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_ATTACK1] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"RockWarrior_Attack1_Sound");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
 		}
 
@@ -446,10 +446,10 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerHit)
 	{
 
-		if ((int)m_fAnimationKeyFrameIndex_Hit == 1)
-		{
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"RockWarrior_Hit_Sound");
-		}
+		//if ((int)m_fAnimationKeyFrameIndex_Hit == 1)
+		//{
+		//	CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"RockWarrior_Hit_Sound");
+		//}
 
 
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
@@ -462,7 +462,7 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 		{
 			m_IsSoundPlay[State::STATE_HIT] = true;
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK3]);		// > 모든 사운드가 들어갔을때 이렇게 바꿔야함!
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"RockWarrior_Hit_Sound");
 		}
 
 		if (!m_IsEffectPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_EffectFrame[MonsterState::MSTATE_HIT])
