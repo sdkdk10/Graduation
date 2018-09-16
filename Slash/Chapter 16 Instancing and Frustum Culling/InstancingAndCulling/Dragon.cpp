@@ -239,7 +239,7 @@ void AnimateStateMachine_Dragon::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsSoundPlay[State::STATE_ATTACK1] && m_fAnimationKeyFrameIndex_Attack1 > m_SoundFrame[State::STATE_ATTACK1])
 		{
 			m_IsSoundPlay[State::STATE_ATTACK1] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
+			//CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Attack");
 			//CManagement::GetInstance()->GetSound()->PlayEffect(m_pMachineName, m_pStateName[State::STATE_ATTACK1]);
 		}
 

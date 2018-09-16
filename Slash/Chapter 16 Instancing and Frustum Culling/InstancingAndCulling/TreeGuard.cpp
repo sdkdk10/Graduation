@@ -184,7 +184,13 @@ HRESULT TreeGuard::Initialize()
 	m_strTexName[SPIDER_ICE] = "iceTex";
 
 
-	AnimStateMachine = new AnimateStateMachine;
+	wchar_t* machineName;
+	machineName = L"NagaGuard";
+	int test[State::STATE_END] = { 0, };
+	AnimStateMachine = AnimateStateMachine_TreeGuard::Create(this, machineName, test, test);
+	if (AnimStateMachine == nullptr)
+		return E_FAIL;
+
 
 	AnimStateMachine->vecAnimFrame = &(dynamic_cast<DynamicMeshSingle*>(m_pMesh)->vecAnimFrame);
 
@@ -331,6 +337,8 @@ TreeGuard * TreeGuard::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, Co
 // > ---------------------------- StateMachine_NagaGuard -----------------------------------
 
 AnimateStateMachine_TreeGuard::AnimateStateMachine_TreeGuard(CGameObject * pObj, wchar_t * pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END])
+	: m_pMachineName(pMachineName)
+	, m_pObject(pObj)
 {
 }
 
@@ -340,7 +348,7 @@ AnimateStateMachine_TreeGuard::~AnimateStateMachine_TreeGuard()
 
 HRESULT AnimateStateMachine_TreeGuard::Initialize()
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
@@ -373,6 +381,11 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerAttack1 == true)
 	{
+
+		if ((int)m_fAnimationKeyFrameIndex_Attack1 == 1)
+		{
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Attack1_Sound");
+		}
 
 		m_fAnimationKeyFrameIndex_Attack1 += gt.DeltaTime() * 20;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Attack1;
@@ -445,6 +458,12 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 	if (bTimerHit)
 	{
 
+		if ((int)m_fAnimationKeyFrameIndex_Hit == 1)
+		{
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Hit_Sound");
+		}
+
+
 		auto * m_pPlayer = CManagement::GetInstance()->Find_Object(L"Layer_Player");
 
 		//m_pPlayer->MoveForward(10.0f);
@@ -482,6 +501,11 @@ void AnimateStateMachine_TreeGuard::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerDead == true)
 	{
+		if ((int)m_fAnimationKeyFrameIndex_Dead == 1)
+		{
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"TreeGuard_Dead_Sound");
+		}
+
 		//cout << m_fAnimationKeyFrameIndex_Dead << endl;
 		if (m_bIsLife == true)
 			m_fAnimationKeyFrameIndex_Dead += gt.DeltaTime() * 20;

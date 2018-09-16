@@ -38,12 +38,17 @@ class AnimateStateMachine_Mushroom
 public:
 
 public:
+	AnimateStateMachine_Mushroom();
 	explicit AnimateStateMachine_Mushroom(CGameObject* pObj, wchar_t* pMachineName, int SoundFrame[State::STATE_END], int EffectFrame[State::STATE_END]);
 	virtual ~AnimateStateMachine_Mushroom();
-private:
-	HRESULT			Initialize();
+public:
 	virtual void	AnimationStateUpdate(const GameTimer & gt);
 	virtual void SetTimerTrueFalse();
+	virtual void SetAnimState(int _animstate);
+
+
+private:
+	HRESULT			Initialize();
 
 private:
 	CGameObject * m_pObject;

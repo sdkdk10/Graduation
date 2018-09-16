@@ -563,9 +563,6 @@ void Camera::CameraEffect_ZoomIn_RoundUltimate()
 				bSaveUltimateCameraPosTest = false;
 				LastLength = 0.0f;
 			}
-
-		
-
 		}
 
 
