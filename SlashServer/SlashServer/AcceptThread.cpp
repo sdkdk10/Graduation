@@ -66,6 +66,10 @@ void AcceptThread::Run()
 		//g_clients[new_key].viewlist.clear();
 		pNewPlayer->viewList_.clear();
 		(objectManager_->GetPlayer(newKey))->isActive_ = true;
+		pNewPlayer->exp_ = 0;
+		pNewPlayer->level_ = 1;
+		pNewPlayer->hp_ = INIT_PLAYER_HP;
+
 		unsigned long flag = 0;
 		int ret = WSARecv(newSocket, &pNewPlayer->exover_.wsaBuf, 1,
 			NULL, &flag, &pNewPlayer->exover_.wsaOver, NULL);

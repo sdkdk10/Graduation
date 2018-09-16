@@ -283,7 +283,7 @@ HRESULT Player::Initialize()
 	scale.y = 0.0465798f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("ExpUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_ExpBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_ExpBar->GetCur() = 30.f;
+	m_ExpBar->GetCur() = 0.f;
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
@@ -312,6 +312,11 @@ HRESULT Player::Initialize()
 
 
 	//m_pBoundMesh = CBoundingBox::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, GetPosition(), XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+	m_iLevel = 1;
+	m_ExpBar->GetMax() = 100;
+	m_ExpBar->GetCur() = 0;
+
 	return S_OK;
 }
 void Player::Free()
@@ -502,6 +507,7 @@ void Player::SetExp(float exp)
 void Player::SetLevel(int iLv)
 {
 	m_iLevel = iLv;
+	m_ExpBar->GetMax() = 100 + 20 * (m_iLevel - 1);
 	// > Level UI 바꾸기
 }
 
@@ -629,7 +635,6 @@ void Player::KeyInput(const GameTimer & gt)
 		if (KeyBoard_Input(DIK_RIGHT) == CInputDevice::INPUT_PRESS) dwDirection |= CS_DIR_RIGHT;
 		if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN) dwDirection |= CS_ROLL; // 이걸 따로 함수로 만들자
 	}
-
 
 	//m_curKeyInputTime = gt.TotalTime();
 	//if (m_curKeyInputTime - m_preKeyInputTime > gt.DeltaTime())

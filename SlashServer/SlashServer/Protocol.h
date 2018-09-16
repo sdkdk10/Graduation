@@ -53,7 +53,7 @@ enum PlayerType
 	PLAYER_WIZARD
 };
 
-const int INIT_PLAYER_HP = 300;
+const float INIT_PLAYER_HP = 300.f;
 const float CS_SEND_PACKET_DELAY = 10;
 static const int EVT_RECV = 0;
 static const int EVT_SEND = 1;
@@ -133,6 +133,7 @@ static const int EVT_PLAYER_ROLL = 14;
 #define SC_ULTIMATE_OFF					0x0d
 #define SC_LEVEL_UP						0x0e
 #define SC_EXP							0x0f
+#define SC_WIZARD_HEAL					0x10
 
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
@@ -291,6 +292,12 @@ struct sc_packet_ultimate_on {
 };
 
 struct sc_packet_ultimate_off {
+	BYTE size;
+	BYTE type;
+	WORD id;
+};
+
+struct sc_packet_wizard_heal {
 	BYTE size;
 	BYTE type;
 	WORD id;

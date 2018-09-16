@@ -37,13 +37,14 @@ void NPC::Initialize()
 
 	lua_getglobal(L, "LoadMonsterData");
 	lua_pushnumber(L, static_cast<int>(npcType_));
-	lua_pcall(L, 1, 4, 0);
-	world_._41 = static_cast<float>(lua_tonumber(L, -4));
+	lua_pcall(L, 1, 5, 0);
+	world_._41 = static_cast<float>(lua_tonumber(L, -5));
 	world_._42 = 0;
-	world_._43 = static_cast<float>(lua_tonumber(L, -3));
-	hp_ = (int)lua_tonumber(L, -2);
-	dmg_ = (int)lua_tonumber(L, -1);
-	lua_pop(L, 4);
+	world_._43 = static_cast<float>(lua_tonumber(L, -4));
+	hp_ = (int)lua_tonumber(L, -3);
+	dmg_ = (int)lua_tonumber(L, -2);
+	exp_ = (int)lua_tonumber(L, -1);
+	lua_pop(L, 5);
 	L_ = L;
 
 	//타입별로 OOBB 노가다 해야함

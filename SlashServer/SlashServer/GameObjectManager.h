@@ -33,6 +33,7 @@ public:
 	void ProcessMove(GameObject * player, unsigned char dirType, unsigned char moveType);
 	void ProcessPacket(GameObject* cl, char * packet);
 	void SearchNewTargetPlayer(GameObject* monster);
+	void AddExp(GameObject * player, GameObject* monster);
 public:
 	inline GameObject*&										GetPlayer(unsigned int playerIndex) { return playerArray_[playerIndex]; }
 	inline std::array<GameObject*, NUM_OF_PLAYER>&				GetPlayerList() { return playerArray_; }
