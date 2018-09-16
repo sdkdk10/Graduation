@@ -4,6 +4,7 @@
 
 class CBoundingBox;
 class HPBar;
+class NumUI;
 
 class Player : public CGameObject
 {
@@ -113,6 +114,7 @@ private:
 	HPBar*		m_HpBar;
 	HPBar*		m_ExpBar;
 	HPBar*		m_GageBar;
+	NumUI*		m_LvUI;
 
 	float		m_fMaxHp = 100.f;
 	float		m_fMaxExp = 100.f;

@@ -505,6 +505,7 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
 		{
+			cout << (*vecAnimFrame)[MonsterState::MSTATE_DEAD] << endl; // 여기 수정
 			m_bIsLife = false;
 			bTimerDead = false;
 			//m_fAnimationKeyFrameIndex_Dead = 0;
