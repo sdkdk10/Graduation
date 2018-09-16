@@ -97,6 +97,10 @@ public:
 	}
 
 	virtual void	AddExp(float exp);
+	virtual void	SetExp(float exp);
+
+	void			SetLevel(int iLv);
+
 private:
 	float m_preKeyInputTime;
 	float m_curKeyInputTime;

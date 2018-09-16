@@ -1,256 +1,218 @@
+
 #include "stdafx.h"
 #include "NumUI.h"
-#include "Define.h"
-#include "GeometryMesh.h"
-#include "Component_Manager.h"
-#include "Texture_Manager.h"
 #include "Management.h"
-#include "InstancingObject.h"
-#include "TestScene.h"
 #include "Renderer.h"
+#include "Component_Manager.h"
+#include "UIMesh.h"
+#include "Define.h"
 
-NumUI::NumUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
+NumUI::NumUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
+	:UI(d3dDevice, srv, srvSize)
+{
+	move = _move;
+	scale = _scale;
+	size = _size;
+
+	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+
+	m_pAllObject[m_iAllObjectIndex] = this;
+	++m_iAllObjectIndex;
+}
+
+NumUI::NumUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t * wstrUIName, int diffuseSrvHeapIndex)
 	: UI(d3dDevice, srv, srvSize)
 {
-	m_iMyInstObject = CInstancingObject::m_iAllInstObjectIndex;
-	CInstancingObject::m_iAllInstObjectIndex;
+	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+
+	m_pAllObject[m_iAllObjectIndex] = this;
+	++m_iAllObjectIndex;
 }
+
 
 NumUI::~NumUI()
 {
 }
 
-NumUI * NumUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize)
+NumUI * NumUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size, int diffuseSrvHeapIndex)
 {
-	NumUI*  pInstance = new NumUI(d3dDevice, srv, srvSize);
+	NumUI* pInstance = new NumUI(d3dDevice, srv, srvSize, move, scale, size, diffuseSrvHeapIndex);
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(pInstance->Initialize(move, scale, size)))
 	{
-		MSG_BOX(L"NumUI Created Failed");
+		MSG_BOX(L"Player Created Failed");
 		Safe_Release(pInstance);
 	}
+
+
 	return pInstance;
 }
 
-HRESULT NumUI::Initialize()
+NumUI * NumUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t * wstrUIName, int diffuseSrvHeapIndex)
 {
-	m_pMesh = dynamic_cast<GeometryMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Geometry"));
-	if (nullptr == m_pMesh)
-		return E_FAIL;
+	NumUI* pInstance = new NumUI(d3dDevice, srv, srvSize, wstrUIName, diffuseSrvHeapIndex);
 
-	Texture* tex = CTexture_Manager::GetInstance()->Find_Texture("NumTex", CTexture_Manager::TEX_INST_2D);
-	if (nullptr == tex)
-		return E_FAIL;
+	if (FAILED(pInstance->Initialize(wstrUIName)))
+	{
+		MSG_BOX(L"Player Created Failed");
+		Safe_Release(pInstance);
+	}
 
 
-	/* Material Build */
-	Mat = new Material;
-	Mat->Name = "TerrainMat";
-	Mat->MatCBIndex = m_iMyInstObject;
-	Mat->DiffuseSrvHeapIndex = tex->Num;
-	Mat->DiffuseAlbedo = XMFLOAT4(1.f, 0.4f, 0.2f, 1.f);
-	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
-	Mat->Roughness = 0.3f;
-	Mat->MatTransform(3, 0) = 0.1f;
-	Mat->MatTransform(3, 1) = 1.f;
-
-	/* CB(World,TextureTranform...) Build */
-
-	//XMStoreFloat4x4(&World, XMMatrixScaling(5.0f, 1.0f, 5.0f));// *XMMatrixRotationY(20.f));
-	//World = MathHelper::Identity4x4();
-	XMStoreFloat4x4(&World, XMMatrixScaling(0.2f, 0.2f, 0.2f) *XMMatrixRotationX(-90.f));
-	m_f4x4InitWorld = World;
-	TexTransform = MathHelper::Identity4x4();
-	ObjCBIndex = m_iMyObjectID;
-
-	Geo = dynamic_cast<GeometryMesh*>(m_pMesh)->m_Geometry[0].get();
-	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	IndexCount = Geo->DrawArgs["grid"].IndexCount;
-	StartIndexLocation = Geo->DrawArgs["grid"].StartIndexLocation;
-	BaseVertexLocation = Geo->DrawArgs["grid"].BaseVertexLocation;
-
-	return S_OK;
+	return pInstance;
 }
 
 bool NumUI::Update(const GameTimer & gt)
 {
 	CGameObject::Update(gt);
-
-	CTestScene* pScene = dynamic_cast<CTestScene*>(CManagement::GetInstance()->Get_CurScene());
-	if (pScene == nullptr)
-		return false;
-
-	int objIdx = pScene->GetObjectCount();
-	++objIdx;
-	m_iMyInstObject = objIdx;
-
-	m_pCamera = CManagement::GetInstance()->Get_MainCam();
-	XMMATRIX view = m_pCamera->GetView();
-
-	XMFLOAT4X4  f4x4View;
-	XMStoreFloat4x4(&f4x4View, view);
-	f4x4View._41 = 0.f;
-	f4x4View._42 = 0.f;
-	f4x4View._43 = 0.f;
-	view = XMLoadFloat4x4(&f4x4View);
-
-	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-
-	XMStoreFloat4x4(&f4x4View, invView);
-
-	XMFLOAT4X4 matBillboard = Matrix4x4::Multiply(m_f4x4InitWorld, f4x4View);
-
-	auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
-	//auto& instanceData = vecInstances;
-
-	int visibleInstanceCount = 0;
-
-	int iTest = m_iMyInstObject;
-
-	size_t iSize = m_vNum.size();
-	for (size_t i = 0; i < iSize; ++i)
+	
+	for (auto& elem : m_vNum)
 	{
-		static int num = 0;
-		m_vNum[i].fStayTime += gt.DeltaTime() * 5.f;
-		if (m_vNum[i].fStayTime > 1.5f)
-			Erase_Vector_Element(m_vNum, i);
+		auto currObjectCB = m_pFrameResource->ObjectCB.get();
 
-		//XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+		XMMATRIX world = XMLoadFloat4x4(&World);
+		XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 
-		//XMMATRIX world = XMLoadFloat4x4(&m_vecTransCom[i]->GetWorld());
-		//XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
-		matBillboard._41 = m_vNum[i].instData.World._41;
-		matBillboard._42 = m_vNum[i].instData.World._42 + m_vNum[i].fStayTime;
-		matBillboard._43 = m_vNum[i].instData.World._43;
-		//XMMATRIX world = XMLoadFloat4x4(&m_vNum[i].instData.World);
-		XMMATRIX world = XMLoadFloat4x4(&matBillboard);
-		XMMATRIX texTransform = XMLoadFloat4x4(&m_vNum[i].instData.TexTransform);
-		
+		ObjectConstants objConstants;
+		XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+		XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
+		objConstants.MaterialIndex = Mat->MatCBIndex;
 
-		XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
-
-		// View space to the object's local space.
-		XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
-
-		// Transform the camera frustum from view space to the object's local space.
-		BoundingFrustum localSpaceFrustum;
-		mCamFrustum = *CManagement::GetInstance()->Get_CurScene()->Get_CamFrustum();
-		mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
+		currObjectCB->CopyData(ObjCBIndex, objConstants);
 
 
-		// Perform the box/frustum intersection test in local space.
-	//	if ((localSpaceFrustum.Contains(Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
-		{
-			//cout << " º¸ÀÎ´ç" << endl;
-			auto currInstanceBuffer = m_pFrameResource->InstanceBuffer.get();
+		auto currMaterialCB = m_pFrameResource->MaterialCB.get();
+
+		Mat->MatTransform._41 = elem.instData.TexTransform._41;
+		XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
+
+		MaterialConstants matConstants;
+		matConstants.DiffuseAlbedo = Mat->DiffuseAlbedo;
+		matConstants.FresnelR0 = Mat->FresnelR0;
+		matConstants.Roughness = Mat->Roughness;
+		XMStoreFloat4x4(&matConstants.MatTransform, XMMatrixTranspose(matTransform));
 
 
-			InstanceData data;
-			XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
-			XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
-			//data.MaterialIndex = m_vNum[i].instData.MaterialIndex;
-			data.MaterialIndex = m_iMyInstObject;
-			//data.MaterialIndex = objIdx;
+		matConstants.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
 
-			// Write the instance data to structured buffer for the visible objects.
-			//currInstanceBuffer->CopyData(objIdx++, data);
-			currInstanceBuffer->CopyData(objIdx++, data);
-			visibleInstanceCount++;
-		}
+		currMaterialCB->CopyData(Mat->MatCBIndex, matConstants);
 	}
 
-	//InstanceCount = visibleInstanceCount;
 
-	//InstanceCount = visibleInstanceCount;
-
-	//cout << m_pwstrMeshName << " : " << endl;
-	//cout << InstanceCount << endl;
-
-	//cout << InstanceCount << endl;
-
-
-	/* Material */
-	auto currMaterialBuffer = m_pFrameResource->MaterialBuffer.get();
-	objIdx = m_iMyInstObject;
-
-	for (int i = 0; i < iSize; ++i)
-	{
-		//Material* mat = mMaterials[m_iMyInstObject + i].get();
-
-		if (Mat->NumFramesDirty > 0)
-		{
-			//Mat->MatTransform._31 = m_vNum[i].instData.TexTransform._41;
-			XMMATRIX matTransform = XMLoadFloat4x4(&Mat->MatTransform);
-
-			MaterialData matData;
-			matData.DiffuseAlbedo = Mat->DiffuseAlbedo;
-			matData.FresnelR0 = Mat->FresnelR0;
-			matData.Roughness = Mat->Roughness;
-
-			
-			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
-			matData.DiffuseMapIndex = Mat->DiffuseSrvHeapIndex;
-
-			//currMaterialBuffer->CopyData(Mat->MatCBIndex, matData);
-			
-			//currMaterialBuffer->CopyData(m_iMyInstObject, matData);
-			currMaterialBuffer->CopyData(m_iMyInstObject, matData);
-
-			// Next FrameResource need to be updated too.
-			Mat->NumFramesDirty--;
-		}
-	}
-
-	//for (auto& e : mMaterials)
-	//{
-	//	// Only update the cbuffer data if the constants have changed.  If the cbuffer
-	//	// data changes, it needs to be updated for each FrameResource.
-	//	Material* mat = e.get();
-	//	if (mat->NumFramesDirty > 0)
-	//	{
-	//		XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
-
-	//		MaterialData matData;
-	//		matData.DiffuseAlbedo = mat->DiffuseAlbedo;
-	//		matData.FresnelR0 = mat->FresnelR0;
-	//		matData.Roughness = mat->Roughness;
-	//		XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
-	//		matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;
-
-	//		currMaterialBuffer->CopyData(mat->MatCBIndex, matData);
-
-	//		// Next FrameResource need to be updated too.
-	//		mat->NumFramesDirty--;
-	//	}
-	//}
-	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UI_INST, this);
+	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_UICHANGE, this);
 	return true;
+}
 
+void NumUI::SetUI(float size, float moveX, float moveY, float scaleX, float scaleY)
+{
 }
 
 void NumUI::Render(ID3D12GraphicsCommandList * cmdList)
 {
-	cmdList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	//UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
+
+	auto objectCB = m_pFrameResource->ObjectCB->Resource();
+	auto matCB = m_pFrameResource->MaterialCB->Resource();
+
 	cmdList->IASetVertexBuffers(0, 1, &Geo->VertexBufferView());
-	cmdList->IASetIndexBuffer(&Geo->IndexBufferView());
 	cmdList->IASetPrimitiveTopology(PrimitiveType);
 
-	// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
-	// the heap and set as a root descriptor.
+	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
 
-	auto instanceBuffer = m_pFrameResource->InstanceBuffer->Resource();
-	D3D12_GPU_VIRTUAL_ADDRESS Address = instanceBuffer->GetGPUVirtualAddress() + m_iMyInstObject * sizeof(InstanceData);
-	cmdList->SetGraphicsRootShaderResourceView(0, Address);
+	Mat->DiffuseSrvHeapIndex;
+	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
+	D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
 
-	//InstanceCount = vecInstances.size();
-	//cmdList->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndexLocation, BaseVertexLocation, 0);
-	cmdList->DrawIndexedInstanced(IndexCount, m_vNum.size(), StartIndexLocation, BaseVertexLocation, 0);
+	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
+	//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
+	cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
 
+	cmdList->SetGraphicsRootDescriptorTable(7, tex);
+
+
+	cmdList->DrawInstanced(6, 1, 0, 0);
 }
 
-void NumUI::Add(int iNum, XMFLOAT3 f3Pos, bool isCritical)
+HRESULT NumUI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 {
+	//m_pMesh = UIMesh::Create(m_d3dDevice, move, scale, size);
+	//Com_Mesh_WarriorUI
+	m_pMesh = dynamic_cast<UIMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_WarriorUI"));
+	if (m_pMesh == nullptr)
+		return E_FAIL;
+	/* Material Build */
+	Mat = new Material;
+	Mat->Name = "TerrainMat";
+	Mat->MatCBIndex = m_iMyObjectID;
+	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.7f);
+	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Mat->Roughness = 0.3f;
+
+	/* CB(World,TextureTranform...) Build */
+
+	Mat->MatTransform(0, 0) = 0.1f;
+	Mat->MatTransform(1, 1) = 1.f;
+
+	TexTransform = MathHelper::Identity4x4();
+	ObjCBIndex = m_iMyObjectID;
+
+	Geo = dynamic_cast<UIMesh*>(m_pMesh)->m_Geometry[0].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	IndexCount = Geo->DrawArgs["UI"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["UI"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
+
+	return S_OK;
+}
+
+HRESULT NumUI::Initialize(wchar_t* uiName)
+{
+	m_pMesh = dynamic_cast<UIMesh*>(CComponent_Manager::GetInstance()->Clone_Component(uiName));
+	if (m_pMesh == nullptr)
+		return E_FAIL;
+	/* Material Build */
+	Mat = new Material;
+	Mat->Name = "TerrainMat";
+	Mat->MatCBIndex = m_iMyObjectID;
+	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Mat->Roughness = 0.3f;
+
+	Mat->MatTransform(0, 0) = 0.1f;
+	Mat->MatTransform(1, 1) = 1.f;
+
+	/* CB(World,TextureTranform...) Build */
+
+	TexTransform = MathHelper::Identity4x4();
+	ObjCBIndex = m_iMyObjectID;
+	World = MathHelper::Identity4x4();
+
+	Geo = dynamic_cast<UIMesh*>(m_pMesh)->m_Geometry[0].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	IndexCount = Geo->DrawArgs["UI"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["UI"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
+
+	SetNum(1);
+
+	return S_OK;
+}
+
+void NumUI::SetColor(float r, float g, float b, float a)
+{
+	Mat->DiffuseAlbedo.x = r;
+	Mat->DiffuseAlbedo.y = g;
+	Mat->DiffuseAlbedo.z = b;
+	Mat->DiffuseAlbedo.w = a;
+}
+
+void NumUI::SetNum(int iNum)
+{
+	m_vNum.clear();
 	int iCnt = 0;
 	for (int i = 4; i >= 0; --i)
 	{
@@ -260,29 +222,25 @@ void NumUI::Add(int iNum, XMFLOAT3 f3Pos, bool isCritical)
 			break;
 		}
 	}
-	f3Pos.y += 5.f;
 	float fNext = 1.f;
-	float fX = f3Pos.x;
+	//float fX = f3Pos.x;
 	float fZ = 0.001f;
 	for (int i = 0; i < iCnt; ++i)
 	{
 		tagNumUI tNum;
-		tNum.isCritical = isCritical;
-
 		int iTexNum = (iNum / int(pow(10, iCnt - 1 - i)));
 
 		iNum = iNum % int(pow(10, iCnt - 1 - i));
 
 		tNum.instData.TexTransform._41 = float(iTexNum) / 10.f;
 		tNum.instData.World = World;
-		tNum.instData.World._41 = fX;
-		fX += fNext;
-		tNum.instData.World._42 = f3Pos.y;
-		tNum.instData.World._43 = f3Pos.z + (fZ*i);
+		//tNum.instData.World._41 = fX;
+		//fX += fNext;
+	//	tNum.instData.World._42 = f3Pos.y;
+		//tNum.instData.World._43 = f3Pos.z + (fZ*i);
 
 		m_vNum.push_back(tNum);
 	}
-	
 }
 
 void NumUI::Free()

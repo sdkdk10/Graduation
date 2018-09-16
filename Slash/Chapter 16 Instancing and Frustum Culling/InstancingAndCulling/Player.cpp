@@ -294,7 +294,7 @@ HRESULT Player::Initialize()
 	m_ExpBar->GetMax() = 100.f;
 
 	// > Gage Bar
-	move.y = -12.973f;
+	move.y = -13.5f;
 	scale.y = 0.053f;
 	tex = CTexture_Manager::GetInstance()->Find_Texture("GageUI", CTexture_Manager::TEX_DEFAULT_2D);
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
@@ -488,13 +488,25 @@ void Player::AddExp(float exp)
 		float fAdd = m_Exp - m_fMaxExp;
 		m_Exp = fAdd;
 		++m_iLevel;
-		m_fMaxExp += 50;
+		m_fMaxExp += 20;
 		m_ExpBar->GetCur() = fAdd;
 		m_ExpBar->GetMax() = m_fMaxExp;
 		//cout << "Level UP" << endl;
 		// >
 		CManagement::GetInstance()->PlayLevelUP();
 	}
+}
+
+void Player::SetExp(float exp)
+{
+	m_Exp = exp;
+	m_ExpBar->GetCur() = exp;
+}
+
+void Player::SetLevel(int iLv)
+{
+	m_iLevel = iLv;
+	// > Level UI ¹Ù²Ù±â
 }
 
 //void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)
