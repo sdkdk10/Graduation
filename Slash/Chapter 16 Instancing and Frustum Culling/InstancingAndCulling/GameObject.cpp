@@ -261,7 +261,7 @@ void AnimateStateMachine::AnimationStateUpdate(const GameTimer & gt)
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1> (*vecAnimFrame)[5])
 		{
-
+			cout << (*vecAnimFrame)[5] << endl; // 여기 수정
 			m_bIsLife = false;
 			bTimerDead = false;
 			//m_fAnimationKeyFrameIndex_Dead = 0;

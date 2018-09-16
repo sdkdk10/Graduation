@@ -185,7 +185,7 @@ HRESULT TreeGuard::Initialize()
 
 
 	wchar_t* machineName;
-	machineName = L"NagaGuard";
+	machineName = L"TreeGuard";
 	int test[State::STATE_END] = { 0, };
 	AnimStateMachine = AnimateStateMachine_TreeGuard::Create(this, machineName, test, test);
 	if (AnimStateMachine == nullptr)
