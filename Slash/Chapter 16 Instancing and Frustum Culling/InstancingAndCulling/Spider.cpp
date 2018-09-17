@@ -660,7 +660,7 @@ void AnimateStateMachine_Spider::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_HIT] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Hit_Sound");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Hit_Sound");
 		}
 
 		if (!m_IsSoundPlay[MonsterState::MSTATE_HIT] && m_fAnimationKeyFrameIndex_Hit > m_SoundFrame[MonsterState::MSTATE_HIT])
@@ -695,7 +695,7 @@ void AnimateStateMachine_Spider::AnimationStateUpdate(const GameTimer & gt)
 		if (!m_IsSoundPlay[MonsterState::MSTATE_DEAD] && m_fAnimationKeyFrameIndex_Dead > m_SoundFrame[MonsterState::MSTATE_DEAD])
 		{
 			m_IsSoundPlay[MonsterState::MSTATE_DEAD] = true;
-			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Turtle_Dead_Sound");
+			CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Spider_Dead_Sound");
 		}
 
 		if (m_fAnimationKeyFrameIndex_Dead + 1 > (*vecAnimFrame)[MonsterState::MSTATE_DEAD])
