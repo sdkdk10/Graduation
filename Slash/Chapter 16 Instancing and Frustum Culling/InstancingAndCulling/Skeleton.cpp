@@ -702,17 +702,13 @@ void AnimateStateMachine_Skeleton::SetUltimateEffect(bool isUltimate)
 			m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
 			m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
 			m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
-			cout << m_mapEffectName.size();
-			cout << "Warrirorrrrrrrr" << endl;
 		}
 		else
 		{
-			m_mapEffectName.emplace(State::STATE_ATTACK1, "UtimateAttack_2");
-			m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
-			m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+			m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+			m_mapEffectName.emplace(State::STATE_ATTACK2, "UtimateAttack_2");
+			m_mapEffectName.emplace(State::STATE_ATTACK3, "Ax_00");
 			m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
-			cout << m_mapEffectName.size() << endl;
-			cout << "Ultimate»óÅÂ·Î" << endl;
 		}
 
 }

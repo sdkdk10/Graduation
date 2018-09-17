@@ -532,10 +532,9 @@ void CNetwork::ProcessPacket(char * ptr)
 		int id = my_packet->id;
 		if (myid == id)
 		{
-			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_IDLE);
+			CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_IDLE); // 내 플레이어는 클라에서 처리
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->bIsUltimateState = true;
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetUltimateEffect(true);
-			cout << "Ultimate Start " << endl;
 		}
 		else if (id < NPC_ID_START)
 		{
@@ -544,6 +543,7 @@ void CNetwork::ProcessPacket(char * ptr)
 
 			CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id)->SetObjectAnimState(State::STATE_IDLE);
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->bIsUltimateState = true;
+			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetUltimateEffect(true);
 		}
 		break;
 	}
@@ -566,7 +566,6 @@ void CNetwork::ProcessPacket(char * ptr)
 		{
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->bIsUltimateState = false;
 			dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->SetUltimateEffect(false);
-			cout << "Ultimate End!!!" << endl;
 		}
 		else if (id < NPC_ID_START)
 		{
@@ -574,6 +573,7 @@ void CNetwork::ProcessPacket(char * ptr)
 				id += NUM_OF_PLAYER;
 
 			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->bIsUltimateState = false;
+			dynamic_cast<CSkeleton*>(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id))->SetUltimateEffect(false);
 		}
 		break;
 	}

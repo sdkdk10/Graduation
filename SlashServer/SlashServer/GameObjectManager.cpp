@@ -402,8 +402,15 @@ void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 	if (player->skillMoveRange >= WARRIOR_SKILL2_MAX_RANGE)
 		player->skillMoveRange = WARRIOR_SKILL2_MAX_RANGE;
 
+	float width = 0;
+
+	if (false == dynamic_cast<Player*>(player)->isWarriorUltimateMode)
+		width = WARRIOR_SKILL2_WIDTH;
+	else
+		width = WARRIOR_ULTIMATE_SKILL2_WIDTH;
+
 	player->SetSkillOOBB(XMFLOAT3(-7.5388f, 0.f - player->skillMoveRange, 28.8367f),
-		XMFLOAT3(23.1505f * WARRIOR_SKILL2_WIDTH, 16.4752f * WARRIOR_SKILL2_DEPTH, 28.5554f),
+		XMFLOAT3(23.1505f * width, 16.4752f * WARRIOR_SKILL2_DEPTH, 28.5554f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
@@ -425,7 +432,7 @@ void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 		player->skillMoveRange = 0;
 	}
 	else
-		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK2, GetTickCount() + WARRIOR_SKILL2_SPEED, nullptr);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK1, GetTickCount() + WARRIOR_SKILL2_SPEED, nullptr);
 }
 void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
 
@@ -953,7 +960,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		{
 			player->state_ = STATE_ATTACK3;
 			if (PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
-				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK3, GetTickCount(), nullptr);
+				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WARRIOR_ATTACK3, GetTickCount() + WARRIOR_SKILL3_DELAY, nullptr);
 			else
 				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK3, GetTickCount(), nullptr);
 		}
@@ -964,10 +971,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			if (false == playerArray_[i]->CanSee(player)) continue;
 
 			SendManager::SendObjectState(playerArray_[i], player);
-
 		}
-
-
 
 		return;
 	}

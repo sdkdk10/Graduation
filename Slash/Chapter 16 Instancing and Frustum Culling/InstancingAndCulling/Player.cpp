@@ -595,6 +595,7 @@ void Player::CheckUltimate(const GameTimer & gt)
 			m_fUltimateTime = 20.0f;
 			bIsUltimateState = false;
 			m_GageFull = false;
+			SetUltimateEffect(false);
 			CNetwork::GetInstance()->SendUltimateOffPacket();
 		}
 	}
@@ -765,7 +766,7 @@ HRESULT AnimateStateMachine_Player::Initialize()
 	{
 		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
-		m_mapEffectName.emplace(State::STATE_ATTACK3, "Ax_00");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
 		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
 	}
 	else
@@ -972,8 +973,11 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			auto pPlayer = dynamic_cast<Player*>(m_pObject);
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			if(pPlayer->GetIsWarrior())
+			if (pPlayer->GetIsWarrior())
+			{
 				pPlayer->bIsUltimateState = true;
+				pPlayer->SetUltimateEffect(true);
+			}
 			CNetwork::GetInstance()->SendUltimateOnPacket(); // 진짜로 넘어간다
 		}
 
@@ -1069,17 +1073,13 @@ void AnimateStateMachine_Player::SetUltimateEffect(bool isUltimate)
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
 		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
 		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
-		cout << m_mapEffectName.size();
-		cout << "Warrirorrrrrrrr" << endl;
 	}
 	else
 	{
-		m_mapEffectName.emplace(State::STATE_ATTACK1, "UtimateAttack_2");
-		m_mapEffectName.emplace(State::STATE_ATTACK2, "Slash_00");
-		m_mapEffectName.emplace(State::STATE_ATTACK3, "Drop");
+		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+		m_mapEffectName.emplace(State::STATE_ATTACK2, "UtimateAttack_2");
+		m_mapEffectName.emplace(State::STATE_ATTACK3, "Ax_00");
 		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
-		cout << m_mapEffectName.size() << endl;
-		cout << "Ultimate상태로" << endl;
 	}
 }
 

@@ -22,25 +22,26 @@ const int ROLL_DELAY				{ 30 };
 const float SKILL_MOVE_DISTANCE{ 50 };
 
 const int WARRIOR_SKILL1_DMG{ 10 };
-const float WARRIOR_SKILL1_DELAY{ 100.f };
+const float WARRIOR_SKILL1_DELAY{ 150.f };
 
 const int WARRIOR_SKILL2_DMG{ 15 };
 const float WARRIOR_SKILL2_DELAY{ 30.f };
 const float WARRIOR_SKILL2_SPEED{ 100.f };
 const float WARRIOR_SKILL2_MAX_RANGE{ 180.f };
-const float WARRIOR_SKILL2_WIDTH{ 2.f };
+const float WARRIOR_SKILL2_WIDTH{ 3.f };
+const float WARRIOR_ULTIMATE_SKILL2_WIDTH{ 4.f };
 const float WARRIOR_SKILL2_DEPTH{ 0.1f };
 
 const int WARRIOR_SKILL3_DMG{ 40 };
-const float WARRIOR_SKILL3_DELAY{ 50.f };
+const float WARRIOR_SKILL3_DELAY{ 200.f };
 const float WARRIOR_SKILL3_WIDTH{ 4.f };
 const float WARRIOR_SKILL3_DEPTH{ 6.f };
 
 const int WIZARD_SKILL1_DMG{ 15 };
-const float WIZARD_SKILL1_DELAY{ 30.f };
-const float WIZARD_SKILL1_SPEED{ 300.f };
-const float WIZARD_SKILL1_MAX_RANGE{ 55.f };
-const float WIZARD_SKILL1_WIDTH{ 1.0f };
+const float WIZARD_SKILL1_DELAY{ 100.f };
+const float WIZARD_SKILL1_SPEED{ 100.f };
+const float WIZARD_SKILL1_MAX_RANGE{ 130.f };
+const float WIZARD_SKILL1_WIDTH{ 2.f };
 const float WIZARD_SKILL1_DEPTH{ 0.1f };
 
 const int WIZARD_SKILL2_DMG{ 10 };
