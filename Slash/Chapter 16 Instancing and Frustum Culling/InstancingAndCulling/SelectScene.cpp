@@ -103,13 +103,13 @@ HRESULT CSelectScene::Initialize()
 	tex = CTexture_Manager::GetInstance()->Find_Texture("PressEnter", CTexture_Manager::TEX_DEFAULT_2D);
 	move.x = 0.f;
 	move.y = -1.9f;
-	scale.x = 0.7f;
+	scale.x = 1.2f;
 	scale.y = 0.4f;
 	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, true);
 	pObject->SetCamera(Get_MainCam());
 	dynamic_cast<ChangeUI*>(pObject)->SetPlay(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetisChange(true);
-	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(1.f, 0.4f, 0.4f, 1.f), 1.5f);
+	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(0.f, 0.0f, 0.f, 0.f), 1.5f);
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_SelectSceneUI", pObject);
 
@@ -122,7 +122,7 @@ HRESULT CSelectScene::Initialize()
 	pObject->SetCamera(Get_MainCam());
 	dynamic_cast<ChangeUI*>(pObject)->SetPlay(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetisChange(true);
-	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(0.f, 0.4f, 1.0f, 1.f), 1.5f);
+	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(1.f, 1.0f, 1.0f, 1.f), 1.5f);
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_SelectSceneUI", pObject);
 
