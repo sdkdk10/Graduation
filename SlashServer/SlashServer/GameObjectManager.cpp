@@ -328,7 +328,6 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 		if (STATE_ATTACK1 == npc->state_) return;
 
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_ATTACK, GetTickCount(), player);
-
 	}
 	else if(player->CanSee(npc))
 	{
@@ -409,8 +408,8 @@ void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 	else
 		width = WARRIOR_ULTIMATE_SKILL2_WIDTH;
 
-	player->SetSkillOOBB(XMFLOAT3(-7.5388f, 0.f - player->skillMoveRange, 28.8367f),
-		XMFLOAT3(23.1505f * width, 16.4752f * WARRIOR_SKILL2_DEPTH, 28.5554f),
+	player->SetSkillOOBB(XMFLOAT3(-7.f, 0.f - player->skillMoveRange, 29.0),
+		XMFLOAT3(23.f * width, 16.f * WARRIOR_SKILL2_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
@@ -438,8 +437,8 @@ void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
 
 	player->dmg_ = WARRIOR_SKILL3_DMG * (1 + player->level_ / 10.f);
 
-	player->SetSkillOOBB(XMFLOAT3(-7.5388f, -50.f, 28.8367f),
-		XMFLOAT3(23.1505f * WARRIOR_SKILL3_WIDTH, 16.4752f * WARRIOR_SKILL3_DEPTH, 28.5554f),
+	player->SetSkillOOBB(XMFLOAT3(-7.f, -50.f, 29.f),
+		XMFLOAT3(23.f * WARRIOR_SKILL3_WIDTH, 16.f * WARRIOR_SKILL3_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
@@ -465,8 +464,8 @@ void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
 	if (player->skillMoveRange >= WIZARD_SKILL1_MAX_RANGE)
 		player->skillMoveRange = WIZARD_SKILL1_MAX_RANGE;
 
-	player->SetSkillOOBB(XMFLOAT3(-7.5388f, 0.f - player->skillMoveRange, 28.8367f),
-		XMFLOAT3(23.1505f * WIZARD_SKILL1_WIDTH, 16.4752f * WIZARD_SKILL1_DEPTH, 28.5554f),
+	player->SetSkillOOBB(XMFLOAT3(-7.f, 0.f - player->skillMoveRange, 29.f),
+		XMFLOAT3(23.f * WIZARD_SKILL1_WIDTH, 16.f * WIZARD_SKILL1_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
@@ -491,8 +490,8 @@ void GameObjectManager::ProcessWizardAttack2(GameObject* player) {
 
 	player->dmg_ = WIZARD_SKILL2_DMG * (1 + player->level_ / 10.f);
 
-	player->SetSkillOOBB(XMFLOAT3(-7.5388f, -200.f, 28.8367f),
-		XMFLOAT3(23.1505f * WIZARD_SKILL2_WIDTH, 16.4752f * WIZARD_SKILL2_DEPTH, 28.5554f),
+	player->SetSkillOOBB(XMFLOAT3(-7.f, -200.f, 29.0f),
+		XMFLOAT3(23.f * WIZARD_SKILL2_WIDTH, 16.f * WIZARD_SKILL2_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_

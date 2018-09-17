@@ -8,7 +8,7 @@ class Player;
 class RockWarrior : public CGameObject
 {
 private:
-	const float m_fScale = 4.38f;
+	const float m_fScale = 0.2f;
 private:
 	RockWarrior(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 public:

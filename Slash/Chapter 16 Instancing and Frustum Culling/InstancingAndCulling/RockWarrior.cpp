@@ -96,6 +96,10 @@ bool RockWarrior::Update(const GameTimer & gt)
 		m_bIsVisiable = false;
 	}
 
+	//cout << "RockWarrior : " << endl;
+	//cout << "Bounds Center: " << Bounds.Center.x << "\t" << Bounds.Center.y << "\t" << Bounds.Center.z << endl;
+	//cout << "Bounds Extents: " << Bounds.Extents.x << "\t" << Bounds.Extents.y << "\t" << Bounds.Extents.z << endl;
+
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }
@@ -218,7 +222,7 @@ HRESULT RockWarrior::Initialize()
 
 
 
-	m_xmf3Scale = XMFLOAT3(0.08f, 0.08f, 0.08f);
+	m_xmf3Scale = XMFLOAT3(0.2f, 0.2f, 0.2f);
 	m_xmf3Rot = XMFLOAT3(1.7f, 0.f, 3.14f);
 
 	return S_OK;
@@ -360,7 +364,7 @@ void AnimateStateMachine_RockWarrior::AnimationStateUpdate(const GameTimer & gt)
 
 	if (bTimerWalk == true)
 	{
-		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 45;
+		m_fAnimationKeyFrameIndex_Walk += gt.DeltaTime() * 30;
 		//m_iCurAnimFrame = m_fAnimationKeyFrameIndex_Walk;
 		if (m_fAnimationKeyFrameIndex_Walk > (*vecAnimFrame)[MonsterState::MSTATE_WALK])
 		{

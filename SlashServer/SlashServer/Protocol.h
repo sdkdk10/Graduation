@@ -55,6 +55,8 @@ enum PlayerType
 
 const float INIT_PLAYER_HP = 300.f;
 const float CS_SEND_PACKET_DELAY = 10;
+
+
 static const int EVT_RECV = 0;
 static const int EVT_SEND = 1;
 static const int EVT_CHASE = 2;

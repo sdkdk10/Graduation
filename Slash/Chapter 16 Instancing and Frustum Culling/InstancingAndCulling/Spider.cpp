@@ -97,8 +97,10 @@ bool Spider::Update(const GameTimer & gt)
 	}
 
 
-	/*cout << "World : " << World._41 << "\t" << World._42 << "\t" << World._43 << endl;
-	cout << "Bounds Center: " << Bounds.Center.x << "\t" << Bounds.Center.y << "\t" << Bounds.Center.z << endl;*/
+	//cout << "World : " << World._41 << "\t" << World._42 << "\t" << World._43 << endl;
+	//cout << "Spider : " << endl;
+	//cout << "Bounds Center: " << Bounds.Center.x << "\t" << Bounds.Center.y << "\t" << Bounds.Center.z << endl;
+	//cout << "Bounds Extents: " << Bounds.Extents.x << "\t" << Bounds.Extents.y << "\t" << Bounds.Extents.z << endl;
 
 
 	//////////////////////////////////////////////////

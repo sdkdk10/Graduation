@@ -25,11 +25,11 @@ my_hp = 50;
 my_dmg = 3;
 my_exp = 20;
 elseif(npcType == NPC_ROCK_WARRIOR) then
-my_x = math.random(8,8)
-my_z = math.random(0,0)
-my_hp = 500;
-my_dmg = 10;
-my_exp = 100;
+my_x = math.random(143,143)
+my_z = math.random(363,363)
+my_hp = 1000;
+my_dmg = 20;
+my_exp = 200;
 elseif(npcType == NPC_TREE_GUARD) then
 my_x = math.random(138,149)
 my_z = math.random(131,331)

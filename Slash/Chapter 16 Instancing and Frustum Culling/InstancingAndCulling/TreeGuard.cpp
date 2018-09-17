@@ -97,6 +97,10 @@ bool TreeGuard::Update(const GameTimer & gt)
 		m_bIsVisiable = false;
 	}
 
+	//cout << "TreeGuard : " << endl;
+	//cout << "Bounds Center: " << Bounds.Center.x << "\t" << Bounds.Center.y << "\t" << Bounds.Center.z << endl;
+	//cout << "Bounds Extents: " << Bounds.Extents.x << "\t" << Bounds.Extents.y << "\t" << Bounds.Extents.z << endl;
+
 	CManagement::GetInstance()->GetRenderer()->Add_RenderGroup(CRenderer::RENDER_NONALPHA_FORWARD, this);
 	return true;
 }
