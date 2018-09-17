@@ -704,6 +704,8 @@ void Player::KeyInput(const GameTimer & gt)
 		{
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack1_Sound");
+			else
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack1_Sound");
 
 			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
@@ -712,6 +714,10 @@ void Player::KeyInput(const GameTimer & gt)
 		{
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack2_Sound");
+			else
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack2_Sound");
+
+
 			CNetwork::GetInstance()->SendAttack2Packet();
 
 		}
@@ -719,6 +725,9 @@ void Player::KeyInput(const GameTimer & gt)
 		{
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
 				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack3_Sound");
+			else
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack3_Sound");
+
 			CNetwork::GetInstance()->SendAttack3Packet();
 		}
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
@@ -727,7 +736,9 @@ void Player::KeyInput(const GameTimer & gt)
 			if (!m_GageFull)return;
 
 			if (!m_IsWarrior)//법사일때 이펙트 사운드
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_UltimateSound");
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Ultimate_Sound");
+			else
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Ultimate_Sound");
 
 
 
@@ -737,6 +748,16 @@ void Player::KeyInput(const GameTimer & gt)
 
 			m_GageBar->GetCur() = 0.f;
 		}
+
+		else if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN)
+		{
+			if (!m_IsWarrior)//법사일때 이펙트 사운드
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Roll_Sound");
+			else
+				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Roll_Sound");
+
+		}
+
 	}
 }
 

@@ -60,6 +60,9 @@ void CManagement::SetLevel(CGameObject* pObj, int iLv)
 
 void CManagement::PlayLevelUP()
 {
+	CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"LevelUp");
+
+
 	size_t iSize = m_pLevelUP.size();
 	for (size_t i = 0; i < iSize; ++i)
 	{
