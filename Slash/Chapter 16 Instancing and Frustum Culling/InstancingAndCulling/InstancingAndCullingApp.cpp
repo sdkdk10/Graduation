@@ -1305,6 +1305,24 @@ void InstancingAndCullingApp::LoadMeshes()
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_SkillUI", pComponent);
 
+
+	move.x = 0.f;
+	move.y = 0.f;
+	scale.x = 1.f;
+	scale.y = 1.f;
+	size = 1.f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Ending", pComponent);
+
+
+	move.x = 0.f;
+	move.y = 0.f;
+	scale.x = 0.7f;
+	scale.y = 0.4f;
+	size = 0.8f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_TheEnd", pComponent);
+
 	// > Map Object ASE Load
 	fstream in("Assets/Data/ModelList.txt");
 	if (in.is_open() == false)

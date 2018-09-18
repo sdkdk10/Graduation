@@ -43,7 +43,8 @@ void CNetwork::InitSock(HWND MainWnd)
 	ServerAddr.sin_port = htons(MY_SERVER_PORT);
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.83.227");
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.227");
-	ServerAddr.sin_addr.s_addr = inet_addr("192.168.143.230");
+	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.143.230");
+	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.82.227");
 	int Result = WSAConnect(mysocket, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
 
@@ -626,14 +627,14 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		break;
 	}
-	//case SC_PLAY_ENDING:
-	//{
-	//	CScene* pScene = CEndingScene::Create(D3DApp::GetApp()->GetDevice(), CManagement::GetInstance()->GetSrvDescriptorHeap(), CManagement::GetInstance()->GetCbvSrvDescriptorSize());
-	//	if (pScene == nullptr)
-	//		return;
-	//	CManagement::GetInstance()->Change_Scene(pScene);
-	//	break;
-	//}
+	case SC_PLAY_ENDING:
+	{
+		CScene* pScene = CEndingScene::Create(D3DApp::GetApp()->GetDevice(), CManagement::GetInstance()->GetSrvDescriptorHeap(), CManagement::GetInstance()->GetCbvSrvDescriptorSize());
+		if (pScene == nullptr)
+			return;
+		CManagement::GetInstance()->Change_Scene(pScene);
+		break;
+	}
 	}
 }
 

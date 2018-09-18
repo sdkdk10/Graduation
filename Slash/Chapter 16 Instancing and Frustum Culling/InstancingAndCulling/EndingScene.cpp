@@ -39,10 +39,10 @@ HRESULT CEndingScene::Initialize()
 	scale.x = 1.0f;
 	scale.y = 1.0f;
 	size = 1.0f;
-	CGameObject* pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, true, 0.02f);
+	CGameObject* pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_Ending", tex->Num, true);
 	pObject->SetCamera(Get_MainCam());
 	dynamic_cast<ChangeUI*>(pObject)->SetPlay(true);
-	Ready_GameObject(L"Layer_SelectSceneUI", pObject);
+	Ready_GameObject(L"Layer_EndingSceneUI", pObject);
 
 
 	tex = CTexture_Manager::GetInstance()->Find_Texture("TheEnd", CTexture_Manager::TEX_DEFAULT_2D);
@@ -50,13 +50,13 @@ HRESULT CEndingScene::Initialize()
 	move.y = -0.f;
 	scale.x = 0.7f;
 	scale.y = 0.4f;
-	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, true);
+	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_TheEnd", tex->Num, true);
 	pObject->SetCamera(Get_MainCam());
 	dynamic_cast<ChangeUI*>(pObject)->SetPlay(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetisChange(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(0.2f, 0.2f, 0.2f, 1.f), 1.5f);
 	dynamic_cast<ChangeUI*>(pObject)->SetInitColor(XMFLOAT4(1.f, 1.f, 1.f, 0.2f));
-	Ready_GameObject(L"Layer_SelectSceneUI", pObject);
+	Ready_GameObject(L"Layer_EndingSceneUI", pObject);
 
 	return S_OK;
 }
@@ -65,17 +65,6 @@ bool CEndingScene::Update(const GameTimer & gt)
 {
 	CScene::Update(gt);
 
-	if (KeyBoard_Input(DIK_1) == CInputDevice::INPUT_PRESS)
-	{
-		//CScene* pScene = CTestScene::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, m_isLeft);
-		CScene* pScene = CSelectScene::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
-
-		pScene->Set_MainCam(m_pMainCam);
-		pScene->Set_CamFrustum(m_pCamFrustum);
-		m_pMainCam->Set_Dynamic(false);
-		CManagement::GetInstance()->Change_Scene(pScene);
-		CManagement::GetInstance()->GetSound()->StopBGM();
-	}
 	return true;
 }
 

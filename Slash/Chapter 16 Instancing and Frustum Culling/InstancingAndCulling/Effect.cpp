@@ -811,6 +811,9 @@ void CEffect::SetPlay(bool _isPlay)
 	m_pTransCom->GetRotation() = m_tInfo.S_Rot;
 	m_pTransCom->Update_Component();
 	Mat->DiffuseAlbedo = m_tInfo.S_Color;
+
+	if (_isPlay == false)
+		m_IsCon = false;
 }
 
 void CEffect::SetIsFrame(bool _isFrame)
