@@ -14,7 +14,7 @@ class NumUI_Inst;
 class CManagement
 	: public CBase
 {
-	enum SCENETYPE{SCENE_LOADING, SCENE_LOGIN, SCENE_LOGO, SCENE_STAGE, SCENE_END};
+	enum SCENETYPE{SCENE_START, SCENE_SELECT, SCENE_STAGE, SCENE_END};
 
 	DECLARE_SINGLETON(CManagement)
 
@@ -52,21 +52,28 @@ public:
 	void			PlayLevelUP();
 	void			SetLevelUPUI(vector<ChangeUI*> vec);
 
+	void			PlaySkillUI(int inum);
+	void			SetSkillUPUI(vector<ChangeUI*> vec);
 private:
 	CScene*				m_pCurScene;
+	CScene*				m_pChangeScene = nullptr;
 	CRenderer*			m_pRenderer;
 	CSound*				m_pSound;
 
 	NumUI_Inst*			m_pNumUI;
 
 	vector<ChangeUI*>	m_pLevelUP;
+	vector<ChangeUI*>	m_pSkillReady;
 
 	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 	UINT mCbvSrvDescriptorSize = 0;
 
 	FrameResource* mCurrFrameResource = nullptr;
 
+	SCENETYPE			m_tCurScene;
+
 	bool				m_IsStop = false;
+	bool				m_IsChange = false;
 public:
 	HRESULT		Init_Management(CRenderer* pRenderer, NumUI_Inst* pNumUI);
 	bool		Update(const GameTimer& gt, const FrameResource* pCruRrc);

@@ -191,8 +191,8 @@ public:
 
 	XMFLOAT3					m_xmf3Height = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Width = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	XMFLOAT3					m_xmf3Scale;
-	XMFLOAT3					m_xmf3Rot;
+	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);;
+	XMFLOAT3					m_xmf3Rot = XMFLOAT3(0.0f, 0.0f, 0.0f);;
 
 
 	float           			m_fPitch = 0.0f;

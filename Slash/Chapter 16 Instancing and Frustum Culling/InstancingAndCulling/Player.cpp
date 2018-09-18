@@ -188,11 +188,17 @@ HRESULT Player::Initialize()
 {
 	string strTexName;
 	wchar_t* machineName;
+	string skill[5];
 	if (m_IsWarrior)
 	{
 		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Warrior"));
 		strTexName = "VillagerTex";
 		machineName = L"Warrior";
+		skill[0] = "Warrior_Shift";
+		skill[1] = "Warrior_1";
+		skill[2] = "Warrior_2";
+		skill[3] = "Warrior_3";
+		skill[4] = "Warrior_R";
 	}
 
 	else
@@ -200,6 +206,11 @@ HRESULT Player::Initialize()
 		m_pMesh = dynamic_cast<DynamicMesh*>(CComponent_Manager::GetInstance()->Clone_Component(L"Com_Mesh_Mage"));
 		strTexName = "MageTex";
 		machineName = L"Mage";
+		skill[0] = "Wizard_Shift";
+		skill[1] = "Wizard_1";
+		skill[2] = "Wizard_2";
+		skill[3] = "Wizard_3";
+		skill[4] = "Wizard_R";
 	}
 
 	if (nullptr == m_pMesh)
@@ -290,6 +301,7 @@ HRESULT Player::Initialize()
 	m_GageBar = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
 	m_GageBar->GetCur() = 0.f;
 	m_GageBar->GetMax() = 100.f;
+	m_GageBar->SetColor(1.f, 1.f, 1.f, 1.f);
 
 	// > Lv UI
 	tex = CTexture_Manager::GetInstance()->Find_Texture("Num_LV", CTexture_Manager::TEX_DEFAULT_2D);
@@ -297,16 +309,69 @@ HRESULT Player::Initialize()
 	m_LvUI->SetNum(1);
 
 	// > Skill UI
-	/*size = -0.0700449f;
+	size = -0.0700449f;
 	scale.y = 1.3972f;
 	move.x = -0.00333446f;
 	move.y = -0.553653f;
-	tex = CTexture_Manager::GetInstance()->Find_Texture("SkillNot", CTexture_Manager::TEX_DEFAULT_2D);
-	m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
-	m_SkillUI[0].fResetTime = 2.f;
-	m_SkillUI[0].pUI->GetCur() = 2.f;
-	m_SkillUI[0].pUI->GetMax() = 2.f;
-	m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.6f);*/
+
+	// > -0.46394354
+	size = 0.1498823f;
+	move.x = -0.46394354f;
+	move.y = -0.653679f;
+	scale.y = 1.23343f;
+	
+	for (int i = 0; i < 5; ++i)
+	{
+		tex = CTexture_Manager::GetInstance()->Find_Texture(skill[i], CTexture_Manager::TEX_DEFAULT_2D);
+		m_SkillUI[i].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num, 0.01f);
+		m_SkillUI[i].fResetTime = 2.f;
+		float fDivTime = m_SkillUI[i].fResetTime / (1.f / 60.f);
+		m_SkillUI[i].alphaAdd = 0.8f / fDivTime;
+		m_SkillUI[i].pUI->GetCur() = 2.f;
+		m_SkillUI[i].pUI->GetMax() = 2.f;
+		m_SkillUI[i].pUI->SetColor(1.f, 1.f, 1.f, 0.8f);
+
+		move.x += 0.23030454f;
+	}
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("Warrior_Shift", CTexture_Manager::TEX_DEFAULT_2D);
+	//m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	//m_SkillUI[0].fResetTime = 2.f;
+	//m_SkillUI[0].pUI->GetCur() = 2.f;
+	//m_SkillUI[0].pUI->GetMax() = 2.f;
+	//m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.8f);
+
+	//move.x += 0.23030454f;
+
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("Warrior_1", CTexture_Manager::TEX_DEFAULT_2D);
+	//m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	//m_SkillUI[0].fResetTime = 2.f;
+	//m_SkillUI[0].pUI->GetCur() = 2.f;
+	//m_SkillUI[0].pUI->GetMax() = 2.f;
+	//m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.8f);
+	//move.x += 0.23030454f;
+
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("Warrior_2", CTexture_Manager::TEX_DEFAULT_2D);
+	//m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	//m_SkillUI[0].fResetTime = 2.f;
+	//m_SkillUI[0].pUI->GetCur() = 2.f;
+	//m_SkillUI[0].pUI->GetMax() = 2.f;
+	//m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.8f);
+	//move.x += 0.23030454f;
+
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("Warrior_3", CTexture_Manager::TEX_DEFAULT_2D);
+	//m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	//m_SkillUI[0].fResetTime = 2.f;
+	//m_SkillUI[0].pUI->GetCur() = 2.f;
+	//m_SkillUI[0].pUI->GetMax() = 2.f;
+	//m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.8f);
+	//move.x += 0.23030454f;
+
+	//tex = CTexture_Manager::GetInstance()->Find_Texture("Warrior_R", CTexture_Manager::TEX_DEFAULT_2D);
+	//m_SkillUI[0].pUI = HPBar::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, move, scale, size, tex->Num);
+	//m_SkillUI[0].fResetTime = 2.f;
+	//m_SkillUI[0].pUI->GetCur() = 2.f;
+	//m_SkillUI[0].pUI->GetMax() = 2.f;
+	//m_SkillUI[0].pUI->SetColor(1.f, 1.f, 1.f, 0.8f);
 
 	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.05f, Bounds.Center.y * 0.05f, Bounds.Center.z * 0.05f), XMFLOAT3(Bounds.Extents.x * 0.05f, Bounds.Extents.y * 0.05f, Bounds.Extents.z * 0.05f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -501,7 +566,7 @@ void Player::SetUltimateEffect(bool isUltimate)
 
 void Player::UIUpdate(const GameTimer & gt)
 {
-	if (m_GageBar->GetCur() < m_GageBar->GetMax())
+	if (m_GageBar->GetCur() < m_GageBar->GetMax() && !bIsUltimateState)
 		m_GageBar->GetCur() += gt.DeltaTime() * 10.f;
 	else
 		m_GageFull = true;
@@ -511,8 +576,23 @@ void Player::UIUpdate(const GameTimer & gt)
 	m_ExpBar->Update(gt);
 	m_LvUI->Update(gt);
 
-	//for (int i = 0; i < 1; ++i)
-	//	m_SkillUI[i].pUI->Update(gt);
+	for (int i = 0; i < 5; ++i)
+	{
+		if (!m_SkillUI[i].isActive)
+		{
+			m_SkillUI[i].fStayTime += gt.DeltaTime();
+			m_SkillUI[i].pUI->SetAlpha(m_SkillUI[i].pUI->GetAlpha() + m_SkillUI[i].alphaAdd);
+			if (m_SkillUI[i].fStayTime > m_SkillUI[i].fResetTime)
+			{
+				m_SkillUI[i].fStayTime = 0.f;
+				m_SkillUI[i].pUI->SetAlpha(1.f);
+				m_SkillUI[i].isActive = true;
+				CManagement::GetInstance()->PlaySkillUI(i - 2);
+			}
+		}
+		m_SkillUI[i].pUI->Update(gt);
+	}
+		
 }
 
 void Player::AddExp(float exp)
@@ -547,42 +627,6 @@ void Player::SetLevel(int iLv)
 	// > Level UI 바꾸기
 	m_LvUI->SetNum(iLv);
 }
-
-//void Player::Render_Left(ID3D12GraphicsCommandList * cmdList)
-//{
-//	UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
-//	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
-//
-//	auto objectCB = m_pFrameResource->ObjectCB->Resource();
-//	auto matCB = m_pFrameResource->MaterialCB->Resource();
-//
-//	cmdList->IASetVertexBuffers(0, 1, &Geo_Left->VertexBufferView());
-//	cmdList->IASetIndexBuffer(&Geo_Left->IndexBufferView());
-//	cmdList->IASetPrimitiveTopology(PrimitiveType);
-//
-//	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-//	tex.Offset(Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
-//
-//	Mat->DiffuseSrvHeapIndex;
-//	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ObjCBIndex * objCBByteSize;
-//	D3D12_GPU_VIRTUAL_ADDRESS matCBAddress = matCB->GetGPUVirtualAddress() + Mat->MatCBIndex*matCBByteSize;
-//
-//	cmdList->SetGraphicsRootConstantBufferView(4, objCBAddress);
-//	//cmdList->SetGraphicsRootConstantBufferView(5, matCBAddress);
-//	cmdList->SetGraphicsRootShaderResourceView(5, matCBAddress);
-//
-//	cmdList->SetGraphicsRootDescriptorTable(7, tex);
-//
-//
-//	cmdList->DrawIndexedInstanced(Element_Right.IndexCount, 1, 
-//		Element_Right.StartIndexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecIndexOffset_Left[iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset_Left[KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
-//		Element_Right.BaseVertexLocation + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexOffset_Left[iTest] + dynamic_cast<DynamicMesh*>(m_pMesh)->m_vecVertexAnimOffset_Left[KeyInputTest/*dynamic_cast<DynamicMesh*>(m_pMesh)->iAnimframe*/],
-//		0);
-//
-//
-//	//cmdList->DrawIndexedInstanced(Element_Left.IndexCount, 1, Element_Left.StartIndexLocation, Element_Left.BaseVertexLocation, 0);
-//}
-
 
 void Player::CheckUltimate(const GameTimer & gt)
 {
@@ -709,44 +753,63 @@ void Player::KeyInput(const GameTimer & gt)
 
 			m_pCamera->SetCameraEffect(Camera::SHAKING);
 			CNetwork::GetInstance()->SendAttack1Packet();
+
 		}
 		else if (KeyBoard_Input(DIK_2) == CInputDevice::INPUT_DOWN)
 		{
-			if (!m_IsWarrior)//법사일때 이펙트 사운드
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack2_Sound");
-			else
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack2_Sound");
+			if (m_SkillUI[2].isActive)
+			{
+				m_SkillUI[2].isActive = false;
+				m_SkillUI[2].pUI->SetAlpha(0.2f);
+
+				if (!m_IsWarrior)//법사일때 이펙트 사운드
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack2_Sound");
+				else
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack2_Sound");
 
 
-			CNetwork::GetInstance()->SendAttack2Packet();
+				CNetwork::GetInstance()->SendAttack2Packet();
+			}
 
 		}
 		else if (KeyBoard_Input(DIK_3) == CInputDevice::INPUT_DOWN)
 		{
-			if (!m_IsWarrior)//법사일때 이펙트 사운드
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack3_Sound");
-			else
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack3_Sound");
+			if (m_SkillUI[3].isActive)
+			{
+				m_SkillUI[3].isActive = false;
+				m_SkillUI[3].pUI->SetAlpha(0.2f);
 
-			CNetwork::GetInstance()->SendAttack3Packet();
+				if (!m_IsWarrior)//법사일때 이펙트 사운드
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Attack3_Sound");
+				else
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Attack3_Sound");
+
+				CNetwork::GetInstance()->SendAttack3Packet();
+			}
 		}
 		else if (KeyBoard_Input(DIK_R) == CInputDevice::INPUT_DOWN)
 		{
 			if (bIsUltimateState) return;
 			if (!m_GageFull)return;
 
-			if (!m_IsWarrior)//법사일때 이펙트 사운드
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Ultimate_Sound");
-			else
-				CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Ultimate_Sound");
+			if (m_SkillUI[4].isActive)
+			{
+				m_SkillUI[4].isActive = false;
+				m_SkillUI[4].pUI->SetAlpha(0.2f);
+
+				if (!m_IsWarrior)//법사일때 이펙트 사운드
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Mage_Ultimate_Sound");
+				else
+					CManagement::GetInstance()->GetSound()->PlayEffect(L"Sound", L"Warrior_Ultimate_Sound");
 
 
 
-			m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
-			SetObjectAnimState(State::STATE_ULTIMATE);
-			CNetwork::GetInstance()->SendUltimateStartPacket();
+				m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
+				SetObjectAnimState(State::STATE_ULTIMATE);
+				CNetwork::GetInstance()->SendUltimateStartPacket();
 
-			m_GageBar->GetCur() = 0.f;
+				m_GageBar->GetCur() = 0.f;
+			}
 		}
 
 		else if (KeyBoard_Input(DIK_LSHIFT) == CInputDevice::INPUT_DOWN)
@@ -1025,7 +1088,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ROLL] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Roll_00", &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Roll > (*vecAnimFrame)[State::STATE_ROLL])
@@ -1096,7 +1159,7 @@ void AnimateStateMachine_Player::SetUltimateEffect(bool isUltimate)
 	}
 	else
 	{
-		m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+		m_mapEffectName.emplace(State::STATE_ATTACK1, "Ultimate1");
 		m_mapEffectName.emplace(State::STATE_ATTACK2, "UtimateAttack_2");
 		m_mapEffectName.emplace(State::STATE_ATTACK3, "Ax_00");
 		m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");

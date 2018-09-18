@@ -1,4 +1,4 @@
-71
+74
 blood_hit_04	Assets/Textures/Effect/blood_hit_04.dds
 aurora01	Assets/Textures/Effect/aurora01.dds
 blood_hit_01	Assets/Textures/Effect/blood_hit_01.dds
@@ -70,3 +70,6 @@ thunder_004	Assets/Textures/Effect/thunder_004.dds
 cast_001	Assets/Textures/Effect/cast_001.dds
 cast_005	Assets/Textures/Effect/cast_005.dds
 Light_002	Assets/Textures/Effect/Light_002.dds
+Cast_007	Assets/Textures/Effect/Cast_007.dds
+Smog_00	Assets/Textures/Effect/Smog_00.dds
+thunder_005	Assets/Textures/Effect/thunder_005.dds

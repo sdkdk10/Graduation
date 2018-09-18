@@ -598,7 +598,7 @@ void CTestScene::UISetting()
 
 		tex = CTexture_Manager::GetInstance()->Find_Texture("SkillUIWarrior", CTexture_Manager::TEX_DEFAULT_2D);
 		pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_SkillUI", tex->Num);
-		Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+		//Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 	}
 		
 	else
@@ -609,7 +609,7 @@ void CTestScene::UISetting()
 
 		tex = CTexture_Manager::GetInstance()->Find_Texture("SkillUIWizard", CTexture_Manager::TEX_DEFAULT_2D);
 		pObject = StaticUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, L"Com_Mesh_SkillUI", tex->Num);
-		Ready_GameObject(L"Layer_PlayerStateUI", pObject);
+		//Ready_GameObject(L"Layer_PlayerStateUI", pObject);
 	}
 		
 

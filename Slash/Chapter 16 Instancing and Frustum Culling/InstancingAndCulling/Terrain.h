@@ -14,6 +14,7 @@ public:
 	virtual void			Render(ID3D12GraphicsCommandList* cmdList);
 	virtual HRESULT			Initialize();
 
+	void					SetTex(int iNum) { Mat->DiffuseSrvHeapIndex = iNum; }
 public:
 	static Terrain* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize);
 

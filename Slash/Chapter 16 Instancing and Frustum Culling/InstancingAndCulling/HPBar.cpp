@@ -8,8 +8,9 @@
 
 unsigned long HPBar::m_iAllBarUIIndex = 0;
 
-HPBar::HPBar(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex)
+HPBar::HPBar(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex, float fZ)
 	:UI(d3dDevice, srv, srvSize)
+	, m_fZ(fZ)
 {
 	move = _move;
 	scale = _scale;
@@ -24,9 +25,9 @@ HPBar::~HPBar()
 {
 }
 
-HPBar * HPBar::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size,int diffuseSrvHeapIndex)
+HPBar * HPBar::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, XMFLOAT2 move, XMFLOAT2 scale, float size,int diffuseSrvHeapIndex, float fZ)
 {
-	HPBar* pInstance = new HPBar(d3dDevice, srv, srvSize, move, scale, size,diffuseSrvHeapIndex);
+	HPBar* pInstance = new HPBar(d3dDevice, srv, srvSize, move, scale, size,diffuseSrvHeapIndex, fZ);
 
 	if (FAILED(pInstance->Initialize(move, scale, size)))
 	{
@@ -51,37 +52,37 @@ bool HPBar::Update(const GameTimer & gt)
 	//»ï°¢Çü 1 - 0 1 2
 	//»ï°¢Çü 2 - 3(0) 4 5(1)
 
-	v.Pos = XMFLOAT3((-size + move.x), (size + move.y) * scale.y, 0.0f); // 0 
+	v.Pos = XMFLOAT3((-size + move.x), (size + move.y) * scale.y, m_fZ); // 0 
 	v.TexC = XMFLOAT2(0.0f, 0.0f);
 
 	//currVB->CopyData(0, v);
 	currVB->CopyData(m_iMyUIID, v);
 
-	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur/m_fMax, (-size + move.y) * scale.y, 0.0f); //1
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur/m_fMax, (-size + move.y) * scale.y, m_fZ); //1
 	//v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
 	v.TexC = XMFLOAT2(m_fCur / m_fMax, 1.f);
 
 	currVB->CopyData(m_iMyUIID + 1, v);
 
-	v.Pos = XMFLOAT3((-size + move.x), (-size + move.y) * scale.y, 0.0f); //2
+	v.Pos = XMFLOAT3((-size + move.x), (-size + move.y) * scale.y, m_fZ); //2
 	v.TexC = XMFLOAT2(0.0f, 1.0f);
 
 	currVB->CopyData(m_iMyUIID + 2, v);
 
 
-	v.Pos = XMFLOAT3((-size + move.x), (size + move.y) * scale.y, 0.0f); //3
+	v.Pos = XMFLOAT3((-size + move.x), (size + move.y) * scale.y, m_fZ); //3
 	v.TexC = XMFLOAT2(0.0f, 0.0f);
 
 	currVB->CopyData(m_iMyUIID + 3, v);
 
-	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (size + move.y) * scale.y, 0.0f); //4
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (size + move.y) * scale.y, m_fZ); //4
 	//v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax) + 0.05, 0.0f);
 	v.TexC = XMFLOAT2(m_fCur / m_fMax, 0.f);
 
 
 	currVB->CopyData(m_iMyUIID + 4, v);
 
-	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (-size + move.y) * scale.y, 0.0f); //5
+	v.Pos = XMFLOAT3((-size + move.x) + 2 * size * m_fCur / m_fMax, (-size + move.y) * scale.y, m_fZ); //5
 	//v.TexC = XMFLOAT2(1.0f + (size + move.x)* (m_fCur / (float)m_fMax), 1.0f);
 	v.TexC = XMFLOAT2(m_fCur / m_fMax, 1.f);
 

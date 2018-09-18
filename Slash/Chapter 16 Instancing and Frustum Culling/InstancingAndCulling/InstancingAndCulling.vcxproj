@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>InstancingAndCulling</RootNamespace>
     <ProjectName>Slash</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -168,6 +168,7 @@
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectScene.cpp" />
     <ClCompile Include="Effect_Manager.cpp" />
+    <ClCompile Include="EndingScene.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="Frame_Manager.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="ResourceUploadBatch.cpp" />
     <ClCompile Include="RockWarrior.cpp" />
     <ClCompile Include="Mushroom.cpp" />
+    <ClCompile Include="SelectPlayer.cpp" />
     <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Skill.cpp" />
@@ -191,6 +193,7 @@
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
     <ClCompile Include="SpriteFont.cpp" />
+    <ClCompile Include="StartScene.cpp" />
     <ClCompile Include="StaticUI.cpp" />
     <ClCompile Include="HPBar.cpp" />
     <ClCompile Include="InputDevice.cpp" />
@@ -247,6 +250,7 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectScene.h" />
     <ClInclude Include="Effect_Manager.h" />
+    <ClInclude Include="EndingScene.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="Frame_Manager.h" />
@@ -267,6 +271,7 @@
     <ClInclude Include="ResourceUploadBatch.h" />
     <ClInclude Include="RockWarrior.h" />
     <ClInclude Include="Mushroom.h" />
+    <ClInclude Include="SelectPlayer.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="SharedResourcePool.h" />
     <ClInclude Include="Skeleton.h" />
@@ -276,6 +281,7 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SpriteBatch.h" />
     <ClInclude Include="SpriteFont.h" />
+    <ClInclude Include="StartScene.h" />
     <ClInclude Include="StaticUI.h" />
     <ClInclude Include="HPBar.h" />
     <ClInclude Include="InputDevice.h" />

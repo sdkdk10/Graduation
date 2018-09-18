@@ -5,6 +5,7 @@
 #include "UIMesh.h"
 #include "Management.h"
 #include "Renderer.h"
+#include "Component_Manager.h"
 #include "Define.h"
 
 ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap> &srv, UINT srvSize, XMFLOAT2 _move, XMFLOAT2 _scale, float _size, int diffuseSrvHeapIndex, bool isCon, float fZ, float fStartTime)
@@ -22,6 +23,16 @@ ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12
 	m_xmf3Scale.z = 1.f;
 }
 
+ChangeUI::ChangeUI(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t * pMeshName, int diffuseSrvHeapIndex, bool isCon)
+	:UI(d3dDevice, srv, srvSize)
+{
+	m_iDiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+	m_IsContinue = isCon;
+	m_xmf3Scale.x = 1.f;
+	m_xmf3Scale.y = 1.f;
+	m_xmf3Scale.z = 1.f;
+}
+
 
 ChangeUI::~ChangeUI()
 {
@@ -33,7 +44,21 @@ ChangeUI * ChangeUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 
 	if (FAILED(pInstance->Initialize(move, scale, size)))
 	{
-		MSG_BOX(L"Player Created Failed");
+		MSG_BOX(L"ChangeUI Created Failed");
+		Safe_Release(pInstance);
+	}
+
+
+	return pInstance;
+}
+
+ChangeUI * ChangeUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, wchar_t * pMeshName, int diffuseSrvHeapIndex, bool isCon)
+{
+	ChangeUI* pInstance = new ChangeUI(d3dDevice, srv, srvSize,pMeshName, diffuseSrvHeapIndex, isCon);
+
+	if (FAILED(pInstance->Initialize(pMeshName, diffuseSrvHeapIndex)))
+	{
+		MSG_BOX(L"ChangeUI Created Failed");
 		Safe_Release(pInstance);
 	}
 
@@ -74,12 +99,12 @@ bool ChangeUI::Update(const GameTimer & gt)
 
 	MaterialConstants matConstants;
 
-	if (m_IsChange)
+	if (m_IsChange && !m_isRemain)
 	{
 
 		float fDivTime = m_fChangeTime / gt.DeltaTime();
 
-		m_ChangeColor = Vector4::Divide(Vector4::Subtract(m_xmf4ColorChange, XMFLOAT4(1, 1, 1, 1)), fDivTime);
+		m_ChangeColor = Vector4::Divide(Vector4::Subtract(m_xmf4ColorChange, m_xmInitColor), fDivTime);
 
 		if (m_ChangeValue)
 		{
@@ -96,11 +121,14 @@ bool ChangeUI::Update(const GameTimer & gt)
 		{
 			if (!m_IsContinue)
 			{
-				m_isPlay = false;
-				Mat->DiffuseAlbedo = XMFLOAT4(1, 1, 1, 1);
-				m_fAccTime = 0.f;
-				m_fTimeAccc = 0.f;
-				return true;
+				if (!m_isRemain)
+				{
+					m_isPlay = false;
+					Mat->DiffuseAlbedo = XMFLOAT4(1, 1, 1, 1);
+					m_fAccTime = 0.f;
+					m_fTimeAccc = 0.f;
+					return true;
+				}
 			}
 			else
 			{
@@ -172,6 +200,38 @@ HRESULT ChangeUI::Initialize(XMFLOAT2 move, XMFLOAT2 scale, float size)
 	Mat->MatCBIndex = m_iMyObjectID;
 	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
 	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_xmInitColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Mat->Roughness = 0.3f;
+	Mat->MatTransform = MathHelper::Identity4x4();
+
+	/* CB(World,TextureTranform...) Build */
+
+	TexTransform = MathHelper::Identity4x4();
+	ObjCBIndex = m_iMyObjectID;
+
+	Geo = dynamic_cast<UIMesh*>(m_pMesh)->m_Geometry[0].get();
+	PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	IndexCount = Geo->DrawArgs["UI"].IndexCount;
+	StartIndexLocation = Geo->DrawArgs["UI"].StartIndexLocation;
+	BaseVertexLocation = Geo->DrawArgs["UI"].BaseVertexLocation;
+
+	return S_OK;
+}
+
+HRESULT ChangeUI::Initialize(wchar_t * pMeshName, int diffuseSrvHeapIndex)
+{
+	m_pMesh = dynamic_cast<UIMesh*>(CComponent_Manager::GetInstance()->Clone_Component(pMeshName));
+	if (m_pMesh == nullptr)
+		return E_FAIL;
+	/* Material Build */
+	Mat = new Material;
+	Mat->Name = "TerrainMat";
+	//Mat->MatCBIndex = 2;
+	Mat->MatCBIndex = m_iMyObjectID;
+	Mat->DiffuseSrvHeapIndex = m_iDiffuseSrvHeapIndex;//7;
+	Mat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_xmInitColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 	Mat->MatTransform = MathHelper::Identity4x4();

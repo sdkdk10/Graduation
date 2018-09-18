@@ -30,6 +30,7 @@
 #include "SpriteBatch.h"
 #include "DescriptorHeap.h"
 #include "NumUI_Inst.h"
+#include "StartScene.h"
 #include "Minidump.h"
 
 const int gNumFrameResources = 3;
@@ -866,6 +867,112 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"SkillUIWarrior Ready Failed");
 
+	Tex = new Texture;
+	Tex->Name = "Warrior_1";
+	Tex->Filename = L"Assets/Textures/Warrior_1.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Warrior_1 Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "Warrior_2";
+	Tex->Filename = L"Assets/Textures/Warrior_2.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Warrior_2 Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Warrior_3";
+	Tex->Filename = L"Assets/Textures/Warrior_3.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Warrior_3 Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Warrior_R";
+	Tex->Filename = L"Assets/Textures/Warrior_R.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Warrior_R Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Warrior_Shift";
+	Tex->Filename = L"Assets/Textures/Warrior_Shift.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Warrior_Shift Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Wizard_1";
+	Tex->Filename = L"Assets/Textures/Wizard_1.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Wizard_1 Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Wizard_2";
+	Tex->Filename = L"Assets/Textures/Wizard_2.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Wizard_2 Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Wizard_3";
+	Tex->Filename = L"Assets/Textures/Wizard_3.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Wizard_3 Ready Failed");
+
+
+	Tex = new Texture;
+	Tex->Name = "Wizard_R";
+	Tex->Filename = L"Assets/Textures/Wizard_R.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Wizard_R Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "Wizard_Shift";
+	Tex->Filename = L"Assets/Textures/Wizard_Shift.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Wizard_Shift Ready Failed");
 
 	Tex = new Texture;
 	Tex->Name = "SkillNot";
@@ -877,6 +984,35 @@ void InstancingAndCullingApp::LoadTextures()
 	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
 		MSG_BOX(L"SkillNot Ready Failed");
 
+	Tex = new Texture;
+	Tex->Name = "StartScene";
+	Tex->Filename = L"Assets/Textures/StartScene.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"StartScene Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "Slash";
+	Tex->Filename = L"Assets/Textures/Slash.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"Slash Ready Failed");
+
+	Tex = new Texture;
+	Tex->Name = "TheEnd";
+	Tex->Filename = L"Assets/Textures/TheEnd.dds";
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), Tex->Filename.c_str(),
+		Tex->Resource, Tex->UploadHeap));
+
+	if (FAILED(CTexture_Manager::GetInstance()->Ready_Texture(Tex->Name, Tex, CTexture_Manager::TEX_DEFAULT_2D)))
+		MSG_BOX(L"TheEnd Ready Failed");
 
 	Tex = new Texture;
 	Tex->Name = "Aura0";
@@ -961,7 +1097,7 @@ void InstancingAndCullingApp::LoadMeshes()
 
 	CComponent* pComponent = DynamicMesh::Create(md3dDevice, path);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Warrior", pComponent);
-	
+	//
 	path.clear();
 	path.push_back(make_pair("Idle", "Assets/Models/Mage/Mage_Idle.ASE"));
 	path.push_back(make_pair("Walk", "Assets/Models/Mage/Mage_Walk.ASE"));
@@ -1067,6 +1203,38 @@ void InstancingAndCullingApp::LoadMeshes()
 	scale.y = 1.0f;
 
 	float size = 0.08f;
+	move.x = 0.f;
+	move.y = -1.4f;
+	scale.x = 0.7f;
+	scale.y = 0.4f;
+	size = 0.8f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PressEnter", pComponent);
+
+	move.x = 0.f;
+	move.y = 1.5f;
+	scale.x = 0.9f;
+	scale.y = 0.4f;
+	size = 0.8f;
+
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_SelectCharacter", pComponent);
+
+	move.x = 0.f;
+	move.y = 0.f;
+	scale.x = 1.f;
+	scale.y = 1.f;
+	size = 0.8f;
+	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
+	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_Seletor0", pComponent);
+
+	move.x = -0.885f;
+	move.y = 0.785f;
+
+	scale.x = 1.0f;
+	scale.y = 1.0f;
+
+	size = 0.08f;
 
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_WarriorUI", pComponent);
@@ -1527,10 +1695,10 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
 	mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
-	mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "VS", "vs_5_1");
-	mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS", "ps_5_1");
+	mShaders["UIVS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", alphaTestDefines, "VS", "vs_5_1");
+	mShaders["UIPS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
-	mShaders["UIChangePS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", nullptr, "PS_Change", "ps_5_1");
+	mShaders["UIChangePS"] = d3dUtil::CompileShader(L"Shaders\\UI.hlsl", alphaTestDefines, "PS_Change", "ps_5_1");
 
 	mShaders["AlphaTestPS_Inst"] = d3dUtil::CompileShader(L"Shaders\\Instancing.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
@@ -1609,27 +1777,6 @@ void InstancingAndCullingApp::BuildPSOs()
 	};
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&InstancingOpaquePsoDesc, IID_PPV_ARGS(&mPSOs["InstancingOpaque"])));
-
-	//
-	// PSO for UI objects.
-	//
-
-
-
-
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
-	UIPsoDesc.VS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
-		mShaders["UIVS"]->GetBufferSize()
-	};
-	UIPsoDesc.PS =
-	{
-		reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
-		mShaders["UIPS"]->GetBufferSize()
-	};
-
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
 
 
 
@@ -1730,7 +1877,7 @@ void InstancingAndCullingApp::BuildPSOs()
 	transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 	transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
 	transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
-	transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ONE;
 	transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
 	transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -1767,6 +1914,27 @@ void InstancingAndCullingApp::BuildPSOs()
 
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&alphaBlend_EffectPsoDesc, IID_PPV_ARGS(&mPSOs["alphaBelnd_Object"])));
 
+
+	//
+	// PSO for UI objects.
+	//
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIPsoDesc = opaquePsoDesc;
+	UIPsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["UIVS"]->GetBufferPointer()),
+		mShaders["UIVS"]->GetBufferSize()
+	};
+	UIPsoDesc.PS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["UIPS"]->GetBufferPointer()),
+		mShaders["UIPS"]->GetBufferSize()
+	};
+	UIPsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc_effect;
+	UIPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIPsoDesc, IID_PPV_ARGS(&mPSOs["UI"])));
+
+
 	// > Instancing UI(NumUI)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC InstancingUIPsoDesc = opaquePsoDesc;
 	InstancingUIPsoDesc.VS =
@@ -1790,7 +1958,7 @@ void InstancingAndCullingApp::BuildPSOs()
 	//
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC UIChangePsoDesc = UIPsoDesc;
-
+	//skyPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	UIChangePsoDesc.PS =
 	{
 		reinterpret_cast<BYTE*>(mShaders["UIChangePS"]->GetBufferPointer()),
@@ -1798,6 +1966,7 @@ void InstancingAndCullingApp::BuildPSOs()
 	};
 
 	UIChangePsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc_effect;
+	UIChangePsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&UIChangePsoDesc, IID_PPV_ARGS(&mPSOs["UIChange"])));
 
 	//
@@ -1922,7 +2091,8 @@ void InstancingAndCullingApp::BuildRenderItems()
 {
 
 	//CScene* pScene = CTestScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
-	CScene* pScene = CSelectScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
+	//CScene* pScene = CSelectScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
+	CScene* pScene = CStartScene::Create(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 	CManagement::GetInstance()->Change_Scene(pScene);
 	CEffect_Manager::GetInstance()->Ready_EffectManager(md3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize);
 }

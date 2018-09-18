@@ -77,7 +77,7 @@ HRESULT CSkeleton::Initialize()
 	Mat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	Mat->Roughness = 0.3f;
 
-	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 20.f));
+	XMStoreFloat4x4(&World, XMMatrixScaling(0.1f, 0.1f, 0.1f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.f));
 	TexTransform = MathHelper::Identity4x4();
 	ObjCBIndex = m_iMyObjectID;
 

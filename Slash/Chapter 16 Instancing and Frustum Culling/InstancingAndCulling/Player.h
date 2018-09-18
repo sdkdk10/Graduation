@@ -11,9 +11,10 @@ class Player : public CGameObject
 	struct tSkillUI
 	{
 		HPBar*		pUI = nullptr;
-		float		fResetTime;
+		float		fResetTime;				// 다시 활성화 되기까지 걸리는 시간
 		float		fStayTime = 0.f;
-		bool		isActive = true;
+		float		alphaAdd;				// 한 프레임당 더해지는 알파값 1.f / fResetTime
+		bool		isActive = true;		// true : 스킬활성화 false : 비활성화
 	};
 	int AnimationtTest = 0;
 public:
@@ -127,7 +128,7 @@ private:
 	HPBar*		m_GageBar;
 	NumUI*		m_LvUI;
 	HPBar*		m_GageSkillUI;
-	tSkillUI	m_SkillUI[2];
+	tSkillUI	m_SkillUI[5];
 
 	float		m_fMaxHp = 100.f;
 	float		m_fMaxExp = 100.f;

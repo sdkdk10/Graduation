@@ -330,7 +330,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			if (dynamic_cast<Player*>(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetIsWarrior())
 				CManagement::GetInstance()->Find_Object(L"Layer_Player", 0)->SetObjectAnimState(State::STATE_ROLL);
 			else
-				CEffect_Manager::GetInstance()->Play_SkillEffect("Trans_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetWorld());
+				CEffect_Manager::GetInstance()->Play_SkillEffect("Teleport_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Player", 0))->GetWorld());
 		}
 		else if (id < NPC_ID_START)
 		{
@@ -342,7 +342,7 @@ void CNetwork::ProcessPacket(char * ptr)
 			else
 			{
 				CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id + NUM_OF_PLAYER)->SetPosition(my_packet->posX, my_packet->posY, my_packet->posZ);
-				CEffect_Manager::GetInstance()->Play_SkillEffect("Trans_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id + NUM_OF_PLAYER))->GetWorld());
+				CEffect_Manager::GetInstance()->Play_SkillEffect("Teleport_00", &(CManagement::GetInstance()->Find_Object(L"Layer_Skeleton", id + NUM_OF_PLAYER))->GetWorld());
 			}
 		}
 		else

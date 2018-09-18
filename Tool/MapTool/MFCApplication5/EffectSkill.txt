@@ -1,2 +1,2 @@
 1
-Ax_00	4	ax00	ax01	ax02	ax03	
+Teleport_00	1	teleport_00	
