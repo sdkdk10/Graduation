@@ -1,5 +1,7 @@
 #pragma once
 #include "Functor.h"
+#include <mutex>
+#include <unordered_set>
 
 class GameObject
 {
@@ -36,4 +38,6 @@ public:
 	BoundingOrientedBox skillOOBBTransformed_{};
 	unsigned int exp_;
 	unsigned short level_;
+	std::unordered_set<GameObject*> viewList_;
+	std::mutex vlm_;
 };

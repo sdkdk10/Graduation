@@ -64,7 +64,6 @@ void NPC::Initialize()
 	XMStoreFloat4(&xmOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&xmOOBBTransformed_.Orientation)));
 
 	objectType_ = TYPE_MONSTER;
-	isActive_ = false;
 }
 
 void display_error(lua_State* L, int errnum)

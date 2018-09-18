@@ -65,7 +65,8 @@ void AcceptThread::Run()
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(newSocket),Thread::GetIocp(), reinterpret_cast<ULONG_PTR>(newPlayer), 0);
 		//g_clients[new_key].viewlist.clear();
 		pNewPlayer->viewList_.clear();
-		(objectManager_->GetPlayer(newKey))->isActive_ = true;
+		pNewPlayer->viewList_.insert(newPlayer);
+		pNewPlayer->isActive_ = true;
 		pNewPlayer->exp_ = 0;
 		pNewPlayer->level_ = 1;
 		pNewPlayer->hp_ = INIT_PLAYER_HP;
