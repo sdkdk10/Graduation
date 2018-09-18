@@ -561,7 +561,10 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK3] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld());
+			if (dynamic_cast<CSkeleton*>(m_pObject)->GetIsWarrior())
+				CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
+			else
+				CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Attack3 > (*vecAnimFrame)[4])
@@ -708,7 +711,7 @@ void AnimateStateMachine_Skeleton::SetUltimateEffect(bool isUltimate)
 		}
 		else
 		{
-			m_mapEffectName.emplace(State::STATE_ATTACK1, "Warrior_Turn");
+			m_mapEffectName.emplace(State::STATE_ATTACK1, "Ultimate1");
 			m_mapEffectName.emplace(State::STATE_ATTACK2, "UtimateAttack_2");
 			m_mapEffectName.emplace(State::STATE_ATTACK3, "Ax_00");
 			m_mapEffectName.emplace(State::STATE_ULTIMATE, "Trans_00");
