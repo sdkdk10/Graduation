@@ -75,6 +75,21 @@ void CManagement::SetLevelUPUI(vector<ChangeUI*> vec)
 	m_pLevelUP = vec;
 }
 
+void CManagement::PlaySkillUI(int inum)
+{
+	m_pSkillReady[inum]->SetPlay(true);
+	/*size_t iSize = m_pSkillReady.size();
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		m_pSkillReady[i]->SetPlay(true);
+	}*/
+}
+
+void CManagement::SetSkillUPUI(vector<ChangeUI*> vec)
+{
+	m_pSkillReady = vec;
+}
+
 
 HRESULT CManagement::Init_Management(CRenderer* pRenderer, NumUI_Inst* pNumUI)
 {
@@ -100,6 +115,11 @@ bool CManagement::Update(const GameTimer & gt, const FrameResource* pCruRrc)
 	for (size_t i = 0; i < iSize; ++i)
 	{
 		m_pLevelUP[i]->Update(gt);
+	}
+	iSize = m_pSkillReady.size();
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		m_pSkillReady[i]->Update(gt);
 	}
 	return true;
 

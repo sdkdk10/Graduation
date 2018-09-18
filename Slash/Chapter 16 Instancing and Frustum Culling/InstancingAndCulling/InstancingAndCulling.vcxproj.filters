@@ -214,6 +214,15 @@
     <Filter Include="91. Network">
       <UniqueIdentifier>{81a480a6-f5a1-4790-8b12-5d6a16da6014}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\00. AnimObject\02. SeletePlayer">
+      <UniqueIdentifier>{b1bd8e00-a7ea-4f82-ad79-3ff23990cf9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\03. StartScene">
+      <UniqueIdentifier>{30911141-3de3-421b-ad35-50b0d2919cbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\04. EndingScene">
+      <UniqueIdentifier>{fbff9569-d6d4-487f-8d5e-5f82ec471578}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\d3dApp.cpp">
@@ -405,6 +414,15 @@
     </ClCompile>
     <ClCompile Include="NumUI.cpp">
       <Filter>02. GameObject\07. UI\04. NumUI</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectPlayer.cpp">
+      <Filter>02. GameObject\00. AnimObject\02. SeletePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="StartScene.cpp">
+      <Filter>01. Scene\03. StartScene</Filter>
+    </ClCompile>
+    <ClCompile Include="EndingScene.cpp">
+      <Filter>01. Scene\04. EndingScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -627,6 +645,15 @@
     </ClInclude>
     <ClInclude Include="NumUI.h">
       <Filter>02. GameObject\07. UI\04. NumUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectPlayer.h">
+      <Filter>02. GameObject\00. AnimObject\02. SeletePlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="StartScene.h">
+      <Filter>01. Scene\03. StartScene</Filter>
+    </ClInclude>
+    <ClInclude Include="EndingScene.h">
+      <Filter>01. Scene\04. EndingScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

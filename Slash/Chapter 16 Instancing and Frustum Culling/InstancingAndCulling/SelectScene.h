@@ -2,7 +2,8 @@
 
 #include "Scene.h"
 
-class ChangeUI;
+class SelectPlayer;
+//class ChangeUI;
 
 class CSelectScene
 	: public CScene
@@ -17,8 +18,11 @@ public:
 	virtual void	Render(ID3D12GraphicsCommandList* cmdList);
 
 private:
-	vector<ChangeUI*>		m_vecSelect;
+	vector<SelectPlayer*>		m_vecSelect;
+	//vector<ChangeUI*>		m_vecSelect;
 	bool					m_isLeft = true;
+	bool					m_isSelect = false;
+	float					m_fSelectTime = 0.f;
 public:
 	static CSelectScene* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, vector<ComPtr<ID3D12DescriptorHeap>> &srv, UINT srvSize);
 
