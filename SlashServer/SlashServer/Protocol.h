@@ -72,6 +72,7 @@ static const int EVT_PLAYER_DAMAGED = 11;
 static const int EVT_MONSTER_RESPAWN = 12;
 static const int EVT_PLAYER_RESPAWN = 13;
 static const int EVT_PLAYER_ROLL = 14;
+static const int EVT_PLAY_ENDING = 15;
 
 #define MY_SERVER_PORT  4000
 
@@ -136,6 +137,7 @@ static const int EVT_PLAYER_ROLL = 14;
 #define SC_LEVEL_UP						0x0e
 #define SC_EXP							0x0f
 #define SC_WIZARD_HEAL					0x10
+#define SC_PLAY_ENDING					0x11
 
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
@@ -300,6 +302,12 @@ struct sc_packet_ultimate_off {
 };
 
 struct sc_packet_wizard_heal {
+	BYTE size;
+	BYTE type;
+	WORD id;
+};
+
+struct sc_packet_play_ending {
 	BYTE size;
 	BYTE type;
 	WORD id;

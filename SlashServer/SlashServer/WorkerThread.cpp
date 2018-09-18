@@ -1,4 +1,5 @@
 #include "WorkerThread.h"
+#include "SendManager.h"
 
 WorkerThread::WorkerThread()
 {
@@ -160,6 +161,12 @@ void WorkerThread::Run()
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
 			objectManager_->ProcessMove(object, dynamic_cast<Player*>(object)->rollDir, SC_ROLL_MOVE);
+			delete o;
+		}
+		else if (EVT_PLAY_ENDING == o->eventType)
+		{
+			EXOver *o = reinterpret_cast<EXOver *>(pOver);
+			SendManager::SendPlayEnding(object);
 			delete o;
 		}
 		else {

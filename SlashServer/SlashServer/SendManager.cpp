@@ -210,3 +210,19 @@ void SendManager::SendObjectExp(GameObject* player)
 
 	SendPacket(player, &p);
 }
+
+
+void SendManager::SendPlayEnding(GameObject* player)
+{
+	sc_packet_play_ending p;
+
+	if (TYPE_MONSTER == player->objectType_)
+		p.id = player->ID_ + NPC_ID_START;
+	else
+		p.id = player->ID_;
+
+	p.size = sizeof(sc_packet_play_ending);
+	p.type = SC_PLAY_ENDING;
+
+	SendPacket(player, &p);
+}
