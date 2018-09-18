@@ -164,7 +164,7 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent, floa
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Parent)
+HRESULT CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Parent, bool isCon)
 {
 	auto effect = Find_SkillEffect(name);
 	if (effect == nullptr)
@@ -196,6 +196,10 @@ HRESULT CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Pare
 	}
 
 	CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Effect", dynamic_cast<CGameObject*>(play));
+	//if (isCon == true)
+	//{
+	//	m_mapSkillEffect_Con.emplace()
+	//}
 	return S_OK;
 }
 

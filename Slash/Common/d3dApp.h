@@ -35,6 +35,8 @@ public:
 	HWND      MainWnd()const;
 	float     AspectRatio()const;
 
+	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return md3dDevice; }
+
     bool Get4xMsaaState()const;
     void Set4xMsaaState(bool value);
 

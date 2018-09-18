@@ -23,7 +23,7 @@ private:
 	virtual ~CManagement();
 
 public:
-	ComPtr<ID3D12DescriptorHeap>&	GetSrvDescriptorHeap() { return mSrvDescriptorHeap; }
+	vector<ComPtr<ID3D12DescriptorHeap>>&	GetSrvDescriptorHeap() { return mSrvDescriptorHeap; }
 	UINT&							GetCbvSrvDescriptorSize() { return mCbvSrvDescriptorSize; }
 	FrameResource*					GetCurFrameResource() { return mCurrFrameResource; }
 	CRenderer*						GetRenderer() { return m_pRenderer; }
@@ -65,7 +65,7 @@ private:
 	vector<ChangeUI*>	m_pLevelUP;
 	vector<ChangeUI*>	m_pSkillReady;
 
-	ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
+	vector<ComPtr<ID3D12DescriptorHeap>> mSrvDescriptorHeap;
 	UINT mCbvSrvDescriptorSize = 0;
 
 	FrameResource* mCurrFrameResource = nullptr;
