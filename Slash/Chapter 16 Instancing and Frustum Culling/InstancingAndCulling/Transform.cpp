@@ -70,13 +70,6 @@ void CTransform::Update_Component()
 void CTransform::SendMapInitData()
 {
 
-	//m_pObject->m_xmOOBBTransformed.Transform(m_pObject->m_xmOOBB, XMLoadFloat4x4(&m_f4x4World));
-	//XMStoreFloat4(&m_pObject->m_xmOOBBTransformed.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_pObject->m_xmOOBBTransformed.Orientation)));
-
-	//cout << m_pObject->m_xmOOBB.Extents.x << " " << m_pObject->m_xmOOBB.Extents.y << " " << m_pObject->m_xmOOBB.Extents.z << endl << endl;
-
-	//SetOOBB(XMFLOAT3(Bounds.Center.x * 0.1f , Bounds.Center.y * 0.1f , Bounds.Center.z * 0.1f ), XMFLOAT3(Bounds.Extents.x * 0.1f , Bounds.Extents.y * 0.1f , Bounds.Extents.z * 0.1f ), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-
 	cs_packet_mapinitdata *my_packet = reinterpret_cast<cs_packet_mapinitdata *>(CNetwork::GetInstance()->send_buffer);
 	my_packet->size = sizeof(cs_packet_mapinitdata);
 	CNetwork::GetInstance()->send_wsabuf.len = sizeof(cs_packet_mapinitdata);
@@ -91,7 +84,7 @@ void CTransform::SendMapInitData()
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendMapInitData [%d]", error_code);
 	}
 
 }

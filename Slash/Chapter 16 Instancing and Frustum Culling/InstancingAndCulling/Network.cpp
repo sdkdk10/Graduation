@@ -103,7 +103,7 @@ void CNetwork::SendDirKeyPacket(DWORD& keyInput)
 	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendDirKeyPacket [%d]", error_code);
 	}
 }
 
@@ -120,7 +120,7 @@ void CNetwork::SendAttack1Packet(void)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendAttack1Packet [%d]", error_code);
 	}
 }
 
@@ -137,7 +137,7 @@ void CNetwork::SendAttack2Packet(void)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendAttack2Packet [%d]", error_code);
 	}
 }
 
@@ -154,7 +154,7 @@ void CNetwork::SendAttack3Packet(void)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendAttack3Packet [%d]", error_code);
 	}
 }
 
@@ -168,10 +168,10 @@ void CNetwork::SendStopPacket(void)
 	my_packet->type = CS_STOP;
 	int ret = WSASend(mysocket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
 
-	if (ret) {
-		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
-	}
+	//if (ret) {
+	//	int error_code = WSAGetLastError();
+	//	printf("Error while sending SendStopPacket [%d]", error_code);
+	//}
 }
 
 void CNetwork::SendUltimateStartPacket(void)
@@ -186,7 +186,7 @@ void CNetwork::SendUltimateStartPacket(void)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendUltimateStartPacket [%d]", error_code);
 	}
 }
 
@@ -202,7 +202,7 @@ void CNetwork::SendUltimateOnPacket(void)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendUltimateOnPacket [%d]", error_code);
 	}
 }
 
@@ -218,7 +218,7 @@ void CNetwork::SendUltimateOffPacket(void)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendUltimateOffPacket [%d]", error_code);
 	}
 }
 
@@ -236,7 +236,7 @@ void CNetwork::SendPlayerInitData(BYTE& playerType)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendPlayerInitData [%d]", error_code);
 	}
 }
 
@@ -253,7 +253,7 @@ void CNetwork::SendMapObjectNumPacket(WORD num)
 
 	if (ret) {
 		int error_code = WSAGetLastError();
-		printf("Error while sending packet [%d]", error_code);
+		printf("Error while sending SendMapObjectNumPacket [%d]", error_code);
 	}
 }
 
