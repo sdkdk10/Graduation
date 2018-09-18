@@ -23,15 +23,18 @@ public:
 	CEffect*				Find_Effect(string name);
 	HRESULT					Play_SkillEffect(string name, XMFLOAT4X4* Parent = nullptr);
 	HRESULT					Play_SkillEffect(string name, XMFLOAT4X4* Parent, float fRot);
-	HRESULT					Play_SkillEffect_Parent(string name, CGameObject* Parent, bool isCon = false);
+	int					Play_SkillEffect_Parent(string name, CGameObject* Parent, bool isCon = false);
 	HRESULT					Stop_SkillEffect(string name);
+	HRESULT					Stop_SkillEffect(int num);
 	void					Set_SkillEffectCon(string name, bool isC);
 
 private:
 	unordered_map<string, CEffect*>					m_mapEffect;
 	unordered_map<string, CSkillEffect*>			m_mapSkillEffect;
 
-	unordered_map<string, CSkillEffect*>			m_mapSkillEffect_Con;
+	unordered_map<int, CSkillEffect*>			m_mapSkillEffect_Con;
+
+	int		m_ConSkillCnt = 0;
 
 	vector<ComPtr<ID3D12DescriptorHeap>> mSrvDescriptorHeap;
 	UINT mCbvSrvDescriptorSize = 0;

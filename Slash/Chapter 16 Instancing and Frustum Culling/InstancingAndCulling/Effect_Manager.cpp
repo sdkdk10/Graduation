@@ -164,11 +164,11 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent, floa
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Parent, bool isCon)
+int CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Parent, bool isCon)
 {
 	auto effect = Find_SkillEffect(name);
 	if (effect == nullptr)
-		return E_FAIL;
+		return -1;
 
 
 	auto play = CSkillEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
@@ -196,11 +196,14 @@ HRESULT CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Pare
 	}
 
 	CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Effect", dynamic_cast<CGameObject*>(play));
-	//if (isCon == true)
-	//{
-	//	m_mapSkillEffect_Con.emplace()
-	//}
-	return S_OK;
+	if (isCon == true)
+	{
+		m_mapSkillEffect_Con.emplace(m_ConSkillCnt++, play);
+
+		play->Set_IsCon(isCon);
+		return m_ConSkillCnt;
+	}
+	return 0;
 }
 
 HRESULT CEffect_Manager::Stop_SkillEffect(string name)
@@ -210,6 +213,17 @@ HRESULT CEffect_Manager::Stop_SkillEffect(string name)
 		return E_FAIL;
 
 	effect->SetPlay(false);
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Stop_SkillEffect(int num)
+{
+	auto& iter = m_mapSkillEffect_Con.find(num);
+	if (iter == m_mapSkillEffect_Con.end())
+		return E_FAIL;
+
+	iter->second->SetPlay(false);
 
 	return S_OK;
 }

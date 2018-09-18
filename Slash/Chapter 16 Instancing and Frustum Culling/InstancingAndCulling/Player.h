@@ -136,6 +136,8 @@ private:
 	float		m_fMaxGage = 100.f;
 
 	int			m_iLevel = 1;
+	
+	int			m_iUltimateEffectCnt = -1;
 };
 
 

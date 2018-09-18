@@ -87,12 +87,12 @@ bool CSkillEffect::Update(const GameTimer & gt)
 	{
 		if (elem == true)
 		{
-			if (m_isContinue)
+			/*if (m_isContinue)
 			{
 				SetPlay(true);
 
-			}
-			else
+			}*/
+			//else
 			{
 				allEnable = true;
 				m_IsEnable = true;

@@ -640,7 +640,8 @@ void Player::CheckUltimate(const GameTimer & gt)
 			m_GageFull = false;
 			SetUltimateEffect(false);
 			CNetwork::GetInstance()->SendUltimateOffPacket();
-			CEffect_Manager::GetInstance()->Stop_SkillEffect("UltimateMode_00");
+			if(m_iUltimateEffectCnt > -1)
+				CEffect_Manager::GetInstance()->Stop_SkillEffect(m_iUltimateEffectCnt);
 		}
 	}
 }
@@ -809,8 +810,8 @@ void Player::KeyInput(const GameTimer & gt)
 				SetObjectAnimState(State::STATE_ULTIMATE);
 				CNetwork::GetInstance()->SendUltimateStartPacket();
 
-				CEffect_Manager::GetInstance()->Play_SkillEffect_Parent("UltimateMode_00", this);
-				CEffect_Manager::GetInstance()->Set_SkillEffectCon("UltimateMode_00", true);
+				if(m_IsWarrior)
+					m_iUltimateEffectCnt = CEffect_Manager::GetInstance()->Play_SkillEffect_Parent("UltimateMode_00", this, true);
 
 				m_GageBar->GetCur() = 0.f;
 			}
@@ -995,9 +996,9 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ATTACK3] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			if(dynamic_cast<Player*>(m_pObject)->GetIsWarrior())
+			/*if(dynamic_cast<Player*>(m_pObject)->GetIsWarrior())
 				CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
-			else
+			else*/
 				CEffect_Manager::GetInstance()->Play_SkillEffect(m_mapEffectName[State::STATE_ATTACK3], &m_pObject->GetWorld());
 		}
 
@@ -1060,7 +1061,7 @@ void AnimateStateMachine_Player::AnimationStateUpdate(const GameTimer & gt)
 			auto pPlayer = dynamic_cast<Player*>(m_pObject);
 
 			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
-			if (pPlayer->GetIsWarrior())
+			//if (pPlayer->GetIsWarrior())
 			{
 				pPlayer->bIsUltimateState = true;
 				pPlayer->SetUltimateEffect(true);
