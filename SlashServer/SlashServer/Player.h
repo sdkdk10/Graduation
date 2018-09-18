@@ -1,6 +1,4 @@
 #pragma once
-#include <mutex>
-#include <unordered_set>
 #include "GameObject.h"
 #include "Defines.h"
 #include "Protocol.h"
@@ -16,8 +14,6 @@ public:
 
 public:
 	SOCKET s_;
-	std::unordered_set<GameObject*> viewList_;
-	std::mutex vlm_;
 	EXOver exover_;
 	int packetSize_;
 	int prevSize_;

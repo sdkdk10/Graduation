@@ -18,7 +18,7 @@ public:
 		allThreads_.push_back(th);
 	}
 	void JoinAllThreads() {
-		for (auto th : allThreads_) th->Join();
+		for (auto& th : allThreads_) th->Join();
 	}
 
 	Thread* FindThread(int threadNum) {

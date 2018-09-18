@@ -48,55 +48,83 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 {
 	auto pPlayer = dynamic_cast<Player*>(player);
 
+	player->state_ = STATE_IDLE;
 	pPlayer->hp_ = INIT_PLAYER_HP;
 	pPlayer->world_._41 = INIT_PLAYER_POS.x;
 	pPlayer->world_._42 = INIT_PLAYER_POS.y;
 	pPlayer->world_._43 = INIT_PLAYER_POS.z;
 
-	pPlayer->vlm_.lock();
-	pPlayer->viewList_.clear();
-	pPlayer->vlm_.unlock();
-
-	SendManager::SendPutPlayer(player, player);
-
-	// 나의 접속을 모든 플레이어에게 알림
-	for (int i = 0; i < NUM_OF_PLAYER; ++i)
-	{
-		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->CanSee(player)) continue;
-		if (i == player->ID_) continue;
-
-		SendManager::SendPutPlayer(playerArray_[i], player);
-
-		dynamic_cast<Player*>(playerArray_[i])->vlm_.lock();
-		dynamic_cast<Player*>(playerArray_[i])->viewList_.insert(player);
-		dynamic_cast<Player*>(playerArray_[i])->vlm_.unlock();
-	}
-	// 접속중인 다른 플레이어 정보를 전송
+	unordered_set <GameObject*> new_view_list; // 새로운 뷰리스트 생성
 	for (int i = 0; i < NUM_OF_PLAYER; ++i) {
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(player)) continue;
-		if (i == player->ID_) continue;
-
-		SendManager::SendPutPlayer(player, playerArray_[i]);
-
-		pPlayer->vlm_.lock();
-		pPlayer->viewList_.insert(playerArray_[i]);
-		pPlayer->vlm_.unlock();
+		// 새로운 뷰리스트 (나를 기준) // 새로 이동하고 보이는 모든 애들
+		new_view_list.insert(playerArray_[i]);
 	}
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; i++)
-	{
-		if (false == pPlayer->CanSee(npcArray_[i])) continue; // 이거 이전에 활성화되어 있는가도 확인해야함
-		if (pPlayer->IsInAgroRange(npcArray_[i]))
-			WakeUpNPC(npcArray_[i], player); // 상태 2번 보냄 수정해야함
+	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i) {
+		if (false == npcArray_[i]->CanSee(player)) continue;
+		new_view_list.insert(npcArray_[i]);
+		WakeUpNPC(npcArray_[i], player);
+	}
 
-		SendManager::SendPutMonster(player, npcArray_[i]);
+	SendManager::SendPutPlayer(player, player);
+
+	for (auto& object : new_view_list) {
 
 		pPlayer->vlm_.lock();
-		pPlayer->viewList_.insert(npcArray_[i]);
+		// 나의 기존 뷰리스트에는 없었다 // 즉 새로 들어왔다
+		if (0 == pPlayer->viewList_.count(object))
+			pPlayer->viewList_.insert(object);
+
 		pPlayer->vlm_.unlock();
 
-		//cout << "접속 : " << i << " 번째 몬스터 보임" << endl;
+		if (TYPE_MONSTER == object->objectType_)
+			SendManager::SendPutMonster(player, object);
+		else
+		{
+			if(player != object)
+				SendManager::SendPutPlayer(player, object);
+		}
+
+		if (TYPE_MONSTER == object->objectType_) continue;
+
+		auto objectPlayer = dynamic_cast<Player*>(object);
+
+		objectPlayer->vlm_.lock();
+		// 상대방한테 내가 없었다? // 추가
+		if (0 == objectPlayer->viewList_.count(player)) {
+			objectPlayer->viewList_.insert(player);
+		}
+		objectPlayer->vlm_.unlock();
+		SendManager::SendPutPlayer(object, player);
+	}
+	// 나의 이전 뷰리스트에 있는 애들
+	pPlayer->vlm_.lock();
+	unordered_set <GameObject*> old_v = pPlayer->viewList_;
+	pPlayer->vlm_.unlock();
+	for (auto& object : old_v) {
+		if (0 == new_view_list.count(object)) {
+			if (player->ID_ == object->ID_) continue;
+			pPlayer->vlm_.lock();
+			pPlayer->viewList_.erase(object); // 계속 락 언락하지 말고 따로 리무브리스트만들고 한번에 지우는게 좋음
+			pPlayer->vlm_.unlock();
+			SendManager::SendRemoveObject(player, object);
+
+			if (TYPE_PLAYER != object->objectType_) continue;
+
+			auto objectPlayer = dynamic_cast<Player*>(object);
+
+			objectPlayer->vlm_.lock();
+			// 내 시야에 없는 애들이니까 걔네 시야에도 내가 있으면 지우게 하자.
+			if (0 != objectPlayer->viewList_.count(player)) {
+				objectPlayer->viewList_.erase(player);
+				objectPlayer->vlm_.unlock();
+				SendManager::SendRemoveObject(object, player);
+			}
+			else {
+				objectPlayer->vlm_.unlock();
+			}
+		}
 	}
 }
 
@@ -106,7 +134,7 @@ void GameObjectManager::DisconnectPlayer(GameObject* player) {
 
 	closesocket(pPlayer->s_); // closesocket 먼저 해야함 // 멀티 쓰레드라서 
 	pPlayer->isActive_ = false;
-	printf("%d번 플레이어 접속종료.\n", player->ID_);
+	printf("%d 번 플레이어 접속종료.\n", player->ID_);
 
 	sc_packet_remove_object p;
 	p.id = player->ID_;
@@ -118,7 +146,7 @@ void GameObjectManager::DisconnectPlayer(GameObject* player) {
 	pPlayer->vlm_.unlock();
 	pPlayer->viewList_.clear();
 
-	for (auto object : vlCopy) {
+	for (auto& object : vlCopy) {
 		if (TYPE_PLAYER != object->objectType_) continue;
 		if (false == object->isActive_) continue;
 
@@ -138,32 +166,40 @@ void GameObjectManager::DisconnectPlayer(GameObject* player) {
 
 void GameObjectManager::WakeUpNPC(GameObject* npc, GameObject* target)
 {
-	if (npc->isActive_) return;
-	if (STATE_DEAD == npc->state_) return;
-	npc->isActive_ = true;
+	if (STATE_IDLE != npc->state_) return;
 
-	dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount(), target);
+	if (false == npc->isActive_)
+		npc->isActive_ = true;
+
+	if (npc->IsInAgroRange(target))
+	{
+		npc->state_ = STATE_WALK;
+		//cout << "WakeUpNPC에서 호출 npc id : " << npc->ID_ << endl;
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount(), target);
+	}
 }
 
 void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
+	
+	if (npc->state_ == STATE_DEAD)
+		return;
 
 	if (npc->state_ == STATE_HIT)
 	{
+		//cout << "ChasingPlayer(위)에서 호출 npc id : " << npc->ID_ << endl;
+		npc->isActive_ = true;
 		npc->state_ = STATE_WALK;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount() + 100, player);
 		return;
 	}
 
-	if (npc->state_ == STATE_DEAD)
-		return;
+	npc->state_ = STATE_WALK;
 
 	if (player->isActive_ == false || player->state_ == STATE_DEAD)
 	{
 		SearchNewTargetPlayer(npc);
 		return;
 	}
-
-	npc->state_ = State::STATE_WALK;
 
 	XMFLOAT3 monsterLook{};
 	
@@ -286,51 +322,43 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 	}
 
 	// PutObject
-	for (auto object : newVL)
+	for (auto& playerObject : newVL)
 	{
-		auto newPlayer = dynamic_cast<Player*>(object);
+		auto newPlayer = dynamic_cast<Player*>(playerObject);
 
 		newPlayer->vlm_.lock();
+
 		if (0 == newPlayer->viewList_.count(npc))
-		{
 			newPlayer->viewList_.insert(npc);
-			newPlayer->vlm_.unlock();
-			SendManager::SendPutMonster(object, npc);
-		}
-		else
-		{
-			newPlayer->vlm_.unlock();
-			SendManager::SendObjectWalk(object, npc);
-			if (IsRotated)
-				SendManager::SendObjectLook(object, npc);
-		}
+		
+		newPlayer->vlm_.unlock();
+		SendManager::SendPutMonster(playerObject, npc);
 	}
 	// RemoveObject
-	for (auto object : oldVL)
+	for (auto& object : oldVL)
 	{
-		if (0 == newVL.count(object))
-		{
-			auto oldPlayer = dynamic_cast<Player*>(object);
-			oldPlayer->vlm_.lock();
-			if (0 != oldPlayer->viewList_.count(npc)) {
-				oldPlayer->viewList_.erase(npc);
-				oldPlayer->vlm_.unlock();
-				SendManager::SendRemoveObject(object, npc);
-			}
-			else {
-				oldPlayer->vlm_.unlock();
-			}
+		if (0 != newVL.count(object)) continue;
+
+		auto oldPlayer = dynamic_cast<Player*>(object);
+		oldPlayer->vlm_.lock();
+		if (0 != oldPlayer->viewList_.count(npc)) {
+			oldPlayer->viewList_.erase(npc);
+			oldPlayer->vlm_.unlock();
+			SendManager::SendRemoveObject(object, npc);
+		}
+		else {
+			oldPlayer->vlm_.unlock();
 		}
 	}
 
 	if (player->IsClose(npc))	 //충돌할 정도로 가까워 졌으면
 	{
-		if (STATE_ATTACK1 == npc->state_) return;
-
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_ATTACK, GetTickCount(), player);
 	}
-	else if(player->CanSee(npc))
+	else if(0 != player->viewList_.count(npc))
 	{
+		npc->isActive_ = true;
+		npc->state_ = STATE_WALK;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount() + 50, player);
 	}
 	else
@@ -340,6 +368,9 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 }
 
 void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
+
+	if (monster->state_ == STATE_DEAD)
+		return;
 
 	if (monster->state_ == STATE_HIT)
 	{
@@ -354,11 +385,12 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 		SearchNewTargetPlayer(monster);
 		return;
 	}
-	if (monster->state_ == STATE_DEAD)
-		return;
 
 	if (false == player->IsClose(monster))
 	{
+		//cout << "MonsterAttack에서 호출 npc id : " << monster->ID_ << endl;
+		monster->isActive_ = true;
+		monster->state_ = STATE_WALK;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_CHASE, GetTickCount(), player);
 		return;
 	}
@@ -369,7 +401,7 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
 			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(monster)) continue;
+			if (0 == playerArray_[i]->viewList_.count(monster)) continue;
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_DAMAGED, GetTickCount() + 300, monster);
@@ -415,15 +447,15 @@ void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	for (auto& npc : player->viewList_)
 	{
-		if (false == npcArray_[i]->isActive_) continue;
-		if (false == npcArray_[i]->CanSee(player)) continue;
-		if (player->skillOOBB_.Contains(npcArray_[i]->xmOOBB_))
-		{
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount(), player);
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 300, player);
-		}
+		if (false == npc->isActive_) continue;
+		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
+		if (false == player->skillOOBB_.Contains(npc->xmOOBB_))continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount(), player);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount() + 300, player);
+
 	}
 
 	if (player->skillMoveRange >= WARRIOR_SKILL2_MAX_RANGE)
@@ -444,15 +476,13 @@ void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	for (auto& npc : player->viewList_)
 	{
-		if (false == npcArray_[i]->isActive_) continue;
-		if (false == npcArray_[i]->CanSee(player)) continue;
-		if (player->skillOOBB_.Contains(npcArray_[i]->xmOOBB_))
-		{
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount(), player);
+		if (false == npc->isActive_) continue;
+		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
+		if (false == player->skillOOBB_.Contains(npc->xmOOBB_))continue;
 
-		}
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount(), player);
 	}
 }
 void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
@@ -471,14 +501,13 @@ void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	for (auto& npc : player->viewList_)
 	{
-		if (false == npcArray_[i]->isActive_) continue;
-		if (false == npcArray_[i]->CanSee(player)) continue;
-		if (player->skillOOBB_.Contains(npcArray_[i]->xmOOBB_))
-		{
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount(), player);
-		}
+		if (false == npc->isActive_) continue;
+		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
+		if (false == player->skillOOBB_.Contains(npc->xmOOBB_))continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount(), player);
 	}
 
 	if (player->skillMoveRange >= WIZARD_SKILL1_MAX_RANGE)
@@ -497,18 +526,17 @@ void GameObjectManager::ProcessWizardAttack2(GameObject* player) {
 	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+	for (auto& npc : player->viewList_)
 	{
-		if (false == npcArray_[i]->isActive_) continue;
-		if (false == npcArray_[i]->CanSee(player)) continue;
-		if (player->skillOOBB_.Contains(npcArray_[i]->xmOOBB_))
-		{
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount(), player);
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 100, player);
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 200, player);
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 300, player);
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npcArray_[i], EVT_MONSTER_DAMAGED, GetTickCount() + 400, player);
-		}
+		if (false == npc->isActive_) continue;
+		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
+		if (false == player->skillOOBB_.Contains(npc->xmOOBB_))continue;
+
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount(), player);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount() + 100, player);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount() + 200, player);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount() + 300, player);
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_DAMAGED, GetTickCount() + 400, player);
 	}
 }
 void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
@@ -517,36 +545,34 @@ void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
 	p.size = sizeof(sc_packet_wizard_heal);
 	p.type = SC_WIZARD_HEAL;
 
-	for (int i = 0; i < NUM_OF_PLAYER; ++i)
+	for (auto& targetPlayer : player->viewList_)
 	{
-		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->CanSee(player)) continue;
+		if (false == targetPlayer->isActive_) continue;
+		if (ObjectType::TYPE_PLAYER != targetPlayer->objectType_) continue;
 
-		for (int j = 0; j < NUM_OF_PLAYER; ++j)
+		for (auto& targetInViewPlayer : targetPlayer->viewList_)
 		{
-			if (false == playerArray_[j]->isActive_) continue;
-			if (false == playerArray_[j]->CanSee(playerArray_[i])) continue;
+			if (false == targetInViewPlayer->isActive_) continue;
+			if (ObjectType::TYPE_PLAYER != targetInViewPlayer->objectType_) continue;
 
-			p.id = playerArray_[i]->ID_;
-			SendManager::SendPacket(playerArray_[j], &p);
+			p.id = targetPlayer->ID_;
+			SendManager::SendPacket(targetInViewPlayer, &p);
 		}
 
-		playerArray_[i]->hp_ += WIZARD_SKILL3_DMG * (1 + player->level_ / 10.f);
-		if (playerArray_[i]->hp_ > INIT_PLAYER_HP)
-			playerArray_[i]->hp_ = INIT_PLAYER_HP;
-		SendManager::SendObjectHp(playerArray_[i], playerArray_[i]);
+		targetPlayer->hp_ += WIZARD_SKILL3_DMG * (1 + player->level_ / 10.f);
+		if (targetPlayer->hp_ > INIT_PLAYER_HP)
+			targetPlayer->hp_ = INIT_PLAYER_HP;
+		SendManager::SendObjectHp(targetPlayer, targetPlayer);
 	}
-
-	
 }
 
 void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 
-	for (int i = 0; i < NUM_OF_PLAYER; ++i)
+	for (auto& playerObject : player->viewList_)
 	{
-		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->CanSee(player)) continue;
-		SendManager::SendObjectDamage(playerArray_[i], player, monster->dmg_);
+		if (false == playerObject->isActive_) continue;
+		if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+		SendManager::SendObjectDamage(playerObject, player, monster->dmg_);
 	}
 
 	if (player->state_ == STATE_DEAD)
@@ -560,11 +586,11 @@ void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 
 		player->state_ = STATE_DEAD;
 
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-			SendManager::SendObjectState(playerArray_[i], player);
+			if (false == playerObject->isActive_) continue;
+			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+			SendManager::SendObjectState(playerObject, player);
 		}
 
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_RESPAWN, GetTickCount() + 5000, nullptr);
@@ -573,11 +599,11 @@ void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 	{
 		player->state_ = STATE_HIT;
 
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-			SendManager::SendObjectState(playerArray_[i], player);
+			if (false == playerObject->isActive_) continue;
+			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+			SendManager::SendObjectState(playerObject, player);
 		}
 	}
 
@@ -592,7 +618,7 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->CanSee(monster)) continue;
+		if (0 == playerArray_[i]->viewList_.count(monster)) continue;
 		SendManager::SendObjectDamage(playerArray_[i], monster, player->dmg_);
 	}
 
@@ -608,7 +634,7 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
 			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(monster)) continue;
+			if (0 == playerArray_[i]->viewList_.count(monster)) continue;
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 
@@ -622,7 +648,7 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
 			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(monster)) continue;
+			if (0 == playerArray_[i]->viewList_.count(monster)) continue;
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 	}
@@ -632,8 +658,6 @@ void GameObjectManager::PlayerRespown(GameObject* player)
 {
 	if (false == player->isActive_)
 		return;
-
-	player->state_ = STATE_IDLE;
 
 	PutNewPlayer(player);
 }
@@ -774,7 +798,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 			break;
 	}
 
-	if (!IsPlayerColl && !IsNPCColl && !IsMapObjectColl)
+	if (!IsPlayerColl && ! IsNPCColl && !IsMapObjectColl)
 		player->world_._41 += xmf3Shift.x, player->world_._42 += xmf3Shift.y, player->world_._43 += xmf3Shift.z;
 
 	sc_packet_move sp_pos;
@@ -791,11 +815,8 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	sp_rotate.type = SC_ROTATE;
 	sp_rotate.lookDegree = player->lookDegree_;
 
-	//////////////
-
 	unordered_set <GameObject*> new_view_list; // 새로운 뷰리스트 생성
 	for (int i = 0; i < NUM_OF_PLAYER; ++i) {
-		if (i == player->ID_) continue;
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(player)) continue;
 		// 새로운 뷰리스트 (나를 기준) // 새로 이동하고 보이는 모든 애들
@@ -804,16 +825,10 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i) {
 		if (false == npcArray_[i]->CanSee(player)) continue;
 		new_view_list.insert(npcArray_[i]);
+		WakeUpNPC(npcArray_[i], player);
 	}
 
-	SendManager::SendPacket(player, &sp_pos);
-	if (IsRotated)
-		SendManager::SendPacket(player, &sp_rotate);
-
 	for (auto& object : new_view_list) {
-
-		if (TYPE_MONSTER == object->objectType_)
-			WakeUpNPC(object, player);
 
 		pPlayer->vlm_.lock();
 		// 나의 기존 뷰리스트에는 없었다 // 즉 새로 들어왔다
@@ -825,7 +840,10 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 		if (TYPE_MONSTER == object->objectType_)
 			SendManager::SendPutMonster(player, object);
 		else
-			SendManager::SendPutPlayer(player, object);
+		{
+			if(player != object)
+				SendManager::SendPutPlayer(player, object);
+		}
 
 		if (TYPE_MONSTER == object->objectType_) continue;
 
@@ -853,7 +871,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	pPlayer->vlm_.unlock();
 	for (auto& object : old_v) {
 		if (0 == new_view_list.count(object)) {
-			if (player->ID_ == object->ID_) continue;
+			if (player == object) continue;
 			pPlayer->vlm_.lock();
 			pPlayer->viewList_.erase(object); // 계속 락 언락하지 말고 따로 리무브리스트만들고 한번에 지우는게 좋음
 			pPlayer->vlm_.unlock();
@@ -864,7 +882,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 			auto objectPlayer = dynamic_cast<Player*>(object);
 
 			objectPlayer->vlm_.lock();
-			// 있을 경우에만 지우게 하자.
+			// 내 시야에 없는 애들이니까 걔네 시야에도 내가 있으면 지우게 하자.
 			if (0 != objectPlayer->viewList_.count(player)) {
 				objectPlayer->viewList_.erase(player);
 				objectPlayer->vlm_.unlock();
@@ -925,13 +943,15 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		sp.size = sizeof(sc_packet_state);
 		sp.type = SC_STATE;
 		sp.state = player->state_;
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-			if (player == playerArray_[i]) continue;
-			SendManager::SendPacket(playerArray_[i], &sp);
+			if (false == playerObject->isActive_) continue;
+			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+			if (player == playerObject) continue;
+			SendManager::SendPacket(playerObject, &sp);
 		}
+
 
 		return;
 	}
@@ -964,12 +984,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK3, GetTickCount(), nullptr);
 		}
 
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-
-			SendManager::SendObjectState(playerArray_[i], player);
+			if (false == playerObject->isActive_) continue;
+			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+			SendManager::SendObjectState(playerObject, player);
 		}
 
 		return;
@@ -986,7 +1005,6 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			return;
 		cs_packet_mapinitdata *p = reinterpret_cast<cs_packet_mapinitdata *>(packet);
 
-		mapObjectArray_[num] = new MapObject;
 		mapObjectArray_[num]->isActive_ = true;
 		mapObjectArray_[num]->ID_ = num;
 		mapObjectArray_[num]->world_ = p->world;
@@ -1014,12 +1032,13 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		sp.size = sizeof(sc_packet_state);
 		sp.type = SC_STATE;
 		sp.state = player->state_;
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-			if (player == playerArray_[i]) continue;
-			SendManager::SendPacket(playerArray_[i], &sp);
+			if (false == playerObject->isActive_) continue;
+			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+			if (player == playerObject) continue;
+			SendManager::SendPacket(playerObject, &sp);
 		}
 
 		return;
@@ -1040,12 +1059,12 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			su.id = player->ID_;
 			su.type = SC_ULTIMATE_WARRIOR;
 
-			for (int i = 0; i < NUM_OF_PLAYER; ++i)
+			for (auto& playerObject : player->viewList_)
 			{
-				if (false == playerArray_[i]->isActive_) continue;
-				if (false == playerArray_[i]->CanSee(player)) continue;
-				if (player == playerArray_[i]) continue;
-				SendManager::SendPacket(playerArray_[i], &su);
+				if (false == playerObject->isActive_) continue;
+				if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+				if (player == playerObject) continue;
+				SendManager::SendPacket(playerObject, &su);
 			}
 		}
 		else if(PlayerType::PLAYER_WIZARD == pPlayer->playerType_)
@@ -1053,20 +1072,20 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			su.type = SC_ULTIMATE_WIZARD;
 			player->dmg_ = MAGE_ULTIMATE_DMG;
 
-			for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
+			for (auto& targetNPC : player->viewList_)
 			{
-				if (false == npcArray_[i]->isActive_) continue;
-				if (false == npcArray_[i]->CanSee(player)) continue;
+				if (false == targetNPC->isActive_) continue;
+				if (ObjectType::TYPE_MONSTER != targetNPC->objectType_) continue;
 
-				for (int j = 0; j < NUM_OF_PLAYER; ++j)
+				for (int i = 0; i < NUM_OF_PLAYER; ++i)
 				{
-					if (false == playerArray_[j]->isActive_) continue;
-					if (false == playerArray_[j]->CanSee(npcArray_[i])) continue;
+					if (false == playerArray_[i]->isActive_) continue;
+					if (0 == playerArray_[i]->viewList_.count(targetNPC)) continue;
 
-					su.id = npcArray_[i]->ID_ + NPC_ID_START;
-					SendManager::SendPacket(playerArray_[j], &su);
+					su.id = targetNPC->ID_ + NPC_ID_START;
+					SendManager::SendPacket(playerArray_[i], &su);
 				}
-				MonsterDamaged(npcArray_[i], player);
+				MonsterDamaged(targetNPC, player);
 			}
 		}
 
@@ -1080,12 +1099,14 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		su.id = player->ID_;
 		su.size = sizeof(sc_packet_ultimate_off);
 		su.type = SC_ULTIMATE_OFF;
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-			if (player == playerArray_[i]) continue;
-			SendManager::SendPacket(playerArray_[i], &su);
+			if (false == playerObject->isActive_) continue;
+			if(ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+			if (player == playerObject) continue;
+
+			SendManager::SendPacket(playerObject, &su);
 		}
 		return;
 	}
@@ -1104,32 +1125,32 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 
 void GameObjectManager::SearchNewTargetPlayer(GameObject * monster)
 {
-	monster->state_ = STATE_IDLE;
-	monster->isActive_ = false;
-
 	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
-		if (false == playerArray_[i]->CanSee(monster)) continue;
+		if (0 == playerArray_[i]->viewList_.count(monster)) continue;
 
 		SendManager::SendObjectState(playerArray_[i], monster);
 
 		if (State::STATE_DEAD == playerArray_[i]->state_) continue;
-
-		if (playerArray_[i]->IsInAgroRange(monster))
-		{
-			monster->isActive_ = true;
-			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_CHASE, GetTickCount() + 50, playerArray_[i]);
-			return;
-		}
+		if (false == playerArray_[i]->IsInAgroRange(monster)) continue;
+		
+		monster->isActive_ = true;
+		monster->state_ = STATE_WALK;
+		//cout << "SearchNewTargetPlayer에서 호출 npc id : " << monster->ID_ << endl;
+		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_CHASE, GetTickCount() + 50, playerArray_[i]);
+		return;
+		
 	}
+	monster->state_ = STATE_IDLE;
+	monster->isActive_ = false;
 }
 
 void GameObjectManager::AddExp(GameObject * player, GameObject* monster)
 {
 	player->exp_ += monster->exp_;
 
-	int playerMaxExp = 100 + 20 * (player->level_ - 1);
+	unsigned int playerMaxExp = 100 + 20 * (player->level_ - 1);
 
 	if (player->exp_ >= playerMaxExp)
 	{
@@ -1137,11 +1158,11 @@ void GameObjectManager::AddExp(GameObject * player, GameObject* monster)
 		++player->level_;
 		player->hp_ = INIT_PLAYER_HP;
 
-		for (int i = 0; i < NUM_OF_PLAYER; ++i)
+		for (auto& playerObject : player->viewList_)
 		{
-			if (false == playerArray_[i]->isActive_) continue;
-			if (false == playerArray_[i]->CanSee(player)) continue;
-			SendManager::SendObjectLevelup(playerArray_[i], player);
+			if (false == playerObject->isActive_) continue;
+			if(ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
+				SendManager::SendObjectLevelup(playerObject, player);
 		}
 	}
 	SendManager::SendObjectExp(player);

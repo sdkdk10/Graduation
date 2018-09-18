@@ -619,6 +619,8 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 
 			m_IsSoundPlay[State::STATE_ULTIMATE] = false;
 			m_IsEffectPlay[State::STATE_ULTIMATE] = false;
+
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
 		}
 
 	}
@@ -652,6 +654,7 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsSoundPlay[State::STATE_ROLL] = false;
 			m_IsEffectPlay[State::STATE_ROLL] = false;
 
+			m_pObject->GetAnimateMachine()->SetAnimState(STATE_IDLE);
 		}
 
 
