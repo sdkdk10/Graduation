@@ -623,7 +623,7 @@ void Player::SetExp(float exp)
 void Player::SetLevel(int iLv)
 {
 	m_iLevel = iLv;
-	m_ExpBar->GetMax() = 100 + 20 * (m_iLevel - 1);
+	m_ExpBar->GetMax() = 100 + 50 * (m_iLevel - 1);
 	// > Level UI ¹Ù²Ù±â
 	m_LvUI->SetNum(iLv);
 }

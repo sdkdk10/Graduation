@@ -641,6 +641,9 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_MONSTER_RESPAWN, GetTickCount() + 50000, nullptr);
 
 		AddExp(player, monster);
+
+		if(NPCType::NPC_ROCK_WARRIOR == dynamic_cast<NPC*>(monster)->npcType_)
+			dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAY_ENDING, GetTickCount() + 3000, nullptr);
 	}
 	else
 	{
@@ -1150,7 +1153,7 @@ void GameObjectManager::AddExp(GameObject * player, GameObject* monster)
 {
 	player->exp_ += monster->exp_;
 
-	unsigned int playerMaxExp = 100 + 20 * (player->level_ - 1);
+	unsigned int playerMaxExp = 100 + 50 * (player->level_ - 1);
 
 	if (player->exp_ >= playerMaxExp)
 	{

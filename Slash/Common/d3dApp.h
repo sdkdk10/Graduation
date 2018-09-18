@@ -140,5 +140,7 @@ protected:
 	};
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	XMFLOAT2 m_fontPos;
+public:
+	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return md3dDevice; }
 };
 
