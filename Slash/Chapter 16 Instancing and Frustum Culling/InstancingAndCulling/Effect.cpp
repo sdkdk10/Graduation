@@ -661,6 +661,7 @@ void CEffect::Update_Play(const GameTimer & gt)
 	if (!m_IsFrame && m_fLifeTimeAcc > m_tInfo.LifeTime)
 	{
 		m_IsEnable = false;
+		cout << "ÀÌÆåÆ®…Ç!!" << endl;
 		if (m_IsCon)
 		{
 			SetPlay(true);

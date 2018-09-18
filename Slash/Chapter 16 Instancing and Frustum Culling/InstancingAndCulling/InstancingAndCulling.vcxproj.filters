@@ -426,9 +426,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Common\d3dApp.h">
-      <Filter>00. App</Filter>
-    </ClInclude>
     <ClInclude Include="FrameResource.h">
       <Filter>97. DirectHelper\00. FrameResource</Filter>
     </ClInclude>
@@ -654,6 +651,9 @@
     </ClInclude>
     <ClInclude Include="EndingScene.h">
       <Filter>01. Scene\04. EndingScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\d3dApp.h">
+      <Filter>00. App</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

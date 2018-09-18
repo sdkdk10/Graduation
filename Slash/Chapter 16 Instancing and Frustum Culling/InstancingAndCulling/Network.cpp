@@ -8,9 +8,8 @@
 #include "Spider.h"
 #include "GameTimer_Manager.h"
 #include "Effect_Manager.h"
-#include "Scene.h"
-#include "EndingScene.h"
 #include "d3dApp.h"
+#include "EndingScene.h"
 
 IMPLEMENT_SINGLETON(CNetwork)
 
@@ -627,8 +626,14 @@ void CNetwork::ProcessPacket(char * ptr)
 		}
 		break;
 	}
-
-
+	case SC_PLAY_ENDING:
+	{
+		CScene* pScene = CEndingScene::Create(D3DApp::GetApp()->GetDevice(), CManagement::GetInstance()->GetSrvDescriptorHeap(), CManagement::GetInstance()->GetCbvSrvDescriptorSize());
+		if (pScene == nullptr)
+			return;
+		CManagement::GetInstance()->Change_Scene(pScene);
+		break;
+	}
 	}
 }
 

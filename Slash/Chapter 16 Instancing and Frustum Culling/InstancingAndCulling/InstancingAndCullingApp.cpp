@@ -187,6 +187,8 @@ bool InstancingAndCullingApp::Initialize()
 	CManagement::GetInstance()->GetRenderer()->SetPSOs(mPSOs);
 	CManagement::GetInstance()->Get_CurScene()->Set_MainCam(&mCamera);
 	CManagement::GetInstance()->Get_CurScene()->Set_CamFrustum(&mCamFrustum);
+	CManagement::GetInstance()->GetCbvSrvDescriptorSize() = mCbvSrvUavDescriptorSize;
+	CManagement::GetInstance()->GetSrvDescriptorHeap() = mSrvDescriptorHeap;
 
 
 	mCamera.Set_Object(CManagement::GetInstance()->Get_CurScene()->Find_Object(L"Layer_Player", 0));
@@ -1274,9 +1276,9 @@ void InstancingAndCullingApp::LoadMeshes()
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerGageState", pComponent);
 
 
-	move.x = -0.8f;
+	move.x = -0.86f;
 	move.y = 2.7f;
-	scale.x = 0.7f;
+	scale.x = 0.6f;
 	scale.y = 0.3f;
 
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.002f);
@@ -1285,7 +1287,7 @@ void InstancingAndCullingApp::LoadMeshes()
 	pComponent = UIMesh::Create(md3dDevice, move, scale, size, 0.001f);
 	CComponent_Manager::GetInstance()->Ready_Component(L"Com_Mesh_PlayerJobState", pComponent);
 
-	move.x = -3.f;
+	move.x = -3.6f;
 	move.y = 12.5f;
 	scale.x = 0.06f;
 	scale.y = 0.06f;
