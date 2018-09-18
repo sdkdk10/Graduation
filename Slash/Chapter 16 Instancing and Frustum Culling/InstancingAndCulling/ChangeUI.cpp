@@ -69,7 +69,10 @@ ChangeUI * ChangeUI::Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComP
 bool ChangeUI::Update(const GameTimer & gt)
 {
 	if (!m_isPlay)
+	{
 		return true;
+	}
+		
 
 	m_fAccTime += gt.DeltaTime();
 	if (m_fStartTime > m_fAccTime)
@@ -99,7 +102,7 @@ bool ChangeUI::Update(const GameTimer & gt)
 
 	MaterialConstants matConstants;
 
-	if (m_IsChange && !m_isRemain)
+	if (m_IsChange && !m_isEnd)
 	{
 
 		float fDivTime = m_fChangeTime / gt.DeltaTime();
@@ -124,10 +127,18 @@ bool ChangeUI::Update(const GameTimer & gt)
 				if (!m_isRemain)
 				{
 					m_isPlay = false;
-					Mat->DiffuseAlbedo = XMFLOAT4(1, 1, 1, 1);
+					Mat->DiffuseAlbedo = m_xmInitColor;// XMFLOAT4(1, 1, 1, 1);
 					m_fAccTime = 0.f;
 					m_fTimeAccc = 0.f;
+					m_isEnd = true;
 					return true;
+				}
+				else
+				{
+					m_isEnd = true;
+					m_fAccTime = 0.f;
+					m_fTimeAccc = 0.f;
+					Mat->DiffuseAlbedo = m_xmf4ColorChange;
 				}
 			}
 			else

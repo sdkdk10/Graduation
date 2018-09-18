@@ -566,7 +566,7 @@ void Player::SetUltimateEffect(bool isUltimate)
 
 void Player::UIUpdate(const GameTimer & gt)
 {
-	if (m_GageBar->GetCur() < m_GageBar->GetMax() && !bIsUltimateState)
+	if (m_GageBar->GetCur() < m_GageBar->GetMax() && !m_GageFull)
 		m_GageBar->GetCur() += gt.DeltaTime() * 10.f;
 	else
 		m_GageFull = true;
@@ -640,6 +640,7 @@ void Player::CheckUltimate(const GameTimer & gt)
 			m_GageFull = false;
 			SetUltimateEffect(false);
 			CNetwork::GetInstance()->SendUltimateOffPacket();
+			CEffect_Manager::GetInstance()->Stop_SkillEffect("UltimateMode_00");
 		}
 	}
 }
@@ -807,6 +808,9 @@ void Player::KeyInput(const GameTimer & gt)
 				m_pCamera->SetCameraEffect(Camera::ZOOMINROUNDULTIMATE, CManagement::GetInstance()->Find_Object(L"Layer_Player"));
 				SetObjectAnimState(State::STATE_ULTIMATE);
 				CNetwork::GetInstance()->SendUltimateStartPacket();
+
+				CEffect_Manager::GetInstance()->Play_SkillEffect_Parent("UltimateMode_00", this);
+				CEffect_Manager::GetInstance()->Set_SkillEffectCon("UltimateMode_00", true);
 
 				m_GageBar->GetCur() = 0.f;
 			}

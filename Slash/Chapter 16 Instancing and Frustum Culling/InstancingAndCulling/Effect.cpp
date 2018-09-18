@@ -661,6 +661,11 @@ void CEffect::Update_Play(const GameTimer & gt)
 	if (!m_IsFrame && m_fLifeTimeAcc > m_tInfo.LifeTime)
 	{
 		m_IsEnable = false;
+		if (m_IsCon)
+		{
+			SetPlay(true);
+			cout << "true로 다시 바뀌기" << endl;
+		}
 		return;
 	}
 
@@ -695,45 +700,6 @@ void CEffect::Update_Play(const GameTimer & gt)
 	if (m_tInfo.isBillboard)
 		Update_Billboard(gt);
 
-	/*XMFLOAT4X4  f4x4View;
-	XMStoreFloat4x4(&f4x4View, m_pCamera->GetView());
-	XMMATRIX matView = m_pCamera->GetView();
-
-
-	XMStoreFloat4x4(&f4x4View, matView);
-	f4x4View._41 = 0.f;
-	f4x4View._42 = 0.f;
-	f4x4View._43 = 0.f;
-
-	matView = XMLoadFloat4x4(&f4x4View);
-
-	XMMATRIX matInvView = XMMatrixInverse(&XMMatrixDeterminant(matView), matView);
-
-	XMStoreFloat4x4(&f4x4View, matInvView);
-
-	XMMATRIX matScale = XMMatrixScaling(m_pTransCom->GetScale().x, m_pTransCom->GetScale().y, m_pTransCom->GetScale().z);
-	XMFLOAT4X4 f4x4Scale;
-	XMStoreFloat4x4(&f4x4Scale, matScale);
-
-	XMMATRIX matRotX = XMMatrixRotationX(XMConvertToRadians(m_pTransCom->GetRotation().x));
-	XMMATRIX matRotY = XMMatrixRotationY(XMConvertToRadians(m_pTransCom->GetRotation().y));
-	XMMATRIX matRotZ = XMMatrixRotationZ(XMConvertToRadians(m_pTransCom->GetRotation().z));
-	XMMATRIX matRot = XMMatrixIdentity();
-	matRot = matRotX * matRotY * matRotZ;
-
-	XMFLOAT4X4 f4x4Rot;
-	XMStoreFloat4x4(&f4x4Rot, matRot);
-
-	XMFLOAT4X4 f4x4World;
-	XMStoreFloat4x4(&f4x4World, matScale * matRot);
-
-	m_pTransCom->GetWorld() = Matrix4x4::Multiply(f4x4World, f4x4View);
-
-	m_pTransCom->GetWorld()._41 = m_pTransCom->GetPosition().x;
-	m_pTransCom->GetWorld()._42 = m_pTransCom->GetPosition().y;
-	m_pTransCom->GetWorld()._43 = m_pTransCom->GetPosition().z;*/
-
-	//XMMATRIX world = XMLoadFloat4x4(&f4x4View);
 	XMMATRIX world = XMLoadFloat4x4(&m_pTransCom->GetWorld());
 	XMMATRIX texTransform = XMLoadFloat4x4(&TexTransform);
 

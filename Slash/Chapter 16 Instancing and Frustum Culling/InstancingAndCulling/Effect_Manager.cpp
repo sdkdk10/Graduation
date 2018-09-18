@@ -4,6 +4,7 @@
 #include "SkillEffect.h"
 #include "Effect.h"
 #include "Renderer.h"
+#include "GameObject.h"
 
 IMPLEMENT_SINGLETON(CEffect_Manager)
 
@@ -163,6 +164,41 @@ HRESULT CEffect_Manager::Play_SkillEffect(string name, XMFLOAT4X4 * Parent, floa
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Play_SkillEffect_Parent(string name, CGameObject * Parent)
+{
+	auto effect = Find_SkillEffect(name);
+	if (effect == nullptr)
+		return E_FAIL;
+
+
+	auto play = CSkillEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, name);
+
+
+	list<CEffect*> DescList = effect->GetEffectList();
+
+	for (auto elem : DescList)
+	{
+		CEffect* finder = Find_Effect(elem->Get_EffectInfo().strName);
+		CEffect* pInst = CEffect::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, finder->Get_EffectInfo());
+		if (finder->Get_IsFrame())
+		{
+			pInst->SetIsFrame(true);
+			pInst->Get_FrameInfo() = finder->Get_FrameInfo();
+		}
+		play->GetEffectList().push_back(pInst);
+	}
+
+
+	play->SetPlay(true);
+	if (Parent != nullptr)
+	{
+		play->Set_Parent(Parent);
+	}
+
+	CManagement::GetInstance()->Get_CurScene()->Ready_GameObject(L"Effect", dynamic_cast<CGameObject*>(play));
+	return S_OK;
+}
+
 HRESULT CEffect_Manager::Stop_SkillEffect(string name)
 {
 	auto effect = Find_SkillEffect(name);
@@ -172,6 +208,16 @@ HRESULT CEffect_Manager::Stop_SkillEffect(string name)
 	effect->SetPlay(false);
 
 	return S_OK;
+}
+
+void CEffect_Manager::Set_SkillEffectCon(string name, bool isC)
+{
+	auto effect = Find_SkillEffect(name);
+	if (effect == nullptr)
+		return;
+
+	effect->Set_IsCon(isC);
+
 }
 
 void CEffect_Manager::Free()

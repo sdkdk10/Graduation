@@ -1,2 +1,2 @@
 1
-Teleport_00	1	teleport_00	
+UltimateMode_00	1	ultimatemode_00	

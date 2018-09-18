@@ -25,11 +25,14 @@ public:
 	void					Set_ParentMatrix(XMFLOAT4X4* f4x4Parent);
 	void					Set_RotParentMatirx(XMFLOAT4X4* f4x4Parent, float fRot);
 	void					Set_Parent(CGameObject* pObj);
+	void					Set_IsCon(bool iscon);
 
 private:
 	list<CEffect*>			m_EffectList;
 	string					m_strName;
 	bool					m_isPlay = false;
+	CGameObject*			m_pParent = nullptr;
+	bool					m_isContinue = false;
 
 public:
 	static CSkillEffect* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, string name);

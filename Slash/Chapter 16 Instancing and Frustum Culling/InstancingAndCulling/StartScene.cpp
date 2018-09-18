@@ -53,13 +53,14 @@ HRESULT CStartScene::Initialize()
 	move.y = -0.f;
 	scale.x = 0.7f;
 	scale.y = 0.4f;
-	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, true);
+	pObject = ChangeUI::Create(m_d3dDevice, mSrvDescriptorHeap[HEAP_DEFAULT], mCbvSrvDescriptorSize, move, scale, size, tex->Num, false);
 	pObject->SetCamera(Get_MainCam());
 	dynamic_cast<ChangeUI*>(pObject)->SetPlay(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetisChange(true);
 	dynamic_cast<ChangeUI*>(pObject)->SetChangeInfo(XMFLOAT4(1.f, 1.f, 1.f, 1.f), 1.5f);
 	dynamic_cast<ChangeUI*>(pObject)->SetInitColor(XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f));
 	dynamic_cast<ChangeUI*>(pObject)->SetColor(XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f));
+	dynamic_cast<ChangeUI*>(pObject)->SetRemain(true);
 	//dynamic_cast<CInstancingObject*>(pObject)->SetCamFrustum(mCamFrustum);
 	Ready_GameObject(L"Layer_SelectSceneUI", pObject);
 

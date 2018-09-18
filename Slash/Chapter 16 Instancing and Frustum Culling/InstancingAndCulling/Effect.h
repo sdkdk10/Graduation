@@ -32,6 +32,7 @@ public:
 	void	SetPlay(bool _isPlay);
 	void	SetIsFrame(bool _isFrame);
 	void	MoveFrame(const GameTimer& gt);
+	void	SetIsCon(bool isC) { m_IsCon = isC; }
 public:
 	static CEffect* Create(Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice, ComPtr<ID3D12DescriptorHeap>& srv, UINT srvSize, EFFECT_INFO info);
 	static CEffect*	Create(CEffect& other);
@@ -50,6 +51,7 @@ private:
 
 	bool			m_IsPlay = false;
 	bool			m_IsFrame;
+	bool			m_IsCon = false;
 
 private:
 	virtual void Free();

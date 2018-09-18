@@ -5,6 +5,7 @@
 
 class CSkillEffect;
 class CEffect;
+class CGameObject;
 
 class CEffect_Manager
 	: public CBase
@@ -22,7 +23,9 @@ public:
 	CEffect*				Find_Effect(string name);
 	HRESULT					Play_SkillEffect(string name, XMFLOAT4X4* Parent = nullptr);
 	HRESULT					Play_SkillEffect(string name, XMFLOAT4X4* Parent, float fRot);
+	HRESULT					Play_SkillEffect_Parent(string name, CGameObject* Parent);
 	HRESULT					Stop_SkillEffect(string name);
+	void					Set_SkillEffectCon(string name, bool isC);
 
 private:
 	unordered_map<string, CEffect*>					m_mapEffect;

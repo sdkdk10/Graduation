@@ -1,4 +1,4 @@
-17
+18
 Warrior_Turn	4	Warrior_Turn_0	Warrior_Turn_1	Warrior_Turn_2	Warrior_Turn_3
 Drop	5	light0	light1	light2	light3	light4
 Hit5	1	Hit05
@@ -16,3 +16,4 @@ Ax_00	4	ax00	ax01	ax02	ax03
 Ultimate1	1	ultimate1_0		
 Roll_00	2	roll_00	roll_01
 Teleport_00	1	teleport_00	
+UltimateMode_00	1	ultimatemode_00

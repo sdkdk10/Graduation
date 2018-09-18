@@ -77,6 +77,7 @@ void CManagement::SetLevelUPUI(vector<ChangeUI*> vec)
 
 void CManagement::PlaySkillUI(int inum)
 {
+	if(inum < 0 && inum > m_pSkillReady.size() - 1)
 	m_pSkillReady[inum]->SetPlay(true);
 	/*size_t iSize = m_pSkillReady.size();
 	for (size_t i = 0; i < iSize; ++i)

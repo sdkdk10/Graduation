@@ -641,7 +641,7 @@ void AnimateStateMachine_Skeleton::AnimationStateUpdate(const GameTimer & gt)
 			m_IsEffectPlay[State::STATE_ROLL] = true;
 			// > 스킬넣어주기
 			//CEffect_Manager::GetInstance()->Play_SkillEffect("스킬이름");
-			CEffect_Manager::GetInstance()->Play_SkillEffect("hh", &m_pObject->GetWorld());
+			CEffect_Manager::GetInstance()->Play_SkillEffect("Roll_00", &m_pObject->GetWorld(), m_pObject->GetNetRotAngle());
 		}
 
 		if (m_fAnimationKeyFrameIndex_Roll > (*vecAnimFrame)[State::STATE_ROLL])

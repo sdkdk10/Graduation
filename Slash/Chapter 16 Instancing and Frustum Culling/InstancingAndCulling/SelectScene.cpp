@@ -396,7 +396,7 @@ bool CSelectScene::Update(const GameTimer & gt)
 			m_vecSelect[i]->Update(gt);
 		}
 
-		if (m_fSelectTime > 3.f)
+		if (m_fSelectTime > 2.3f)
 		{
 			CScene* pScene = CTestScene::Create(m_d3dDevice, mSrvDescriptorHeap, mCbvSrvDescriptorSize, m_isLeft);
 

@@ -64,6 +64,10 @@ bool CSkillEffect::Update(const GameTimer & gt)
 	{
 		if (elem->IsEnable() == true)
 		{
+			if (m_pParent != nullptr)
+			{
+				Set_ParentMatrix(&m_pParent->GetWorld());
+			}
 			elem->Update(gt);
 			vecEnable[i] = true;
 			//allEnable = true;
@@ -83,8 +87,17 @@ bool CSkillEffect::Update(const GameTimer & gt)
 	{
 		if (elem == true)
 		{
-			allEnable = true;
-			m_IsEnable = true;
+			if (m_isContinue)
+			{
+				SetPlay(true);
+
+			}
+			else
+			{
+				allEnable = true;
+				m_IsEnable = true;
+
+			}
 			break;
 		}
 
@@ -169,10 +182,23 @@ void CSkillEffect::Set_Parent(CGameObject* pObj)
 {
 	if (pObj == nullptr)
 		return;
+
+	m_pParent = pObj;
+
+	Set_ParentMatrix(&pObj->GetWorld());
 	//XMFLOAT4X4 world = pObj->GetTransform()
-	for (auto& elem : m_EffectList)
+	/*for (auto& elem : m_EffectList)
 	{
 		elem->GetTransform()->SetParentMatrix(&(pObj->GetTransform()->GetWorld()));
+	}*/
+}
+
+void CSkillEffect::Set_IsCon(bool iscon)
+{
+	m_isContinue = iscon;
+	for (auto& elem : m_EffectList)
+	{
+		elem->SetIsCon(iscon);
 	}
 }
 

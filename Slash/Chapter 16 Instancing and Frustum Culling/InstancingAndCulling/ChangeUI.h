@@ -27,7 +27,7 @@ public:
 	void		SetFrameInfo(UV_FRAME_INFO info);
 	void		MoveFrame(const GameTimer& gt);
 
-	void		SetPlay(bool _end) { m_isPlay = _end; }
+	void		SetPlay(bool _end) { m_isPlay = _end; if (m_isPlay == true) m_isEnd = false; }
 
 	void		Scaling(float x, float y);
 	void		GetScale(float* x, float* y);
@@ -36,6 +36,7 @@ public:
 	void		SetColor(XMFLOAT4 color) { Mat->DiffuseAlbedo = color; }
 	void		SetAlpha(float a) { Mat->DiffuseAlbedo.w = a; }
 	void		SetRemain(bool remain) { m_isRemain = remain; }
+
 private:
 	bool				m_IsContinue = false;
 	bool				m_IsChange = false;
@@ -51,6 +52,7 @@ private:
 	float				m_fAccTime = 0.f;
 	bool				m_isPlay = false;
 	bool				m_isRemain = false;
+	bool				m_isEnd = false;
 	XMFLOAT4			m_xmInitColor;
 
 private:
