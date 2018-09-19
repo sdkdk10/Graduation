@@ -448,67 +448,6 @@ bool CSelectScene::Update(const GameTimer & gt)
 		CManagement::GetInstance()->GetSound()->StopBGM();*/
 		m_isSelect = true;
 	}
-	static float fX = 0.f;
-	float mx, my, sx, sy, size;
-	if (KeyBoard_Input(DIK_Q) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		size += gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-
-	if (KeyBoard_Input(DIK_E) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		size -= gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-
-	if (KeyBoard_Input(DIK_W) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		my += gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-
-	if (KeyBoard_Input(DIK_S) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		my -= gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-	if (KeyBoard_Input(DIK_A) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		mx += gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-
-	if (KeyBoard_Input(DIK_D) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		mx -= gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-	if (KeyBoard_Input(DIK_Z) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		sy += gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-
-	if (KeyBoard_Input(DIK_X) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		sy -= gt.DeltaTime();
-		gBar->SetUI(size, mx, my, sx, sy);
-	}
-
-	if (KeyBoard_Input(DIK_I) == CInputDevice::INPUT_PRESS)
-	{
-		gBar->GetUIValue(&size, &mx, &my, &sx, &sy);
-		cout << "size : " << size << ", mx : " << mx << ", my : " << my << ",sy : " << sy << endl;
-	}
 	return true;
 }
 
