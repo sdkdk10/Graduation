@@ -635,7 +635,7 @@ void Player::CheckUltimate(const GameTimer & gt)
 		m_fUltimateTime -= gt.DeltaTime();
 		if (m_fUltimateTime < 0.0f)
 		{
-			m_fUltimateTime = 20.0f;
+			m_fUltimateTime = 5.0f;
 			bIsUltimateState = false;
 			m_GageFull = false;
 			SetUltimateEffect(false);
