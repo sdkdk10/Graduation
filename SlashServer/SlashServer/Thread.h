@@ -15,13 +15,6 @@ public:
 	virtual void Join() {
 		thread_.join();
 	}
-//public:
-//	virtual void SetThread(std::thread pthread) {
-//		thread_ = std::move(pthread);
-//	}
-//	virtual void Init() {
-//		thread_ = std::thread([&]() { Run(); });
-//	}
 public:
 	static void* GetIocp() {
 		return iocp_;

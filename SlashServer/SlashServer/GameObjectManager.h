@@ -15,7 +15,7 @@ public:
 	virtual ~GameObjectManager();
 public:
 	void InitGameObjects();
-	void PutNewPlayer(GameObject* player);
+	void PutNewPlayer(GameObject * player, BYTE type);
 	void DisconnectPlayer(GameObject* player);
 	void WakeUpNPC(GameObject * npc, GameObject * target);
 	void ChasingPlayer(GameObject* npc, GameObject* player);
@@ -30,7 +30,7 @@ public:
 	void MonsterDamaged(GameObject * monster, GameObject * player);
 	void PlayerRespown(GameObject* player);
 	void MonsterRespown(GameObject* monster);
-	void ProcessMove(GameObject * player, unsigned char dirType, unsigned char moveType);
+	void ProcessMove(GameObject * player, unsigned char dirType);
 	void ProcessPacket(GameObject* cl, char * packet);
 	void SearchNewTargetPlayer(GameObject* monster);
 	void AddExp(GameObject * player, GameObject* monster);

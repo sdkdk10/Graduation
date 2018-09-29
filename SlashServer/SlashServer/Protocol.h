@@ -86,7 +86,7 @@ static const int EVT_PLAY_ENDING = 15;
 #define PLAYER_ATTACK_RADIUS	6
 #define CLOSE_RADIUS	4
 
-#define NUM_OF_PLAYER 1000
+#define NUM_OF_PLAYER 10000
 #define NUM_OF_MAPOBJECT 100
 
 
@@ -110,16 +110,20 @@ static const int EVT_PLAY_ENDING = 15;
 #define CS_DIR_LEFT						0x04
 #define CS_DIR_RIGHT					0x08
 #define CS_ROLL							0x10
-#define CS_STOP							0x20
-#define CS_ATTACK1						0x21
-#define CS_ATTACK2						0x22
-#define CS_ATTACK3						0x23
-#define CS_MAP_INIT_DATA				0x24
-#define CS_PLAYER_TYPE					0x25
-#define CS_ULTIMATE_START				0x26
-#define CS_ULTIMATE_ON					0x27
-#define CS_ULTIMATE_OFF					0x28
-#define CS_MAPOBJECT_NUM				0x29
+#define CS_TEST_MOVE					0x20
+#define CS_STOP							0x40
+#define CS_ATTACK1						0x41
+#define CS_ATTACK2						0x42
+#define CS_ATTACK3						0x43
+#define CS_MAP_INIT_DATA				0x44
+#define CS_PLAYER_TYPE					0x45
+#define CS_ULTIMATE_START				0x46
+#define CS_ULTIMATE_ON					0x47
+#define CS_ULTIMATE_OFF					0x48
+#define CS_MAPOBJECT_NUM				0x49
+#define CS_MULTI_TEST					0x4a
+#define CS_HOTSPOT_TEST					0x4b
+#define CS_PLAYER_RESPOWN				0x4c
 
 #define SC_WALK_MOVE					0x01
 #define SC_ROLL_MOVE					0x02
@@ -138,10 +142,10 @@ static const int EVT_PLAY_ENDING = 15;
 #define SC_EXP							0x0f
 #define SC_WIZARD_HEAL					0x10
 #define SC_PLAY_ENDING					0x11
-
+#define SC_TEST_MOVE					0x12
 
 static const int MOVE_PACKET_START = CS_DIR_FORWARD;
-static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL;
+static const int MOVE_PACKET_END = CS_DIR_FORWARD + CS_DIR_BACKWARD + CS_DIR_LEFT + CS_DIR_RIGHT + CS_ROLL + CS_TEST_MOVE;
 
 using BYTE = unsigned char;
 using WORD = unsigned short;
@@ -200,7 +204,16 @@ struct cs_packet_mapobject_num {
 	BYTE type;
 	WORD mapObjectNum;
 };
-
+struct cs_packet_multi_test {
+	BYTE size;
+	BYTE type;
+	float x;
+	float z;
+};
+struct cs_packet_hotspot_test {
+	BYTE size;
+	BYTE type;
+};
 
 struct sc_packet_move {
 	BYTE size;

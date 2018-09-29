@@ -44,21 +44,25 @@ void GameObjectManager::InitGameObjects()
 	}
 }
 
-void GameObjectManager::PutNewPlayer(GameObject* player)
+void GameObjectManager::PutNewPlayer(GameObject* player, BYTE type)
 {
 	auto pPlayer = dynamic_cast<Player*>(player);
 
 	player->state_ = STATE_IDLE;
 	pPlayer->hp_ = INIT_PLAYER_HP;
-	pPlayer->world_._41 = INIT_PLAYER_POS.x;
-	pPlayer->world_._42 = INIT_PLAYER_POS.y;
-	pPlayer->world_._43 = INIT_PLAYER_POS.z;
 
-	unordered_set <GameObject*> new_view_list; // 새로운 뷰리스트 생성
+	if (CS_MULTI_TEST != type && CS_PLAYER_RESPOWN != type)
+	{
+		pPlayer->world_._41 = INIT_PLAYER_POS.x;
+		pPlayer->world_._42 = INIT_PLAYER_POS.y;
+		pPlayer->world_._43 = INIT_PLAYER_POS.z;
+	}
+
+	unordered_set <GameObject*> new_view_list; 
 	for (int i = 0; i < NUM_OF_PLAYER; ++i) {
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(player)) continue;
-		// 새로운 뷰리스트 (나를 기준) // 새로 이동하고 보이는 모든 애들
+		// 새로 이동하고 보이는 모든 애들
 		new_view_list.insert(playerArray_[i]);
 	}
 	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i) {
@@ -72,7 +76,6 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 	for (auto& object : new_view_list) {
 
 		pPlayer->vlm_.lock();
-		// 나의 기존 뷰리스트에는 없었다 // 즉 새로 들어왔다
 		if (0 == pPlayer->viewList_.count(object))
 			pPlayer->viewList_.insert(object);
 
@@ -91,14 +94,13 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 		auto objectPlayer = dynamic_cast<Player*>(object);
 
 		objectPlayer->vlm_.lock();
-		// 상대방한테 내가 없었다? // 추가
 		if (0 == objectPlayer->viewList_.count(player)) {
 			objectPlayer->viewList_.insert(player);
 		}
 		objectPlayer->vlm_.unlock();
 		SendManager::SendPutPlayer(object, player);
 	}
-	// 나의 이전 뷰리스트에 있는 애들
+	// 나의 이전 뷰리스트에 있는 객체
 	pPlayer->vlm_.lock();
 	unordered_set <GameObject*> old_v = pPlayer->viewList_;
 	pPlayer->vlm_.unlock();
@@ -106,7 +108,7 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 		if (0 == new_view_list.count(object)) {
 			if (player->ID_ == object->ID_) continue;
 			pPlayer->vlm_.lock();
-			pPlayer->viewList_.erase(object); // 계속 락 언락하지 말고 따로 리무브리스트만들고 한번에 지우는게 좋음
+			pPlayer->viewList_.erase(object);
 			pPlayer->vlm_.unlock();
 			SendManager::SendRemoveObject(player, object);
 
@@ -115,7 +117,7 @@ void GameObjectManager::PutNewPlayer(GameObject* player)
 			auto objectPlayer = dynamic_cast<Player*>(object);
 
 			objectPlayer->vlm_.lock();
-			// 내 시야에 없는 애들이니까 걔네 시야에도 내가 있으면 지우게 하자.
+			// 내 시야에 없는 객체
 			if (0 != objectPlayer->viewList_.count(player)) {
 				objectPlayer->viewList_.erase(player);
 				objectPlayer->vlm_.unlock();
@@ -132,8 +134,7 @@ void GameObjectManager::DisconnectPlayer(GameObject* player) {
 
 	Player* pPlayer = dynamic_cast<Player*>(player);
 
-	closesocket(pPlayer->s_); // closesocket 먼저 해야함 // 멀티 쓰레드라서 
-	pPlayer->isActive_ = false;
+	closesocket(pPlayer->s_); // closesocket 위치중요(멀티쓰레드)
 	printf("%d 번 플레이어 접속종료.\n", player->ID_);
 
 	sc_packet_remove_object p;
@@ -174,7 +175,6 @@ void GameObjectManager::WakeUpNPC(GameObject* npc, GameObject* target)
 	if (npc->IsInAgroRange(target))
 	{
 		npc->state_ = STATE_WALK;
-		//cout << "WakeUpNPC에서 호출 npc id : " << npc->ID_ << endl;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount(), target);
 	}
 }
@@ -186,7 +186,6 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 
 	if (npc->state_ == STATE_HIT)
 	{
-		//cout << "ChasingPlayer(위)에서 호출 npc id : " << npc->ID_ << endl;
 		npc->isActive_ = true;
 		npc->state_ = STATE_WALK;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount() + 100, player);
@@ -215,9 +214,8 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 	XMFLOAT3 playerPos = XMFLOAT3(player->world_._41, player->world_._42, player->world_._43);
 	XMFLOAT3 shift = Vector3::Normalize(monsterLook);
 
-	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, monsterPos);   // 객체에서 플레이어로 가는 벡터
+	XMFLOAT3 dirVector = Vector3::Subtract(playerPos, monsterPos);
 
-	//auto n_dirVector = Vector3::Normalize(dirVector);
 	dirVector = Vector3::Normalize(dirVector);
 	XMFLOAT3 crossVector = Vector3::CrossProduct(shift, dirVector, true);
 
@@ -231,7 +229,7 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 
 	ceta = ceta * RADIAN_TO_DEGREE;
 
-	XMFLOAT3 movingReflectVector = XMFLOAT3(0, 0, 0); // 나중에 충돌하면 갱신해줘야함 이동하기전에
+	XMFLOAT3 movingReflectVector = XMFLOAT3(0, 0, 0); 
 
 	bool IsRotated = false;
 
@@ -351,18 +349,22 @@ void GameObjectManager::ChasingPlayer(GameObject* npc, GameObject* player) {
 		}
 	}
 
-	if (player->IsClose(npc))	 //충돌할 정도로 가까워 졌으면
+	player->vlm_.lock();
+	if (player->IsClose(npc))
 	{
+		player->vlm_.unlock();
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_MONSTER_ATTACK, GetTickCount(), player);
 	}
 	else if(0 != player->viewList_.count(npc))
 	{
+		player->vlm_.unlock();
 		npc->isActive_ = true;
 		npc->state_ = STATE_WALK;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(npc, EVT_CHASE, GetTickCount() + 50, player);
 	}
 	else
 	{
+		player->vlm_.unlock();
 		SearchNewTargetPlayer(npc);
 	}
 }
@@ -388,7 +390,6 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 
 	if (false == player->IsClose(monster))
 	{
-		//cout << "MonsterAttack에서 호출 npc id : " << monster->ID_ << endl;
 		monster->isActive_ = true;
 		monster->state_ = STATE_WALK;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_CHASE, GetTickCount(), player);
@@ -401,7 +402,12 @@ void GameObjectManager::MonsterAttack(GameObject* monster, GameObject* player) {
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
 			if (false == playerArray_[i]->isActive_) continue;
-			if (0 == playerArray_[i]->viewList_.count(monster)) continue;
+			playerArray_[i]->vlm_.lock();
+			if (0 == playerArray_[i]->viewList_.count(monster)) {
+				playerArray_[i]->vlm_.unlock();
+				continue;
+			}
+			playerArray_[i]->vlm_.unlock();
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_PLAYER_DAMAGED, GetTickCount() + 300, monster);
@@ -413,9 +419,6 @@ void GameObjectManager::ProcessWarriorAttack1(GameObject* player) {
 
 	player->dmg_ = WARRIOR_SKILL1_DMG * (1 + player->level_ / 10.f);
 
-	// -bound.center.y == playerlook방향 
-	//	bound.extents.x == 가로길이
-	//	bound.extents.y == 세로길이
 	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i)
 	{
 		if (false == npcArray_[i]->isActive_) continue;
@@ -444,10 +447,14 @@ void GameObjectManager::ProcessWarriorAttack2(GameObject* player) {
 		XMFLOAT3(23.f * width, 16.f * WARRIOR_SKILL2_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
-	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
+	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_)));
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (auto& npc : player->viewList_)
+	player->vlm_.lock();
+	unordered_set <GameObject*> vlCopy = player->viewList_;
+	player->vlm_.unlock();
+
+	for (auto& npc : vlCopy)
 	{
 		if (false == npc->isActive_) continue;
 		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
@@ -473,10 +480,14 @@ void GameObjectManager::ProcessWarriorAttack3(GameObject* player) {
 		XMFLOAT3(23.f * WARRIOR_SKILL3_WIDTH, 16.f * WARRIOR_SKILL3_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
-	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
+	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_)));
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (auto& npc : player->viewList_)
+	player->vlm_.lock();
+	unordered_set <GameObject*> vlCopy = player->viewList_;
+	player->vlm_.unlock();
+
+	for (auto& npc : vlCopy)
 	{
 		if (false == npc->isActive_) continue;
 		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
@@ -498,10 +509,14 @@ void GameObjectManager::ProcessWizardAttack1(GameObject* player) {
 		XMFLOAT3(23.f * WIZARD_SKILL1_WIDTH, 16.f * WIZARD_SKILL1_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
-	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
+	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_)));
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (auto& npc : player->viewList_)
+	player->vlm_.lock();
+	unordered_set <GameObject*> vlCopy = player->viewList_;
+	player->vlm_.unlock();
+
+	for (auto& npc : vlCopy)
 	{
 		if (false == npc->isActive_) continue;
 		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
@@ -523,10 +538,14 @@ void GameObjectManager::ProcessWizardAttack2(GameObject* player) {
 		XMFLOAT3(23.f * WIZARD_SKILL2_WIDTH, 16.f * WIZARD_SKILL2_DEPTH, 28.f),
 		XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 
-	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_))); // world_
+	player->skillOOBBTransformed_.Transform(player->skillOOBB_, XMLoadFloat4x4(&(player->world_)));
 	XMStoreFloat4(&player->skillOOBBTransformed_.Orientation, XMQuaternionNormalize(XMLoadFloat4(&player->skillOOBBTransformed_.Orientation)));
 
-	for (auto& npc : player->viewList_)
+	player->vlm_.lock();
+	unordered_set <GameObject*> vlCopy = player->viewList_;
+	player->vlm_.unlock();
+
+	for (auto& npc : vlCopy)
 	{
 		if (false == npc->isActive_) continue;
 		if (ObjectType::TYPE_MONSTER != npc->objectType_) continue;
@@ -545,12 +564,20 @@ void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
 	p.size = sizeof(sc_packet_wizard_heal);
 	p.type = SC_WIZARD_HEAL;
 
-	for (auto& targetPlayer : player->viewList_)
+	player->vlm_.lock();
+	unordered_set<GameObject*> vCopy = player->viewList_;
+	player->vlm_.unlock();
+
+	for (auto& targetPlayer : vCopy)
 	{
 		if (false == targetPlayer->isActive_) continue;
 		if (ObjectType::TYPE_PLAYER != targetPlayer->objectType_) continue;
 
-		for (auto& targetInViewPlayer : targetPlayer->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> targetCopy = targetPlayer->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& targetInViewPlayer : targetCopy)
 		{
 			if (false == targetInViewPlayer->isActive_) continue;
 			if (ObjectType::TYPE_PLAYER != targetInViewPlayer->objectType_) continue;
@@ -568,7 +595,11 @@ void GameObjectManager::ProcessWizardAttack3(GameObject* player) {
 
 void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 
-	for (auto& playerObject : player->viewList_)
+	player->vlm_.lock();
+	unordered_set<GameObject*> vCopy = player->viewList_;
+	player->vlm_.unlock();
+
+	for (auto& playerObject : vCopy)
 	{
 		if (false == playerObject->isActive_) continue;
 		if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -586,7 +617,11 @@ void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 
 		player->state_ = STATE_DEAD;
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -599,7 +634,11 @@ void GameObjectManager::PlayerDamaged(GameObject* player, GameObject* monster) {
 	{
 		player->state_ = STATE_HIT;
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -618,7 +657,13 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
-		if (0 == playerArray_[i]->viewList_.count(monster)) continue;
+		playerArray_[i]->vlm_.lock();
+		if (0 == playerArray_[i]->viewList_.count(monster))
+		{
+			playerArray_[i]->vlm_.unlock();
+			continue;
+		}
+		playerArray_[i]->vlm_.unlock();
 		SendManager::SendObjectDamage(playerArray_[i], monster, player->dmg_);
 	}
 
@@ -634,7 +679,13 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
 			if (false == playerArray_[i]->isActive_) continue;
-			if (0 == playerArray_[i]->viewList_.count(monster)) continue;
+			playerArray_[i]->vlm_.lock();
+			if (0 == playerArray_[i]->viewList_.count(monster))
+			{
+				playerArray_[i]->vlm_.unlock();
+				continue;
+			}
+			playerArray_[i]->vlm_.unlock();
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 
@@ -651,7 +702,13 @@ void GameObjectManager::MonsterDamaged(GameObject* monster, GameObject* player) 
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
 			if (false == playerArray_[i]->isActive_) continue;
-			if (0 == playerArray_[i]->viewList_.count(monster)) continue;
+			playerArray_[i]->vlm_.lock();
+			if (0 == playerArray_[i]->viewList_.count(monster))
+			{
+				playerArray_[i]->vlm_.unlock();
+				continue;
+			}
+			playerArray_[i]->vlm_.unlock();
 			SendManager::SendObjectState(playerArray_[i], monster);
 		}
 	}
@@ -662,7 +719,7 @@ void GameObjectManager::PlayerRespown(GameObject* player)
 	if (false == player->isActive_)
 		return;
 
-	PutNewPlayer(player);
+	PutNewPlayer(player, CS_PLAYER_RESPOWN);
 }
 
 void GameObjectManager::MonsterRespown(GameObject* monster)
@@ -683,7 +740,7 @@ void GameObjectManager::MonsterRespown(GameObject* monster)
 	SearchNewTargetPlayer(monster);
 }
 
-void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, unsigned char moveType)
+void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType)
 {
 	if ((player->state_ == State::STATE_IDLE ||
 		player->state_ == State::STATE_WALK ||
@@ -695,10 +752,15 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 
 	float moveSpeed = 0;
 
-	if (SC_WALK_MOVE == moveType)
+	if (dirType < CS_ROLL)
 	{
 		player->state_ = STATE_WALK;
 		moveSpeed = PLAYER_MOVE_SPEED;
+	}
+	else if(CS_TEST_MOVE & dirType)
+	{
+		player->state_ = STATE_WALK;
+		moveSpeed = TEST_MOVE_SPEED;
 	}
 	else
 	{
@@ -732,11 +794,9 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 
 	float cosCeta = dotproduct / xmf3ShiftLength * xmf3PlayerLooklength;
 
-	float ceta = acos(cosCeta); // 현재 각도
+	float ceta = acos(cosCeta);
 
 	ceta = ceta * RADIAN_TO_DEGREE;
-
-	//cout << ceta << endl;
 
 	if (ceta > 8.0f)
 	{
@@ -767,7 +827,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	bool IsNPCColl = false;
 	bool IsMapObjectColl = false;
 
-	if (SC_WALK_MOVE == moveType || PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
+	if (false == (CS_ROLL & dirType) || PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
 	{
 		for (int i = 0; i < NUM_OF_PLAYER; ++i)
 		{
@@ -807,7 +867,12 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	sc_packet_move sp_pos;
 	sp_pos.id = player->ID_;
 	sp_pos.size = sizeof(sc_packet_move);
-	sp_pos.type = moveType;
+
+	if(CS_ROLL & dirType)
+		sp_pos.type = SC_ROLL_MOVE;
+	else
+		sp_pos.type = SC_WALK_MOVE;
+	
 	sp_pos.posX = player->world_._41;
 	sp_pos.posY = player->world_._42;
 	sp_pos.posZ = player->world_._43;
@@ -818,11 +883,11 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	sp_rotate.type = SC_ROTATE;
 	sp_rotate.lookDegree = player->lookDegree_;
 
-	unordered_set <GameObject*> new_view_list; // 새로운 뷰리스트 생성
+	unordered_set <GameObject*> new_view_list;
 	for (int i = 0; i < NUM_OF_PLAYER; ++i) {
 		if (false == playerArray_[i]->isActive_) continue;
 		if (false == playerArray_[i]->CanSee(player)) continue;
-		// 새로운 뷰리스트 (나를 기준) // 새로 이동하고 보이는 모든 애들
+		// 새로운 뷰리스트 (나를 기준)
 		new_view_list.insert(playerArray_[i]);
 	}
 	for (int i = 0; i < NUM_OF_NPC_TOTAL; ++i) {
@@ -834,7 +899,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 	for (auto& object : new_view_list) {
 
 		pPlayer->vlm_.lock();
-		// 나의 기존 뷰리스트에는 없었다 // 즉 새로 들어왔다
+		// 나의 기존 뷰리스트에는 없었다
 		if (0 == pPlayer->viewList_.count(object))
 			pPlayer->viewList_.insert(object);
 
@@ -853,13 +918,11 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 		auto objectPlayer = dynamic_cast<Player*>(object);
 
 		objectPlayer->vlm_.lock();
-		// 상대방한테 내가 없었다? // 추가
 		if (0 == objectPlayer->viewList_.count(player)) {
 			objectPlayer->viewList_.insert(player);
 			objectPlayer->vlm_.unlock();
 			SendManager::SendPutPlayer(object, player);
 		}
-		// 상대방한테 내가 있었다? // 위치값만
 		else
 		{
 			objectPlayer->vlm_.unlock();
@@ -868,7 +931,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 				SendManager::SendPacket(object, &sp_rotate);
 		}
 	}
-	// 나의 이전 뷰리스트에 있는 애들
+	// 나의 이전 뷰리스트에 있는 객체
 	pPlayer->vlm_.lock();
 	unordered_set <GameObject*> old_v = pPlayer->viewList_;
 	pPlayer->vlm_.unlock();
@@ -876,7 +939,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 		if (0 == new_view_list.count(object)) {
 			if (player == object) continue;
 			pPlayer->vlm_.lock();
-			pPlayer->viewList_.erase(object); // 계속 락 언락하지 말고 따로 리무브리스트만들고 한번에 지우는게 좋음
+			pPlayer->viewList_.erase(object);
 			pPlayer->vlm_.unlock();
 			SendManager::SendRemoveObject(player, object);
 
@@ -885,7 +948,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 			auto objectPlayer = dynamic_cast<Player*>(object);
 
 			objectPlayer->vlm_.lock();
-			// 내 시야에 없는 애들이니까 걔네 시야에도 내가 있으면 지우게 하자.
+			// 내 시야에 없는 객체
 			if (0 != objectPlayer->viewList_.count(player)) {
 				objectPlayer->viewList_.erase(player);
 				objectPlayer->vlm_.unlock();
@@ -897,7 +960,7 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 		}
 	}
 
-	if (SC_ROLL_MOVE == moveType)
+	if (CS_ROLL & dirType)
 	{
 		if (PlayerType::PLAYER_WARRIOR == pPlayer->playerType_)
 		{
@@ -913,7 +976,6 @@ void GameObjectManager::ProcessMove(GameObject* player, unsigned char dirType, u
 		}
 	}
 
-	/////////////
 }
 
 void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
@@ -925,17 +987,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 
 		cs_packet_dir *p = reinterpret_cast<cs_packet_dir *>(packet);
 
-		if (p->type & CS_DIR_FORWARD) dirType |= CS_DIR_FORWARD;
-		if (p->type & CS_DIR_BACKWARD) dirType |= CS_DIR_BACKWARD;
-		if (p->type & CS_DIR_RIGHT) dirType |= CS_DIR_RIGHT;
-		if (p->type & CS_DIR_LEFT) dirType |= CS_DIR_LEFT;
-
-		if (p->type & CS_ROLL)
-			moveType = SC_ROLL_MOVE;
-		else
-			moveType = SC_WALK_MOVE;
-
-		GameObjectManager::ProcessMove(player, dirType, moveType);
+		GameObjectManager::ProcessMove(player, p->type);
 	}
 	else if (packet[1] == CS_STOP)
 	{
@@ -947,7 +999,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		sp.type = SC_STATE;
 		sp.state = player->state_;
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -987,7 +1043,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 				dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(player, EVT_WIZARD_ATTACK3, GetTickCount(), nullptr);
 		}
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -1023,7 +1083,7 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 
 		dynamic_cast<Player*>(player)->playerType_ = p->playerType;
 
-		PutNewPlayer(player);
+		PutNewPlayer(player, CS_PLAYER_TYPE);
 
 		return;
 	}
@@ -1036,7 +1096,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		sp.type = SC_STATE;
 		sp.state = player->state_;
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -1062,7 +1126,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			su.id = player->ID_;
 			su.type = SC_ULTIMATE_WARRIOR;
 
-			for (auto& playerObject : player->viewList_)
+			player->vlm_.lock();
+			unordered_set<GameObject*> vCopy = player->viewList_;
+			player->vlm_.unlock();
+
+			for (auto& playerObject : vCopy)
 			{
 				if (false == playerObject->isActive_) continue;
 				if (ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -1075,7 +1143,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 			su.type = SC_ULTIMATE_WIZARD;
 			player->dmg_ = MAGE_ULTIMATE_DMG;
 
-			for (auto& targetNPC : player->viewList_)
+			player->vlm_.lock();
+			unordered_set<GameObject*> vCopy = player->viewList_;
+			player->vlm_.unlock();
+
+			for (auto& targetNPC : vCopy)
 			{
 				if (false == targetNPC->isActive_) continue;
 				if (ObjectType::TYPE_MONSTER != targetNPC->objectType_) continue;
@@ -1083,7 +1155,13 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 				for (int i = 0; i < NUM_OF_PLAYER; ++i)
 				{
 					if (false == playerArray_[i]->isActive_) continue;
-					if (0 == playerArray_[i]->viewList_.count(targetNPC)) continue;
+					playerArray_[i]->vlm_.lock();
+					if (0 == playerArray_[i]->viewList_.count(targetNPC))
+					{
+						playerArray_[i]->vlm_.unlock();
+						continue;
+					}
+					playerArray_[i]->vlm_.unlock();
 
 					su.id = targetNPC->ID_ + NPC_ID_START;
 					SendManager::SendPacket(playerArray_[i], &su);
@@ -1103,7 +1181,11 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		su.size = sizeof(sc_packet_ultimate_off);
 		su.type = SC_ULTIMATE_OFF;
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if(ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;
@@ -1119,9 +1201,24 @@ void GameObjectManager::ProcessPacket(GameObject* player, char *packet)
 		mapObjectNum_ = p->mapObjectNum;
 		return;
 	}
+	else if (packet[1] == CS_MULTI_TEST)
+	{
+		cs_packet_multi_test* p = reinterpret_cast<cs_packet_multi_test *>(packet);
+		player->world_._41 = p->x;
+		player->world_._42 = 0;
+		player->world_._43 = p->z;
+		PutNewPlayer(player, CS_MULTI_TEST);
+		return;
+	}
+	else if (packet[1] == CS_HOTSPOT_TEST)
+	{
+		cs_packet_hotspot_test* p = reinterpret_cast<cs_packet_hotspot_test *>(packet);
+		PutNewPlayer(player, CS_HOTSPOT_TEST);
+		return;
+	}
 	else
 	{
-		//cout << cl << " ProcessPacket Error" << endl;
+		cout << player->ID_ << "Client " << packet[1] << " ProcessPacket Error" << endl;
 		return;
 	}
 }
@@ -1131,7 +1228,13 @@ void GameObjectManager::SearchNewTargetPlayer(GameObject * monster)
 	for (int i = 0; i < NUM_OF_PLAYER; ++i)
 	{
 		if (false == playerArray_[i]->isActive_) continue;
-		if (0 == playerArray_[i]->viewList_.count(monster)) continue;
+		playerArray_[i]->vlm_.lock();
+		if (0 == playerArray_[i]->viewList_.count(monster))
+		{
+			playerArray_[i]->vlm_.unlock();
+			continue;
+		}
+		playerArray_[i]->vlm_.unlock();
 
 		SendManager::SendObjectState(playerArray_[i], monster);
 
@@ -1140,7 +1243,6 @@ void GameObjectManager::SearchNewTargetPlayer(GameObject * monster)
 		
 		monster->isActive_ = true;
 		monster->state_ = STATE_WALK;
-		//cout << "SearchNewTargetPlayer에서 호출 npc id : " << monster->ID_ << endl;
 		dynamic_cast<TimerThread*>(threadManager_->FindThread(TIMER_THREAD))->AddTimer(monster, EVT_CHASE, GetTickCount() + 50, playerArray_[i]);
 		return;
 		
@@ -1161,7 +1263,11 @@ void GameObjectManager::AddExp(GameObject * player, GameObject* monster)
 		++player->level_;
 		player->hp_ = INIT_PLAYER_HP;
 
-		for (auto& playerObject : player->viewList_)
+		player->vlm_.lock();
+		unordered_set<GameObject*> vCopy = player->viewList_;
+		player->vlm_.unlock();
+
+		for (auto& playerObject : vCopy)
 		{
 			if (false == playerObject->isActive_) continue;
 			if(ObjectType::TYPE_PLAYER != playerObject->objectType_) continue;

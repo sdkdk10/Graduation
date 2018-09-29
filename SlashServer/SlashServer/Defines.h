@@ -13,6 +13,7 @@ const double MONSTER_MOVE_SPEED		{ 0.3 };
 const double MONSTER_ROTATE_DEGREE	{ 7.0 };
 const double PLAYER_MOVE_SPEED		{ 0.15 };
 const double PLAYER_ROTATE_DEGREE	{ 15.0 };
+const double TEST_MOVE_SPEED		{ 1.0 };
 const double WARRIOR_ROLL_SPEED		{ 0.5 };
 const double WIZARD_TELEPORT_SPEED	{ 5.0 };
 const unsigned char ROLL_MAX_FRAME	{ 10 };

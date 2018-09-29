@@ -26,7 +26,7 @@ void NPC::Initialize()
 		XMStoreFloat4x4(&world_, XMMatrixScaling(2.0f, 2.0f, 2.0f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	else if(NPC_NAGA_GUARD == npcType_)
 		XMStoreFloat4x4(&world_, XMMatrixScaling(0.08f, 0.08f, 0.08f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
-	else if(NPC_ROCK_WARRIOR == npcType_) // 보스 렌더 크기만 키웠음
+	else if(NPC_ROCK_WARRIOR == npcType_)
 		XMStoreFloat4x4(&world_, XMMatrixScaling(0.08f, 0.08f, 0.08f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 	else if(NPC_TREE_GUARD == npcType_)
 		XMStoreFloat4x4(&world_, XMMatrixScaling(0.07f, 0.07f, 0.07f)*XMMatrixRotationX(1.7f)*XMMatrixRotationZ(3.14f)*XMMatrixTranslation(0.0f, 0.0f, 0.0f));
@@ -47,8 +47,6 @@ void NPC::Initialize()
 	lua_pop(L, 5);
 	L_ = L;
 
-	//타입별로 OOBB 노가다 해야함
-	//SetOOBB(XMFLOAT3(Bounds.Center.x , Bounds.Center.y , Bounds.Center.z ), XMFLOAT3(Bounds.Extents.x, Bounds.Extents.y, Bounds.Extents.z), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	if (NPC_SPIDER == npcType_)
 		SetOOBB(XMFLOAT3(0.f, 0.3f, 0.7f), XMFLOAT3(1.f, 0.8f, 1.1f), XMFLOAT4(0.f, 0.f, 0.f, 1.f));
 	else if (NPC_TURTLE == npcType_)

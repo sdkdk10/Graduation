@@ -21,10 +21,7 @@ void WorkerThread::Run()
 		BOOL isSuccess = GetQueuedCompletionStatus(Thread::GetIocp(),
 			&dataSize, reinterpret_cast<ULONG_PTR*>(&object), &pOver, INFINITE);
 
-		//printf("GQCS from client [ %d ] with size [ %d ]\n", key, data_size);
-
-		//cout << object << endl;
-		//cout << object->ID_ << endl;
+		//printf("GQCS from client [ %d ] with size [ %d ]\n", object->ID_, dataSize); // 디버깅용 코드
 
 		// 접속종료 처리
 		if (0 == dataSize) {
@@ -33,7 +30,7 @@ void WorkerThread::Run()
 		}
 		// 에러 처리
 		if (0 == isSuccess) {
-			//printf("Error in GQCS key[ %d ]\n", key);
+			printf("Error in GQCS client[ %d ]\n", object->ID_);
 			objectManager_->DisconnectPlayer(object);
 			continue;
 		}
@@ -49,8 +46,9 @@ void WorkerThread::Run()
 			while (0 < rSize) {
 				if (0 == player->packetSize_)
 					player->packetSize_ = ptr[0];
-				int remain = player->packetSize_ - player->prevSize_; // 받아야하는 패킷 총 사이즈 - 이전에 받은 값
-				if (remain <= rSize) { // 패킷을 만들 수 있을 때
+				int remain = player->packetSize_ - player->prevSize_;
+				// 패킷을 만들 수 있을 때
+				if (remain <= rSize) {
 					memcpy(player->prevPacket_ + player->prevSize_,
 						ptr, remain);
 					objectManager_->ProcessPacket(object, player->prevPacket_);
@@ -59,7 +57,8 @@ void WorkerThread::Run()
 					player->packetSize_ = 0;
 					player->prevSize_ = 0;
 				}
-				else {// 패킷을 만들 수 없을 때
+				// 패킷을 만들 수 없을 때
+				else {
 					memcpy(player->prevPacket_ + player->prevSize_,
 						ptr,
 						rSize);
@@ -69,7 +68,7 @@ void WorkerThread::Run()
 				}
 			}
 			unsigned long rflag = 0;
-			ZeroMemory(&o->wsaOver, sizeof(WSAOVERLAPPED)); // 재사용할거니까 초기화해줘야 한다.
+			ZeroMemory(&o->wsaOver, sizeof(WSAOVERLAPPED)); // wsaOver 재사용
 			WSARecv(player->s_, &o->wsaBuf, 1, NULL,
 				&rflag, &o->wsaOver, NULL);
 		}
@@ -160,7 +159,7 @@ void WorkerThread::Run()
 		else if (EVT_PLAYER_ROLL == o->eventType)
 		{
 			EXOver *o = reinterpret_cast<EXOver *>(pOver);
-			objectManager_->ProcessMove(object, dynamic_cast<Player*>(object)->rollDir, SC_ROLL_MOVE);
+			objectManager_->ProcessMove(object, dynamic_cast<Player*>(object)->rollDir);
 			delete o;
 		}
 		else if (EVT_PLAY_ENDING == o->eventType)
